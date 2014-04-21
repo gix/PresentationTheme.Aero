@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="ThemeTestApp.Samples.ColorList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Samples="clr-namespace:ThemeTestApp.Samples"
+             mc:Ignorable="d"
+             x:ClassModifier="internal"
+             d:DesignHeight="300" d:DesignWidth="300">
+  <ListView ItemsSource="{Binding Colors}">
+    <ListView.ItemTemplate>
+      <DataTemplate DataType="{x:Type Samples:ColorSpec}">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Rectangle Grid.Column="0" Fill="{Binding Brush, Mode=OneWay}" VerticalAlignment="Stretch"/>
+          <TextBox Grid.Column="1" BorderThickness="0" Background="{x:Null}" IsReadOnly="True"
+                   Text="{Binding StringValue, Mode=OneWay}" Margin="5,0,5,0"/>
+          <TextBlock Grid.Column="2" Text="{Binding Name, Mode=OneWay}"/>
+        </Grid>
+      </DataTemplate>
+    </ListView.ItemTemplate>
+  </ListView>
+</UserControl>

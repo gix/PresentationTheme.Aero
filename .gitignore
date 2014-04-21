@@ -1,0 +1,23 @@
+# Visual Studio
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.vspscc
+*.vssscc
+*.aps
+*.cso
+ipch/
+
+# VC
+*.pch
+*.tlb
+*.tlh
+*.sbr
+*.ilk
+*.log
+*.lib
+
+/aero/
+bin/
+obj/
