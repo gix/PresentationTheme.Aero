@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4B44ACC1-0177-4A8A-AB35-D4B3F3986382}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ThemePreviewer</RootNamespace>
+    <AssemblyName>ThemePreviewer</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <FileAlignment>512</FileAlignment>
+    <Utf8Output>true</Utf8Output>
+    <ExpressionBlendVersion>12.0.41212.0</ExpressionBlendVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Aero2" />
+    <Reference Include="PresentationFramework.Royale" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BuiltinThemes.cs" />
+    <Compile Include="Controls\ProgressBarEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TrackBarEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ExpressionExtensions.cs" />
+    <Compile Include="ItemGenerator.cs" />
+    <Compile Include="ProcessExtensions.cs" />
+    <Compile Include="ProcessUtils.cs" />
+    <Compile Include="ImagingUtils.cs" />
+    <Compile Include="Samples\ListBoxSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ListBoxSampleNative.Designer.cs">
+      <DependentUpon>ListBoxSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ListBoxSampleWpf.xaml.cs">
+      <DependentUpon>ListBoxSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ComboBoxSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ComboBoxSampleNative.Designer.cs">
+      <DependentUpon>ComboBoxSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ScrollBarEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ListViewExtensions.cs" />
+    <Compile Include="Samples\RadioCheckSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\RadioCheckSampleNative.Designer.cs">
+      <DependentUpon>RadioCheckSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\RadioCheckSampleWpf.xaml.cs">
+      <DependentUpon>RadioCheckSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ScrollBarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ScrollBarSampleNative.Designer.cs">
+      <DependentUpon>ScrollBarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ScrollBarSampleWpf.xaml.cs">
+      <DependentUpon>ScrollBarSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TabControlEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Samples\TabControlSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\TabControlSampleNative.Designer.cs">
+      <DependentUpon>TabControlSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TabControlSampleWpf.xaml.cs">
+      <DependentUpon>TabControlSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TextBoxSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\TextBoxSampleNative.Designer.cs">
+      <DependentUpon>TextBoxSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TextBoxSampleWpf.xaml.cs">
+      <DependentUpon>TextBoxSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TrackbarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\TrackbarSampleNative.Designer.cs">
+      <DependentUpon>TrackbarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TrackbarSampleWpf.xaml.cs">
+      <DependentUpon>TrackbarSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TreeViewSampleWpf.xaml.cs">
+      <DependentUpon>TreeViewSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Samples\ColorList.xaml.cs">
+      <DependentUpon>ColorList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ButtonSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ButtonSampleNative.Designer.cs">
+      <DependentUpon>ButtonSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\MenuSampleNative.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\MenuSampleNative.Designer.cs">
+      <DependentUpon>MenuSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IOptionControl.cs" />
+    <Compile Include="ItemsCollection.cs" />
+    <Compile Include="OptionList.cs" />
+    <Compile Include="Samples\ControlComparison.xaml.cs">
+      <DependentUpon>ControlComparison.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\DataGridSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\DataGridSampleNative.Designer.cs">
+      <DependentUpon>DataGridSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ProgressBarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ProgressBarSampleNative.Designer.cs">
+      <DependentUpon>ProgressBarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ButtonSampleWpf.xaml.cs">
+      <DependentUpon>ButtonSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\DataGridSampleWpf.xaml.cs">
+      <DependentUpon>DataGridSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\MenuSampleWpf.xaml.cs">
+      <DependentUpon>MenuSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ProgressBarSampleWpf.xaml.cs">
+      <DependentUpon>ProgressBarSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ComboBoxSampleWpf.xaml.cs">
+      <DependentUpon>ComboBoxSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ListViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Samples\ListViewSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ListViewSampleNative.Designer.cs">
+      <DependentUpon>ListViewSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BoolControlOption.cs" />
+    <Compile Include="Samples\ListViewSampleWpf.xaml.cs">
+      <DependentUpon>ListViewSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\TreeViewEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Samples\TreeViewSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\TreeViewSampleNative.Designer.cs">
+      <DependentUpon>TreeViewSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Theme.cs" />
+    <Compile Include="ThemeUtils.cs" />
+    <Compile Include="UxThemeOverride.cs" />
+    <EmbeddedResource Include="Samples\ListBoxSampleNative.resx">
+      <DependentUpon>ListBoxSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Samples\ButtonSampleNative.resx">
+      <DependentUpon>ButtonSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\ComboBoxSampleNative.resx">
+      <DependentUpon>ComboBoxSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\MenuSampleNative.resx">
+      <DependentUpon>MenuSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\DataGridSampleNative.resx">
+      <DependentUpon>DataGridSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\ListViewSampleNative.resx">
+      <DependentUpon>ListViewSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\ProgressBarSampleNative.resx">
+      <DependentUpon>ProgressBarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\RadioCheckSampleNative.resx">
+      <DependentUpon>RadioCheckSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\ScrollBarSampleNative.resx">
+      <DependentUpon>ScrollBarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\TabControlSampleNative.resx">
+      <DependentUpon>TabControlSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\TextBoxSampleNative.resx">
+      <DependentUpon>TextBoxSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\TrackbarSampleNative.resx">
+      <DependentUpon>TrackbarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\TreeViewSampleNative.resx">
+      <DependentUpon>TreeViewSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="Samples\ListBoxSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Samples\RadioCheckSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ScrollBarSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\TabControlSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\TextBoxSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\TrackbarSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\TreeViewSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Samples\ColorList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ControlComparison.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ButtonSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\DataGridSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\MenuSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ProgressBarSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ComboBoxSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Samples\ListViewSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StyleCore\StyleCore.csproj">
+      <Project>{839bcdaf-c880-4f9e-b3b6-388c2ae77156}</Project>
+      <Name>StyleCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj">
+      <Project>{d82a4175-763e-4591-8aa3-4bed74b57e32}</Project>
+      <Name>PresentationTheme.Aero.Win8</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj">
+      <Project>{a6e7c65f-98f7-4297-89ea-cad879719fd6}</Project>
+      <Name>PresentationTheme.Aero.Win10</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj">
+      <Project>{8bb1d809-ea59-490f-9867-80e031ce691c}</Project>
+      <Name>PresentationTheme.Aero.Win7</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\SharedPropertiesDotNet.props" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup>
+    <_PropertySheetDisplayName>Uniform Properties</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <ConfigSuffix Condition="'$(UseDebugLibraries)'=='true'">-dbg</ConfigSuffix>
+    <ConfigSuffix Condition="'$(UseDebugLibraries)'!='true'"></ConfigSuffix>
+    <LinkageSuffix Condition="'$(ConfigurationType)'=='StaticLibrary'">-static</LinkageSuffix>
+    <LinkageSuffix Condition="'$(ConfigurationType)'!='StaticLibrary'"></LinkageSuffix>
+    <OutputPlatform Condition="'$(Platform)'=='Win32'">x86</OutputPlatform>
+    <OutputPlatform Condition="'$(Platform)'=='x86'">x86</OutputPlatform>
+    <OutputPlatform Condition="'$(Platform)'=='x64'">x64</OutputPlatform>
+    <OutputPlatform Condition="'$(Platform)'=='ia64'">ia64</OutputPlatform>
+    <Toolset>$(PlatformToolset)</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v90'">vc90</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v100'">vc100</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='Windows7.1SDK'">vc101</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v110'">vc110</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v120'">vc120</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v140'">vc140</Toolset>
+    <Toolset Condition="'$(PlatformToolset)'=='v141'">vc141</Toolset>
+    <OutputBaseName Condition="'$(OutputBaseName)'==''">$(OutputPlatform)$(ConfigSuffix)</OutputBaseName>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup />
+</Project>

@@ -1,0 +1,38 @@
+﻿<Window
+    x:Class="ThemePreviewer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:themePreviewer="clr-namespace:ThemePreviewer"
+    xmlns:win10="clr-namespace:PresentationTheme.Aero.Win10;assembly=PresentationTheme.Aero.Win10"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance {x:Type themePreviewer:MainWindow}, d:IsDesignTimeCreatable=False}"
+    Title="Theme Previewer"
+    Width="1200"
+    Height="701"
+    TextOptions.TextFormattingMode="Display"
+    UseLayoutRounding="True"
+    x:Name="Root">
+  <DockPanel>
+    <DockPanel.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}"/>
+    </DockPanel.LayoutTransform>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+      <Menu>
+        <MenuItem Header="_Theme" x:Name="themeItem"/>
+      </Menu>
+      <Slider Margin="3,1" Width="100" Value="{Binding Scale}" Minimum="1" Maximum="4" SmallChange="1" LargeChange="1"/>
+      <CheckBox Margin="3,1" IsChecked="{Binding UseLayoutRounding, ElementName=Root}">Use Layout Rounding</CheckBox>
+      <CheckBox Margin="3,1" x:Name="textFormattingFlag" IsChecked="True" Click="OnTextFormattingFlagClicked">Text Formatting: Display</CheckBox>
+      <CheckBox Margin="3,1" x:Name="animationFlag" IsChecked="{x:Static win10:AeroWin10Theme.UseAnimationsOverride}" IsThreeState="True" Click="OnAnimationFlagClicked">Animations</CheckBox>
+    </StackPanel>
+    <TabControl ItemsSource="{Binding Pages}" SelectedItem="{Binding CurrentPage}">
+      <TabControl.ItemContainerStyle>
+        <Style TargetType="TabItem">
+          <Setter Property="Header" Value="{Binding Label}"/>
+        </Style>
+      </TabControl.ItemContainerStyle>
+    </TabControl>
+  </DockPanel>
+</Window>

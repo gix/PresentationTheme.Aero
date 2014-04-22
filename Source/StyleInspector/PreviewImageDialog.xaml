@@ -1,0 +1,77 @@
+﻿<Window x:Class="StyleInspector.PreviewImageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StyleInspector"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance {x:Type local:PreviewImageDialogViewModel}}"
+        Title="Preview Image"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display"
+        Width="500"
+        Height="400">
+  <Window.Resources>
+    <Style TargetType="{x:Type TextBlock}">
+      <Setter Property="Margin" Value="3"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="{x:Type TextBox}">
+      <Setter Property="Margin" Value="3"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Border Padding="10">
+      <Border x:Name="border" Width="100" Height="100"
+              HorizontalAlignment="Left">
+        <Image Source="{Binding ImageSource}" Stretch="Fill">
+          <local:DataPiping.DataPipes>
+            <local:DataPipeCollection>
+              <local:DataPipe Source="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Image}}}"
+                              Target="{Binding ImageWidth, Mode=OneWayToSource}"/>
+              <local:DataPipe Source="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type Image}}}"
+                              Target="{Binding ImageHeight, Mode=OneWayToSource}"/>
+            </local:DataPipeCollection>
+          </local:DataPiping.DataPipes>
+        </Image>
+      </Border>
+    </Border>
+    <TextBlock Grid.Row="1" Text="{Binding Message}"/>
+
+    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+      <Grid Margin="6" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+          <RowDefinition/>
+          <RowDefinition/>
+          <RowDefinition/>
+          <RowDefinition/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition MaxWidth="200"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Source Rect"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SourceRect, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Dest Rect"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DestRect, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Sizing Margins"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SizingMargins, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Clip Rect"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ClippingRect, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Draw Option"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DrawOption, UpdateSourceTrigger=PropertyChanged}"/>
+      </Grid>
+    </ScrollViewer>
+  </Grid>
+</Window>

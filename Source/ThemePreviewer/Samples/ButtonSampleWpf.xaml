@@ -1,0 +1,40 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             x:Class="ThemePreviewer.Samples.ButtonSampleWpf"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+  <UserControl.Resources>
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="MinWidth" Value="75"/>
+      <Setter Property="MinHeight" Value="23"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="Padding" Value="6,1"/>
+    </Style>
+  </UserControl.Resources>
+  <Grid Margin="3">
+    <StackPanel>
+      <Button Content="Button" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <Button x:Name="defaulted" Content="Default" IsDefault="True" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <Button Content="Disabled" IsEnabled="False" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <StackPanel Orientation="Horizontal" Margin="0,11,0,0">
+        <StackPanel Orientation="Vertical" Margin="0,0,0,11" VerticalAlignment="Top">
+          <CheckBox x:Name="useTransitionsFlag" IsChecked="True" Content="Transitions" Margin="0,0,0,2"/>
+          <Button x:Name="normalButton"    Content="Normal" Margin="0,0,0,2"/>
+          <Button x:Name="mouseOverButton" Content="MouseOver" Margin="0,0,0,2"/>
+          <Button x:Name="pressedButton"   Content="Pressed" Margin="0,0,0,2"/>
+          <Button x:Name="disabledButton"  Content="Disabled" Margin="0,0,0,2"/>
+          <Button x:Name="focusButton"     Content="Focus" Margin="0,2"/>
+          <Button x:Name="unfocusButton"   Content="Unfocus"/>
+        </StackPanel>
+        <Button x:Name="customButton" Content="Custom" MinWidth="75" Margin="10,0,0,0"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Height="75" Width="150"/>
+        <TextBlock x:Name="status"/>
+      </StackPanel>
+      <Button Content="Thick" BorderThickness="5" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <Button Content="Padded" BorderThickness="2" Padding="20" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <Button Content="Margin" BorderThickness="2" Margin="20" HorizontalAlignment="Left"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

@@ -1,0 +1,142 @@
+<UserControl
+    x:Class="ThemePreviewer.Samples.ComboBoxSampleWpf"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    mc:Ignorable="d"
+    d:DesignHeight="500"
+    d:DesignWidth="300">
+  <Grid>
+    <StackPanel>
+      <ComboBox Margin="3" Width="140" HorizontalAlignment="Left"
+                Text="Foo" SelectedIndex="0">
+        <system:String>Foo</system:String>
+        <system:String>Documents and Settings</system:String>
+        <system:String>ProgramData</system:String>
+        <system:String>Recovery</system:String>
+        <system:String>System Volume Information</system:String>
+        <system:String>bootmgr</system:String>
+        <system:String>hiberfil.sys</system:String>
+        <system:String>pagefile.sys</system:String>
+        <system:String>swapfile.sys</system:String>
+      </ComboBox>
+      <StackPanel Orientation="Horizontal">
+        <ComboBox x:Name="ComboBoxDisabled"
+                  Margin="3" Width="140" HorizontalAlignment="Left"
+                  Text="Foo" SelectedIndex="0"
+                  IsEnabled="False">
+          <system:String>Foo</system:String>
+          <system:String>Documents and Settings</system:String>
+          <system:String>ProgramData</system:String>
+          <system:String>Recovery</system:String>
+          <system:String>System Volume Information</system:String>
+          <system:String>bootmgr</system:String>
+          <system:String>hiberfil.sys</system:String>
+          <system:String>pagefile.sys</system:String>
+          <system:String>swapfile.sys</system:String>
+        </ComboBox>
+        <CheckBox Margin="3" IsChecked="{Binding IsEnabled, ElementName=ComboBoxDisabled}"/>
+      </StackPanel>
+      <ComboBox Margin="3" Width="140" HorizontalAlignment="Left"
+                Text="Foo" IsEditable="True">
+        <system:String>Documents and Settings</system:String>
+        <system:String>ProgramData</system:String>
+        <system:String>Recovery</system:String>
+        <system:String>System Volume Information</system:String>
+        <system:String>bootmgr</system:String>
+        <system:String>hiberfil.sys</system:String>
+        <system:String>pagefile.sys</system:String>
+        <system:String>swapfile.sys</system:String>
+      </ComboBox>
+      <StackPanel Orientation="Horizontal">
+        <ComboBox x:Name="ComboBoxEditableDisabled"
+                  Margin="3" Width="140" HorizontalAlignment="Left"
+                  Text="Foo" IsEditable="True"
+                  IsEnabled="False">
+          <system:String>Documents and Settings</system:String>
+          <system:String>ProgramData</system:String>
+          <system:String>Recovery</system:String>
+          <system:String>System Volume Information</system:String>
+          <system:String>bootmgr</system:String>
+          <system:String>hiberfil.sys</system:String>
+          <system:String>pagefile.sys</system:String>
+          <system:String>swapfile.sys</system:String>
+        </ComboBox>
+        <CheckBox Margin="3" IsChecked="{Binding IsEnabled, ElementName=ComboBoxEditableDisabled}"/>
+      </StackPanel>
+
+      <Border Margin="3,10"/>
+
+      <StackPanel Orientation="Horizontal">
+        <StackPanel>
+          <ComboBox Margin="3" BorderThickness="5" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Padding="10" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0" IsEnabled="False">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" BorderThickness="5" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True"/>
+          <ComboBox Margin="3" Padding="10" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True" IsEnabled="False"/>
+        </StackPanel>
+
+        <StackPanel>
+          <ComboBox Margin="3" Height="40" BorderThickness="0" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Height="40" BorderThickness="0" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0" IsEnabled="False">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Height="40" BorderThickness="0" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True"/>
+          <ComboBox Margin="3" Height="40" BorderThickness="0" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True" IsEnabled="False"/>
+        </StackPanel>
+      </StackPanel>
+
+      <Border Margin="3,10"/>
+
+      <StackPanel Orientation="Horizontal">
+        <StackPanel>
+          <ComboBox Margin="3" FontSize="18" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" FontSize="18" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0" IsEnabled="False">
+            <system:String>Foo</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" FontSize="18" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True"/>
+          <ComboBox Margin="3" FontSize="18" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True" IsEnabled="False"/>
+        </StackPanel>
+        <StackPanel>
+          <ComboBox Margin="3" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0"
+                    ItemStringFormat="({0})">
+            <system:String>Foo</system:String>
+            <system:String>Bar</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Width="140" HorizontalAlignment="Left" Text="Foo" SelectedIndex="0">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding}" FontWeight="Bold"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <system:String>Foo</system:String>
+            <system:String>Bar</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True"
+                    ItemStringFormat="({0})">
+            <system:String>Foo</system:String>
+            <system:String>Bar</system:String>
+          </ComboBox>
+          <ComboBox Margin="3" Width="140" HorizontalAlignment="Left" Text="Foo" IsEditable="True">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding}" FontWeight="Bold"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+            <system:String>Foo</system:String>
+            <system:String>Bar</system:String>
+          </ComboBox>
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>
