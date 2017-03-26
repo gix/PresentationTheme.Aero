@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="ThemePNGDecoder.cpp" />
+    <ClCompile Include="ThemeMemStream.cpp" />
+    <ClCompile Include="VSUnpack.cpp" />
+    <ClCompile Include="ThemeLoader.cpp" />
+    <ClCompile Include="TextDraw.cpp" />
+    <ClCompile Include="RenderObj.cpp" />
+    <ClCompile Include="ImageFile.cpp" />
+    <ClCompile Include="BorderFill.cpp" />
+    <ClCompile Include="UxThemeFile.cpp" />
+    <ClCompile Include="DpiInfo.cpp" />
+    <ClCompile Include="PublicApi.cpp" />
+    <ClCompile Include="Hooks.cpp" />
+    <ClCompile Include="RenderList.cpp" />
+    <ClCompile Include="Global.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UxThemeEx.def" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="ThemePNGDecoder.h" />
+    <ClInclude Include="ThemeMemStream.h" />
+    <ClInclude Include="VSUnpack.h" />
+    <ClInclude Include="ThemeLoader.h" />
+    <ClInclude Include="TextDraw.h" />
+    <ClInclude Include="RenderObj.h" />
+    <ClInclude Include="ImageFile.h" />
+    <ClInclude Include="DrawBase.h" />
+    <ClInclude Include="BorderFill.h" />
+    <ClInclude Include="UxThemeFile.h" />
+    <ClInclude Include="Primitives.h" />
+    <ClInclude Include="DpiInfo.h" />
+    <ClInclude Include="gdiex.h" />
+    <ClInclude Include="UxThemeEx.h" />
+    <ClInclude Include="UxThemeHelpers.h" />
+    <ClInclude Include="RenderList.h" />
+    <ClInclude Include="Global.h" />
+  </ItemGroup>
+</Project>

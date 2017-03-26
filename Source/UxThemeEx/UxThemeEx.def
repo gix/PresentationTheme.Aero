@@ -1,0 +1,53 @@
+EXPORTS
+	;DllCanUnloadNow     PRIVATE
+	;DllRegisterServer   PRIVATE
+	;DllMain             PRIVATE
+	;DllUnregisterServer PRIVATE
+	;DllGetClassObject   PRIVATE
+	UxOpenThemeFile
+	UxCloseThemeFile
+	UxGetThemeAnimationProperty
+	UxGetThemeAnimationTransform
+	UxGetThemeBackgroundContentRect
+	UxGetThemeBackgroundExtent
+	UxGetThemeBackgroundRegion
+	UxGetThemeBitmap
+	UxGetThemeBool
+	UxGetThemeColor
+	UxGetThemeDocumentationProperty
+	UxGetThemeEnumValue
+	UxGetThemeFilename
+	UxGetThemeFont
+	UxGetThemeInt
+	UxGetThemeIntList
+	UxGetThemeMargins
+	UxGetThemeMetric
+	UxGetThemePartSize
+	UxGetThemePosition
+	UxGetThemePropertyOrigin
+	UxGetThemeRect
+	UxGetThemeStream
+	UxGetThemeString
+	UxGetThemeSysBool
+	UxGetThemeSysColor
+	UxGetThemeSysColorBrush
+	UxGetThemeSysFont
+	UxGetThemeSysInt
+	UxGetThemeSysSize
+	UxGetThemeSysString
+	UxGetThemeTextExtent
+	UxGetThemeTextMetrics
+	UxGetThemeTimingFunction
+	UxGetThemeTransitionDuration
+	UxHitTestThemeBackground
+	UxIsThemePartDefined
+	UxIsThemeBackgroundPartiallyTransparent
+	UxDrawThemeEdge
+	UxDrawThemeIcon
+	UxDrawThemeBackground
+	UxDrawThemeBackgroundEx
+	UxDrawThemeParentBackground
+	UxDrawThemeParentBackgroundEx
+	UxOverrideTheme
+	UxHook
+	UxUnhook
