@@ -6,8 +6,8 @@ namespace uxtheme
 
 struct DpiInfo
 {
-    unsigned int _nDpiPlateausCurrentlyPresent = 0;
-    unsigned int _nNonStandardDpi = 0;
+    unsigned _nDpiPlateausCurrentlyPresent = 0;
+    unsigned _nNonStandardDpi = 0;
     int _fIsInitialized = 0;
     void Clear();
     HRESULT Ensure(unsigned a2);

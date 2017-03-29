@@ -9,7 +9,7 @@ namespace uxtheme
 struct THEMEMETRICS
 {
     LOGFONTW lfFonts[9];
-    unsigned int crColors[31];
+    unsigned crColors[31];
     int iSizes[10];
     int fBools[1];
     int iStringOffsets[4];
@@ -37,7 +37,7 @@ union MIXEDPTRS
     short* ps;
     wchar_t* px;
     int* pi;
-    unsigned int* pdw;
+    unsigned* pdw;
     POINT* ppt;
     SIZE* psz;
     RECT* prc;
@@ -46,13 +46,25 @@ union MIXEDPTRS
 struct ENTRYHDR
 {
     short usTypeNum;
-    char ePrimVal;
+    unsigned char ePrimVal;
     unsigned dwDataLen;
+
+    ENTRYHDR* Next()
+    {
+        return reinterpret_cast<ENTRYHDR*>(
+            (reinterpret_cast<uintptr_t>(this) + sizeof*this + dwDataLen));
+    }
+
+    ENTRYHDR const* Next() const
+    {
+        return reinterpret_cast<ENTRYHDR*>(
+            (reinterpret_cast<uintptr_t>(this) + sizeof*this + dwDataLen));
+    }
 };
 
 struct NONSHARABLEDATAHDR
 {
-    unsigned int dwFlags;
+    unsigned dwFlags;
     int iLoadId;
     int cBitmaps;
     int iBitmapsOffset;
@@ -62,6 +74,14 @@ struct PARTOBJHDR
 {
     int iPartId;
     int iStateId;
+};
+
+struct __declspec(align(4)) PARTJUMPTABLEHDR
+{
+    int iBaseClassIndex;
+    int iFirstDrawObjIndex;
+    int iFirstTextObjIndex;
+    char cParts;
 };
 
 struct __declspec(align(8)) STATEJUMPTABLEHDR
@@ -83,7 +103,7 @@ struct APPCLASSINFO
     int iClassNameIndex = 0;
 };
 
-struct APPCLASSLIVE
+struct alignas(8) APPCLASSLIVE
 {
     APPCLASSINFO AppClassInfo;
     int iIndex;
@@ -103,15 +123,15 @@ struct APPCLASSLOCAL
 struct THEMEHDR
 {
     char szSignature[8];
-    unsigned int dwVersion;
+    unsigned dwVersion;
     FILETIME ftModifTimeStamp;
-    unsigned int dwTotalLength;
+    unsigned dwTotalLength;
     int iDllNameOffset;
     int iColorParamOffset;
     int iSizeParamOffset;
-    unsigned int dwLangID;
+    unsigned dwLangID;
     int iLoadDPI;
-    unsigned int dwLoadDPIs;
+    unsigned dwLoadDPIs;
     int iLoadPPI;
     int iStringsOffset;
     int iStringsLength;
@@ -158,7 +178,7 @@ struct REUSEDATAHDR
     wchar_t szSharableSectionName[260];
     int iDIBReuseRecordsCount;
     int iDIBReuseRecordsOffset;
-    unsigned int dwTotalLength;
+    unsigned dwTotalLength;
 };
 
 } // namespace uxtheme

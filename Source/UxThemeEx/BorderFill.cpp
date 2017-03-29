@@ -5,6 +5,35 @@
 namespace uxtheme
 {
 
+BOOL CBorderFill::KeyProperty(int iPropId)
+{
+    switch (iPropId) {
+    case TMT_BORDERSIZE:
+    case TMT_ROUNDCORNERWIDTH:
+    case TMT_ROUNDCORNERHEIGHT:
+    case TMT_GRADIENTRATIO1:
+    case TMT_GRADIENTRATIO2:
+    case TMT_GRADIENTRATIO3:
+    case TMT_GRADIENTRATIO4:
+    case TMT_GRADIENTRATIO5:
+    case TMT_CONTENTMARGINS:
+    case TMT_BORDERCOLOR:
+    case TMT_FILLCOLOR:
+    case TMT_GRADIENTCOLOR1:
+    case TMT_GRADIENTCOLOR2:
+    case TMT_GRADIENTCOLOR3:
+    case TMT_GRADIENTCOLOR4:
+    case TMT_GRADIENTCOLOR5:
+    case TMT_BGTYPE:
+    case TMT_BORDERTYPE:
+    case TMT_FILLTYPE:
+        return TRUE;
+
+    default:
+        return FALSE;
+    }
+}
+
 HRESULT CBorderFill::PackProperties(CRenderObj* pRender, int fNoDraw, int iPartId, int iStateId)
 {
     memset(this, 0, sizeof(CBorderFill));
@@ -86,10 +115,110 @@ HRESULT CBorderFill::GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz)
     return S_OK;
 }
 
+HRESULT CBorderFill::GetBackgroundExtent(
+    CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect)
+{
+    pExtentRect->left = pContentRect->left - _ContentMargins.cxLeftWidth;
+    pExtentRect->top = pContentRect->top - _ContentMargins.cyTopHeight;
+    pExtentRect->right = pContentRect->right + _ContentMargins.cxRightWidth;
+    pExtentRect->bottom = pContentRect->bottom + _ContentMargins.cyBottomHeight;
+    return S_OK;
+}
+
 HRESULT CBorderFill::DrawBackground(
     CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions)
 {
+    RECT const* pClipRect = nullptr;
+    BOOL fGettingRegion = FALSE;
+    BOOL fBorder = TRUE;
+    BOOL fContent = TRUE;
+    if (pOptions) {
+        if (pOptions->dwFlags & DTBG_CLIPRECT)
+            pClipRect = &pOptions->rcClip;
+        if (pOptions->dwFlags & DTBG_OMITBORDER)
+            fBorder = FALSE;
+        if (pOptions->dwFlags & DTBG_OMITCONTENT)
+            fContent = FALSE;
+        if (pOptions->dwFlags & DTBG_COMPUTINGREGION)
+            fGettingRegion = DTBG_CLIPRECT;
+    }
+
+    if (_fNoDraw)
+        return S_OK;
+
+    if (_eFillType != FT_SOLID || _eBorderType != BT_RECT)
+        return DrawComplexBackground(
+            pRender,
+            hdcOrig,
+            pRect,
+            fGettingRegion,
+            fBorder,
+            fContent,
+            pClipRect);
+
+    if (_iBorderSize == 0) {
+        if (!fContent)
+            return S_OK;
+        RECT rc = *pRect;
+        if (pClipRect)
+            IntersectRect(&rc, &rc, pClipRect);
+        COLORREF const oldBkColor = SetBkColor(hdcOrig, _crFill);
+        ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+        SetBkColor(hdcOrig, oldBkColor);
+    } else {
+        COLORREF const oldBkColor = GetBkColor(hdcOrig);
+        if (fBorder) {
+            RECT rc;
+            SetBkColor(hdcOrig, _crBorder);
+            SetRect(&rc, pRect->left, pRect->top, pRect->left + _iBorderSize,
+                    pRect->bottom);
+            if (pClipRect)
+                IntersectRect(&rc, &rc, pClipRect);
+            ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+
+            SetRect(&rc, pRect->right - _iBorderSize, pRect->top,
+                    pRect->right, pRect->bottom);
+            if (pClipRect)
+                IntersectRect(&rc, &rc, pClipRect);
+            ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+
+            SetRect(&rc, pRect->left, pRect->top, pRect->right,
+                    pRect->top + _iBorderSize);
+            if (pClipRect)
+                IntersectRect(&rc, &rc, pClipRect);
+            ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+
+            SetRect(&rc, pRect->left, pRect->bottom - _iBorderSize,
+                    pRect->right, pRect->bottom);
+            if (pClipRect)
+                IntersectRect(&rc, &rc, pClipRect);
+            ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+        }
+
+        if (fContent) {
+            RECT rc;
+            rc = *pRect;
+            rc.right -= _iBorderSize;
+            rc.top += _iBorderSize;
+            rc.bottom -= _iBorderSize;
+            rc.left += _iBorderSize;
+            if (pClipRect)
+                IntersectRect(&rc, &rc, pClipRect);
+            SetBkColor(hdcOrig, _crFill);
+            ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
+        }
+
+        SetBkColor(hdcOrig, oldBkColor);
+    }
+
     return S_OK;
+}
+
+HRESULT CBorderFill::DrawComplexBackground(
+    CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion,
+    BOOL fBorder, BOOL fContent, RECT const* pClipRect)
+{
+    return E_NOTIMPL;
 }
 
 } // namespace uxtheme

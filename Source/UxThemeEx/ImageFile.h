@@ -23,7 +23,7 @@ struct CImageFile : CDrawBase
                                      RECT const* pBoundingRect, RECT* pContentRect);
     DIBINFO* SelectCorrectImageFile(CRenderObj* pRender, HDC hdc, RECT const* prc,
                                     int fForGlyph, TRUESTRETCHINFO* ptsInfo);
-    HRESULT DrawFontGlyph(CRenderObj* pRender, HDC hdc, tagRECT* prc, DTBGOPTS const* pOptions);
+    HRESULT DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc, DTBGOPTS const* pOptions);
     HRESULT DrawBackground(CRenderObj* pRender, HDC hdc, int iStateId,
                            RECT const* pRect, DTBGOPTS const* pOptions);
     HRESULT DrawImageInfo(DIBINFO* pdi, CRenderObj* pRender, HDC hdc, int iStateId,
@@ -34,9 +34,12 @@ struct CImageFile : CDrawBase
                              int iStateId, RECT* pRect, int fForceStretch,
                              MARGINS* pmarDest, float xMarginFactor,
                              float yMarginFactor, DTBGOPTS const* pOptions);
+    HRESULT GetBackgroundExtent(CRenderObj* pRender, HDC hdc, RECT const* pContentRect, RECT* pExtentRect);
+    void GetOffsets(int iStateId, DIBINFO const* pdi, int* piXOffset, int* piYOffset) const;
+    HRESULT BuildRgnData(unsigned* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi, CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen);
     HRESULT PackProperties(CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT GetBitmap(CRenderObj* pRender, int iPropId, unsigned dwFlags, HBITMAP* phBitmap);
-    HRESULT GetPartSize(CRenderObj* pRender, HDC hdc, RECT* prc, THEMESIZE eSize, SIZE* psz);
+    HRESULT GetPartSize(CRenderObj* pRender, HDC hdc, RECT const* prc, THEMESIZE eSize, SIZE* psz);
     void GetDrawnImageSize(DIBINFO const* pdi, RECT const* pRect, TRUESTRETCHINFO const* ptsInfo, SIZE* pszDraw);
     HRESULT CreateScaledBackgroundImage(CRenderObj* pRender, int iPartId,
                                         int iStateId, DIBINFO** pScaledDibInfo);
@@ -55,7 +58,7 @@ struct CImageFile : CDrawBase
     HALIGN _eHAlign;
     VALIGN _eVAlign;
     int _fBgFill;
-    unsigned int _crFill;
+    unsigned _crFill;
     int _iTrueSizeStretchMark;
     int _fUniformSizing;
     int _fIntegralSizing;
@@ -65,7 +68,7 @@ struct CImageFile : CDrawBase
     int _fSourceShrink;
     int _fGlyphOnly;
     GLYPHTYPE _eGlyphType;
-    unsigned int _crGlyphTextColor;
+    unsigned _crGlyphTextColor;
     unsigned short _iGlyphFontIndex;
     int _iGlyphIndex;
     DIBINFO _GlyphInfo;
@@ -75,6 +78,11 @@ struct CImageFile : CDrawBase
 
 struct CMaxImageFile : CImageFile
 {
+    CMaxImageFile()
+    {
+        memset(MultiDibs, 0, sizeof(MultiDibs));
+    }
+
     DIBINFO* MultiDibPtr(int iIndex)
     {
         if (iIndex >= 0 || iIndex < _iMultiImageCount)

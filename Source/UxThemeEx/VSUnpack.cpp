@@ -61,7 +61,7 @@ enum VSRESOURCETYPE
 struct _VSRESOURCE
 {
     VSRESOURCETYPE type;
-    unsigned int uResID;
+    unsigned uResID;
     std::wstring strValue;
     std::wstring strComment;
 };
@@ -71,7 +71,7 @@ struct VSERRORCONTEXT
     _iobuf* _pLog;
     HINSTANCE__* _hInstErrorRes;
     wchar_t const* _pszSource;
-    unsigned int _nLineNumber;
+    unsigned _nLineNumber;
     wchar_t const* _pszTool;
 };
 
@@ -196,19 +196,19 @@ static HRESULT _AllocateRecordPlusData(
     *pcbRecord = 0;
 
     auto size = sizeof(_VSRECORD) + cbData;
-    auto pRec = static_cast<_VSRECORD*>(malloc(size));
-    if (!pRec)
+    auto record = new(cbData, std::nothrow) _VSRECORD();
+    if (!record)
         return E_OUTOFMEMORY;
 
-    memset(pRec, 0, size);
-    pRec->iClass = -1;
-    pRec->iPart = 0;
-    pRec->iState = 0;
-    pRec->cbData = cbData;
+    memset(record, 0, size);
+    record->iClass = -1;
+    record->iPart = 0;
+    record->iState = 0;
+    record->cbData = cbData;
 
-    memcpy(&pRec[1], pvData, cbData);
+    memcpy(&record[1], pvData, cbData);
 
-    *ppRecord = pRec;
+    *ppRecord = record;
     *pcbRecord = static_cast<int>(size);
     return S_OK;
 }
@@ -228,23 +228,274 @@ static HRESULT _ParseBool(wchar_t const* pszValue, BOOL* pf)
     return E_INVALIDARG;
 }
 
-static HRESULT ParseFont(
-    wchar_t const* pszValue, LOGFONTW* plf, unsigned long long cchComment, wchar_t* pszComment)
+static int String2Number(wchar_t const* psz)
 {
+    int base = 10;
+    int sign = 1;
+    int value = 0;
+
+    if (*psz == L'-') {
+        sign = -1;
+        ++psz;
+    } else if (*psz == L'+') {
+        ++psz;
+    }
+
+    if (*psz == L'0') {
+        ++psz;
+        if (*psz == L'X' || *psz == L'x') {
+            base = 16;
+            ++psz;
+        }
+    }
+
+    for (; *psz; ++psz) {
+        wchar_t const chr = *psz;
+
+        int digit;
+        if (chr >= L'0' && chr <= L'9')
+            digit = chr - L'0';
+        else if (chr >= L'A' && chr <= L'F' && base == 16)
+            digit = 10 + (chr - L'A');
+        else if (chr >= L'a' && chr <= L'f' && base == 16)
+            digit = 10 + (chr - L'a');
+        else
+            break;
+
+        value = (value * base) + digit;
+        ++psz;
+    }
+
+    return sign * value;
+}
+
+static bool IsSpace(wchar_t wch)
+{
+    WORD charType = 0;
+    GetStringTypeW(CT_CTYPE1, &wch, 1, &charType);
+    return (charType & C1_SPACE) != 0;
+}
+
+static bool IsDigit(wchar_t wch)
+{
+    WORD charType = 0;
+    GetStringTypeW(CT_CTYPE1, &wch, 1, &charType);
+    return (charType & C1_DIGIT) != 0;
+}
+
+static HRESULT ParseIntegerToken(wchar_t const** ppsz, wchar_t const* pszDelim, int* pnValue)
+{
+    wchar_t const* ptr = *ppsz;
+    int value = 0;
+    if (*ppsz) {
+        while (ptr && *ptr != 0 && IsSpace(*ptr))
+            ++ptr;
+
+        if (ptr && *ptr) {
+            if (!IsDigit(*ptr) && *ptr != L'+' && *ptr != L'-')
+                return E_FAIL;
+            if (*ptr)
+                value = String2Number(ptr);
+        }
+    }
+
+    if (ptr) {
+        while (ptr && *ptr && !wcschr(pszDelim, *ptr))
+            ++ptr;
+        while (ptr && *ptr && wcschr(pszDelim, *ptr))
+            ++ptr;
+    }
+
+    *ppsz = ptr;
+    *pnValue = value;
     return S_OK;
-    return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT ParseIntegerTokenList(wchar_t const** ppsz, int* prgVal, int* pcVal)
 {
-    return S_OK;
-    return TRACE_HR(E_NOTIMPL);
+    if (*pcVal == 0 && prgVal)
+        return E_INVALIDARG;
+
+    HRESULT hr = S_OK;
+    int const count = *pcVal;
+    int idx;
+    for (idx = 0; *ppsz && !**ppsz; ++idx) {
+        if (idx >= count && prgVal)
+            break;
+
+        int value;
+        hr = ParseIntegerToken(ppsz, L", ", &value);
+        if (hr < 0)
+            break;
+
+        if (prgVal)
+            prgVal[idx] = value;
+    }
+
+    *pcVal = idx;
+    return hr;
 }
 
 static HRESULT ParseIntlist(wchar_t const* pszValue, int** pprgIntegers, int* pcIntegers)
 {
-    return S_OK;
-    return TRACE_HR(E_NOTIMPL);
+    *pprgIntegers = nullptr;
+    *pcIntegers = 0;
+
+    int count = 0;
+    ENSURE_HR(ParseIntegerTokenList(&pszValue, nullptr, &count));
+
+    if (count == 0 || count > MAX_INTLIST_COUNT)
+        return E_INVALIDARG;
+
+    auto values = new(std::nothrow) int[count];
+    if (!values)
+        return E_OUTOFMEMORY;
+
+    HRESULT hr = ParseIntegerTokenList(&pszValue, *pprgIntegers, pcIntegers);
+    if (SUCCEEDED(hr)) {
+        *pprgIntegers = values;
+        *pcIntegers = count;
+    } else {
+        delete[](*pprgIntegers);
+        *pprgIntegers = nullptr;
+        *pcIntegers = 0;
+    }
+
+    return hr;
+}
+
+static HRESULT _ParseStringToken(
+    wchar_t const** ppsz, wchar_t const* pszDelim, wchar_t** ppszString)
+{
+    HRESULT hr;
+
+    wchar_t const* const delim = pszDelim ? pszDelim : L",:;";
+
+    int length = 0;
+    for (auto c = *ppsz; *c && !wcschr(delim, *c); ++c)
+        ++length;
+
+    wchar_t* token = new(std::nothrow) wchar_t[length + 1];
+    if (token) {
+        StringCchCopyNW(token, length + 1, *ppsz, length);
+        *ppszString = token;
+        hr = 0;
+    } else {
+        hr = E_OUTOFMEMORY;
+    }
+
+    wchar_t v15 = 0;
+    int v16 = 0;
+    wchar_t const* v17 = &(*ppsz)[length];
+
+    for (auto c = v17; *c; ++c) {
+        if (!wcschr(delim, *c))
+            break;
+        if (*c == v15)
+            break;
+
+        v15 = *c;
+        ++v16;
+    }
+
+    *ppsz = &v17[v16];
+
+    return hr;
+}
+
+static void AppendFontResComment(
+    wchar_t** ppszCommentBuf, size_t* pcchComment, wchar_t const* pszStrToAppend)
+{
+    if (!*ppszCommentBuf || *pcchComment == 0)
+        return;
+
+    size_t appendLen = lstrlenW(pszStrToAppend);
+    HRESULT hr = StringCchCopyNW(*ppszCommentBuf, *pcchComment, pszStrToAppend, appendLen);
+    if (hr == STRSAFE_E_INSUFFICIENT_BUFFER) {
+        *ppszCommentBuf = nullptr;
+        *pcchComment = 0;
+        return;
+    }
+
+    *ppszCommentBuf += appendLen;
+    *pcchComment -= appendLen;
+}
+
+static HRESULT ParseFont(
+    wchar_t const* pszValue, LOGFONTW* plf, size_t cchComment, wchar_t* pszComment)
+{
+    fill_zero(plf);
+    plf->lfWeight = 400;
+    plf->lfCharSet = 1;
+
+    wchar_t* faceName;
+    ENSURE_HR(_ParseStringToken(&pszValue, nullptr, &faceName));
+
+    StringCchCopyNW(plf->lfFaceName, 32, faceName, 32 - 1);
+    AppendFontResComment(&pszComment, &cchComment, L"{Split=', '}{@FontFace@=s'0'}");
+    delete[] faceName;
+
+    int height;
+    if (ParseIntegerToken(&pszValue, L",", &height) != S_OK)
+        return S_OK;
+
+    plf->lfHeight = -MulDiv(height, 96, 72);
+    AppendFontResComment(&pszComment, &cchComment, L"{@fontsize_float@=s'1','FontSize'}");
+
+    while (pszValue && *pszValue && IsSpace(*pszValue))
+        ++pszValue;
+
+    wchar_t buffer[200];
+    HRESULT hr = S_OK;
+    bool locked = false;
+    wchar_t* token;
+
+    for (int idx = 2; *pszValue && _ParseStringToken(&pszValue, L" ,", &token) == S_OK; ++idx) {
+        wchar_t const* format = nullptr;
+        if (!AsciiStrCmpI(token, L"bold")) {
+            plf->lfWeight = 700;
+            format = L"{ValidStrings=s'%d',i'Bold','bold',''}";
+        } else if (!AsciiStrCmpI(token, L"italic")) {
+            plf->lfItalic = 1;
+            format = L"{ValidStrings=s'%d',i'Italic','italic',''}";
+        } else if (!AsciiStrCmpI(token, L"underline")) {
+            plf->lfUnderline = 1;
+            format = L"{ValidStrings=s'%d',i'Underline','underline',''}";
+        } else if (!AsciiStrCmpI(token, L"strikeout")) {
+            plf->lfStrikeOut = 1;
+            format = L"{ValidStrings=s'%d',i'Strikeout','strikeout',''}";
+        } else if (!AsciiStrCmpI(token, L"quality:cleartype")) {
+            plf->lfQuality = 5;
+            locked = true;
+        } else if (!AsciiStrCmpI(token, L"quality:cleartype-natural")) {
+            plf->lfQuality = 6;
+            locked = true;
+        } else if (!AsciiStrCmpI(token, L"quality:antialiased")) {
+            plf->lfQuality = 4;
+            locked = true;
+        } else if (!AsciiStrCmpI(token, L"quality:nonantialiased")) {
+            plf->lfQuality = 3;
+            locked = true;
+        } else if (*token == 0) {
+            hr = S_OK;
+        } else {
+            hr = 0x80070648;
+        }
+
+        if (format) {
+            if (StringCchPrintfW(buffer, countof(buffer), format, idx) == S_OK)
+                AppendFontResComment(&pszComment, &cchComment, buffer);
+        }
+
+        delete[] token;
+        if (hr < 0)
+            return hr;
+    }
+
+    if (locked)
+        AppendFontResComment(&pszComment, &cchComment, L"{Locked=s'x'}");
+
+    return hr;
 }
 
 static HRESULT GetResourceOffset(
@@ -267,12 +518,6 @@ static HRESULT GetResourceOffset(
     return S_OK;
 }
 
-static HRESULT ParseIntegerToken(wchar_t const** ppsz, wchar_t const* pszDelim, int* pnValue)
-{
-    *pnValue = 0;
-    return S_OK;
-}
-
 static HRESULT AllocImageFileRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
@@ -282,45 +527,45 @@ static HRESULT AllocImageFileRecord(
 
 static HRESULT AllocImageFileResRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned int uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto pRec = static_cast<_VSRECORD*>(malloc(sizeof(_VSRECORD)));
-    if (!pRec)
+    auto record = new(std::nothrow) _VSRECORD();
+    if (!record)
         return E_OUTOFMEMORY;
 
     pvsr->uResID = uResID;
     pvsr->type = VSRT_BITMAP;
     pvsr->strValue = pszValue;
 
-    pRec->uResID = uResID;
-    pRec->cbData = cbType;
+    record->uResID = uResID;
+    record->cbData = cbType;
 
-    *ppRecord = pRec;
-    *pcbRecord = 32;
+    *ppRecord = record;
+    *pcbRecord = sizeof(_VSRECORD);
     return S_OK;
 }
 
-static HRESULT LoadImageFileRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadImageFileRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                                int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
 
     void* data;
-    unsigned v11;
-
+    unsigned size;
     HRESULT hr = GetPtrToResource(hInst, L"IMAGE",
                                   MAKEINTRESOURCEW(pRecord->uResID),
-                                  &data, &v11);
+                                  &data, &size);
 
     if (hr >= 0) {
-        if (*(WORD *)data != 0x4D42) {
+        if (*(WORD*)data != 0x4D42) {
             *(void**)pvData = data;
-            *((DWORD*)pvData + 2) = v11;
+            *((DWORD*)pvData + 2) = size;
             *pcbData = 16;
             return hr;
         }
-        if (!((*((WORD *)data + 14) - 24) & 0xFFF7)) {
-            *(void**)pvData = data; +14;
+        if (!((*((WORD*)data + 14) - 24) & 0xFFF7)) {
+            *(void**)pvData = (char*)data + 14;
             *((DWORD*)pvData + 2) = 0;
             *pcbData = 16;
             return hr;
@@ -364,17 +609,33 @@ static HRESULT AllocAtlasInputImageRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    char pvData[16];
+    return _AllocateRecordPlusData(&pvData, 16, ppRecord, pcbRecord);
 }
 
 static HRESULT AllocAtlasImageResRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned int uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    auto record = new(std::nothrow) _VSRECORD();
+    if (!record)
+        return E_OUTOFMEMORY;
+
+    pvsr->uResID = uResID;
+    pvsr->type = VSRT_STREAM;
+    pvsr->strValue = pszValue;
+
+    record->uResID = uResID;
+    record->cbData = 8;
+
+    *ppRecord = record;
+    *pcbRecord = sizeof(_VSRECORD);
+
+    return S_OK;
 }
 
-static HRESULT LoadDiskStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadDiskStreamRes(HMODULE hInst, _VSRECORD* pRecord,
+                                 void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -395,14 +656,23 @@ static HRESULT AllocBoolRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    BOOL value;
+    ENSURE_HR(_ParseBool(pszValue, &value));
+    ENSURE_HR(_AllocateRecordPlusData(&value, sizeof(value), ppRecord, pcbRecord));
+    return S_OK;
 }
 
 static HRESULT AllocRGBRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    int values[3];
+    int count = (int)countof(values);
+    ENSURE_HR(ParseIntegerTokenList(&pszValue, values, &count));
+
+    int rgb = (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) | ((values[2] & 0xFF) << 16);
+    ENSURE_HR(_AllocateRecordPlusData(&rgb, sizeof(rgb), ppRecord, pcbRecord));
+    return S_OK;
 }
 
 static HRESULT AllocRectRecord(
@@ -458,8 +728,8 @@ static HRESULT AllocStringResRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto pRec = static_cast<_VSRECORD*>(malloc(sizeof(_VSRECORD)));
-    if (!pRec)
+    auto record = new(std::nothrow) _VSRECORD();
+    if (!record)
         return E_OUTOFMEMORY;
 
     pvsr->uResID = uResID;
@@ -468,10 +738,10 @@ static HRESULT AllocStringResRecord(
 
     if (cbType == -1)
         cbType = 2 * (lstrlenW(pvsr->strValue.c_str()) + 1);
-    pRec->uResID = uResID;
-    pRec->cbData = cbType;
+    record->uResID = uResID;
+    record->cbData = cbType;
 
-    *ppRecord = pRec;
+    *ppRecord = record;
     *pcbRecord = sizeof(_VSRECORD);
     return S_OK;
 }
@@ -487,7 +757,8 @@ static HRESULT AllocFontResRecord(
 
     LOGFONTW lf;
     ENSURE_HR(ParseFont(pszValue, &lf, 1000, comment));
-    ENSURE_HR(AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID, pvsr, pEcx));
+    ENSURE_HR(AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord,
+                                   uResID, pvsr, pEcx));
 
     pvsr->strComment = comment;
     return S_OK;
@@ -497,41 +768,46 @@ static HRESULT AllocIntlistResRecord(
     wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
     unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    LPVOID lpMem;
-    int v13;
+    int* values;
+    int count;
 
-    if (ParseIntlist(pszValue, (int **)&lpMem, &v13) >= 0) {
-        cbType = 4 * v13;
-        free(lpMem);
+    if (ParseIntlist(pszValue, &values, &count) >= 0) {
+        cbType = sizeof(int) * count;
+        delete[] values;
     }
 
-    return AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID, pvsr, pEcx);
+    return AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID,
+                                pvsr, pEcx);
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord, wchar_t* pszData, int cchData)
+static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord,
+                             wchar_t* pszData, int cchData)
 {
     *pszData = 0;
     return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0 ? 0x80070490 : 0;
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                             int* pcbData)
 {
     return LoadStringRes(hInst, pRecord, (wchar_t*)pvData, *pcbData / sizeof(wchar_t));
 }
 
-static HRESULT LoadIntRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadIntRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                          int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
 
     wchar_t buffer[128];
-    wchar_t const* ppsz = buffer;
-
     ENSURE_HR(LoadStringRes(hInst, pRecord, buffer, 128));
-    return ParseIntegerToken(&ppsz, L", ", (int*)pvData);
+
+    wchar_t const* cbuffer = buffer;
+    return ParseIntegerToken(&cbuffer, L", ", (int*)pvData);
 }
 
-static HRESULT LoadBoolRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadBoolRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                           int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -541,7 +817,8 @@ static HRESULT LoadBoolRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int*
     return _ParseBool(buffer, (BOOL*)pvData);
 }
 
-static HRESULT LoadRectRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadRectRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                           int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -550,15 +827,15 @@ static HRESULT LoadRectRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int*
     ENSURE_HR(LoadStringRes(hInst, pRecord, buffer, 128));
 
     int values[4];
-    int pcVal = 4;
-    wchar_t* ppsz = buffer;
-    ENSURE_HR(ParseIntegerTokenList((const wchar_t **)&ppsz, values, &pcVal));
+    int count = static_cast<int>(countof(values));
+    wchar_t const* cbuffer = buffer;
+    ENSURE_HR(ParseIntegerTokenList(&cbuffer, values, &count));
 
-    auto pRect = (RECT *)pvData;
-    pRect->left = values[0];
-    pRect->top = values[1];
-    pRect->right = values[2];
-    pRect->bottom = values[3];
+    auto rect = static_cast<RECT*>(pvData);
+    rect->left = values[0];
+    rect->top = values[1];
+    rect->right = values[2];
+    rect->bottom = values[3];
     return S_OK;
 }
 
@@ -570,12 +847,12 @@ static HRESULT LoadRGBRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* 
     wchar_t buffer[128];
     ENSURE_HR(LoadStringRes(hInst, pRecord, buffer, 128));
 
-    wchar_t* ppsz = buffer;
     int values[3];
-    int pcVal = 3;
-    ENSURE_HR(ParseIntegerTokenList((const wchar_t **)&ppsz, values, &pcVal));
+    int count = (int)countof(values);
+    wchar_t const* cbuffer = buffer;
+    ENSURE_HR(ParseIntegerTokenList(&cbuffer, values, &count));
 
-    *(unsigned*)pvData = (values[0] & 0xFF) | ((values[2] & 0xFF) << 16) | ((values[1] & 0xFF) << 8);
+    *(unsigned*)pvData = (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) | ((values[2] & 0xFF) << 16);
     return S_OK;
 }
 
@@ -593,14 +870,16 @@ static HRESULT AllocDiskStreamResRecord(
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT LoadStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                             int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
 
     void* ptr = nullptr;
     int size;
-    ENSURE_HR(GetPtrToResource(hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID), &ptr, (unsigned*)&size));
+    ENSURE_HR(GetPtrToResource(hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID),
+                               &ptr, (unsigned*)&size));
 
     if (size > *pcbData)
         size = *pcbData;
@@ -611,7 +890,8 @@ static HRESULT LoadStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, in
     return S_OK;
 }
 
-static HRESULT LoadPositionRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadPositionRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+                               int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -619,11 +899,10 @@ static HRESULT LoadPositionRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, 
     wchar_t buffer[128];
     ENSURE_HR(LoadStringRes(hInst, pRecord, buffer, 128));
 
-    wchar_t* ppsz = buffer;
     int values[2];
-    int pcVal = 2;
-
-    ENSURE_HR(ParseIntegerTokenList((const wchar_t **)&ppsz, values, &pcVal));
+    int count = (int)countof(values);
+    wchar_t const* cbuffer = buffer;
+    ENSURE_HR(ParseIntegerTokenList(&cbuffer, values, &count));
 
     auto pt = (POINT*)pvData;
     pt->x = values[0];
@@ -649,7 +928,7 @@ static HRESULT LoadIntlistRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, i
 
     memcpy(pvData, integers, cBytes);
     *pcbData = cBytes;
-    free(integers);
+    delete[] integers;
 
     return S_OK;
 }
@@ -668,7 +947,7 @@ struct PARSETABLE
 {
     THEMEPRIMITIVEID tpi;
     HRESULT(*pfnAlloc)(const wchar_t *, _VSRECORD **, int, int *, VSERRORCONTEXT *);
-    HRESULT(*pfnAllocRes)(const wchar_t *, _VSRECORD **, int, int *, unsigned int, _VSRESOURCE *, VSERRORCONTEXT *);
+    HRESULT(*pfnAllocRes)(const wchar_t *, _VSRECORD **, int, int *, unsigned, _VSRESOURCE *, VSERRORCONTEXT *);
     HRESULT(*pfnLoad)(HINSTANCE__ *, _VSRECORD *, void *, int *);
     void(*pfnUnload)(void *);
 };
@@ -716,7 +995,7 @@ static HRESULT _GenerateEmptySection(
 {
     int begin = pfnCB->GetNextDataIndex();
     int value = 0;
-    if (FAILED(pfnCB->AddData(12, 12, &value, sizeof(value))))
+    if (FAILED(pfnCB->AddData(TMT_12, TMT_12, &value, sizeof(value))))
         return E_FAIL;
 
     int length = pfnCB->GetNextDataIndex() - begin;
@@ -728,7 +1007,7 @@ static HRESULT _TerminateSection(
     int iPart, int iState, int iStartOfSection)
 {
     int value = 0;
-    if (FAILED(pfnCB->AddData(12, 12, &value, sizeof(value))))
+    if (FAILED(pfnCB->AddData(TMT_12, TMT_12, &value, sizeof(value))))
         return E_FAIL;
 
     int length = pfnCB->GetNextDataIndex() - iStartOfSection;
@@ -736,12 +1015,12 @@ static HRESULT _TerminateSection(
 }
 
 void _ParseClassName(
-    wchar_t const* pszClassSpec, wchar_t* pszAppNameBuf, unsigned int cchAppNameBuf,
-    wchar_t* pszClassNameBuf, unsigned int cchClassNameBuf)
+    wchar_t const* pszClassSpec, wchar_t* pszAppNameBuf, unsigned cchAppNameBuf,
+    wchar_t* pszClassNameBuf, unsigned cchClassNameBuf)
 {
     wchar_t const* classSpecPtr;
     wchar_t* v9;
-    unsigned int v10;
+    unsigned v10;
     signed __int64 v11;
 
     *pszAppNameBuf = 0;
@@ -773,7 +1052,8 @@ void _ParseClassName(
     *v9 = 0;
 }
 
-static HRESULT LoadVSRecordData(HMODULE hInstVS, _VSRECORD* pRecord, void* pvBuf, int* pcbBuf)
+static HRESULT LoadVSRecordData(
+    HMODULE hInstVS, _VSRECORD* pRecord, void* pvBuf, int* pcbBuf)
 {
     if (!pRecord || !pcbBuf)
         return E_INVALIDARG;
@@ -848,32 +1128,90 @@ static char* GetBitmapBits(BITMAPINFOHEADER* header)
     return reinterpret_cast<char*>(header) + header->biSize + 4 * header->biClrUsed;
 }
 
+static uint8_t PremultiplyChannel(uint8_t channel, uint8_t alpha)
+{
+    // premult = alpha/255 * color/255 * 255
+    //         = (alpha*color)/255
+    //
+    // (z/255) = z/256 * 256/255
+    //         = z/256 * (1 + 1/255)
+    //         = z/256 + (z/256)/255
+    //         = (z + z/255)/256
+    //         # Recursing once:
+    //         = (z + (z + z/255)/256)/256
+    //         = (z + z/256 + z/256/255) / 256
+    //         # Using only 16-bit operations, loosing some precision, and
+    //         # flooring the result gives:
+    //         => (z + z>>8)>>8
+    //         # Add 0x80/255 (= 0.5) to convert floor to round
+    //         => (z+0x80 + (z+0x80)>>8 ) >> 8
+    //         = lround(z/255.0) for z in [0..0xfe02]
+    unsigned pre = channel * alpha + 0x80;
+    return (pre + (pre >> 8)) >> 8;
+}
+
+static unsigned PremultiplyColor(unsigned rgba)
+{
+    uint8_t r = static_cast<uint8_t>(rgba >> 0);
+    uint8_t g = static_cast<uint8_t>(rgba >> 8);
+    uint8_t b = static_cast<uint8_t>(rgba >> 16);
+    uint8_t a = static_cast<uint8_t>(rgba >> 24);
+
+    r = PremultiplyChannel(r, a);
+    g = PremultiplyChannel(g, a);
+    b = PremultiplyChannel(b, a);
+
+    return (a << 24) | (b << 16) | (g << 8) | r;
+}
+
+static unsigned PremultiplyColor(unsigned rgba, uint8_t alpha)
+{
+    uint8_t r = static_cast<uint8_t>(rgba >> 0);
+    uint8_t g = static_cast<uint8_t>(rgba >> 8);
+    uint8_t b = static_cast<uint8_t>(rgba >> 16);
+    uint8_t a = static_cast<uint8_t>(rgba >> 24);
+
+    r = PremultiplyChannel(r, alpha);
+    g = PremultiplyChannel(g, alpha);
+    b = PremultiplyChannel(b, alpha);
+    a = PremultiplyChannel(a, alpha);
+
+    return (a << 24) | (b << 16) | (g << 8) | r;
+}
+
+static unsigned AlphaBlend(unsigned rgbDst, unsigned rgbaSrc)
+{
+    unsigned invSrcAlpha = ~(rgbaSrc >> 24) & 0xFF;
+    if (invSrcAlpha == 0)
+        return rgbaSrc; // Source is opaque.
+
+    uint8_t r = static_cast<uint8_t>(rgbDst >> 0);
+    uint8_t g = static_cast<uint8_t>(rgbDst >> 8);
+    uint8_t b = static_cast<uint8_t>(rgbDst >> 16);
+    uint8_t a = static_cast<uint8_t>(rgbDst >> 24);
+
+    r = PremultiplyChannel(r, invSrcAlpha);
+    g = PremultiplyChannel(g, invSrcAlpha);
+    b = PremultiplyChannel(b, invSrcAlpha);
+    a = PremultiplyChannel(a, invSrcAlpha);
+
+    return rgbaSrc + ((a << 24) | (b << 16) | (g << 8) | r);
+}
+
 static unsigned Colorize(unsigned rgbaSrc, unsigned rgbTint)
 {
     unsigned alpha = rgbaSrc >> 24;
     unsigned color = rgbTint | (alpha << 24);
 
-    if (alpha == 0)
+    if (alpha == 0x00)
         return 0;
     if (alpha == 0xFF)
         return color;
 
-    unsigned r = (color >> 16) & 0xFF;
-    unsigned g = (color >> 8) & 0xFF;
-    unsigned b = (color & 0xFF);
-
-    r = alpha * r + 0x80;
-    g = alpha * g + 0x80;
-    b = alpha * b + 0x80;
-
-    r = (r + (r / 256)) / 256;
-    g = (g + (g / 256)) / 256;
-    b = (b + (b / 256)) / 256;
-
-    return (alpha << 24) | (r << 16) | (g << 8) | b;
+    return PremultiplyColor(color);
 }
 
-void ColorizeGlyphByAlpha(char* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned int dwRGBColor)
+void ColorizeGlyphByAlpha(char* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned dwRGBColor)
 {
     int const tint = SwapRGB(dwRGBColor);
     unsigned const* src = reinterpret_cast<unsigned*>(GetBitmapBits(pBitmapHdr));
@@ -885,7 +1223,7 @@ void ColorizeGlyphByAlpha(char* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned i
 
 static void ColorizeAndComposeImages(
     char* pDstImageBytes, char* pSrcBGImageBytes, char* pSrcFGImageBytes,
-    SIZE imageSize, unsigned int* pdwBGColor, unsigned int* pdwFGColor)
+    SIZE imageSize, unsigned* pdwBGColor, unsigned* pdwFGColor)
 {
     auto srcFg = reinterpret_cast<unsigned*>(pSrcFGImageBytes);
     auto srcBg = reinterpret_cast<unsigned*>(pSrcBGImageBytes);
@@ -907,27 +1245,15 @@ static void ColorizeAndComposeImages(
         ++srcBg;
 
         *dst = bgClr;
-        if (fgClr & 0xFF000000) {
-            unsigned v17 = ~((fgClr >> 24) & 0xFF);
-            if (v17) {
-                unsigned v18 = v17 * (bgClr & 0xFF00FF) + 0x800080;
-                unsigned v19 = v17 * ((bgClr >> 8) & 0xFF00FF) + 0x800080;
-                unsigned y = (v19 + ((v19 >> 8) & 0xFF00FF));
-                unsigned z = (v19 + ((v19 >> 8) & 0xFFFF00FF));
-                unsigned g = (v18 + ((v18 >> 8) & 0xFF00FF));
-                unsigned x = (y ^ (z ^ (g >> 8)) & 0xFF00FF);
-                *dst = fgClr + x;
-            } else {
-                *dst = fgClr;
-            }
-        }
+        if (fgClr & 0xFF000000)
+            *dst = AlphaBlend(bgClr, fgClr);
         ++dst;
     }
 }
 
 void ColorizeGlyphByAlphaComposition(
-    char* pBytes, tagBITMAPINFOHEADER* pBitmapHdr, int iImageCount,
-    unsigned* pdwGlyphBGColor, unsigned int* pdwGlyphColor)
+    char* pBytes, BITMAPINFOHEADER* pBitmapHdr, int iImageCount,
+    unsigned* pdwGlyphBGColor, unsigned* pdwGlyphColor)
 {
     SIZE size;
     size.cx = pBitmapHdr->biWidth;
@@ -997,7 +1323,7 @@ static HRESULT _ReadVSVariant(char* pbVariantList, int cbVariantList, int* pcbPo
             *v13 = v15;
             if (!v15)
                 return E_OUTOFMEMORY;
-            StringCchCopyNW(v15, (unsigned int)v12, (const wchar_t *)&pbVariantList[*pcbPos], (unsigned int)(v12 - 1));
+            StringCchCopyNW(v15, (unsigned)v12, (const wchar_t *)&pbVariantList[*pcbPos], (unsigned)(v12 - 1));
         }
         ++v10;
         ++v11;
@@ -1040,21 +1366,14 @@ HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, int fGlobal, int f
     }
 
     _cBitmaps = 1000;
-    _rgBitmapIndices = new(std::nothrow) int[1000];
+    _rgBitmapIndices = new(std::nothrow) int[_cBitmaps];
     if (!_rgBitmapIndices)
         return E_OUTOFMEMORY;
 
-    unsigned __int64 v17 = (unsigned __int64)&_rgBitmapIndices[_cBitmaps];
-    unsigned v18 = (4 * _cBitmaps + 3) >> 2;
+    for (unsigned i = 0; i < _cBitmaps; ++i)
+        _rgBitmapIndices[i] = -1;
 
-    int* indexPtr = _rgBitmapIndices;
-    if ((unsigned __int64)indexPtr > v17)
-        v18 = 0;
-
-    for (unsigned __int64 v16 = 0; v16 < v18; ++v16)
-        *indexPtr++ = -1;
-
-    _rgfPartiallyTransparent = new(std::nothrow) char[(_cBitmaps >> 3) + 1];
+    _rgfPartiallyTransparent = new(std::nothrow) char[(_cBitmaps / 8) + 1];
     if (!_rgfPartiallyTransparent)
         return E_OUTOFMEMORY;
 
@@ -1146,7 +1465,7 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant, wchar_t const* p
                                 if (!AsciiStrCmpI(dst, pszSizeVariant) && !AsciiStrCmpI(v15, pszColorVariant))
                                 {
                                     v5 = 1;
-                                    v10 = GetPtrToResource(_hInst, L"VARIANT", ppszName, pvMap, (unsigned int *)v11);
+                                    v10 = GetPtrToResource(_hInst, L"VARIANT", ppszName, pvMap, (unsigned *)v11);
                                 }
                                 free(ppszName);
                                 ppszName = 0;
@@ -1162,10 +1481,11 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant, wchar_t const* p
             }
         }
     }
-    return (unsigned int)v10;
+    return (unsigned)v10;
 }
 
-HRESULT CVSUnpack::LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB)
+HRESULT CVSUnpack::LoadClassDataMap(
+    wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB)
 {
     HRESULT hr = S_OK; // ebx@1
     signed int currClassId; // er12@2
@@ -1174,12 +1494,9 @@ HRESULT CVSUnpack::LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszS
     _VSRECORD* pRec; // rdi@2
     bool hasDelayedRecords; // er13@2
     __int64 isNewClass; // rcx@4
-    unsigned int isNewPart; // er8@4
+    unsigned isNewPart; // er8@4
     bool isNewState; // zf@4
-    __int64 v16; // rax@17
     int v17; // eax@31
-    HRESULT v19; // eax@39
-    unsigned int pcbMap; // [sp+20h] [bp-A8h]@1
     int iState; // [sp+30h] [bp-98h]@2
     bool hasPlateauRecords; // [sp+34h] [bp-94h]@2
     int iPart; // [sp+38h] [bp-90h]@2
@@ -1307,9 +1624,9 @@ HRESULT CVSUnpack::LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszS
 HRESULT CVSUnpack::LoadBaseClassDataMap(IParserCallBack* pfnCB)
 {
     int* ptr;
-    unsigned int size;
+    unsigned size;
 
-    ENSURE_HR(GetPtrToResource(_hInst, c_szBCMAP, c_szBCMAP, (void **)&ptr, &size));
+    ENSURE_HR(GetPtrToResource(_hInst, c_szBCMAP, c_szBCMAP, (void**)&ptr, &size));
 
     if (ptr && size) {
         int count = *ptr++;
@@ -1336,13 +1653,13 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
 {
     void* pbBuf = nullptr;
     unsigned cbBuf = 0;
-    ENSURE_HR(GetPtrToResource(_hInst, c_szAMAP, c_szAMAP, &pbBuf, &cbBuf));
-    if (!pbBuf || !cbBuf)
+    HRESULT hr = GetPtrToResource(_hInst, c_szAMAP, c_szAMAP, &pbBuf, &cbBuf);
+    if (hr == 0x80070715 || !pbBuf || !cbBuf)
         return S_OK;
+    ENSURE_HR(hr);
 
     int const timingClass = _FindClass(c_szTimingFunctionElement_0);
 
-    HRESULT hr = S_OK;
     int currClass = 0;
     int currPart = 0;
 
@@ -1354,17 +1671,15 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
 
         if (currClass != pRec->iClass) {
             currClass = pRec->iClass;
-            hr = _GenerateEmptySection(pfnCB, pszAppName, _rgClassNames[pRec->iClass].c_str(), 0, 0);
+            hr = _GenerateEmptySection(pfnCB, pszAppName,
+                                       _rgClassNames[pRec->iClass].c_str(), 0, 0);
         }
 
         if (currClass != timingClass && currPart != pRec->iPart) {
             currPart = pRec->iPart;
             hr = _GenerateEmptySection(
-                pfnCB,
-                pszAppName,
-                _rgClassNames[pRec->iClass].c_str(),
-                pRec->iPart,
-                0);
+                pfnCB, pszAppName, _rgClassNames[pRec->iClass].c_str(),
+                pRec->iPart, 0);
         }
 
         if (hr >= 0) {
@@ -1558,7 +1873,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(
         if (pRec->lSymbolVal == entry.lHCSymbolVal) {
             *pfIsColor = true;
             if (!IsHighContrastMode())
-                return S_FALSE;
+                return S_OK;
 
             DWORD value = MapEnumToSysColor(*reinterpret_cast<HIGHCONTRASTCOLOR*>(pbData));
             return pfnCB->AddData(entry.lSymbolVal, TMT_COLOR, &value, sizeof(value));
@@ -1695,7 +2010,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, 
         v16 = 0;
         goto LABEL_131;
 
-    case TMT_5100: {
+    case TMT_5100:
+    {
         if (IsHighContrastMode())
             return 0;
 
@@ -1706,7 +2022,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, 
         goto LABEL_98;
     }
 
-    case TMT_5101: {
+    case TMT_5101:
+    {
         if (!IsHighContrastMode())
             return 0;
 
@@ -1914,7 +2231,7 @@ LABEL_98:
         }
 
         if (partiallyTransparent && _fIsLiteVisualStyle) {
-            if (pRec->lSymbolVal >= 3002 && pRec->lSymbolVal <= 3006 || pRec->lSymbolVal > 3007 && pRec->lSymbolVal <= 3010 || pRec->lSymbolVal > 5143 && pRec->lSymbolVal <= 5149 || (unsigned int)(pRec->lSymbolVal - 5152) <= 1 || _IsTrueSizeImage(pRec)) {
+            if (pRec->lSymbolVal >= 3002 && pRec->lSymbolVal <= 3006 || pRec->lSymbolVal > 3007 && pRec->lSymbolVal <= 3010 || pRec->lSymbolVal > 5143 && pRec->lSymbolVal <= 5149 || (unsigned)(pRec->lSymbolVal - 5152) <= 1 || _IsTrueSizeImage(pRec)) {
                 goto LABEL_71a;
             } else {
                 goto LABEL_71;
@@ -2018,8 +2335,8 @@ LABEL_98:
                         (char *)pfncb,
                         &bmpInfoHeader->bmih,
                         v79,
-                        (unsigned int *)((unsigned __int64)&pcbNewBitmap & -(signed __int64)v80),
-                        (unsigned int *)((unsigned __int64)&pvBuf & -(signed __int64)(v47 != 0)));
+                        (unsigned *)((unsigned __int64)&pcbNewBitmap & -(signed __int64)v80),
+                        (unsigned *)((unsigned __int64)&pvBuf & -(signed __int64)(v47 != 0)));
                     goto LABEL_70;
                 }
                 v44 = pfncb;
@@ -2076,7 +2393,7 @@ LABEL_75:
         hr = -2147024882;
         goto LABEL_36;
     } else {
-        ePrimVal = 212;
+        ePrimVal = TMT_HBITMAP;
         short w = bmpInfoHeader->bmih.biWidth;
         short h = bmpInfoHeader->bmih.biHeight;
         if (pImageProperties_a)
@@ -2150,7 +2467,8 @@ LABEL_24:
     return hr;
 }
 
-HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst, _VSRECORD* pRec)
+HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
+                                    _VSRECORD* pRec)
 {
     char localBuffer[256];
     int pcbBuf = pRec->cbData;
@@ -2194,9 +2512,12 @@ HRESULT CVSUnpack::_InitializePlateauPpiMapping(_VSRECORD* pRec)
 HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
 {
     int const plateauCount = 7;
-    static_assert(sizeof(_rgImageDpiRec) == plateauCount * sizeof(_rgImageDpiRec[0]), "Size mismatch");
-    static_assert(sizeof(_rgImageRec) == plateauCount * sizeof(_rgImageRec[0]), "Size mismatch");
-    static_assert(sizeof(_rgComposedImageRec) == plateauCount * sizeof(_rgComposedImageRec[0]), "Size mismatch");
+    static_assert(sizeof(_rgImageDpiRec) == plateauCount * sizeof(_rgImageDpiRec[0]),
+                  "Size mismatch");
+    static_assert(sizeof(_rgImageRec) == plateauCount * sizeof(_rgImageRec[0]),
+                  "Size mismatch");
+    static_assert(sizeof(_rgComposedImageRec) == plateauCount * sizeof(_rgComposedImageRec[0]),
+                  "Size mismatch");
 
     int minDpis[7] = {-1, -1, -1, -1, -1, -1, -1};
     char plateauFlags[7] = {};
@@ -2354,7 +2675,7 @@ HRESULT CVSUnpack::_AddScaledBackgroundDataRecord(IParserCallBack* pfnCB)
     hdr.dwSize = sizeof(hdr);
     hdr.iBitmapIndex = index;
     hdr.fPartiallyTransparent = 0;
-    ENSURE_HR(pfnCB->AddData(TMT_SCALEDBACKGROUND, -44, &hdr, sizeof(hdr)));
+    ENSURE_HR(pfnCB->AddData(TMT_SCALEDBACKGROUND, TMT_HBITMAP, &hdr, sizeof(hdr)));
     return S_OK;
 }
 

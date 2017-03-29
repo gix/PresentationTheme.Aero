@@ -18,6 +18,21 @@ THEMEEXAPI UxOpenThemeFile(
 
 THEMEEXAPI UxCloseThemeFile(_In_ HTHEMEFILE hThemeFile);
 
+THEMEEXAPI_(HTHEME) UxOpenThemeData(
+    _In_ HTHEMEFILE hThemeFile,
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList);
+
+THEMEAPI_(HTHEME) UxOpenThemeDataEx(
+    _In_ HTHEMEFILE hThemeFile,
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList,
+    _In_ DWORD dwFlags);
+
+THEMEEXAPI UxCloseThemeData(
+    _In_ HTHEMEFILE hThemeFile,
+    _In_ HTHEME hTheme);
+
 THEMEEXAPI UxGetThemeAnimationProperty(
     _In_ HTHEMEFILE hThemeFile,
     _In_ HTHEME hTheme,
@@ -387,6 +402,7 @@ THEMEEXAPI UxDrawThemeTextEx(
     _Inout_ LPRECT pRect,
     _In_opt_ DTTOPTS const* pOptions);
 
-THEMEEXAPI UxOverrideTheme(_In_ wchar_t const* themeFileName);
+THEMEEXAPI UxOverrideTheme(_In_ HTHEMEFILE hThemeFile);
 THEMEEXAPI UxHook();
 THEMEEXAPI UxUnhook();
+THEMEEXAPI_(void) UxBroadcastThemeChange();

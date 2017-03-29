@@ -11,22 +11,31 @@ struct CRenderObj;
 
 struct CBorderFill : CDrawBase
 {
+    static BOOL KeyProperty(int iPropId);
     HRESULT PackProperties(CRenderObj* pRender, int fNoDraw, int iPartId, int iStateId);
     HRESULT GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz);
+
+    bool IsBackgroundPartiallyTransparent() const
+    {
+        return _eBorderType != 0 || _fNoDraw;
+    }
+
+    HRESULT GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect);
     HRESULT DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions);
+    HRESULT DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion, BOOL fBorder, BOOL fContent, RECT const* pClipRect);
 
     int _fNoDraw;
     BORDERTYPE _eBorderType;
-    unsigned int _crBorder;
+    unsigned _crBorder;
     int _iBorderSize;
     int _iRoundCornerWidth;
     int _iRoundCornerHeight;
     FILLTYPE _eFillType;
-    unsigned int _crFill;
+    unsigned _crFill;
     int _iDibOffset;
     MARGINS _ContentMargins;
     int _iGradientPartCount;
-    unsigned int _crGradientColors[5];
+    unsigned _crGradientColors[5];
     int _iGradientRatios[5];
     int _iSourcePartId;
     int _iSourceStateId;

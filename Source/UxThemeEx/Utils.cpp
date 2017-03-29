@@ -77,7 +77,9 @@ void TraceFormatArgs(char const* file, int lineNumber, char const* function,
     }
 
     //OutputDebugStringW(message);
+#if _DEBUG
     (void)_CrtDbgReportW(_CRT_WARN, nullptr, 0, nullptr, L"%ls", message);
+#endif
 }
 
 static void TraceFormat(char const* file, int lineNumber,
@@ -137,7 +139,7 @@ int AsciiStrCmpI(wchar_t const* dst, wchar_t const* src)
 
 HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
                          wchar_t const* pszResName, void** ppBytes,
-                         unsigned int* pdwBytes)
+                         unsigned* pdwBytes)
 {
     *ppBytes = nullptr;
     *pdwBytes = 0;
@@ -207,13 +209,25 @@ BOOL EnumProcessWindows(
     return EnumProcessThreads(processId, cb, reinterpret_cast<LPARAM>(&ptParams));
 }
 
+void SafeSendMessage(HWND hwnd, DWORD uMsg, WPARAM wParam, LPARAM lParam)
+{
+    DWORD_PTR result;
+    if (!SendMessageTimeoutW(hwnd, uMsg, wParam, lParam,
+                             SMTO_BLOCK | SMTO_ABORTIFHUNG, 250, &result))
+        PostMessageW(hwnd, uMsg, wParam, lParam);
+}
+
 void SendThemeChanged(HWND hwnd)
 {
-    PostMessageW(hwnd, WM_THEMECHANGED, 0, 0);
+    SafeSendMessage(hwnd, WM_THEMECHANGED, 0, 0);
 }
 
 void SendThemeChangedProcessLocal()
 {
+    auto CThemeMenuMetrics_FlushAll = (void(*)())(
+        (uintptr_t)GetModuleHandleW(L"uxtheme") + 0x171B231A4 - 0x171B00000);
+    CThemeMenuMetrics_FlushAll();
+
     EnumProcessWindows(GetCurrentProcessId(), [](HWND hwnd, LPARAM param) -> BOOL {
         SendThemeChanged(hwnd);
         EnumChildWindows(hwnd, [](HWND hwndChild, LPARAM p) {

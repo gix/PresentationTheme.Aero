@@ -24,6 +24,19 @@ CUxThemeFile::~CUxThemeFile()
     StringCchCopyA(_szHead, 8, "deleted");
 }
 
+HRESULT CUxThemeFile::CreateFileW(
+    wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
+    int iSharableSectionLength, wchar_t* pszNonSharableSectionName,
+    unsigned cchNonSharableSectionName, int iNonSharableSectionLength,
+    int fReserve)
+{
+    _pbSharableData = (THEMEHDR*)VirtualAlloc(nullptr, iSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
+    _cbSharableData = iSharableSectionLength;
+    _pbNonSharableData = (char*)VirtualAlloc(nullptr, iNonSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
+    _cbNonSharableData = iNonSharableSectionLength;
+    return S_OK;
+}
+
 void CUxThemeFile::CloseFile()
 {
     if (_hSharableSection && _hNonSharableSection && _pbNonSharableData) {
@@ -46,17 +59,14 @@ void CUxThemeFile::CloseFile()
     _hNonSharableSection = nullptr;
 }
 
-HRESULT CUxThemeFile::CreateFileW(
-    wchar_t* pszSharableSectionName, unsigned int cchSharableSectionName,
-    int iSharableSectionLength, wchar_t* pszNonSharableSectionName,
-    unsigned int cchNonSharableSectionName, int iNonSharableSectionLength,
-    int fReserve)
+LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
 {
-    _pbSharableData = (THEMEHDR*)VirtualAlloc(nullptr, iSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
-    _cbSharableData = iSharableSectionLength;
-    _pbNonSharableData = (char*)VirtualAlloc(nullptr, iNonSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
-    _cbNonSharableData = iNonSharableSectionLength;
-    return S_OK;
+    if (index >= _pbSharableData->cFonts)
+        assert("FRE: index < pHeader->cFonts");
+
+    auto ptr = reinterpret_cast<char*>(&_pbSharableData[index]) +
+        _pbSharableData->iFontsOffset;
+    return reinterpret_cast<LOGFONTW const*>(ptr);
 }
 
 } // namespace uxtheme

@@ -3,13 +3,22 @@
 #include <vssym32.h>
 #include <windows.h>
 
-#define TMT_3 3
-#define TMT_4 4
-#define TMT_5 5
-#define TMT_6 6
-#define TMT_7 7
-#define TMT_22 22
-#define TMT_23 23
+#define TMT_THEMEMETRICS 1
+#define TMT_DIBDATA1 3
+#define TMT_DIBDATA2 4
+#define TMT_DIBDATA3 5
+#define TMT_DIBDATA4 6
+#define TMT_DIBDATA5 7
+#define TMT_PARTJUMPTBL 10
+#define TMT_STATEJUMPTBL 11
+#define TMT_12 12
+#define TMT_DRAWOBJ 16
+#define TMT_TEXTOBJ 17
+#define TMT_IMAGEINFO 18
+#define TMT_REGIONDATA 19
+#define TMT_CLSGROUPEND 20
+#define TMT_DIBDATA6 22
+#define TMT_DIBDATA7 23
 
 #define TMT_TRANSPARENTMARGINS 5107
 #define TMT_5131 5131
@@ -31,6 +40,7 @@
 #define TMT_COMPOSEDIMAGEFILE5 5148
 #define TMT_COMPOSEDIMAGEFILE6 5152
 #define TMT_COMPOSEDIMAGEFILE7 5153
+#define TMT_20000 20000
 
 #define TMT_5100 5100
 #define TMT_5101 5101
@@ -72,19 +82,19 @@ enum HIGHCONTRASTCOLOR
 struct _BITMAPHEADER
 {
     BITMAPINFOHEADER bmih;
-    unsigned int masks[3];
+    unsigned masks[3];
 };
 
 inline int Map_COMPOSEDIMAGEFILE_To_DIBDATA(int id)
 {
     switch (id) {
-    case TMT_COMPOSEDIMAGEFILE1: return 3;
-    case TMT_COMPOSEDIMAGEFILE2: return 4;
-    case TMT_COMPOSEDIMAGEFILE3: return 5;
-    case TMT_COMPOSEDIMAGEFILE4: return 6;
-    case TMT_COMPOSEDIMAGEFILE5: return 7;
-    case TMT_COMPOSEDIMAGEFILE6: return 22;
-    case TMT_COMPOSEDIMAGEFILE7: return 23;
+    case TMT_COMPOSEDIMAGEFILE1: return TMT_DIBDATA1;
+    case TMT_COMPOSEDIMAGEFILE2: return TMT_DIBDATA2;
+    case TMT_COMPOSEDIMAGEFILE3: return TMT_DIBDATA3;
+    case TMT_COMPOSEDIMAGEFILE4: return TMT_DIBDATA4;
+    case TMT_COMPOSEDIMAGEFILE5: return TMT_DIBDATA5;
+    case TMT_COMPOSEDIMAGEFILE6: return TMT_DIBDATA6;
+    case TMT_COMPOSEDIMAGEFILE7: return TMT_DIBDATA7;
     default:
         assert("FRE: FALSE");
         return 0;

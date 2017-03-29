@@ -13,8 +13,8 @@ struct CUxThemeFile
     void* _hSharableSection;
     char* _pbNonSharableData;
     void* _hNonSharableSection;
-    unsigned int _Debug_Generation;
-    unsigned int _Debug_ChangeID;
+    unsigned _Debug_Generation;
+    unsigned _Debug_ChangeID;
     char _szTail[4];
 
     int _cbSharableData = 0;
@@ -36,8 +36,6 @@ struct CUxThemeFile
         return *this;
     }
 
-    void CloseFile();
-
     HRESULT CreateFileW(wchar_t* pszSharableSectionName,
                         unsigned cchSharableSectionName,
                         int iSharableSectionLength,
@@ -45,6 +43,8 @@ struct CUxThemeFile
                         unsigned cchNonSharableSectionName,
                         int iNonSharableSectionLength,
                         int fReserve);
+    void CloseFile();
+    LOGFONTW const* GetFontByIndex(unsigned short index) const;
 };
 
 } // namespace uxtheme

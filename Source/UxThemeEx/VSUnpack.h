@@ -19,6 +19,16 @@ struct _VSRECORD
     unsigned uResID = 0;
     int lReserved = 0;
     int cbData = 0;
+
+    void* operator new(size_t size, std::nothrow_t) noexcept
+    {
+        return ::operator new(size, std::nothrow);
+    }
+
+    void* operator new(size_t size, size_t extraSize, std::nothrow_t) noexcept
+    {
+        return ::operator new(size + extraSize, std::nothrow);
+    }
 };
 
 struct _HCIMAGEPROPERTIES
@@ -35,7 +45,7 @@ struct _IMAGEPROPERTIES
 
 struct TMBITMAPHEADER
 {
-    unsigned int dwSize;
+    unsigned dwSize;
     int iBitmapIndex;
     int fPartiallyTransparent;
 };
@@ -72,8 +82,8 @@ struct CVSUnpack
     int _fGlobal = 1;
     char* _rgfPartiallyTransparent = nullptr;
     int* _rgBitmapIndices = nullptr;
-    unsigned int _cBitmaps = 0;
-    unsigned int _cbBuffer = 0;
+    unsigned _cBitmaps = 0;
+    unsigned _cbBuffer = 0;
     char* _pBuffer = nullptr;
     int _fIsLiteVisualStyle = 0;
     _VSRECORD* _rgImageDpiRec[7] = {};

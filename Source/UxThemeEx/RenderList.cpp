@@ -1,6 +1,7 @@
 ﻿#include "RenderList.h"
 #include "RenderObj.h"
 #include "Utils.h"
+#include "DpiInfo.h"
 
 namespace uxtheme
 {
@@ -100,22 +101,16 @@ HRESULT CRenderList::OpenRenderObject(
     HWND hwnd, int iTargetDpi, unsigned dwOtdFlags, bool fForNonClientUse,
     HTHEME* phTheme)
 {
-    //if (iTargetDpi)
-    //{
-    //    v36 = 1;
-    //} else
-    //{
-    //    if (hwnd && ThemeHasPerWindowDPI(hwnd, fForNonClientUse))
-    //    {
-    //        v15 = GetWindowDPI(hwnd);
-    //        v36 = 1;
-    //    } else
-    //    {
-    //        v15 = GetScreenDpi();
-    //        v36 = 0;
-    //    }
-    //    iTargetDpi = v15;
-    //}
+    bool isStronglyAssociatedDpi;
+    if (iTargetDpi) {
+        isStronglyAssociatedDpi = true;
+    //} else if (hwnd && ThemeHasPerWindowDPI(hwnd, fForNonClientUse)) {
+    //    iTargetDpi = GetWindowDPI(hwnd);
+    //    isStronglyAssociatedDpi = true;
+    } else {
+        iTargetDpi = GetScreenDpi();
+        isStronglyAssociatedDpi = false;
+    }
 
     std::lock_guard<std::mutex> lock(_csListLock);
 
@@ -144,8 +139,8 @@ HRESULT CRenderList::OpenRenderObject(
     CRenderObj* renderObj = nullptr;
     ENSURE_HR(CRenderObj::Create(
         pThemeFile, 0, iThemeOffset, iAppNameOffset, iClassNameOffset,
-        ++_iNextUniqueId, false, pDrawBase, nullptr, iTargetDpi, false,
-        dwOtdFlags, &renderObj));
+        ++_iNextUniqueId, false, pDrawBase, pTextObj, iTargetDpi,
+        isStronglyAssociatedDpi, dwOtdFlags, &renderObj));
 
     int iLoadId = 0;
     if (auto nonSharableHdr = (NONSHARABLEDATAHDR*)renderObj->_pbNonSharableData)

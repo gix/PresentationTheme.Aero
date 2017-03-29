@@ -15,7 +15,7 @@ struct LOADTHEMEMETRICS : THEMEMETRICS
 };
 
 typedef HRESULT(*PFNALLOCSECTIONS)(
-    CUxThemeFile *, wchar_t *, unsigned int, int, wchar_t *, unsigned int, int, int);
+    CUxThemeFile *, wchar_t *, unsigned, int, wchar_t *, unsigned, int, int);
 
 class CThemeLoader : public IParserCallBack
 {
@@ -38,7 +38,7 @@ public:
     void FreeLocalTheme();
     HRESULT LoadTheme(HINSTANCE hInst, wchar_t const* pszThemeName, HANDLE* phReuseSection, BOOL fGlobalTheme);
     HRESULT EmitString(MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc, int* piOffSet);
-    HRESULT EmitObject(MIXEDPTRS* u, short propnum, char privnum, void* pHdr, unsigned dwHdrLen, void* pObj, unsigned dwObjLen);
+    HRESULT EmitObject(MIXEDPTRS* u, short propnum, char privnum, void* pHdr, unsigned dwHdrLen, void* pObj, unsigned dwObjLen, CRenderObj*);
     HRESULT MakeStockObject(CRenderObj* pRender, DIBINFO* pdi);
     HRESULT PackImageFileInfo(DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT EmitAndCopyBlock(MIXEDPTRS* u, void const* pSrc, unsigned dwLen);
@@ -73,7 +73,7 @@ public:
     HRESULT CopyPartGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, int iPartId, int* piPartJumpTable, int iPartZeroIndex, int iBaseClassIndex, int fGlobalsGroup);
 
     HRESULT AddIndexInternal(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen);
-    HRESULT GetFontTableIndex(LOGFONTW* pFont, unsigned short* pIndex);
+    HRESULT GetFontTableIndex(LOGFONTW const* pFont, unsigned short* pIndex);
 
     std::wstring _wsThemeFileName;
     int _iGlobalsOffset;
@@ -91,7 +91,7 @@ public:
     int _iCurrentScreenPpi;
     unsigned short _wCurrentLangID;
     THEMEHDR* _hdr;
-    unsigned int _dwPageSize;
+    unsigned _dwPageSize;
     std::vector<DIBDATA> _rgDIBDataArray;
     std::vector<int> _rgBaseClassIds;
     std::vector<LOGFONTW> _fontTable;

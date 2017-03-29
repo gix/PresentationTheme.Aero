@@ -29,7 +29,7 @@ HRESULT CThemePNGDecoder::_Init()
     return S_OK;
 }
 
-HRESULT CThemePNGDecoder::ConvertToDIB(char const* lpBits, unsigned int cbDIB, int* pf32bpp)
+HRESULT CThemePNGDecoder::ConvertToDIB(char const* lpBits, unsigned cbDIB, int* pf32bpp)
 {
     HRESULT hr;
     int v24;
@@ -75,7 +75,7 @@ HRESULT CThemePNGDecoder::ConvertToDIB(char const* lpBits, unsigned int cbDIB, i
                         hr = decoder->GetFrameCount(&v46);
                         if (hr >= 0)
                         {
-                            if ((unsigned int)v46 < 1)
+                            if ((unsigned)v46 < 1)
                                 hr = -2147467259;
                             if (hr >= 0)
                             {
@@ -109,7 +109,7 @@ HRESULT CThemePNGDecoder::ConvertToDIB(char const* lpBits, unsigned int cbDIB, i
                                                         v24 = 4 * v1 * v1;
                                                         if (cbDIB > v24)
                                                             v24 = cbDIB;
-                                                        hr = _stream.SetMaxSize((unsigned int)v24);
+                                                        hr = _stream.SetMaxSize((unsigned)v24);
                                                         if (hr >= 0)
                                                         {
                                                             hr = encoder->Initialize(&_stream, WICBitmapEncoderNoCache);

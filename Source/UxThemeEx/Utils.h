@@ -82,6 +82,14 @@ static void fill_zero(T(&arr)[N])
     std::fill_n(arr, N, T());
 }
 
+template<typename T>
+static std::enable_if_t<std::is_pointer_v<T>> fill_zero(T ptr)
+{
+    using V = std::remove_pointer<T>;
+    static_assert(std::is_trivially_copyable<V>::value, "T must be trivially copyable.");
+    std::fill_n(reinterpret_cast<char*>(ptr), sizeof(V), 0);
+}
+
 
 template<typename T>
 static T* Advance(T* ptr, unsigned n)
@@ -101,14 +109,17 @@ constexpr bool IsPowerOf2(T value)
     return (value & (value - 1)) == 0;
 }
 
+#define UXTHEME_ALWAYS_INLINE _forceinline
+
 template<int Alignment, typename T>
-T AlignPower2(T value)
+UXTHEME_ALWAYS_INLINE T AlignPower2(T value)
 {
     static_assert(Alignment != 0 && IsPowerOf2(Alignment));
     return (value + Alignment - 1) & ~(Alignment - 1);
 }
 
-template<typename T> T Align8(T value) { return AlignPower2<8>(value); }
+template<typename T>
+UXTHEME_ALWAYS_INLINE T Align8(T value) { return AlignPower2<8>(value); }
 
 template<typename T>
 static T AlignTo(T value, T alignment)
@@ -146,54 +157,8 @@ int AsciiStrCmpI(wchar_t const* dst, wchar_t const* src);
 
 HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
                          wchar_t const* pszResName, void** ppBytes,
-                         unsigned int* pdwBytes);
+                         unsigned* pdwBytes);
 
-struct Handle
-{
-    Handle() : handle(nullptr) {}
-    explicit Handle(HANDLE handle) : handle(handle) {}
-    ~Handle() { if (handle) CloseHandle(handle); }
-
-    Handle(Handle&& source) noexcept
-        : handle(std::exchange(source.handle, nullptr))
-    {}
-
-    Handle& operator=(Handle&& source) noexcept
-    {
-        handle = std::exchange(source.handle, nullptr);
-        return*this;
-    }
-
-    HANDLE Get() const { return handle; }
-    operator HANDLE() const { return handle; }
-    explicit operator bool() const { return handle != nullptr; }
-
-private:
-    HANDLE handle;
-};
-
-struct ModuleHandle
-{
-    ModuleHandle() : module(nullptr) {}
-    explicit ModuleHandle(HMODULE module) : module(module) {}
-
-    ~ModuleHandle()
-    {
-        if (module)
-            FreeLibrary(module);
-    }
-
-    ModuleHandle(ModuleHandle&&) = default;
-    ModuleHandle& operator=(ModuleHandle&&) = default;
-
-    HMODULE Get() const { return module; }
-    operator HMODULE() const { return module; }
-    explicit operator bool() const { return module != nullptr; }
-    HMODULE Detach() { return std::exchange(module, nullptr); }
-
-private:
-    HMODULE module;
-};
 
 using THREADENUMPROC = BOOL(CALLBACK*)(DWORD ownerProcessId, DWORD threadId, LPARAM param);
 
@@ -207,6 +172,7 @@ BOOL EnumProcessWindows(
     _In_ WNDENUMPROC callback,
     _In_opt_ LPARAM param);
 
+void SafeSendMessage(HWND hwnd, DWORD uMsg, WPARAM wParam, LPARAM lParam);
 void SendThemeChanged(HWND hwnd);
 void SendThemeChangedProcessLocal();
 

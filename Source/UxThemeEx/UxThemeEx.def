@@ -1,11 +1,9 @@
 EXPORTS
-	;DllCanUnloadNow     PRIVATE
-	;DllRegisterServer   PRIVATE
-	;DllMain             PRIVATE
-	;DllUnregisterServer PRIVATE
-	;DllGetClassObject   PRIVATE
 	UxOpenThemeFile
 	UxCloseThemeFile
+	UxOpenThemeData
+	UxOpenThemeDataEx
+	UxCloseThemeData
 	UxGetThemeAnimationProperty
 	UxGetThemeAnimationTransform
 	UxGetThemeBackgroundContentRect
@@ -51,3 +49,4 @@ EXPORTS
 	UxOverrideTheme
 	UxHook
 	UxUnhook
+	UxBroadcastThemeChange

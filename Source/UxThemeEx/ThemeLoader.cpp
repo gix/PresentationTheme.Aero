@@ -2,6 +2,8 @@
 
 #include "DpiInfo.h"
 #include "BorderFill.h"
+#include "Debug.h"
+#include "Handle.h"
 #include "RenderObj.h"
 #include "TextDraw.h"
 #include "Utils.h"
@@ -9,9 +11,18 @@
 #include "UxThemeHelpers.h"
 
 #include <algorithm>
+#include <array>
 #include <shlwapi.h>
 #include <strsafe.h>
 #include <vssym32.h>
+#include <winnt.h>
+#include <winternl.h>
+#include <ntstatus.h>
+
+NTSYSAPI NTSTATUS NTAPI NtOpenSection(
+    _Out_ PHANDLE            SectionHandle,
+    _In_  ACCESS_MASK        DesiredAccess,
+    _In_  POBJECT_ATTRIBUTES ObjectAttributes);
 
 namespace uxtheme
 {
@@ -33,6 +44,78 @@ HRESULT CThemeLoader::AddBaseClass(int idClass, int idBaseClass)
     return S_OK;
 }
 
+static unsigned const DefaultColors[31] = {
+    0xC8D0D4,
+    0xA56E3A,
+    0x6A240A,
+    0x808080,
+    0xC8D0D4,
+    0xFFFFFF,
+    0x000000,
+    0x000000,
+    0x000000,
+    0xFFFFFF,
+    0xC8D0D4,
+    0xC8D0D4,
+    0x808080,
+    0x6A240A,
+    0xFFFFFF,
+    0xC8D0D4,
+    0x808080,
+    0x808080,
+    0x000000,
+    0xC8D0D4,
+    0xFFFFFF,
+    0x404040,
+    0xC8D0D4,
+    0x000000,
+    0xE1FFFF,
+    0xB5B5B5,
+    0x800000,
+    0xF0CAA6,
+    0xC0C0C0,
+    0xE1D3CE,
+    0xF0F4F4,
+};
+
+static void SetFont(LOGFONTW *plf, wchar_t const* lszFontName, int iPointSize)
+{
+    fill_zero(plf);
+    plf->lfWeight = 400;
+    plf->lfCharSet = 1;
+    plf->lfHeight = -MulDiv(iPointSize, 96, 72);
+    StringCchCopyW(plf->lfFaceName, countof(plf->lfFaceName), lszFontName);
+}
+
+static HRESULT InitThemeMetrics(LOADTHEMEMETRICS* tm)
+{
+    memset(tm, 0, sizeof(LOADTHEMEMETRICS));
+    SetFont(&tm->lfFonts[0], L"tahoma bold", 8);
+    SetFont(&tm->lfFonts[1], L"tahoma", 8);
+    SetFont(&tm->lfFonts[2], L"tahoma", 8);
+    SetFont(&tm->lfFonts[3], L"tahoma", 8);
+    SetFont(&tm->lfFonts[4], L"tahoma", 8);
+    SetFont(&tm->lfFonts[5], L"tahoma", 8);
+    tm->iSizes[0] = 1;
+    tm->iSizes[1] = 16;
+    tm->iSizes[2] = 16;
+    tm->iSizes[3] = 18;
+    tm->iSizes[4] = 19;
+    tm->iSizes[5] = 12;
+    tm->iSizes[6] = 19;
+    tm->iSizes[7] = 18;
+    tm->iSizes[8] = 19;
+    tm->iSizes[9] = 0;
+    tm->iSizes[10] = 0;
+    tm->iStringOffsets[0] = 0;
+    tm->iStringOffsets[1] = 0;
+    tm->wsStrings[0] = L"";
+    tm->wsStrings[1] = L"";
+    tm->iInts[0] = 16;
+    memcpy(tm->crColors, DefaultColors, sizeof(tm->crColors));
+    return S_OK;
+}
+
 CThemeLoader::CThemeLoader()
     : _iGlobalsOffset(0)
     , _iSysMetricsOffset(0)
@@ -47,13 +130,13 @@ CThemeLoader::CThemeLoader()
     SYSTEM_INFO systemInfo;
     GetSystemInfo(&systemInfo);
 
-    //InitThemeMetrics(&_LoadThemeMetrics);
+    InitThemeMetrics(&_LoadThemeMetrics);
     _dwPageSize = systemInfo.dwPageSize;
     _wCurrentLangID = 0;
     _iCurrentScreenPpi = 96;
 }
 
-HRESULT CThemeLoader::AllocateThemeFileBytes(char* upb, unsigned int dwAdditionalLen)
+HRESULT CThemeLoader::AllocateThemeFileBytes(char* upb, unsigned dwAdditionalLen)
 {
     bool overflowsPage = (uintptr_t)upb / _dwPageSize != ((uintptr_t)upb + dwAdditionalLen) / _dwPageSize;
 
@@ -82,6 +165,7 @@ HRESULT CThemeLoader::EmitEntryHdr(MIXEDPTRS* u, short propnum, char privnum)
     hdr->usTypeNum = propnum;
     hdr->ePrimVal = privnum;
     hdr->dwDataLen = 0;
+    RegisterPtr(hdr);
 
     ++_iEntryHdrLevel;
     u->pb = reinterpret_cast<char*>(hdr + 1);
@@ -172,7 +256,8 @@ HRESULT CThemeLoader::AddIndex(
 }
 
 HRESULT CThemeLoader::AddIndexInternal(
-    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen)
+    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId,
+    int iStateId, int iIndex, int iLen)
 {
     APPCLASSLOCAL* cls = nullptr;
 
@@ -218,11 +303,12 @@ HRESULT CThemeLoader::AddIndexInternal(
     return S_OK;
 }
 
-HRESULT CThemeLoader::AddData(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen)
+HRESULT CThemeLoader::AddData(short sTypeNum, unsigned char ePrimVal,
+                              void const* pData, unsigned dwLen)
 {
-    if (ePrimVal == 210) {
+    if (ePrimVal == TMT_FONT) {
         unsigned short idx = 0;
-        ENSURE_HR(GetFontTableIndex((LOGFONTW*)pData, &idx));
+        ENSURE_HR(GetFontTableIndex(static_cast<LOGFONTW const*>(pData), &idx));
         pData = &idx;
         dwLen = sizeof(idx);
     }
@@ -258,8 +344,8 @@ HRESULT CThemeLoader::AddDataInternal(short sTypeNum, char ePrimVal, void const*
 
 struct _VISUALSTYLELOAD
 {
-    unsigned int cbStruct;
-    unsigned int ulFlags;
+    unsigned cbStruct;
+    unsigned ulFlags;
     HMODULE hInstVS;
     wchar_t const* pszColorVariant;
     wchar_t const* pszSizeVariant;
@@ -282,9 +368,11 @@ HRESULT VSLoad(_VISUALSTYLELOAD* pvsl, BOOL fIsLiteVisualStyle)
     if (!unpack)
         return E_OUTOFMEMORY;
 
-    ENSURE_HR(unpack->Initialize(pvsl->hInstVS, 0, pvsl->ulFlags & 1, fIsLiteVisualStyle));
+    ENSURE_HR(unpack->Initialize(pvsl->hInstVS, 0, pvsl->ulFlags & 1,
+                                 fIsLiteVisualStyle));
     ENSURE_HR(unpack->LoadRootMap(pvsl->pfnCB));
-    ENSURE_HR(unpack->LoadClassDataMap(pvsl->pszColorVariant, pvsl->pszSizeVariant, pvsl->pfnCB));
+    ENSURE_HR(unpack->LoadClassDataMap(pvsl->pszColorVariant,
+                                       pvsl->pszSizeVariant, pvsl->pfnCB));
     ENSURE_HR(unpack->LoadBaseClassDataMap(pvsl->pfnCB));
     ENSURE_HR(unpack->LoadAnimationDataMap(pvsl->pfnCB));
     return S_OK;
@@ -362,11 +450,11 @@ HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
 }
 
 HRESULT CThemeLoader::EmitString(
-    MIXEDPTRS* u, wchar_t const* pszSrc, unsigned int cchSrc, int* piOffSet)
+    MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc, int* piOffSet)
 {
     unsigned paddedLen = Align8(2 * (cchSrc + 1));
     ENSURE_HR(AllocateThemeFileBytes(u->pb, paddedLen));
-    ENSURE_HR(StringCchCopyW((wchar_t *)u->pb, cchSrc + 1, pszSrc));
+    ENSURE_HR(StringCchCopyW((wchar_t*)u->pb, cchSrc + 1, pszSrc));
 
     if (piOffSet)
         *piOffSet = (char*)(u->pi) - (char*)(_LoadingThemeFile._pbSharableData);
@@ -375,19 +463,38 @@ HRESULT CThemeLoader::EmitString(
     return S_OK;
 }
 
+struct PTOEntry
+{
+    void* ptr;
+    wchar_t const* className;
+    int partId;
+    int stateId;
+};
+std::vector<PTOEntry> g_textObjEntries;
+std::vector<PTOEntry> g_drawObjEntries;
+
 HRESULT CThemeLoader::EmitObject(
     MIXEDPTRS* u, short propnum, char privnum, void* pHdr, unsigned dwHdrLen,
-    void* pObj, unsigned int dwObjLen)
+    void* pObj, unsigned dwObjLen, CRenderObj* pRender)
 {
     ENSURE_HR(EmitEntryHdr(u, propnum, privnum));
     ENSURE_HR(AllocateThemeFileBytes(u->pb, dwHdrLen));
 
     memcpy(u->pb, pHdr, dwHdrLen);
+    RegisterPtr((PARTOBJHDR*)u->pb);
     u->pb += dwHdrLen;
 
     auto paddedLen = Align8(dwObjLen);
     ENSURE_HR(AllocateThemeFileBytes(u->pb, paddedLen));
     memcpy(u->pb, pObj, dwObjLen);
+    auto poh = (PARTOBJHDR*)pHdr;
+    if (dwObjLen == sizeof(CTextDraw)) {
+        RegisterPtr((CTextDraw*)u->pb);
+        g_textObjEntries.push_back({u->pb, pRender->_pszClassName, poh->iPartId, poh->iStateId});
+    } else {
+        RegisterPtr((CDrawBase*)u->pb);
+        g_drawObjEntries.push_back({u->pb, pRender->_pszClassName, poh->iPartId, poh->iStateId});
+    }
     u->pb += paddedLen;
 
     EndEntry(u);
@@ -395,11 +502,10 @@ HRESULT CThemeLoader::EmitObject(
     return S_OK;
 }
 
-HRESULT CThemeLoader::GetFontTableIndex(LOGFONTW* pFont, unsigned short* pIndex)
+HRESULT CThemeLoader::GetFontTableIndex(LOGFONTW const* pFont, unsigned short* pIndex)
 {
     if (_fontTable.empty()) {
-        LOGFONTW t;
-        memset(&t, 0, sizeof(LOGFONTW));
+        LOGFONTW t = {};
         _fontTable.push_back(t);
     }
 
@@ -416,7 +522,8 @@ HRESULT CThemeLoader::GetFontTableIndex(LOGFONTW* pFont, unsigned short* pIndex)
     return S_OK;
 }
 
-HRESULT CThemeLoader::PackDrawObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
+HRESULT CThemeLoader::PackDrawObject(
+    MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
 {
     int bgType;
     if (pRender->ExternalGetEnumValue(iPartId, iStateId/*0*/, TMT_BGTYPE, &bgType) < 0)
@@ -428,118 +535,87 @@ HRESULT CThemeLoader::PackDrawObject(MIXEDPTRS* u, CRenderObj* pRender, int iPar
 
     if (bgType == BT_NONE || bgType == BT_BORDERFILL) {
         CBorderFill borderFill;
-        ENSURE_HR(borderFill.PackProperties(pRender, bgType == BT_NONE, iPartId, iStateId/*0*/));
-        return EmitObject(u, 16, 16, &partHdr, sizeof(partHdr), &borderFill, sizeof(borderFill));
+        ENSURE_HR(borderFill.PackProperties(
+            pRender, bgType == BT_NONE, iPartId, iStateId/*0*/));
+        return EmitObject(u, TMT_DRAWOBJ, TMT_DRAWOBJ, &partHdr,
+                          sizeof(partHdr), &borderFill, sizeof(borderFill), pRender);
     }
 
     CMaxImageFile imgFile;
-    memset(imgFile.MultiDibs, 0, sizeof(imgFile.MultiDibs));
     ENSURE_HR(imgFile.PackProperties(pRender, iPartId, iStateId/*0*/));
 
     DIBINFO* pScaledDibInfo = nullptr;
-    HRESULT hr = imgFile.CreateScaledBackgroundImage(pRender, iPartId, iStateId/*0*/, &pScaledDibInfo);
+    HRESULT hr = imgFile.CreateScaledBackgroundImage(
+        pRender, iPartId, iStateId/*0*/, &pScaledDibInfo);
     if (hr < 0)
         return hr;
-
     if (hr == 0)
         ENSURE_HR(MakeStockObject(pRender, pScaledDibInfo));
 
-    int v14 = imgFile._iMultiImageCount;
     for (int i = 0; ; ++i) {
-        auto dibinfo = imgFile.EnumImageFiles(i);
-        if (!dibinfo)
+        auto pdi = imgFile.EnumImageFiles(i);
+        if (!pdi)
             break;
-        ENSURE_HR(PackImageFileInfo(dibinfo, &imgFile, u, pRender, iPartId/*0*/, iStateId/*0*/));
-        if (hr < 0)
-            return hr;
+        ENSURE_HR(PackImageFileInfo(pdi, &imgFile, u, pRender, iPartId,
+                                    iStateId));
     }
 
-    return EmitObject(u, 16, 16, &partHdr, sizeof(partHdr), &imgFile, sizeof(DIBINFO) * v14 + sizeof(CImageFile));
+    return EmitObject(u, TMT_DRAWOBJ, TMT_DRAWOBJ, &partHdr, sizeof(partHdr), &imgFile,
+                      sizeof(CImageFile) + imgFile._iMultiImageCount * sizeof(DIBINFO), pRender);
 }
 
 BOOL CThemeLoader::KeyTextPropertyFound(int iStateDataOffset)
 {
-    unsigned int v2; // er9@1
-    char* i; // r8@1
-
-    v2 = 0;
-    for (i = &_LoadingThemeFile._pbSharableData->szSignature[iStateDataOffset];
-         *(WORD *)i != 12;
-         i = (char *)(*(DWORD *)(i + 4) + i + 8))
+    for (auto hdr = (ENTRYHDR*)((char*)_LoadingThemeFile._pbSharableData + iStateDataOffset);
+         hdr->usTypeNum != TMT_12;
+         hdr = hdr->Next())
     {
-        if ((unsigned int)CTextDraw::KeyProperty(*(WORD *)i))
-            return 1;
+        if (CTextDraw::KeyProperty(hdr->usTypeNum))
+            return TRUE;
     }
-    return v2;
+
+    return FALSE;
 }
 
 HRESULT CThemeLoader::PackTextObjects(
     MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, int fGlobals)
 {
-    HRESULT hr; // er10@1
-    int v6; // edi@1
-    int v9; // er15@2
-    int v10; // eax@3
-    MIXEDPTRS* v11; // r11@3
-    char* v12; // rbx@4
-    int v13; // er14@5
-    __int64 v14; // rsi@5
-    int v15; // eax@5
-    __int64 v16; // r12@5
-    int v17; // edx@6
+    for (int partId = 0; partId <= iMaxPart; ++partId) {
+        int offset = GetPartOffset(pRender, partId);
+        if (offset == -1)
+            continue;
 
-    hr = 0;
-    v6 = 0;
-    if (iMaxPart >= 0)
-    {
-        v9 = fGlobals;
-        do
-        {
-            v10 = GetPartOffset(pRender, v6);
-            if (v10 != -1)
-            {
-                v12 = &_LoadingThemeFile._pbSharableData->szSignature[v10];
-                if (*(WORD *)v12 == 11)
-                {
-                    v13 = 0;
-                    v14 = 0i64;
-                    v15 = (unsigned __int8)v12[8] - 1;
-                    v16 = v15;
-                    if (v15 >= 0)
-                    {
-                        do
-                        {
-                            v17 = *(DWORD *)&v12[4 * v14 + 16];
-                            if (v17 != -1 && (v9 || KeyTextPropertyFound(v17)))
-                            {
-                                hr = PackTextObject(uOut, pRender, v6, v13);
-                                if (hr < 0)
-                                    return hr;
-                                v11 = uOut;
-                                v9 = 0;
-                            }
-                            ++v13;
-                            ++v14;
-                        } while (v14 <= v16);
-                    }
-                } else if (v9 || KeyTextPropertyFound(v10))
-                {
-                    hr = PackTextObject(uOut, pRender, v6, 0);
-                    if (hr < 0)
-                        return hr;
+        auto entryHdr = (ENTRYHDR*)((char*)_LoadingThemeFile._pbSharableData + offset);
+        if (entryHdr->usTypeNum == TMT_STATEJUMPTBL) {
+            auto jumpTableHdr = (STATEJUMPTABLEHDR*)(entryHdr + 1);
+            auto jumpTable = (int*)(jumpTableHdr + 1);
+
+            for (int stateId = 0; stateId <= jumpTableHdr->cStates - 1; ++stateId) {
+                int so = jumpTable[stateId];
+                if (so != -1 && (fGlobals || KeyTextPropertyFound(so))) {
+                    ENSURE_HR(PackTextObject(uOut, pRender, partId, stateId));
+                    fGlobals = 0;
                 }
             }
-            ++v6;
-        } while (v6 <= iMaxPart);
+        } else if (fGlobals || KeyTextPropertyFound(offset)) {
+            ENSURE_HR(PackTextObject(uOut, pRender, partId, 0));
+        }
     }
-    return hr;
+
+    return S_OK;
 }
 
-HRESULT CThemeLoader::PackTextObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
+HRESULT CThemeLoader::PackTextObject(
+    MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
 {
+    PARTOBJHDR partHdr;
+    partHdr.iPartId = iPartId;
+    partHdr.iStateId = iStateId;
+
     CTextDraw textDraw;
     ENSURE_HR(textDraw.PackProperties(pRender, iPartId, iStateId));
-    return EmitObject(u, 17, 17, &iPartId, sizeof(iPartId), &textDraw, sizeof(textDraw));
+    return EmitObject(u, TMT_TEXTOBJ, TMT_TEXTOBJ, &partHdr, sizeof(partHdr),
+                      &textDraw, sizeof(textDraw), pRender);
 }
 
 int CThemeLoader::GetScreenPpi()
@@ -549,6 +625,71 @@ int CThemeLoader::GetScreenPpi()
 
 HRESULT CThemeLoader::PackMetrics()
 {
+    __int64 v1;
+    APPCLASSLOCAL *v2;
+    int v3;
+    APPCLASSLOCAL *v5;
+    __int64 v6;
+    PART_STATE_INDEX *pIndex;
+    ENTRYHDR *ptr;
+    ENTRYHDR *end;
+    LOGFONTW *v17;
+    signed __int64 v18;
+    __int64 v19;
+
+    v1 = _LocalIndexes.size();
+    v2 = 0i64;
+    v3 = 0;
+    if ((signed int)v1 > 0)
+    {
+        v5 = _LocalIndexes.data();
+        v6 = 0i64;
+        do
+        {
+            v2 = v5;
+            if (!AsciiStrCmpI(v5->csClassName.c_str(), L"SysMetrics"))
+                break;
+            ++v3;
+            ++v6;
+            ++v5;
+        } while (v6 < v1);
+    }
+
+    if (v3 != v1 && v2->PartStateIndexes.size())
+    {
+        pIndex = v2->PartStateIndexes.data();
+        ptr = (ENTRYHDR *)&_pbLocalData[pIndex->iIndex];
+        end = (ENTRYHDR *)((char *)ptr + pIndex->iLen);
+
+        while (ptr < end && ptr->usTypeNum != 12) {
+            char const* v11 = (char const*)&ptr[1];
+            auto v21 = *(short*)ptr;
+
+            switch ((unsigned char)ptr->ePrimVal) {
+            case TMT_STRING:
+                _LoadThemeMetrics.wsStrings[v21 - TMT_CSSNAME] = (wchar_t const*)v11;
+                break;
+            case TMT_INT:
+                _LoadThemeMetrics.iInts[v21 - TMT_FIRSTINT] = *(DWORD *)v11;
+                break;
+            case TMT_BOOL:
+                _LoadThemeMetrics.fBools[v21 - TMT_FIRSTBOOL] = *(BYTE *)v11;
+                break;
+            case TMT_COLOR:
+                _LoadThemeMetrics.crColors[v21 - TMT_FIRSTCOLOR] = *(DWORD *)v11;
+                break;
+            case TMT_SIZE:
+                _LoadThemeMetrics.iSizes[v21 - TMT_FIRSTSIZE] = *(DWORD *)v11;
+                break;
+            case TMT_FONT:
+                _LoadThemeMetrics.lfFonts[v21 - TMT_FIRSTFONT] = _fontTable[*(short*)v11];
+                break;
+            }
+
+            ptr = (ENTRYHDR *)((char *)v11 + *((DWORD *)ptr + 1));
+        }
+    }
+
     return S_OK;
 }
 
@@ -596,7 +737,8 @@ HRESULT CThemeLoader::CreateReuseSection(
 
     REUSEDATAHDR* reuseDataHdr = nullptr;
 
-    *phReuseSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, maxSize, nullptr);
+    *phReuseSection = CreateFileMappingW(FileHandle::InvalidHandle(), nullptr,
+                                         PAGE_READWRITE, 0, maxSize, nullptr);
     if (!*phReuseSection)
         hr = MakeErrorLast();
 
@@ -643,27 +785,27 @@ HRESULT CThemeLoader::CreateReuseSection(
 
 static HRESULT GenerateNonSharableData(void* hReuseSection, void* pNonSharableData)
 {
-    HRESULT hr; // edi@1
-    NONSHARABLEDATAHDR* nonSharableDataHdr; // r13@1
-    NONSHARABLEDATAHDR* v5; // r15@1
-    REUSEDATAHDR* v7; // rsi@3
-    int v8; // ecx@4
-    HBITMAP* bitmapIt; // rbx@6
-    __int64 iBitmapsOffset; // rbx@7
-    __int64 iDIBReuseRecordsCount; // rax@7
-    __int64 iDIBReuseRecordsOffset; // rsi@7
-    DIBREUSEDATA* dibReuseRec; // rsi@7
-    HBITMAP* bitmapsEnd; // rax@7 MAPDST
-    int v15; // eax@9
-    int v16; // eax@9
-    HBITMAP v17; // rax@10
-    HBITMAP v18; // r12@12
-    HBITMAP v19; // rax@14
-    char* v20; // rsi@24
-    void* v21; // rax@26
-    __int64 v25; // [sp+40h] [bp-29h]@11
-    REUSEDATAHDR* reuseDataHdr; // [sp+48h] [bp-21h]@1 MAPDST
-    _BITMAPHEADER bitmapHdr; // [sp+50h] [bp-19h]@7
+    HRESULT hr;
+    NONSHARABLEDATAHDR* nonSharableDataHdr;
+    NONSHARABLEDATAHDR* v5;
+    REUSEDATAHDR* v7;
+    int v8;
+    HBITMAP* bitmapIt;
+    __int64 iBitmapsOffset;
+    __int64 iDIBReuseRecordsCount;
+    __int64 iDIBReuseRecordsOffset;
+    DIBREUSEDATA* dibReuseRec;
+    HBITMAP* bitmapsEnd;
+    int v15;
+    int v16;
+    HBITMAP v17;
+    HBITMAP v18;
+    HBITMAP v19;
+    char* v20;
+    void* v21;
+    __int64 v25;
+    REUSEDATAHDR* reuseDataHdr;
+    _BITMAPHEADER bitmapHdr;
 
     hr = 0;
     nonSharableDataHdr = (NONSHARABLEDATAHDR *)pNonSharableData;
@@ -750,20 +892,492 @@ HRESULT CThemeLoader::CopyNonSharableDataToLive(void* hReuseSection)
     return GenerateNonSharableData(hReuseSection, ptr);
 }
 
+struct ROOTSECTION
+{
+    wchar_t szSharableSectionName[260];
+    wchar_t szNonSharableSectionName[260];
+    unsigned dwClientChangeNumber;
+};
+
+struct SectionHandleTraits : NullIsInvalidHandleTraits {};
+using SectionHandle = Handle<SectionHandleTraits>;
+
+struct FileViewHandleTraits
+{
+    using HandleType = void*;
+    constexpr static HandleType InvalidHandle() noexcept { return nullptr; }
+    constexpr static bool IsValid(HandleType h) noexcept { return h != InvalidHandle(); }
+    static void Close(HandleType h) noexcept { ::UnmapViewOfFile(h); }
+};
+using FileViewHandle = Handle<FileViewHandleTraits>;
+
+class Section
+{
+public:
+    Section(DWORD desiredSectionAccess, DWORD desiredViewAccess)
+        : desiredSectionAccess(desiredSectionAccess)
+        , desiredViewAccess(desiredViewAccess)
+    {
+    }
+
+    HRESULT OpenSection(wchar_t const* sectionName, bool mapView)
+    {
+        UNICODE_STRING name;
+        RtlInitUnicodeString(&name, sectionName);
+        OBJECT_ATTRIBUTES objA = {};
+        InitializeObjectAttributes(&objA, &name, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+
+        ModuleHandle ntdllHandle{LoadLibraryW(L"ntdll.dll")};
+        SectionHandle sectionHandle;
+        decltype(NtOpenSection)* NtOpenSectionPtr = (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle, "NtOpenSection");
+
+        NTSTATUS st = NtOpenSectionPtr(sectionHandle.CloseAndGetAddressOf(),
+                                       desiredSectionAccess, &objA);
+        if (st != STATUS_SUCCESS)
+            return st;
+
+        //SectionHandle sectionHandle{OpenFileMappingW(desiredSectionAccess, FALSE, sectionName)};
+        //if (!sectionHandle)
+        //    return MakeErrorLast();
+
+        if (mapView) {
+            FileViewHandle sectionData{MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
+            if (!sectionData)
+                return MakeErrorLast();
+
+            this->sectionData = std::move(sectionData);
+        }
+
+        this->sectionHandle = std::move(sectionHandle);
+        return S_OK;
+    }
+
+    void* View() const { return sectionData.Get(); }
+
+protected:
+    SectionHandle sectionHandle;
+    FileViewHandle sectionData;
+    DWORD desiredSectionAccess;
+    DWORD desiredViewAccess;
+};
+
+class RootSection : public Section
+{
+public:
+    RootSection(DWORD desiredSectionAccess, DWORD desiredViewAccess)
+        : Section(desiredSectionAccess, desiredViewAccess)
+    {
+        DWORD sessionId = NtCurrentTeb()->ProcessEnvironmentBlock->SessionId;
+        if (sessionId)
+            StringCchPrintfW(sectionName, 260, L"\\Sessions\\%d\\Windows\\ThemeSection", sessionId);
+        else
+            StringCchPrintfW(sectionName, 260, L"\\Windows\\ThemeSection");
+    }
+
+    HRESULT GetRootSectionData(ROOTSECTION** ppRootSection)
+    {
+        *ppRootSection = nullptr;
+        ENSURE_HR(OpenSection(sectionName, true));
+        if (!sectionData)
+            return E_OUTOFMEMORY;
+
+        *ppRootSection = static_cast<ROOTSECTION*>(sectionData.Get());
+        return S_OK;
+    }
+
+private:
+    wchar_t sectionName[260];
+};
+
+static void GetStrings(THEMEHDR const* hdr, std::vector<std::wstring>& strings)
+{
+    auto begin = (wchar_t const*)Advance(hdr, hdr->iStringsOffset);
+    auto end = Advance(begin, hdr->iStringsLength);
+    for (auto ptr = begin; ptr < end;) {
+        strings.emplace_back(ptr);
+        ptr += wcslen(ptr);
+        while (ptr < end && *ptr == 0)
+            ++ptr;
+    }
+}
+
+template<typename T, typename = std::enable_if_t<std::is_enum_v<T>, T>>
+static int FormatImpl(char* buffer, size_t bufferSize, T const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%d", value);
+}
+
+template<typename T>
+static int Format(char* buffer, size_t bufferSize, T const& value)
+{
+
+    return FormatImpl(buffer, bufferSize, value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, void* const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%p", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, void const* const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%p", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, char const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%d", (int)value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, unsigned char const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%u", (unsigned)value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, short const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%d", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, unsigned short const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%u", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, int const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%d", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, unsigned const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%u", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, long const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%ld", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, unsigned long const& value)
+{
+    return sprintf_s(buffer, bufferSize, "%lu", value);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, POINT const& value)
+{
+    return sprintf_s(buffer, bufferSize, "(%ld,%ld)", value.x, value.y);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, SIZE const& value)
+{
+    return sprintf_s(buffer, bufferSize, "(%ld,%ld)", value.cx, value.cy);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, RECT const& value)
+{
+    return sprintf_s(buffer, bufferSize, "(%ld,%ld,%ld,%ld)",
+                     value.left, value.top, value.right, value.bottom);
+}
+
+template<>
+static int Format(char* buffer, size_t bufferSize, MARGINS const& value)
+{
+    return sprintf_s(buffer, bufferSize, "(l:%d,r:%d,t:%d,b:%d)",
+                     value.cxLeftWidth, value.cxRightWidth, value.cyTopHeight, value.cyBottomHeight);
+}
+
+class LogFile
+{
+public:
+    LogFile(wchar_t const* path) : path(path) {}
+
+    bool Open()
+    {
+        FileHandle h{CreateFileW(path.c_str(), GENERIC_WRITE, 0, nullptr,
+                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+        if (!h)
+            return false;
+        hFile = std::move(h);
+        return true;
+    }
+
+    void Indent(int n = 1) { indentLevel += n; }
+    void Outdent(int n = 1) { indentLevel -= n; }
+
+    template<typename... T>
+    void Log(char const* format, T const&... args)
+    {
+        int len = sprintf_s(buffer, countof(buffer), format, args...);
+        if (len <= 0)
+            return;
+
+        WriteIndent();
+        DWORD written;
+        WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+    }
+
+    template<typename T>
+    void LogPair(char const* key, T const& value)
+    {
+        WriteIndent();
+
+        DWORD written;
+
+        int len = sprintf_s(buffer, countof(buffer), "%s: ", key);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        len = Format(buffer, countof(buffer), value);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        buffer[0] = '\n';
+        WriteFile(hFile, buffer, 1, &written, nullptr);
+    }
+
+    void LogPair(char const* key, DIBINFO const& value)
+    {
+        Log("%s:\n", key);
+        Indent();
+
+        LogPair("uhbm.hBitmap64", value.uhbm.hBitmap64);
+        LogPair("iDibOffset", value.iDibOffset);
+        LogPair("iSingleWidth", value.iSingleWidth);
+        LogPair("iSingleHeight", value.iSingleHeight);
+        LogPair("iRgnListOffset", value.iRgnListOffset);
+        LogPair("eSizingType", value.eSizingType);
+        LogPair("fBorderOnly", value.fBorderOnly);
+        LogPair("fPartiallyTransparent", value.fPartiallyTransparent);
+        LogPair("iAlphaThreshold", value.iAlphaThreshold);
+        LogPair("iMinDpi", value.iMinDpi);
+        LogPair("szMinSize", value.szMinSize);
+
+        Outdent();
+    }
+
+    template<typename T, size_t N>
+    void LogPair(char const* key, T const (&value)[N])
+    {
+        DWORD written;
+
+        for (size_t i = 0; i < N; ++i) {
+            WriteIndent();
+
+            int len = sprintf_s(buffer, countof(buffer), "%s[%zu]: ", key, i);
+            if (len > 0)
+                WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+            len = Format(buffer, countof(buffer), value[i]);
+            if (len > 0)
+                WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+            buffer[0] = '\n';
+            WriteFile(hFile, buffer, 1, &written, nullptr);
+        }
+    }
+
+private:
+    void WriteIndent()
+    {
+        if (indentLevel == 0)
+            return;
+
+        size_t length = std::min(indentLevel * (size_t)2, indentBuffer.size() - 1);
+        memset(indentBuffer.data(), ' ', length);
+
+        DWORD written;
+        WriteFile(hFile, indentBuffer.data(), static_cast<DWORD>(length), &written, nullptr);
+    }
+
+    std::wstring path;
+    FileHandle hFile;
+    char buffer[0x800];
+    std::array<char, 64> indentBuffer;
+    int indentLevel = 0;
+};
+
+static void Dump(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
+{
+    if (drawObj->_eBgType == BT_IMAGEFILE) {
+        auto imageFile = (CImageFile*)drawObj;
+        log.LogPair("_eBgType", imageFile->_eBgType);
+        log.LogPair("_iUnused", imageFile->_iUnused);
+        log.LogPair("_ImageInfo", imageFile->_ImageInfo);
+        log.LogPair("_ScaledImageInfo", imageFile->_ScaledImageInfo);
+        log.LogPair("_iMultiImageCount", imageFile->_iMultiImageCount);
+        log.LogPair("_eImageSelectType", imageFile->_eImageSelectType);
+        log.LogPair("_iImageCount", imageFile->_iImageCount);
+        log.LogPair("_eImageLayout", imageFile->_eImageLayout);
+        log.LogPair("_fMirrorImage", imageFile->_fMirrorImage);
+        log.LogPair("_eTrueSizeScalingType", imageFile->_eTrueSizeScalingType);
+        log.LogPair("_eHAlign", imageFile->_eHAlign);
+        log.LogPair("_eVAlign", imageFile->_eVAlign);
+        log.LogPair("_fBgFill", imageFile->_fBgFill);
+        log.LogPair("_crFill", imageFile->_crFill);
+        log.LogPair("_iTrueSizeStretchMark", imageFile->_iTrueSizeStretchMark);
+        log.LogPair("_fUniformSizing", imageFile->_fUniformSizing);
+        log.LogPair("_fIntegralSizing", imageFile->_fIntegralSizing);
+        log.LogPair("_SizingMargins", imageFile->_SizingMargins);
+        log.LogPair("_ContentMargins", imageFile->_ContentMargins);
+        log.LogPair("_fSourceGrow", imageFile->_fSourceGrow);
+        log.LogPair("_fSourceShrink", imageFile->_fSourceShrink);
+        log.LogPair("_fGlyphOnly", imageFile->_fGlyphOnly);
+        log.LogPair("_eGlyphType", imageFile->_eGlyphType);
+        log.LogPair("_crGlyphTextColor", imageFile->_crGlyphTextColor);
+        log.LogPair("_iGlyphFontIndex", imageFile->_iGlyphFontIndex);
+        log.LogPair("_iGlyphIndex", imageFile->_iGlyphIndex);
+        log.LogPair("_GlyphInfo", imageFile->_GlyphInfo);
+        log.LogPair("_iSourcePartId", imageFile->_iSourcePartId);
+        log.LogPair("_iSourceStateId", imageFile->_iSourceStateId);
+    } else if (drawObj->_eBgType == BT_BORDERFILL) {
+        auto borderFill = (CBorderFill*)drawObj;
+        log.LogPair("_eBgType", borderFill->_eBgType);
+        log.LogPair("_iUnused", borderFill->_iUnused);
+        log.LogPair("_fNoDraw", borderFill->_fNoDraw);
+        log.LogPair("_eBorderType", borderFill->_eBorderType);
+        log.LogPair("_crBorder", borderFill->_crBorder);
+        log.LogPair("_iBorderSize", borderFill->_iBorderSize);
+        log.LogPair("_iRoundCornerWidth", borderFill->_iRoundCornerWidth);
+        log.LogPair("_iRoundCornerHeight", borderFill->_iRoundCornerHeight);
+        log.LogPair("_eFillType", borderFill->_eFillType);
+        log.LogPair("_crFill", borderFill->_crFill);
+        log.LogPair("_iDibOffset", borderFill->_iDibOffset);
+        log.LogPair("_ContentMargins", borderFill->_ContentMargins);
+        log.LogPair("_iGradientPartCount", borderFill->_iGradientPartCount);
+        log.LogPair("_crGradientColors", borderFill->_crGradientColors);
+        log.LogPair("_iGradientRatios", borderFill->_iGradientRatios);
+        log.LogPair("_iSourcePartId", borderFill->_iSourcePartId);
+        log.LogPair("_iSourceStateId", borderFill->_iSourceStateId);
+    } else {
+        log.LogPair("_eBgType", drawObj->_eBgType);
+        log.LogPair("_iUnused", drawObj->_iUnused);
+    }
+}
+
+static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
+{
+    log.Log("  (%05d %05u) %05u\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
+
+    log.Indent();
+
+    if (entry->usTypeNum == TMT_PARTJUMPTBL) {
+        auto jumpTableHdr = (PARTJUMPTABLEHDR*)(entry + 1);
+        auto jumpTable = (int*)(jumpTableHdr + 1);
+        log.Log("  iBaseClassIndex: %d\n", jumpTableHdr->iBaseClassIndex);
+        log.Log("  iFirstDrawObjIndex: %d\n", jumpTableHdr->iFirstDrawObjIndex);
+        log.Log("  iFirstTextObjIndex: %d\n", jumpTableHdr->iFirstTextObjIndex);
+        log.Log("  cParts: %d\n", jumpTableHdr->cParts);
+        for (int i = 0; i < jumpTableHdr->cParts; ++i)
+            log.Log("  [%d] %d\n", i, jumpTable[i]);
+    } else if (entry->usTypeNum == TMT_STATEJUMPTBL) {
+        auto jumpTableHdr = (STATEJUMPTABLEHDR*)(entry + 1);
+        auto jumpTable = (int*)(jumpTableHdr + 1);
+        log.Log("  cStates: %d\n", jumpTableHdr->cStates);
+        for (int i = 0; i < jumpTableHdr->cStates; ++i)
+            log.Log("  [%d] %d\n", i, jumpTable[i]);
+    } else if (entry->usTypeNum == TMT_IMAGEINFO) {
+        auto data = (char*)(entry + 1);
+        auto imageCount = *(char*)data;
+        log.Log("  ImageCount: %d\n", imageCount);
+
+        auto regionOffsets = (int*)(data + 8);
+
+        for (unsigned i = 0; i < imageCount; ++i)
+            log.Log("  [Region %d]: %d\n", i, regionOffsets[i]);
+
+        for (unsigned i = 0; i < imageCount; ++i)
+            DumpEntry(log, hdr, (ENTRYHDR*)((char*)hdr + regionOffsets[i]));
+    } else if (entry->usTypeNum == TMT_REGIONDATA) {
+        auto data = (RGNDATA*)(entry + 1);
+        log.Log("  rdh.nCount:   %lu\n", data->rdh.nCount);
+        log.Log("  rdh.nRgnSize: %lu\n", data->rdh.nRgnSize);
+        log.Log("  rdh.rcBound: (%d,%d,%d,%d)\n", data->rdh.rcBound.left,
+                data->rdh.rcBound.top, data->rdh.rcBound.right,
+                data->rdh.rcBound.bottom);
+        auto rects = (RECT*)data->Buffer;
+        for (DWORD i = 0; i < data->rdh.nCount; ++i) {
+            log.Log("  [%lu]: (%d,%d,%d,%d)\n", i, rects[i].left,
+                    rects[i].top, rects[i].right, rects[i].bottom);
+        }
+    } else if (entry->usTypeNum == TMT_DRAWOBJ) {
+        auto objHdr = (PARTOBJHDR*)(entry + 1);
+        log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
+        Dump(log, hdr, (CDrawBase*)(objHdr + 1));
+    }
+
+    log.Outdent();
+}
+
+static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
+{
+    auto begin = (APPCLASSLIVE*)Advance(hdr, hdr->iSectionIndexOffset);
+    auto end = Advance(begin, hdr->iSectionIndexLength);
+
+    for (auto p = begin; p < end; ++p) {
+        auto appName = p->AppClassInfo.iAppNameIndex ?
+            (wchar_t const*)Advance(hdr, p->AppClassInfo.iAppNameIndex) : L"<no app>";
+        auto className = p->AppClassInfo.iClassNameIndex ?
+            (wchar_t const*)Advance(hdr, p->AppClassInfo.iClassNameIndex) : L"<no class>";
+
+        log.Log("%-10ls %-30ls  %05d %05d %05d\n",
+                appName, className, p->iIndex, p->iLen, p->iBaseClassIndex);
+
+        auto be = (ENTRYHDR*)Advance(hdr, p->iIndex);
+        auto ee = Advance(be, p->iLen);
+
+        for (auto pe = be; pe < ee; pe = pe->Next()) {
+            DumpEntry(log, hdr, pe);
+        }
+    }
+}
+
+static void Dump(THEMEHDR const* rev, THEMEHDR const* ref)
+{
+    return;
+
+    std::vector<std::wstring> str1;
+    std::vector<std::wstring> str2;
+    GetStrings(rev, str1);
+    GetStrings(ref, str2);
+
+    auto revMetrics = (THEMEMETRICS const*)Advance(rev, rev->iSysMetricsOffset);
+    auto refMetrics = (THEMEMETRICS const*)Advance(ref, ref->iSysMetricsOffset);
+
+    LogFile f1{L"D:\\l1.txt"};
+    LogFile f2{L"D:\\l2.txt"};
+    f1.Open();
+    f2.Open();
+    DumpSectionIndex(rev, f1);
+    DumpSectionIndex(ref, f2);
+    int x = 1;
+}
+
 HRESULT CThemeLoader::PackAndLoadTheme(
     void* hFile, wchar_t const* pszThemeName, wchar_t const* pszColorParam,
-    wchar_t const* pszSizeParam, unsigned int cbMaxDesiredSharableSectionSize,
-    wchar_t* pszSharableSectionName, unsigned int cchSharableSectionName,
-    wchar_t* pszNonSharableSectionName, unsigned int cchNonSharableSectionName,
+    wchar_t const* pszSizeParam, unsigned cbMaxDesiredSharableSectionSize,
+    wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
+    wchar_t* pszNonSharableSectionName, unsigned cchNonSharableSectionName,
     void** phReuseSection,
     PFNALLOCSECTIONS pfnAllocSections)
 {
-    HRESULT hr = S_OK;
-
     ENSURE_HR(PackMetrics());
 
     if (pfnAllocSections) {
-        hr = pfnAllocSections(
+        ENSURE_HR(pfnAllocSections(
             &_LoadingThemeFile,
             pszSharableSectionName,
             cchSharableSectionName,
@@ -771,65 +1385,86 @@ HRESULT CThemeLoader::PackAndLoadTheme(
             pszNonSharableSectionName,
             cchNonSharableSectionName,
             8 * _rgDIBDataArray.size() + 16,
-            1);
+            1));
     } else {
-        hr = _LoadingThemeFile.CreateFileW(
+        ENSURE_HR(_LoadingThemeFile.CreateFileW(
             pszSharableSectionName,
             cchSharableSectionName,
             cbMaxDesiredSharableSectionSize,
             pszNonSharableSectionName,
             cchNonSharableSectionName,
             8 * _rgDIBDataArray.size() + 16,
-            0);
+            0));
     }
 
-    if (hr >= 0) {
-        if (phReuseSection) {
-            hr = CreateReuseSection(pszSharableSectionName, phReuseSection);
-            if (hr < 0)
-                return hr;
-            hr = CopyNonSharableDataToLive(*phReuseSection);
-        } else {
-            hr = CopyDummyNonSharableDataToLive();
+    if (phReuseSection) {
+        ENSURE_HR(CreateReuseSection(pszSharableSectionName, phReuseSection));
+        ENSURE_HR(CopyNonSharableDataToLive(*phReuseSection));
+    } else {
+        ENSURE_HR(CopyDummyNonSharableDataToLive());
+    }
+
+    ENSURE_HR(CopyLocalThemeToLive(
+        hFile,
+        cbMaxDesiredSharableSectionSize,
+        pszThemeName,
+        pszColorParam,
+        pszSizeParam));
+
+    {
+        FileHandle h{CreateFileW(L"d:\\theme-packed.rev.dat", GENERIC_WRITE, 0, nullptr,
+                     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+        DWORD bytesWritten;
+        WriteFile(h, _hdr, _hdr->dwTotalLength, &bytesWritten, nullptr);
+        h.Close();
+    }
+
+    {
+        RootSection rootSection(FILE_MAP_READ, FILE_MAP_READ);
+        ROOTSECTION* rootSectionData;
+        HRESULT hr = rootSection.GetRootSectionData(&rootSectionData);
+        if (SUCCEEDED(hr)) {
+            Section section(FILE_MAP_READ, FILE_MAP_READ);
+            hr = section.OpenSection(rootSectionData->szSharableSectionName, true);
+            if (SUCCEEDED(hr)) {
+                auto hdr = (THEMEHDR const*)section.View();
+
+                FileHandle h{CreateFileW(L"d:\\theme-packed.orig.dat", GENERIC_WRITE, 0, nullptr,
+                                         CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+                DWORD bytesWritten;
+                WriteFile(h, hdr, hdr->dwTotalLength, &bytesWritten, nullptr);
+                h.Close();
+
+                Dump(_hdr, hdr);
+            }
         }
-
-        if (hr >= 0)
-            hr = CopyLocalThemeToLive(
-                hFile,
-                cbMaxDesiredSharableSectionSize,
-                pszThemeName,
-                pszColorParam,
-                pszSizeParam);
     }
 
-    return hr;
+    return S_OK;
 }
 
 HRESULT CThemeLoader::CopyLocalThemeToLive(
     void* hFile, int iTotalLength, wchar_t const* pszThemeName,
     wchar_t const* pszColorParam, wchar_t const* pszSizeParam)
 {
-    auto themeHdr = (THEMEHDR*)VirtualAlloc(_LoadingThemeFile._pbSharableData, 0x60, MEM_COMMIT, PAGE_READWRITE);
+    auto const themeHdrSize = Align8(sizeof(THEMEHDR));
+    auto const themeHdr = (THEMEHDR*)VirtualAlloc(
+        _LoadingThemeFile._pbSharableData, themeHdrSize, MEM_COMMIT, PAGE_READWRITE);
     if (!themeHdr)
         return 0x80070008;
-
-    DpiInfo* v16;
-    MIXEDPTRS u;
 
     _hdr = themeHdr;
     _iGlobalsOffset = -1;
     _iSysMetricsOffset = -1;
-    u.pb = (char*)(themeHdr + 1) + 4;
+
     _hdr->dwTotalLength = iTotalLength;
-    *(uint64_t*)_hdr = 0x4D48544E49474542;
+    *(uint64_t*)&_hdr->szSignature = 0x4D48544E49474542;
     _hdr->dwVersion = 65543;
     _hdr->iDllNameOffset = 0;
     _hdr->iColorParamOffset = 0;
     _hdr->iSizeParamOffset = 0;
     _hdr->dwLangID = _wCurrentLangID;
-    v16 = (DpiInfo *)_hdr;
-    v16[3]._nNonStandardDpi = GetScreenDpi();
-    v16->Ensure(0);
+    _hdr->iLoadDPI = GetScreenDpi();
     _hdr->dwLoadDPIs = g_DpiInfo._nDpiPlateausCurrentlyPresent;
     _hdr->iLoadPPI = GetScreenPpi();
     _hdr->iGlobalsOffset = 0;
@@ -839,6 +1474,10 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
     _hdr->cFonts = _fontTable.size();
     _hdr->ftModifTimeStamp = FILETIME();
     GetFileTime(hFile, nullptr, nullptr, &_hdr->ftModifTimeStamp);
+
+    MIXEDPTRS u;
+    u.pb = (char*)themeHdr + themeHdrSize;
+
     _hdr->iStringsOffset = (uintptr_t)u.pb - (uintptr_t)(_LoadingThemeFile._pbSharableData);
 
     char* stringsBegin = u.pb;
@@ -865,13 +1504,15 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
         }
     }
 
-    int* v28 = (int*)_LoadThemeMetrics.iStringOffsets;
-    for (std::wstring const& str : _LoadThemeMetrics.wsStrings) {
-        if (size_t len = str.length())
-            ENSURE_HR(EmitString(&u, str.c_str(), len, v28));
-        else
-            *v28 = 0;
-        ++v28;
+    {
+        int* pStringOffsets = (int*)_LoadThemeMetrics.iStringOffsets;
+        for (std::wstring const& str : _LoadThemeMetrics.wsStrings) {
+            if (size_t len = str.length())
+                ENSURE_HR(EmitString(&u, str.c_str(), len, pStringOffsets));
+            else
+                *pStringOffsets = 0;
+            ++pStringOffsets;
+        }
     }
 
     _hdr->iStringsLength = (uintptr_t)u.pb - (uintptr_t)stringsBegin;
@@ -880,41 +1521,39 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
     _hdr->iSectionIndexLength = sizeof(APPCLASSLIVE) * _LocalIndexes.size();
     ENSURE_HR(AllocateThemeFileBytes(u.pb, _hdr->iSectionIndexLength));
 
-    char* v33 = u.pb;
+    auto liveClasses = (APPCLASSLIVE*)u.pb;
     u.pb += _hdr->iSectionIndexLength;
-    if (_LocalIndexes.size() > 0) {
-        auto liveClasses = (APPCLASSLIVE*)v33;
-        for (size_t i = 0; i < _LocalIndexes.size(); ++i) {
-            APPCLASSLOCAL& pac = _LocalIndexes[i];
-            APPCLASSLIVE& liveCls = liveClasses[i];
-            liveCls.AppClassInfo = pac.AppClassInfo;
-            liveCls.iIndex = (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile._pbSharableData;
+    for (size_t i = 0; i < _LocalIndexes.size(); ++i) {
+        APPCLASSLOCAL& pac = _LocalIndexes[i];
+        APPCLASSLIVE& liveCls = liveClasses[i];
+        liveCls.AppClassInfo = pac.AppClassInfo;
+        liveCls.iIndex = (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile._pbSharableData;
 
-            if (!AsciiStrCmpI(pac.csClassName.c_str(), L"globals"))
-                _iGlobalsOffset = liveCls.iIndex;
+        if (!AsciiStrCmpI(pac.csClassName.c_str(), L"globals"))
+            _iGlobalsOffset = liveCls.iIndex;
 
-            if (_rgBaseClassIds[i] == -1)
-                liveCls.iBaseClassIndex = _iGlobalsOffset;
-            else
-                liveCls.iBaseClassIndex = liveClasses[_rgBaseClassIds[i]].iIndex;
+        if (_rgBaseClassIds[i] == -1)
+            liveCls.iBaseClassIndex = _iGlobalsOffset;
+        else
+            liveCls.iBaseClassIndex = liveClasses[_rgBaseClassIds[i]].iIndex;
 
-            if (!AsciiStrCmpI(pac.csClassName.c_str(), L"sysmetrics")) {
-                _iSysMetricsOffset = liveCls.iIndex;
-                ENSURE_HR(EmitEntryHdr(&u, 1, 1));
-                ENSURE_HR(EmitAndCopyBlock(&u, &_LoadThemeMetrics, sizeof(THEMEMETRICS)));
-                EndEntry(&u);
+        if (!AsciiStrCmpI(pac.csClassName.c_str(), L"sysmetrics")) {
+            _iSysMetricsOffset = liveCls.iIndex;
+            ENSURE_HR(EmitEntryHdr(&u, TMT_THEMEMETRICS, TMT_THEMEMETRICS));
+            ENSURE_HR(EmitAndCopyBlock(&u, &_LoadThemeMetrics, sizeof(THEMEMETRICS)));
+            EndEntry(&u);
 
-                ENSURE_HR(EmitEntryHdr(&u, 12, 12));
-                ENSURE_HR(AllocateThemeFileBytes(u.pb, 8));
-                *(int*)u.pb = -1;
-                u.pb += 8;
-                EndEntry(&u);
-            } else {
-                ENSURE_HR(CopyClassGroup(&pac, &u, &liveCls));
-            }
-
-            liveCls.iLen = (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile._pbSharableData - liveCls.iIndex;
+            ENSURE_HR(EmitEntryHdr(&u, TMT_12, TMT_12));
+            ENSURE_HR(AllocateThemeFileBytes(u.pb, 8));
+            *(int*)u.pb = -1;
+            u.pb += 8;
+            EndEntry(&u);
+        } else {
+            ENSURE_HR(CopyClassGroup(&pac, &u, &liveCls));
         }
+
+        int currIndex = (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile._pbSharableData;
+        liveCls.iLen = currIndex - liveCls.iIndex;
     }
 
     {
@@ -934,24 +1573,17 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
     return S_OK;
 }
 
-struct __declspec(align(4)) PARTJUMPTABLEHDR
+HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
+                                     APPCLASSLIVE* pacl)
 {
-    int iBaseClassIndex;
-    int iFirstDrawObjIndex;
-    int iFirstTextObjIndex;
-    char cParts;
-};
-
-HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSLIVE* pacl)
-{
-    int fGlobalsGroup; // er15@1
-    HRESULT hr; // ebx@1
-    int* partJumpTable; // r12@4
-    int iPartZeroIndex; // ebp@7
-    int screenDpi; // eax@11
-    int v21; // er9@11
-    char* v26; // [sp+70h] [bp-48h]@1
-    CRenderObj* pRender; // [sp+C0h] [bp+8h]@1
+    int fGlobalsGroup;
+    HRESULT hr;
+    int* partJumpTable;
+    int iPartZeroIndex;
+    int screenDpi;
+    int v21;
+    char* v26;
+    CRenderObj* pRender;
 
     pRender = 0i64;
     v26 = u->pb;
@@ -959,14 +1591,16 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSL
 
     int cParts = pac->iMaxPartNum + 1;
 
-    ENSURE_HR(EmitEntryHdr(u, 10, 10));
-    ENSURE_HR(AllocateThemeFileBytes(u->pb, sizeof(PARTJUMPTABLEHDR) + 4 * cParts));
+    ENSURE_HR(EmitEntryHdr(u, TMT_PARTJUMPTBL, TMT_PARTJUMPTBL));
+    ENSURE_HR(AllocateThemeFileBytes(
+        u->pb, sizeof(PARTJUMPTABLEHDR) + sizeof(int) * cParts));
 
     auto partJumpTableHdr = (PARTJUMPTABLEHDR*)u->pb;
     partJumpTableHdr->iBaseClassIndex = pacl->iBaseClassIndex;
     partJumpTableHdr->iFirstTextObjIndex = 0;
     partJumpTableHdr->cParts = cParts;
     u->pb = (char*)(partJumpTableHdr + 1);
+    RegisterPtr(partJumpTableHdr);
 
     partJumpTable = (int*)u->pb;
     for (int i = cParts; i; --i) {
@@ -976,8 +1610,8 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSL
     EndEntry(u);
 
     iPartZeroIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
-    for (int p = 0; p <= pac->iMaxPartNum; ++p)
-        CopyPartGroup(pac, u, p, partJumpTable, iPartZeroIndex, pacl->iBaseClassIndex, fGlobalsGroup);
+    for (int partId = 0; partId <= pac->iMaxPartNum; ++partId)
+        CopyPartGroup(pac, u, partId, partJumpTable, iPartZeroIndex, pacl->iBaseClassIndex, fGlobalsGroup);
 
     screenDpi = GetScreenDpi();
     hr = CRenderObj::Create(
@@ -991,7 +1625,7 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSL
         nullptr,
         nullptr,
         screenDpi,
-        0,
+        false,
         0,
         &pRender);
 
@@ -1002,16 +1636,16 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSL
         if (fGlobalsGroup)
             _iGlobalsDrawObj = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
 
-        *((DWORD *)partJumpTableHdr + 1) = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
+        partJumpTableHdr->iFirstDrawObjIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
         hr = PackDrawObjects(u, pRender, pac->iMaxPartNum, fGlobalsGroup);
         if (hr >= 0) {
             if (fGlobalsGroup)
                 _iGlobalsTextObj = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
-            *((DWORD *)partJumpTableHdr + 2) = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
+            partJumpTableHdr->iFirstTextObjIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
             hr = PackTextObjects(u, pRender, pac->iMaxPartNum, fGlobalsGroup);
             if (hr >= 0)
             {
-                hr = EmitEntryHdr(u, 20, 20);
+                hr = EmitEntryHdr(u, TMT_CLSGROUPEND, TMT_CLSGROUPEND);
                 if (hr >= 0)
                     EndEntry(u);
             }
@@ -1025,7 +1659,7 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSL
 int CThemeLoader::GetPartOffset(CRenderObj* pRender, int iPartId)
 {
     auto entryHdr = (ENTRYHDR*)pRender->_pbSectionData;
-    if (entryHdr->usTypeNum != 10)
+    if (entryHdr->usTypeNum != TMT_PARTJUMPTBL)
         return -1;
 
     auto jumpTableHdr = (PARTJUMPTABLEHDR*)(entryHdr + 1);
@@ -1041,34 +1675,13 @@ BOOL CThemeLoader::KeyDrawPropertyFound(int iStateDataOffset)
     auto ptr = (char*)_LoadingThemeFile._pbSharableData + iStateDataOffset;
     for (;;) {
         auto hdr = (ENTRYHDR*)ptr;
-        if (hdr->usTypeNum == 12)
+        if (hdr->usTypeNum == TMT_12)
             break;
 
-        switch (hdr->usTypeNum) {
-        case TMT_BORDERSIZE:
-        case TMT_ROUNDCORNERWIDTH:
-        case TMT_ROUNDCORNERHEIGHT:
-        case TMT_GRADIENTRATIO1:
-        case TMT_GRADIENTRATIO2:
-        case TMT_GRADIENTRATIO3:
-        case TMT_GRADIENTRATIO4:
-        case TMT_GRADIENTRATIO5:
-        case TMT_CONTENTMARGINS:
-        case TMT_BORDERCOLOR:
-        case TMT_FILLCOLOR:
-        case TMT_GRADIENTCOLOR1:
-        case TMT_GRADIENTCOLOR2:
-        case TMT_GRADIENTCOLOR3:
-        case TMT_GRADIENTCOLOR4:
-        case TMT_GRADIENTCOLOR5:
-        case TMT_BGTYPE:
-        case TMT_BORDERTYPE:
-        case TMT_FILLTYPE:
+        if (CBorderFill::KeyProperty(hdr->usTypeNum))
             return TRUE;
-        default:
-            if (CImageFile::KeyProperty(hdr->usTypeNum))
-                return TRUE;
-        }
+        if (CImageFile::KeyProperty(hdr->usTypeNum))
+            return TRUE;
 
         ptr += sizeof(ENTRYHDR) + hdr->dwDataLen;
     }
@@ -1076,21 +1689,22 @@ BOOL CThemeLoader::KeyDrawPropertyFound(int iStateDataOffset)
     return FALSE;
 }
 
-HRESULT CThemeLoader::PackDrawObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, int fGlobals)
+HRESULT CThemeLoader::PackDrawObjects(
+    MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, int fGlobals)
 {
     for (int partId = 0; partId <= iMaxPart; ++partId) {
         int offset = GetPartOffset(pRender, partId);
         if (offset == -1)
             continue;
 
-        auto entryHdr = (ENTRYHDR *)((char*)_LoadingThemeFile._pbSharableData + offset);
-        if (entryHdr->usTypeNum == 11) {
+        auto entryHdr = (ENTRYHDR*)((char*)_LoadingThemeFile._pbSharableData + offset);
+        if (entryHdr->usTypeNum == TMT_STATEJUMPTBL) {
             auto jumpTableHdr = (STATEJUMPTABLEHDR*)(entryHdr + 1);
             auto jumpTable = (int*)(jumpTableHdr + 1);
 
             for (int stateId = 0; stateId <= jumpTableHdr->cStates - 1; ++stateId) {
-                int iStateDataOffset = jumpTable[stateId];
-                if (iStateDataOffset != -1 && (fGlobals || KeyDrawPropertyFound(iStateDataOffset))) {
+                int so = jumpTable[stateId];
+                if (so != -1 && (fGlobals || KeyDrawPropertyFound(so))) {
                     ENSURE_HR(PackDrawObject(uOut, pRender, partId, stateId));
                     fGlobals = 0;
                 }
@@ -1121,17 +1735,23 @@ HRESULT CThemeLoader::CopyPartGroup(
         return S_OK;
 
     HRESULT hr = 0;
-    if (piPartJumpTable)
+    if (piPartJumpTable) {
         piPartJumpTable[iPartId] = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
+        if (piPartJumpTable[iPartId] == 0) { // FIXME: Remove
+            piPartJumpTable[iPartId] = 0;
+        }
+    }
 
     int* stateJumpTable = nullptr;
     if (iMaxStateId > 0) {
         int cStates = iMaxStateId + 1;
-        ENSURE_HR(EmitEntryHdr(u, 11, 11));
-        ENSURE_HR(AllocateThemeFileBytes(u->pb, sizeof(STATEJUMPTABLEHDR) + sizeof(int) * cStates));
+        ENSURE_HR(EmitEntryHdr(u, TMT_STATEJUMPTBL, TMT_STATEJUMPTBL));
+        ENSURE_HR(AllocateThemeFileBytes(
+            u->pb, sizeof(STATEJUMPTABLEHDR) + sizeof(int) * cStates));
 
         auto stateJumpTableHdr = (STATEJUMPTABLEHDR*)u->pb;
         stateJumpTableHdr->cStates = cStates;
+        RegisterPtr(stateJumpTableHdr);
 
         u->pb = (char*)(stateJumpTableHdr + 1);
         stateJumpTable = (int*)u->pb;
@@ -1164,7 +1784,15 @@ HRESULT CThemeLoader::CopyPartGroup(
             char* block = &_pbLocalData[psi.iIndex];
             *(int*)(_pbLocalData + psi.iIndex + psi.iLen - 8) = vv;
 
+            auto begin = (ENTRYHDR const*)u->pb;
+            auto end = Advance(begin, psi.iLen);
+
             hr = EmitAndCopyBlock(u, block, psi.iLen);
+
+            for (auto p = begin; p < end;) {
+                RegisterPtr(p);
+                p = Advance(p, sizeof(ENTRYHDR) + p->dwDataLen);
+            }
         }
     }
 
@@ -1184,10 +1812,10 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
     if (!hbmp)
         return S_FALSE;
 
-    HRESULT v4; // er9@1
-    HBITMAP v10; // rax@4
+    HRESULT v4;
+    HBITMAP v10;
     v4 = 1;
-    //LODWORD(v10) = SetBitmapAttributes(hbmp, (unsigned int)v4);
+    //LODWORD(v10) = SetBitmapAttributes(hbmp, (unsigned)v4);
     //if (v10) {
     pRender->_phBitmapsArray[hdr->iBitmapIndex].hBitmap = hbmp;
     //    return S_OK;
@@ -1200,13 +1828,13 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
 
 struct CBitmapPixels
 {
-    tagBITMAPINFOHEADER* _hdrBitmap;
+    BITMAPINFOHEADER* _hdrBitmap;
     int _iWidth;
     int _iHeight;
     char* _buffer;
     ~CBitmapPixels();
-    DWORD OpenBitmap(HDC__* hdc, HBITMAP__* bitmap, int fForceRGB32, unsigned** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
-    void CloseBitmap(HDC__* hdc, HBITMAP__* hBitmap);
+    DWORD OpenBitmap(HDC hdc, HBITMAP bitmap, int fForceRGB32, unsigned** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
+    void CloseBitmap(HDC hdc, HBITMAP hBitmap);
 };
 
 CBitmapPixels::~CBitmapPixels()
@@ -1216,16 +1844,16 @@ CBitmapPixels::~CBitmapPixels()
 }
 
 DWORD CBitmapPixels::OpenBitmap(
-    HDC__* hdc, HBITMAP__* bitmap, int fForceRGB32, unsigned int** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned int cbBytesBefore)
+    HDC hdc, HBITMAP bitmap, int fForceRGB32, unsigned** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned cbBytesBefore)
 {
-    DWORD hr; // eax@2
-    HDC v14; // rsi@3
-    __int64 v15; // rdx@5
-    unsigned __int64 v16; // rcx@5
-    int v17; // edi@7
-    unsigned __int64 v18; // rcx@7
-    tagBITMAPINFOHEADER* v19; // rax@9
-    BITMAP pv; // [sp+40h] [bp-38h]@5
+    DWORD hr;
+    HDC v14;
+    __int64 v15;
+    unsigned __int64 v16;
+    int v17;
+    unsigned __int64 v18;
+    BITMAPINFOHEADER* v19;
+    BITMAP pv;
 
     if (pPixels)
     {
@@ -1233,41 +1861,41 @@ DWORD CBitmapPixels::OpenBitmap(
         if (v14)
         {
             GetObjectW(bitmap, sizeof(BITMAP), &pv);
-            v15 = (unsigned int)pv.bmHeight;
-            v16 = 4i64 * (unsigned int)pv.bmWidth;
-            this->_iWidth = pv.bmWidth;
-            this->_iHeight = v15;
+            v15 = (unsigned)pv.bmHeight;
+            v16 = 4i64 * (unsigned)pv.bmWidth;
+            _iWidth = pv.bmWidth;
+            _iHeight = v15;
             if (v16 <= 0xFFFFFFFF
-                && (unsigned int)v16 <= 0x7FFFFFFC
-                && (v17 = (v16 + 3) & 0xFFFFFFFC, v18 = v15 * (unsigned int)v17, v18 <= 0xFFFFFFFF)
-                && (signed int)v18 + 0x8C >= (unsigned int)v18
-                && (v19 = (tagBITMAPINFOHEADER *)malloc((unsigned int)(v18 + 0x8C)),
-                (this->_buffer = (char *)v19) != 0i64))
+                && (unsigned)v16 <= 0x7FFFFFFC
+                && (v17 = (v16 + 3) & 0xFFFFFFFC, v18 = v15 * (unsigned)v17, v18 <= 0xFFFFFFFF)
+                && (signed int)v18 + 0x8C >= (unsigned)v18
+                && (v19 = (BITMAPINFOHEADER *)malloc((unsigned)(v18 + 0x8C)),
+                (_buffer = (char *)v19) != 0i64))
             {
-                this->_hdrBitmap = v19;
+                _hdrBitmap = v19;
                 memset(v19, 0, 0x28ui64);
-                this->_hdrBitmap->biSize = 40;
-                this->_hdrBitmap->biWidth = this->_iWidth;
-                this->_hdrBitmap->biHeight = this->_iHeight;
-                this->_hdrBitmap->biPlanes = 1;
-                this->_hdrBitmap->biBitCount = 32;
-                this->_hdrBitmap->biCompression = 0;
+                _hdrBitmap->biSize = 40;
+                _hdrBitmap->biWidth = _iWidth;
+                _hdrBitmap->biHeight = _iHeight;
+                _hdrBitmap->biPlanes = 1;
+                _hdrBitmap->biBitCount = 32;
+                _hdrBitmap->biCompression = 0;
                 GetDIBits(
                     v14,
                     bitmap,
                     0,
-                    this->_iHeight,
-                    (char *)this->_hdrBitmap + 4 * this->_hdrBitmap->biClrUsed + this->_hdrBitmap->biSize,
-                    (LPBITMAPINFO)this->_hdrBitmap,
+                    _iHeight,
+                    (char *)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
+                    (LPBITMAPINFO)_hdrBitmap,
                     0);
                 ReleaseDC(0i64, v14);
-                *pPixels = (unsigned int *)((char *)&this->_hdrBitmap->biSize
-                                            + 4 * this->_hdrBitmap->biClrUsed
-                                            + this->_hdrBitmap->biSize);
+                *pPixels = (unsigned *)((char *)&_hdrBitmap->biSize
+                                            + 4 * _hdrBitmap->biClrUsed
+                                            + _hdrBitmap->biSize);
                 if (piWidth)
-                    *piWidth = this->_iWidth;
+                    *piWidth = _iWidth;
                 if (piHeight)
-                    *piHeight = this->_iHeight;
+                    *piHeight = _iHeight;
                 if (piBytesPerPixel)
                     *piBytesPerPixel = 4;
                 if (piBytesPerRow)
@@ -1288,11 +1916,11 @@ DWORD CBitmapPixels::OpenBitmap(
     return hr;
 }
 
-void CBitmapPixels::CloseBitmap(HDC__* hdc, HBITMAP__* hBitmap)
+void CBitmapPixels::CloseBitmap(HDC hdc, HBITMAP hBitmap)
 {
-    HDC v5; // rsi@4
+    HDC v5;
 
-    if (this->_hdrBitmap && this->_buffer)
+    if (_hdrBitmap && _buffer)
     {
         if (hBitmap)
         {
@@ -1301,56 +1929,50 @@ void CBitmapPixels::CloseBitmap(HDC__* hdc, HBITMAP__* hBitmap)
                 v5,
                 hBitmap,
                 0,
-                this->_iHeight,
-                (char *)this->_hdrBitmap + 4 * this->_hdrBitmap->biClrUsed + this->_hdrBitmap->biSize,
-                (const BITMAPINFO *)this->_hdrBitmap,
+                _iHeight,
+                (char *)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
+                (const BITMAPINFO *)_hdrBitmap,
                 0);
             if (v5)
                 ReleaseDC(0i64, v5);
         }
-        free(this->_buffer);
-        this->_hdrBitmap = 0i64;
-        this->_buffer = 0i64;
+        free(_buffer);
+        _hdrBitmap = 0i64;
+        _buffer = 0i64;
     }
 }
 
 HRESULT CThemeLoader::PackImageFileInfo(
-    DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
+    DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender,
+    int iPartId, int iStateId)
 {
-    HRESULT hr; // edi@1
-    signed __int64 v11; // r13@4
-    __int64 v12; // rbx@5
-    char* v13; // rax@6
-    signed __int64 v14; // r12@6
-    int v15; // edx@9
-    TMBITMAPHEADER* v16; // rax@10
-    HBITMAP__* v17; // r8@10
-    int v18; // edx@10
-    DWORD v19; // eax@11
-    HDC__* v20; // rdx@11
-    int v21; // er9@11
-    HBITMAP__* v22; // r12@11
-    int v23; // eax@13
-    signed __int64 v24; // r12@14
-    int* v26; // [sp+48h] [bp-90h]@0
-    unsigned int v27; // [sp+50h] [bp-88h]@0
-    int v28; // [sp+60h] [bp-78h]@6
-    void* v29; // [sp+68h] [bp-70h]@13
-    int v30; // [sp+70h] [bp-68h]@12
-    int v31; // [sp+74h] [bp-64h]@12
-    HBITMAP__* v32; // [sp+78h] [bp-60h]@6
-    unsigned int* v33; // [sp+80h] [bp-58h]@12
-    signed __int64 v34; // [sp+88h] [bp-50h]@6
-    int iPartIda; // [sp+108h] [bp+30h]@13
+    HRESULT hr;
+    signed __int64 v11;
+    __int64 v12;
+    signed __int64 v14;
+    TMBITMAPHEADER* v16;
+    HBITMAP v22;
+    int v23;
+    signed __int64 v24;
+    int v28;
+    void* v29;
+    int v30;
+    int v31;
+    HBITMAP v32;
+    unsigned* v33;
+    signed __int64 v34;
+    int iPartIda;
 
     hr = 0;
     if (iStateId != 0 || !pdi->fPartiallyTransparent || pdi->iDibOffset <= 0)
+        return hr;
+    if (pdi->iDibOffset == 56864) // FIXME
         return hr;
 
     v11 = pImageObj->_iImageCount;
     pdi->iRgnListOffset = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData) + 8;
 
-    hr = EmitEntryHdr(u, 18, 18);
+    hr = EmitEntryHdr(u, TMT_IMAGEINFO, TMT_IMAGEINFO);
     if (hr < 0) {
         EndEntry(u);
         return hr;
@@ -1366,9 +1988,9 @@ HRESULT CThemeLoader::PackImageFileInfo(
     *u->pb = pImageObj->_iImageCount + 1;
     v14 = (signed __int64)(u->pb + 8);
     v34 = (signed __int64)(u->pb + 8);
-    memset(u->pb + 8, 0, (unsigned int)v12);
+    memset(u->pb + 8, 0, (unsigned)v12);
 
-    u->pb = (char *)(v12 + v14);
+    u->pb = (char *)(v14 + v12);
 
     v32 = 0;
     v28 = 0;
@@ -1379,12 +2001,11 @@ HRESULT CThemeLoader::PackImageFileInfo(
                 v28 = pRender->_phBitmapsArray[v16->iBitmapIndex].hBitmap != nullptr;
             }
 
-            v19 = pRender->ExternalGetBitmap(0, pdi->iDibOffset, 1u, &v32);
+            hr = pRender->ExternalGetBitmap(nullptr, pdi->iDibOffset, GBF_DIRECT, &v32);
             v22 = v32;
-            hr = v19;
-            if ((v19 & 0x80000000) == 0) {
-                CBitmapPixels v35;
-                hr = v35.OpenBitmap(
+            if (hr >= 0) {
+                CBitmapPixels pixels;
+                hr = pixels.OpenBitmap(
                     nullptr,
                     v32,
                     0,
@@ -1401,31 +2022,32 @@ HRESULT CThemeLoader::PackImageFileInfo(
                     iPartIda = 0;
                     if (v11 >= 0) {
                         v24 = (signed __int64)v29;
-                        //do {
-                        //    v29 = 0;
-                        //    hr = pImageObj->BuildRgnData(
-                        //        v33,
-                        //        v31,
-                        //        v30,
-                        //        pdi,
-                        //        pRender,
-                        //        v23,
-                        //        (_RGNDATA **)&v29,
-                        //        &iStateId);
-                        //    if (hr >= 0) {
-                        //        if (iStateId) {
-                        //            *(DWORD *)(v34 + 4 * v24) = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
-                        //            hr = EmitEntryHdr(u, 19, 19);
-                        //            if (hr >= 0) {
-                        //                hr = EmitAndCopyBlock(u, v29, iStateId);
-                        //                EndEntry(u);
-                        //            }
-                        //        }
-                        //    }
-                        //    free(v29);
-                        //    ++v24;
-                        //    v23 = iPartIda++ + 1;
-                        //} while (v24 <= v11);
+                        do {
+                            RGNDATA* rgnData = nullptr;
+                            int rgnDataLen;
+                            hr = pImageObj->BuildRgnData(
+                                v33,
+                                v31,
+                                v30,
+                                pdi,
+                                pRender,
+                                v23,
+                                &rgnData,
+                                &rgnDataLen);
+                            if (hr >= 0) {
+                                if (rgnDataLen) {
+                                    *(DWORD *)(v34 + 4 * v24) = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile._pbSharableData);
+                                    hr = EmitEntryHdr(u, TMT_REGIONDATA, TMT_REGIONDATA);
+                                    if (hr >= 0) {
+                                        hr = EmitAndCopyBlock(u, rgnData, rgnDataLen);
+                                        EndEntry(u);
+                                    }
+                                }
+                            }
+                            free(rgnData);
+                            ++v24;
+                            v23 = iPartIda++ + 1;
+                        } while (v24 <= v11);
                         v22 = v32;
                     }
                 }

@@ -17,6 +17,7 @@
     <ClCompile Include="Hooks.cpp" />
     <ClCompile Include="RenderList.cpp" />
     <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UxThemeEx.def" />
@@ -41,5 +42,8 @@
     <ClInclude Include="UxThemeHelpers.h" />
     <ClInclude Include="RenderList.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="Handle.h" />
+    <ClInclude Include="GdiHandles.h" />
   </ItemGroup>
 </Project>

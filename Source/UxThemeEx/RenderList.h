@@ -15,7 +15,7 @@ struct CRenderObj;
 struct RENDER_OBJ_ENTRY
 {
     CRenderObj* pRenderObj;
-    unsigned int dwRecycleNum;
+    unsigned dwRecycleNum;
     int iRefCount;
     int iInUseCount;
     int iLoadId;
