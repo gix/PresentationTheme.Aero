@@ -46,6 +46,7 @@ namespace StyleInspector
 
         public IReadOnlyList<ThemeClassViewModel> Classes => classes;
         public IReadOnlyList<ThemePropertyViewModel> Properties => properties;
+        public ThemeFile ThemeFile => themeFile;
 
         public void Dispose()
         {

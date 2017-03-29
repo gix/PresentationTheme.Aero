@@ -7,7 +7,7 @@ namespace StyleInspector
     using System.Windows.Media;
     using StyleCore.Native;
 
-    public class ThemeData : IDisposable
+    public class ThemeData : IThemeData
     {
         private readonly SafeThemeHandle theme;
 

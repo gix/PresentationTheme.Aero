@@ -14,6 +14,7 @@
     using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Interop;
+    using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Win32;
     using StyleCore;
@@ -405,7 +406,10 @@
 
         private void DumpThemePart(IntPtr hwnd, string className, ThemePartViewModel part, ThemeStateViewModel state)
         {
-            using (var theme = ThemeData.Open(hwnd, className)) {
+            hwnd = IntPtr.Zero;
+            using (IThemeData nativeTheme = ThemeData.Open(hwnd, className))
+            using (IThemeData theme = UxThemeExData.Open(
+                    themeFile.ThemeFile.NativeThemeFile, hwnd, className)) {
                 if (!theme.IsValid)
                     return;
 
@@ -416,86 +420,110 @@
 
                 foreach (var entry in EnumThemeProperties()) {
                     int propId = entry.Item1;
-                    var origin = theme.GetThemePropertyOrigin(partId, stateId, propId);
-                    var type = ThemeInfo.GetPropertyType((TMT)propId);
-
-                    object value = null;
-                    switch (type) {
-                        case ThemePropertyType.Enum:
-                            value = theme.GetThemeEnumValue(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.String:
-                            value = theme.GetThemeString(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Int:
-                            value = theme.GetThemeInt(partId, stateId, propId);
-                            //value = theme.GetThemeMetric(part.PartId, state.StateId, entry.Item1);
-                            break;
-                        case ThemePropertyType.Bool:
-                            value = theme.GetThemeBool(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Color:
-                            value = theme.GetThemeColor(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Margins:
-                            value = theme.GetThemeMargins(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Filename:
-                            value = theme.GetThemeFilename(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Size:
-                            var partSize1 = theme.GetThemePartSize(partId, stateId, ThemeSize.Min);
-                            var partSize2 = theme.GetThemePartSize(partId, stateId, ThemeSize.True);
-                            var partSize3 = theme.GetThemePartSize(partId, stateId, ThemeSize.Draw);
-                            if (partSize1 != null)
-                                AllProperties.Add(
-                                    new ThemeRawProperty(propId, $"{entry.Item2} (Min)", type, origin, partSize1));
-                            if (partSize2 != null)
-                                AllProperties.Add(
-                                    new ThemeRawProperty(propId, $"{entry.Item2} (True)", type, origin, partSize2));
-                            if (partSize3 != null)
-                                AllProperties.Add(
-                                    new ThemeRawProperty(propId, $"{entry.Item2} (Draw)", type, origin, partSize3));
-                            break;
-                        case ThemePropertyType.Position:
-                            value = theme.GetThemePosition(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Rect:
-                            value = theme.GetThemeRect(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.Font:
-                            value = theme.GetThemeFont(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.IntList:
-                            value = theme.GetThemeIntList(partId, stateId, propId);
-                            break;
-                        case ThemePropertyType.HBitmap:
-                            var hbmp = theme.GetThemeBitmap(partId, stateId, propId);
-                            if (hbmp != null) {
-                                var source = Imaging.CreateBitmapSourceFromHBitmap(
-                                    hbmp.Value, IntPtr.Zero, Int32Rect.Empty,
-                                    BitmapSizeOptions.FromEmptyOptions());
-                                source.Freeze();
-                                value = source;
-                            }
-                            break;
-                        case ThemePropertyType.DiskStream:
-                            value = theme.GetThemeStream(partId, stateId, propId, SafeModuleHandle.Zero);
-                            break;
-                        case ThemePropertyType.Stream:
-                            value = theme.GetThemeStream(partId, stateId, propId, SafeModuleHandle.Zero);
-                            break;
-                        case ThemePropertyType.None:
-                            break;
-                        default:
-                            value = $"<Unhandled Property Type '{type}'>";
-                            break;
-                    }
-
-                    if (value != null)
-                        AllProperties.Add(new ThemeRawProperty(propId, entry.Item2, type, origin, value));
+                    foreach (var p in EnumPropertyValues(nativeTheme, partId, stateId, propId))
+                        AllProperties.Add(p);
+                    foreach (var p in EnumPropertyValues(theme, partId, stateId, propId))
+                        AllProperties.Add(p);
                 }
             }
+        }
+
+        private IEnumerable<ThemeRawProperty> EnumPropertyValues(
+            IThemeData theme, int partId, int stateId, int propId)
+        {
+            var name = ((TMT)propId).ToString();
+            var origin = theme.GetThemePropertyOrigin(partId, stateId, propId);
+            var type = ThemeInfo.GetPropertyType((TMT)propId);
+
+            object value = null;
+            switch (type) {
+                case ThemePropertyType.Enum:
+                    value = theme.GetThemeEnumValue(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.String:
+                    value = theme.GetThemeString(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Int:
+                    value = theme.GetThemeInt(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Bool:
+                    value = theme.GetThemeBool(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Color:
+                    value = theme.GetThemeColor(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Margins:
+                    value = theme.GetThemeMargins(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Filename:
+                    value = theme.GetThemeFilename(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Size:
+                    var partSize1 = theme.GetThemePartSize(partId, stateId, ThemeSize.Min);
+                    var partSize2 = theme.GetThemePartSize(partId, stateId, ThemeSize.True);
+                    var partSize3 = theme.GetThemePartSize(partId, stateId, ThemeSize.Draw);
+                    if (partSize1 != null)
+                        yield return new ThemeRawProperty(propId, $"{name} (Min)", type, origin, partSize1);
+                    if (partSize2 != null)
+                        yield return new ThemeRawProperty(propId, $"{name} (True)", type, origin, partSize2);
+                    if (partSize3 != null)
+                        yield return new ThemeRawProperty(propId, $"{name} (Draw)", type, origin, partSize3);
+                    break;
+                case ThemePropertyType.Position:
+                    value = theme.GetThemePosition(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Rect:
+                    value = theme.GetThemeRect(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.Font:
+                    value = theme.GetThemeFont(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.IntList:
+                    value = theme.GetThemeIntList(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.HBitmap:
+                    var hbmp = theme.GetThemeBitmap(partId, stateId, propId);
+                    if (hbmp != null) {
+                        var source = Imaging.CreateBitmapSourceFromHBitmap(
+                            hbmp.Value, IntPtr.Zero, Int32Rect.Empty,
+                            BitmapSizeOptions.FromEmptyOptions());
+                        source.Freeze();
+                        value = source;
+                    }
+                    break;
+                case ThemePropertyType.DiskStream:
+                    value = theme.GetThemeStream(partId, stateId, propId, SafeModuleHandle.Zero);
+                    break;
+                case ThemePropertyType.Stream:
+                    value = theme.GetThemeStream(partId, stateId, propId, SafeModuleHandle.Zero);
+                    break;
+                case ThemePropertyType.BitmapRef:
+                    value = theme.GetThemeBitmap(partId, stateId, propId);
+                    break;
+                case ThemePropertyType.None:
+                    break;
+                default:
+                    value =
+                        theme.GetThemeEnumValue(partId, stateId, propId) ??
+                        theme.GetThemeString(partId, stateId, propId) ??
+                        theme.GetThemeInt(partId, stateId, propId) ??
+                        theme.GetThemeBool(partId, stateId, propId) ??
+                        theme.GetThemeColor(partId, stateId, propId) ??
+                        theme.GetThemeMargins(partId, stateId, propId) ??
+                        theme.GetThemeFilename(partId, stateId, propId) ??
+                        theme.GetThemePosition(partId, stateId, propId) ??
+                        theme.GetThemeRect(partId, stateId, propId) ??
+                        theme.GetThemeFont(partId, stateId, propId) ??
+                        theme.GetThemeIntList(partId, stateId, propId) ??
+                        theme.GetThemeBitmapAsImageSource(partId, stateId, propId) ??
+                        theme.GetThemeStream(partId, stateId, propId, SafeModuleHandle.Zero) ??
+                        (object)$"<Unhandled Property Type '{type}'>";
+                    break;
+            }
+
+            if (value != null)
+                yield return new ThemeRawProperty(
+                    propId, name, type, origin, value);
         }
 
         private IEnumerable<Tuple<int, string>> EnumThemeProperties()
@@ -507,7 +535,7 @@
             }
         }
 
-        public void LoadTransitions(ThemeData theme, int partId, IReadOnlyList<ThemeStateViewModel> states)
+        public void LoadTransitions(IThemeData theme, int partId, IReadOnlyList<ThemeStateViewModel> states)
         {
             var durations = new List<TransitionDuration>();
 
@@ -588,5 +616,22 @@
         public ThemePropertyType Type { get; }
         public PropertyOrigin Origin { get; }
         public object Value { get; }
+    }
+
+    public static class ThemeDataExtensions
+    {
+        public static ImageSource GetThemeBitmapAsImageSource(
+            this IThemeData themeData, int partId, int stateId, int propertyId)
+        {
+            var hbmp = themeData.GetThemeBitmap(partId, stateId, propertyId);
+            if (hbmp == null)
+                return null;
+
+            var source = Imaging.CreateBitmapSourceFromHBitmap(
+                hbmp.Value, IntPtr.Zero, Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+            source.Freeze();
+            return source;
+        }
     }
 }

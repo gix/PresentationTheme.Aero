@@ -550,32 +550,48 @@ namespace StyleCore
                 case TMT.NAME:
                     return ThemePropertyType.String;
 
-
-                case TMT.RESERVEDLOW:
-                case TMT.RESERVEDHIGH:
                 case TMT.ENUM:
+                    return ThemePropertyType.Enum;
                 case TMT.STRING:
+                    return ThemePropertyType.String;
                 case TMT.INT:
+                    return ThemePropertyType.Int;
                 case TMT.BOOL:
+                    return ThemePropertyType.Bool;
                 case TMT.COLOR:
+                    return ThemePropertyType.Color;
                 case TMT.MARGINS:
+                    return ThemePropertyType.Margins;
                 case TMT.FILENAME:
+                    return ThemePropertyType.Filename;
                 case TMT.SIZE:
+                    return ThemePropertyType.Size;
                 case TMT.POSITION:
+                    return ThemePropertyType.Position;
                 case TMT.RECT:
+                    return ThemePropertyType.Rect;
                 case TMT.FONT:
+                    return ThemePropertyType.Font;
                 case TMT.INTLIST:
+                    return ThemePropertyType.IntList;
                 case TMT.HBITMAP:
+                    return ThemePropertyType.HBitmap;
                 case TMT.DISKSTREAM:
+                    return ThemePropertyType.DiskStream;
                 case TMT.STREAM:
+                    return ThemePropertyType.Stream;
                 case TMT.BITMAPREF:
+                    return ThemePropertyType.BitmapRef;
                 case TMT.FLOAT:
+                    return ThemePropertyType.Float;
                 case TMT.FLOATLIST:
-                    return ThemePropertyType.Unknown;
+                    return ThemePropertyType.FloatList;
 
                 case TMT.HCCOLOR:
                     return ThemePropertyType.Int;
 
+                case TMT.RESERVEDLOW:
+                case TMT.RESERVEDHIGH:
                 default:
                     return ThemePropertyType.None;
             }

@@ -87,6 +87,7 @@
     <Compile Include="HighContrastColor.cs" />
     <Compile Include="ImageColorPickerBehavior.cs" />
     <Compile Include="Extensions\ImagingUtils.cs" />
+    <Compile Include="IThemeData.cs" />
     <Compile Include="NamedItemContainer.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PreviewImageDialog.xaml.cs">
@@ -104,6 +105,7 @@
     <Compile Include="DoubleMultiplyConverter.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="ThemePropertyViewModel.cs" />
+    <Compile Include="UxThemeExData.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

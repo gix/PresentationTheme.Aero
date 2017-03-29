@@ -52,7 +52,7 @@ namespace StyleCore.Native
 
         /// <summary>The system cannot find the file specified.</summary>
         /// <native>DRM_E_WIN32_FILE_NOT_FOUND</native>
-        DRM_E_WIN32_FILE_NOT_FOUND = unchecked((int)0x80070002),
+        FileNotFound = unchecked((int)0x80070002),
 
         /// <summary>General access denied error.</summary>
         /// <native>E_ACCESSDENIED</native>

@@ -1,7 +1,6 @@
 ﻿namespace ThemePreviewer.Samples
 {
     using System;
-    using System.Diagnostics;
     using System.Drawing;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
@@ -19,7 +18,6 @@
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            return;
 
             var button = VisualStyleElement.Button.PushButton.Normal;
 

@@ -9,12 +9,13 @@
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Markup;
     using System.Windows.Media;
     using System.Xml;
     using PresentationTheme.Aero.Win10;
-    using StyleCore;
+    using StyleCore.Native;
 
     public partial class App
     {
@@ -59,21 +60,25 @@
 
             uxThemeOverride = new UxThemeOverride();
 
-            uxThemeOverride.SetTheme(ThemeFileLoader.LoadTheme(@"C:\Users\nrieck\dev\PresentationTheme.Aero\Data\6.3.9600.16384\aero.msstyles"));
+            OverrideNativeTheme(
+                @"C:\Users\nrieck\dev\PresentationTheme.Aero\Data\10.0.14393.0\aerolite.msstyles")
+                .Forget();
         }
 
-        public bool OverrideNativeTheme(string path)
+        public async Task<bool> OverrideNativeTheme(string path)
         {
-            ThemeFile theme = null;
-            if (path != null) {
-                try {
-                    theme = ThemeFileLoader.LoadTheme(path);
-                } catch {
-                    return false;
+            try {
+                if (path != null) {
+                    var theme = await Task.Run(() => UxThemeOverride.LoadTheme(path));
+                    uxThemeOverride.SetTheme(theme);
+                } else {
+                    uxThemeOverride.SetTheme(SafeThemeFileHandle.Zero);
                 }
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                return false;
             }
 
-            uxThemeOverride.SetTheme(theme);
             ThemeUtils.SendThemeChangedProcessLocal();
             return true;
         }
@@ -184,6 +189,13 @@
         public void UntrackElement(FrameworkElement element)
         {
             trackedElements.Remove(element);
+        }
+    }
+
+    public static class TaskExtensions
+    {
+        public static void Forget(this Task task)
+        {
         }
     }
 

@@ -1,17 +1,20 @@
 ﻿namespace ThemePreviewer
 {
     using System;
-    using System.Diagnostics;
+    using StyleCore.Native;
 
     public static class ThemeUtils
     {
+        public static void SendThemeChangedGlobal()
+        {
+            NativeMethods.PostMessage(
+                NativeMethods.HWND_BROADCAST, NativeMethods.WM_THEMECHANGED,
+                IntPtr.Zero, IntPtr.Zero);
+        }
+
         public static void SendThemeChangedProcessLocal()
         {
             foreach (var hwnd in NativeMethods.EnumerateProcessWindows()) {
-                Debug.WriteLine(
-                    "ThemeChanged: 0x{0:X8} ({1})",
-                    hwnd.ToInt64(), NativeMethods.GetClassName(hwnd));
-
                 NativeMethods.PostMessage(
                     hwnd, NativeMethods.WM_THEMECHANGED, IntPtr.Zero, IntPtr.Zero);
 

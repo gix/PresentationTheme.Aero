@@ -29,18 +29,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
-            this.menuItem23 = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.menuItem10 = new System.Windows.Forms.MenuItem();
-            this.menuItem56 = new System.Windows.Forms.MenuItem();
-            this.menuItem57 = new System.Windows.Forms.MenuItem();
-            this.menuItem58 = new System.Windows.Forms.MenuItem();
-            this.menuItem65 = new System.Windows.Forms.MenuItem();
-            this.menuItem66 = new System.Windows.Forms.MenuItem();
-            this.menuItem67 = new System.Windows.Forms.MenuItem();
-            this.menuItem68 = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
-            this.menuItem17 = new System.Windows.Forms.MenuItem();
             this.menuItem24 = new System.Windows.Forms.MenuItem();
             this.menuItem25 = new System.Windows.Forms.MenuItem();
             this.menuItem26 = new System.Windows.Forms.MenuItem();
@@ -48,10 +38,18 @@
             this.menuItem40 = new System.Windows.Forms.MenuItem();
             this.menuItem41 = new System.Windows.Forms.MenuItem();
             this.menuItem42 = new System.Windows.Forms.MenuItem();
+            this.menuItem17 = new System.Windows.Forms.MenuItem();
             this.menuItem43 = new System.Windows.Forms.MenuItem();
             this.menuItem44 = new System.Windows.Forms.MenuItem();
             this.menuItem45 = new System.Windows.Forms.MenuItem();
             this.menuItem46 = new System.Windows.Forms.MenuItem();
+            this.menuItem56 = new System.Windows.Forms.MenuItem();
+            this.menuItem58 = new System.Windows.Forms.MenuItem();
+            this.menuItem57 = new System.Windows.Forms.MenuItem();
+            this.menuItem65 = new System.Windows.Forms.MenuItem();
+            this.menuItem66 = new System.Windows.Forms.MenuItem();
+            this.menuItem67 = new System.Windows.Forms.MenuItem();
+            this.menuItem68 = new System.Windows.Forms.MenuItem();
             this.menuItem59 = new System.Windows.Forms.MenuItem();
             this.menuItem60 = new System.Windows.Forms.MenuItem();
             this.menuItem61 = new System.Windows.Forms.MenuItem();
@@ -94,12 +92,14 @@
             this.menuItem90 = new System.Windows.Forms.MenuItem();
             this.menuItem91 = new System.Windows.Forms.MenuItem();
             this.menuItem93 = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.menuItem21 = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.menuItem95 = new System.Windows.Forms.MenuItem();
             this.menuItem92 = new System.Windows.Forms.MenuItem();
+            this.menuItem23 = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
@@ -135,18 +135,13 @@
             this.menuItem9,
             this.menuItem11});
             // 
-            // menuItem23
-            // 
-            this.menuItem23.Index = 0;
-            this.menuItem23.Text = "&Normal";
-            // 
             // menuItem1
             // 
             this.menuItem1.Index = 1;
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem10,
-            this.menuItem56,
             this.menuItem7,
+            this.menuItem56,
             this.menuItem59,
             this.menuItem2,
             this.menuItem70,
@@ -159,60 +154,9 @@
             this.menuItem95});
             this.menuItem1.Text = "&Header";
             // 
-            // menuItem10
-            // 
-            this.menuItem10.Index = 0;
-            this.menuItem10.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
-            this.menuItem10.Text = "&Normal";
-            // 
-            // menuItem56
-            // 
-            this.menuItem56.Index = 1;
-            this.menuItem56.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem57,
-            this.menuItem58,
-            this.menuItem65,
-            this.menuItem66,
-            this.menuItem67,
-            this.menuItem68});
-            this.menuItem56.Text = "&Header";
-            // 
-            // menuItem57
-            // 
-            this.menuItem57.Index = 0;
-            this.menuItem57.Text = "&Normal";
-            // 
-            // menuItem58
-            // 
-            this.menuItem58.Index = 1;
-            this.menuItem58.Text = "&Header";
-            // 
-            // menuItem65
-            // 
-            this.menuItem65.Checked = true;
-            this.menuItem65.Index = 2;
-            this.menuItem65.Text = "&Checked";
-            // 
-            // menuItem66
-            // 
-            this.menuItem66.Checked = true;
-            this.menuItem66.Index = 3;
-            this.menuItem66.Text = "&Radio";
-            // 
-            // menuItem67
-            // 
-            this.menuItem67.Index = 4;
-            this.menuItem67.Text = "-";
-            // 
-            // menuItem68
-            // 
-            this.menuItem68.Enabled = false;
-            this.menuItem68.Index = 5;
-            this.menuItem68.Text = "Disabled";
-            // 
             // menuItem7
             // 
-            this.menuItem7.Index = 2;
+            this.menuItem7.Index = 1;
             this.menuItem7.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem17,
             this.menuItem24,
@@ -221,11 +165,6 @@
             this.menuItem45,
             this.menuItem46});
             this.menuItem7.Text = "&Header";
-            // 
-            // menuItem17
-            // 
-            this.menuItem17.Index = 0;
-            this.menuItem17.Text = "&Normal";
             // 
             // menuItem24
             // 
@@ -272,6 +211,11 @@
             this.menuItem42.Index = 5;
             this.menuItem42.Text = "Disabled";
             // 
+            // menuItem17
+            // 
+            this.menuItem17.Index = 0;
+            this.menuItem17.Text = "&Normal";
+            // 
             // menuItem43
             // 
             this.menuItem43.Checked = true;
@@ -294,6 +238,51 @@
             this.menuItem46.Enabled = false;
             this.menuItem46.Index = 5;
             this.menuItem46.Text = "Disabled";
+            // 
+            // menuItem56
+            // 
+            this.menuItem56.Index = 2;
+            this.menuItem56.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem57,
+            this.menuItem58,
+            this.menuItem65,
+            this.menuItem66,
+            this.menuItem67,
+            this.menuItem68});
+            this.menuItem56.Text = "&Header";
+            // 
+            // menuItem58
+            // 
+            this.menuItem58.Index = 1;
+            this.menuItem58.Text = "&Header";
+            // 
+            // menuItem57
+            // 
+            this.menuItem57.Index = 0;
+            this.menuItem57.Text = "&Normal";
+            // 
+            // menuItem65
+            // 
+            this.menuItem65.Checked = true;
+            this.menuItem65.Index = 2;
+            this.menuItem65.Text = "&Checked";
+            // 
+            // menuItem66
+            // 
+            this.menuItem66.Checked = true;
+            this.menuItem66.Index = 3;
+            this.menuItem66.Text = "&Radio";
+            // 
+            // menuItem67
+            // 
+            this.menuItem67.Index = 4;
+            this.menuItem67.Text = "-";
+            // 
+            // menuItem68
+            // 
+            this.menuItem68.Enabled = false;
+            this.menuItem68.Index = 5;
+            this.menuItem68.Text = "Disabled";
             // 
             // menuItem59
             // 
@@ -571,6 +560,12 @@
             this.menuItem93.Index = 1;
             this.menuItem93.Text = "";
             // 
+            // menuItem10
+            // 
+            this.menuItem10.Index = 0;
+            this.menuItem10.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
+            this.menuItem10.Text = "&Normal";
+            // 
             // menuItem4
             // 
             this.menuItem4.Checked = true;
@@ -607,6 +602,11 @@
             // 
             this.menuItem92.Index = 0;
             this.menuItem92.Text = "Normal";
+            // 
+            // menuItem23
+            // 
+            this.menuItem23.Index = 0;
+            this.menuItem23.Text = "&Normal";
             // 
             // menuItem8
             // 
@@ -766,7 +766,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(338, 200);
+            this.ClientSize = new System.Drawing.Size(338, 160);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Menu = this.mainMenu1;

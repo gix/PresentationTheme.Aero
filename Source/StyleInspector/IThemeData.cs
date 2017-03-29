@@ -1,0 +1,34 @@
+namespace StyleInspector
+{
+    using System;
+    using System.IO;
+    using System.Windows.Media;
+    using StyleCore.Native;
+
+    public interface IThemeData : IDisposable
+    {
+        bool IsValid { get; }
+        bool? GetThemeBool(int partId, int stateId, int propertyId);
+        Color? GetThemeColor(int partId, int stateId, int propertyId);
+        int? GetThemeEnumValue(int partId, int stateId, int propertyId);
+        string GetThemeFilename(int partId, int stateId, int propertyId);
+        LOGFONT GetThemeFont(int partId, int stateId, int propertyId);
+        IntPtr? GetThemeBitmap(int partId, int stateId, int propertyId);
+        int? GetThemeInt(int partId, int stateId, int propertyId);
+        int? GetThemeMetric(int partId, int stateId, int propertyId);
+        INTLIST GetThemeIntList(int partId, int stateId, int propertyId);
+        MARGINS? GetThemeMargins(int partId, int stateId, int propertyId);
+        POINT? GetThemePosition(int partId, int stateId, int propertyId);
+        RECT? GetThemeRect(int partId, int stateId, int propertyId);
+        SIZE? GetThemePartSize(int partId, int stateId, ThemeSize themeSize);
+        Stream GetThemeStream(int partId, int stateId, int propertyId, SafeModuleHandle instance);
+        string GetThemeString(int partId, int stateId, int propertyId);
+        HResult GetThemeTransitionDuration(int partId, int stateFrom, int stateTo, int propertyId, out uint duration);
+        PropertyOrigin GetThemePropertyOrigin(int partId, int stateId, int propertyId);
+        bool GetThemeSysBool(int propertyId);
+        Color GetThemeSysColor(int propertyId);
+        LOGFONT GetThemeSysFont(int propertyId);
+        int? GetThemeSysInt(int propertyId);
+        string GetThemeSysString(int propertyId);
+    }
+}

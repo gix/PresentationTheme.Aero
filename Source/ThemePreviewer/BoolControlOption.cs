@@ -35,8 +35,6 @@ namespace ThemePreviewer
             TValue trueValue,
             TValue falseValue)
         {
-            name = name.Replace("_", "__");
-
             var property = typeof(T).GetProperty(((MemberExpression)propertyExpression.Body).Member.Name);
             if (property == null)
                 throw new ArgumentException("propertyName");
@@ -55,8 +53,6 @@ namespace ThemePreviewer
             T[] controls, string name, Expression<Func<T, bool>> propertyExpression,
             bool negated = false)
         {
-            name = name.Replace("_", "__");
-
             var property = propertyExpression.TryGetProperty();
             if (property == null)
                 throw new ArgumentException("propertyName");

@@ -66,6 +66,9 @@ namespace StyleCore
 
             themeFile.VariantMap = vmap;
             themeFile.ClassNames = classNames;
+            SafeThemeFileHandle themeFileHandle;
+            UxThemeExNativeMethods.UxOpenThemeFile(filePath, out themeFileHandle).ThrowIfFailed();
+            themeFile.NativeThemeFile = themeFileHandle;
 
             ReadProperties(themeFile, "RMAP", "RMAP");
             ReadProperties(themeFile, "VARIANT", vmap.Name);
@@ -311,6 +314,7 @@ namespace StyleCore
                     case TPID.BITMAPIMAGE7:
                     case TPID.STOCKBITMAPIMAGE:
                     case TPID.GLYPHIMAGE:
+                    case TPID.COMPOSEDIMAGETYPE:
                         return LoadImageFileRes(theme.Theme, record.ResId, out value);
                     // TPID_ATLASIMAGE
                     // TPID_ATLASINPUTIMAGE
@@ -549,7 +553,14 @@ namespace StyleCore
                 property == TMT.IMAGEFILE4 ||
                 property == TMT.IMAGEFILE5 ||
                 property == TMT.IMAGEFILE6 ||
-                property == TMT.IMAGEFILE7;
+                property == TMT.IMAGEFILE7 ||
+                property == TMT.COMPOSEDIMAGEFILE1 ||
+                property == TMT.COMPOSEDIMAGEFILE2 ||
+                property == TMT.COMPOSEDIMAGEFILE3 ||
+                property == TMT.COMPOSEDIMAGEFILE4 ||
+                property == TMT.COMPOSEDIMAGEFILE5 ||
+                property == TMT.COMPOSEDIMAGEFILE6 ||
+                property == TMT.COMPOSEDIMAGEFILE7;
         }
 
         private bool TryParseRectSpec(string spec, out RECT rect)
@@ -670,6 +681,7 @@ namespace StyleCore
         private readonly List<ThemeClass> classes = new List<ThemeClass>();
         private ThemeClass globals;
         private bool globalsSearched;
+        private SafeThemeFileHandle nativeThemeFile;
 
         public ThemeFile(string filePath, SafeModuleHandle style, SafeModuleHandle mui)
         {
@@ -708,6 +720,8 @@ namespace StyleCore
                 return globals?.Properties ?? new ThemeProperty[0];
             }
         }
+
+        public SafeThemeFileHandle NativeThemeFile { get; set; }
 
         public ThemeClass FindClass(string name)
         {
@@ -757,6 +771,7 @@ namespace StyleCore
         {
             Theme.Dispose();
             MUI.Dispose();
+            NativeThemeFile?.Dispose();
         }
 
         public ThemeProperty FindProperty(TMT propertyId)

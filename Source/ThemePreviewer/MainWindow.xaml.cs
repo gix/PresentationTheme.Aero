@@ -9,22 +9,32 @@
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Media;
-    using Microsoft.Win32;
     using PresentationTheme.Aero.Win10;
     using PresentationTheme.Aero.Win7;
     using PresentationTheme.Aero.Win8;
     using Samples;
+    using StyleCore.Native;
+    using Application = System.Windows.Application;
+    using MenuItem = System.Windows.Controls.MenuItem;
+    using MessageBox = System.Windows.MessageBox;
+    using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
     public partial class MainWindow : INotifyPropertyChanged
     {
         private object currentPage;
         private Theme currentTheme;
+        private double scale = 1;
+
+        private string nativeThemeName;
+        private string wpfThemeName;
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
 
+            NativeThemeName = "Native";
+            WpfThemeName = "WPF";
             ChangeThemeCommand = new DelegateCommand<Theme>(t => CurrentTheme = t);
             RestartWithThemeCommand = new DelegateCommand<Theme>(App.Current.RestartWithDifferentTheme);
 
@@ -42,7 +52,6 @@
             UpdateMenu();
 
             Pages = new ObservableCollection<object>();
-            Pages.Add(ControlComparison.Create<TextBoxSampleNative, TextBoxSampleWpf>("TextBox"));
             Pages.Add(ControlComparison.Create<ButtonSampleNative, ButtonSampleWpf>("Button"));
             Pages.Add(ControlComparison.Create<RadioCheckSampleNative, RadioCheckSampleWpf>("Radio/Check"));
             Pages.Add(ControlComparison.Create<MenuSampleNative, MenuSampleWpf>("Menu"));
@@ -57,6 +66,18 @@
             Pages.Add(ControlComparison.Create<TrackbarSampleNative, TrackbarSampleWpf>("Trackbar"));
             Pages.Add(new ColorList());
             CurrentPage = Pages[0];
+        }
+
+        public string NativeThemeName
+        {
+            get => nativeThemeName;
+            set => SetProperty(ref nativeThemeName, value);
+        }
+
+        public string WpfThemeName
+        {
+            get => wpfThemeName;
+            set => SetProperty(ref wpfThemeName, value);
         }
 
         public ICommand ChangeThemeCommand { get; }
@@ -96,8 +117,8 @@
 
             {
                 var item = new MenuItem {
-                    Header = "Send WM__THEMECHANGED",
-                    Command = new DelegateCommand(SendThemeChanged)
+                    Header = "Broadcast theme change",
+                    Command = new DelegateCommand(UxThemeExNativeMethods.UxBroadcastThemeChange)
                 };
                 themeItem.Items.Add(item);
             }
@@ -121,7 +142,7 @@
             if (dialog.ShowDialog(this) != true)
                 return;
 
-            Run(() => App.Current.OverrideNativeTheme(dialog.FileName));
+            Run(async () => await App.Current.OverrideNativeTheme(dialog.FileName));
         }
 
         private void Run(Action action)
@@ -135,29 +156,22 @@
 
         private void RemoveNativeThemeOverride()
         {
-            Run(() => App.Current.OverrideNativeTheme(null));
-        }
-
-        private void SendThemeChanged()
-        {
-            ThemeUtils.SendThemeChangedProcessLocal();
+            Run(async () => await App.Current.OverrideNativeTheme(null));
         }
 
         public ObservableCollection<Theme> Themes { get; }
         public ObservableCollection<object> Pages { get; }
 
-        private double scale = 1;
-
         public double Scale
         {
-            get { return scale; }
-            set { SetProperty(ref scale, Math.Max(1, Math.Min(4, value))); }
+            get => scale;
+            set => SetProperty(ref scale, Math.Max(1, Math.Min(4, value)));
         }
 
         public object CurrentPage
         {
-            get { return currentPage; }
-            set { SetProperty(ref currentPage, value); }
+            get => currentPage;
+            set => SetProperty(ref currentPage, value);
         }
 
         public Theme CurrentTheme
