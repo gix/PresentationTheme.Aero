@@ -67,6 +67,7 @@
 
         public async Task<bool> OverrideNativeTheme(string path)
         {
+            MainWindow.IsEnabled = false;
             try {
                 if (path != null) {
                     var theme = await Task.Run(() => UxThemeOverride.LoadTheme(path));
@@ -74,13 +75,15 @@
                 } else {
                     uxThemeOverride.SetTheme(SafeThemeFileHandle.Zero);
                 }
+
+                ThemeUtils.SendThemeChangedProcessLocal();
+                return true;
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message);
                 return false;
+            } finally {
+                MainWindow.IsEnabled = true;
             }
-
-            ThemeUtils.SendThemeChangedProcessLocal();
-            return true;
         }
 
         private void OnThemeChanged(object sender, EventArgs args)
