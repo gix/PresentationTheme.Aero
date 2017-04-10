@@ -36,7 +36,7 @@ namespace StyleInspector
 
         public ThemeClassViewModel BaseClass
         {
-            get { return baseClass; }
+            get => baseClass;
             set
             {
                 if (baseClass != null)

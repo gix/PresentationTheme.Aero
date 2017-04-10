@@ -28,8 +28,8 @@
 
         public BitmapSource Bitmap
         {
-            get { return (BitmapSource)GetValue(BitmapProperty); }
-            set { SetValue(BitmapProperty, value); }
+            get => (BitmapSource)GetValue(BitmapProperty);
+            set => SetValue(BitmapProperty, value);
         }
 
         public static readonly DependencyProperty SourceBitmapProperty =
@@ -41,8 +41,8 @@
 
         public BitmapSource SourceBitmap
         {
-            get { return (BitmapSource)GetValue(SourceBitmapProperty); }
-            set { SetValue(SourceBitmapProperty, value); }
+            get => (BitmapSource)GetValue(SourceBitmapProperty);
+            set => SetValue(SourceBitmapProperty, value);
         }
 
         public static readonly DependencyProperty DiffBitmapProperty =
@@ -54,8 +54,8 @@
 
         public BitmapSource DiffBitmap
         {
-            get { return (BitmapSource)GetValue(DiffBitmapProperty); }
-            set { SetValue(DiffBitmapProperty, value); }
+            get => (BitmapSource)GetValue(DiffBitmapProperty);
+            set => SetValue(DiffBitmapProperty, value);
         }
 
         /// <summary>
@@ -72,8 +72,8 @@
 
         public BitmapSource TracedBitmap
         {
-            get { return (BitmapSource)GetValue(TracedBitmapProperty); }
-            set { SetValue(TracedBitmapProperty, value); }
+            get => (BitmapSource)GetValue(TracedBitmapProperty);
+            set => SetValue(TracedBitmapProperty, value);
         }
 
         public static readonly DependencyProperty SourceRectProperty =
@@ -88,8 +88,8 @@
 
         public Int32Rect SourceRect
         {
-            get { return (Int32Rect)GetValue(SourceRectProperty); }
-            set { SetValue(SourceRectProperty, value); }
+            get => (Int32Rect)GetValue(SourceRectProperty);
+            set => SetValue(SourceRectProperty, value);
         }
 
         public static readonly DependencyProperty ShowTracedFlagProperty =
@@ -103,8 +103,8 @@
 
         public bool ShowTracedFlag
         {
-            get { return (bool)GetValue(ShowTracedFlagProperty); }
-            set { SetValue(ShowTracedFlagProperty, value); }
+            get => (bool)GetValue(ShowTracedFlagProperty);
+            set => SetValue(ShowTracedFlagProperty, value);
         }
 
         public static readonly DependencyProperty PathGeometryProperty =
@@ -118,8 +118,8 @@
 
         public Geometry PathGeometry
         {
-            get { return (Geometry)GetValue(PathGeometryProperty); }
-            set { SetValue(PathGeometryProperty, value); }
+            get => (Geometry)GetValue(PathGeometryProperty);
+            set => SetValue(PathGeometryProperty, value);
         }
 
         public static readonly DependencyProperty PathMarginProperty =
@@ -133,8 +133,8 @@
 
         public Thickness PathMargin
         {
-            get { return (Thickness)GetValue(PathMarginProperty); }
-            set { SetValue(PathMarginProperty, value); }
+            get => (Thickness)GetValue(PathMarginProperty);
+            set => SetValue(PathMarginProperty, value);
         }
 
         public static readonly DependencyProperty PathDataProperty =
@@ -147,8 +147,8 @@
 
         public string PathData
         {
-            get { return (string)GetValue(PathDataProperty); }
-            set { SetValue(PathDataProperty, value); }
+            get => (string)GetValue(PathDataProperty);
+            set => SetValue(PathDataProperty, value);
         }
 
         public static readonly DependencyProperty PathFillProperty =
@@ -162,8 +162,8 @@
 
         public Brush PathFill
         {
-            get { return (Brush)GetValue(PathFillProperty); }
-            set { SetValue(PathFillProperty, value); }
+            get => (Brush)GetValue(PathFillProperty);
+            set => SetValue(PathFillProperty, value);
         }
 
         public static readonly DependencyProperty PathRenderedDataProperty =
@@ -175,8 +175,8 @@
 
         public string PathRenderedData
         {
-            get { return (string)GetValue(PathRenderedDataProperty); }
-            set { SetValue(PathRenderedDataProperty, value); }
+            get => (string)GetValue(PathRenderedDataProperty);
+            set => SetValue(PathRenderedDataProperty, value);
         }
 
         public static readonly DependencyProperty PathWidenProperty =
@@ -190,8 +190,8 @@
 
         public double PathWiden
         {
-            get { return (double)GetValue(PathWidenProperty); }
-            set { SetValue(PathWidenProperty, value); }
+            get => (double)GetValue(PathWidenProperty);
+            set => SetValue(PathWidenProperty, value);
         }
 
         private readonly Brush pathBorderBrush =

@@ -18,8 +18,8 @@ namespace StyleInspector
 
         public object Data
         {
-            get { return GetValue(DataProperty); }
-            set { SetValue(DataProperty, value); }
+            get => GetValue(DataProperty);
+            set => SetValue(DataProperty, value);
         }
     }
 }

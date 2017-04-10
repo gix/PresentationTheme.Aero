@@ -21,8 +21,8 @@ namespace StyleInspector
 
         public Color? PixelColor
         {
-            get { return (Color?)GetValue(PixelColorProperty); }
-            private set { SetValue(PixelColorPropertyKey, value); }
+            get => (Color?)GetValue(PixelColorProperty);
+            private set => SetValue(PixelColorPropertyKey, value);
         }
 
         protected override void OnAttached()

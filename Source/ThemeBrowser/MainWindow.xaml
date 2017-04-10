@@ -175,7 +175,8 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
-        <MenuItem Header="_Open" Command="{Binding OpenCommand}"/>
+        <MenuItem Header="_Open…" Command="{Binding OpenCommand}"/>
+        <MenuItem Header="_Compare…" Command="{Binding CompareCommand}"/>
         <Separator/>
         <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
       </MenuItem>

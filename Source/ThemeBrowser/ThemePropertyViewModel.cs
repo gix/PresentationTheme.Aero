@@ -126,15 +126,6 @@ namespace StyleInspector
 
         public Bitmap LoadDrawingBitmap()
         {
-            {
-                var src = LoadBitmap();
-                var b = new Bitmap(src.PixelWidth, src.PixelHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                var data = b.LockBits(new Rectangle(Point.Empty, b.Size), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                src.CopyPixels(System.Windows.Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
-                b.UnlockBits(data);
-                return b;
-            }
-
             using (var stream = OpenStream())
                 return new Bitmap(stream);
         }

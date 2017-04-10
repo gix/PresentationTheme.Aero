@@ -32,6 +32,7 @@
         public MainWindowViewModel()
         {
             OpenCommand = new DelegateCommand(Open);
+            CompareCommand = new DelegateCommand(Compare);
             ExitCommand = new DelegateCommand(Exit);
             CopyVisualStatesCommand = new AsyncDelegateCommand<object>(CopyVisualStates);
             SaveImageCommand = new AsyncDelegateCommand<ThemeBitmapViewModel>(OnSaveImage, CanSaveImage);
@@ -295,6 +296,22 @@
             }
         }
 
+        public async void TryLoadAndCompareThemes(string styleFilePath1, string styleFilePath2)
+        {
+            try {
+                var theme1 = await Task.Run(() => LoadTheme(styleFilePath1));
+                var theme2 = await Task.Run(() => LoadTheme(styleFilePath2));
+                ThemeFile?.Dispose();
+                CompareThemes(theme1, theme2);
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Failed to open file");
+            }
+        }
+
+        private void CompareThemes(ThemeFileViewModel theme1, ThemeFileViewModel theme2)
+        {
+        }
+
         private void Open()
         {
             var dialog = new OpenFileDialog();
@@ -304,6 +321,27 @@
                 return;
 
             TryLoadTheme(dialog.FileName);
+        }
+
+        private void Compare()
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Multiselect = false;
+            dialog.Filter = "MSStyles (*.msstyles)|*.msstyles|All Files (*.*)|*.*";
+
+            dialog.Title = "Select First Theme";
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var firstTheme = dialog.FileName;
+
+            dialog.Title = "Select Second Theme";
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var secondTheme = dialog.FileName;
+
+            TryLoadAndCompareThemes(firstTheme, secondTheme);
         }
 
         private ThemeFileViewModel LoadTheme(string styleFilePath)
@@ -318,6 +356,7 @@
         }
 
         public ICommand OpenCommand { get; }
+        public ICommand CompareCommand { get; }
         public ICommand ExitCommand { get; }
         public ICommand CopyVisualStatesCommand { get; }
         public ICommand SaveImageCommand { get; }
@@ -327,20 +366,20 @@
 
         public ThemeFileViewModel ThemeFile
         {
-            get { return themeFile; }
-            set { SetProperty(ref themeFile, value); }
+            get => themeFile;
+            set => SetProperty(ref themeFile, value);
         }
 
         public ObservableCollection<ThemeRawProperty> AllProperties
         {
-            get { return allProperties; }
-            set { SetProperty(ref allProperties, value); }
+            get => allProperties;
+            set => SetProperty(ref allProperties, value);
         }
 
         public List<TransitionDuration> TransitionDurations
         {
-            get { return transitionDurations; }
-            set { SetProperty(ref transitionDurations, value); }
+            get => transitionDurations;
+            set => SetProperty(ref transitionDurations, value);
         }
 
         public object SelectedItem
@@ -369,8 +408,8 @@
 
         public object Content
         {
-            get { return content; }
-            set { SetProperty(ref content, value); }
+            get => content;
+            set => SetProperty(ref content, value);
         }
 
         public class TransitionDuration

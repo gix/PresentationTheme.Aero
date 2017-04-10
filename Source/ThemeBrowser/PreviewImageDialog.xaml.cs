@@ -64,8 +64,8 @@
 
         public object Source
         {
-            get { return (object)GetValue(SourceProperty); }
-            set { SetValue(SourceProperty, value); }
+            get => (object)GetValue(SourceProperty);
+            set => SetValue(SourceProperty, value);
         }
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register("Source", typeof(object), typeof(DataPipe),
@@ -87,8 +87,8 @@
 
         public object Target
         {
-            get { return (object)GetValue(TargetProperty); }
-            set { SetValue(TargetProperty, value); }
+            get => (object)GetValue(TargetProperty);
+            set => SetValue(TargetProperty, value);
         }
         public static readonly DependencyProperty TargetProperty =
             DependencyProperty.Register("Target", typeof(object), typeof(DataPipe),
@@ -133,8 +133,8 @@
 
         public string Message
         {
-            get { return message; }
-            set { SetProperty(ref message, value); }
+            get => message;
+            set => SetProperty(ref message, value);
         }
 
         public Int32Rect SourceRect
@@ -192,8 +192,8 @@
 
         public ImageSource ImageSource
         {
-            get { return imageSource; }
-            set { SetProperty(ref imageSource, value); }
+            get => imageSource;
+            set => SetProperty(ref imageSource, value);
         }
 
         public double ImageWidth
@@ -560,8 +560,8 @@
         /// </summary>
         public ResizeDirection Direction
         {
-            get { return (ResizeDirection)GetValue(DirectionProperty); }
-            set { SetValue(DirectionProperty, value); }
+            get => (ResizeDirection)GetValue(DirectionProperty);
+            set => SetValue(DirectionProperty, value);
         }
 
         private static void OnDirectionChanged(
