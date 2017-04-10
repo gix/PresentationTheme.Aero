@@ -12,6 +12,7 @@
 #include <atlimage.h>
 #include "Handle.h"
 #include "GdiHandles.h"
+#include "DrawHelp.h"
 #undef min
 #undef max
 
@@ -305,7 +306,7 @@ static HBITMAP CreateScaledDDB(HBITMAP hbmp)
     HGDIOBJ v11;
     int v12;
     BITMAP v14;
-    _BITMAPHEADER v15;
+    BITMAPHEADER v15;
 
     v1 = hbmp;
     if (GetObjectW(hbmp, 32, &v14))
@@ -703,7 +704,7 @@ HRESULT CImageFile::SetImageInfo(
         width = bitmap.bmWidth;
         height = bitmap.bmHeight;
     } else {
-        auto bmphdr = (_BITMAPHEADER*)((char*)tmhdr + tmhdr->dwSize);
+        auto bmphdr = (BITMAPHEADER*)((char*)tmhdr + tmhdr->dwSize);
         if (!bmphdr)
             return E_FAIL;
         width = bmphdr->bmih.biWidth;
@@ -822,13 +823,13 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
     CRenderObj* pRender, HDC hdc, RECT const* prc, int fForGlyph, TRUESTRETCHINFO* ptsInfo)
 {
     DIBINFO* dibInfo;
-    signed int v11;
+    int v11;
     DIBINFO* v12;
-    signed int v13;
+    int v13;
     int v14;
     int v15;
-    signed int v17;
-    signed int v18;
+    int v17;
+    int v18;
     int v23;
     int v24;
     int v25;
@@ -1045,7 +1046,7 @@ HRESULT CImageFile::DrawImageInfo(
     unsigned v13;
     int width;
     int height;
-    signed int v21;
+    int v21;
     float xMarginFactor;
     float yMarginFactor;
     int fStock;
@@ -1219,7 +1220,7 @@ HBITMAP CBitmapCache::AcquireBitmap(HDC hdc, int iWidth, int iHeight)
             _iHeight = 0;
         }
 
-        _BITMAPHEADER bmpInfo;
+        BITMAPHEADER bmpInfo;
         bmpInfo.bmih.biSizeImage = 0;
         bmpInfo.bmih.biXPelsPerMeter = 0;
         bmpInfo.bmih.biYPelsPerMeter = 0;
@@ -1357,13 +1358,12 @@ HRESULT CImageFile::DrawBackgroundDS(
     int fForceStretch, MARGINS* pmarDest, float xMarginFactor,
     float yMarginFactor, DTBGOPTS const* pOptions)
 {
-    int offsetY;
     HBITMAP v19;
     HRESULT hr;
     int v23;
-    int offsetX;
     HBITMAP v28;
     RECT dstRect;
+    RECT clipRect;
     HBITMAP v52;
     HBITMAP v65;
     HBITMAP v66;
@@ -1376,15 +1376,11 @@ HRESULT CImageFile::DrawBackgroundDS(
     v65 = 0i64;
     v66 = 0i64;
 
-    offsetX = 0;
-    offsetY = 0;
-    if (_eImageLayout == IL_HORIZONTAL) {
-        if (iStateId > 0 && iStateId <= _iImageCount)
-            offsetX = pdi->iSingleWidth * (iStateId - 1);
-    } else {
-        if (iStateId > 0 && iStateId <= _iImageCount)
-            offsetY = pdi->iSingleHeight * (iStateId - 1);
-    }
+    DWORD const flags = pOptions ? pOptions->dwFlags : 0;
+
+    int offsetX;
+    int offsetY;
+    GetOffsets(iStateId, pdi, &offsetX, &offsetY);
 
     if (pThemeBitmapHeader) {
         hr = pRender->ExternalGetBitmap(hdc, pdi->iDibOffset, GBF_DIRECT, &v19);
@@ -1452,7 +1448,7 @@ HRESULT CImageFile::DrawBackgroundDS(
     srcRect.top = offsetY;
     srcRect.bottom = offsetY + unkHeight;
 
-    RECT clipRect = *pRect;
+    clipRect = *pRect;
     if (pRect->left > pRect->right) {
         clipRect.left = pRect->right;
         clipRect.right = pRect->left;
@@ -1461,8 +1457,6 @@ HRESULT CImageFile::DrawBackgroundDS(
         clipRect.top = pRect->bottom;
         clipRect.bottom = pRect->top;
     }
-
-    DWORD const flags = pOptions ? pOptions->dwFlags : 0;
 
     dstRect = clipRect;
     if (flags & DTBG_CLIPRECT)
@@ -1528,6 +1522,215 @@ LABEL_38:
     if (v19) {
         if (!fStock)
             DeleteObject(v19);
+    }
+
+    return hr;
+}
+
+static void FixMarginOverlaps(int szDest, int& pm1, int& pm2)
+{
+    int total = pm1 + pm2;
+    if (total <= szDest || total <= 0)
+        return;
+
+    pm1 = static_cast<int>(((szDest * pm1) / static_cast<float>(total)) + 0.5);
+    pm2 = szDest - pm1;
+}
+
+struct NINEGRIDPOS
+{
+    int xLeft;
+    int xRight;
+    int yTop;
+    int yBottom;
+};
+
+static HRESULT ScaleRectsAndCreateRegion(
+    RGNDATA const* prd, RECT const* prcDest, MARGINS const* pMargins,
+    SIZE const* psizeSrc, HRGN* phrgn)
+{
+    if (!prd)
+        return E_POINTER;
+
+    MARGINS margins = *pMargins;
+    FixMarginOverlaps(prcDest->right - prcDest->left, margins.cxLeftWidth,
+                      margins.cxRightWidth);
+    FixMarginOverlaps(prcDest->bottom - prcDest->top, margins.cyTopHeight,
+                      margins.cyBottomHeight);
+
+    int sizeToAlloc = prd->rdh.nRgnSize + 32;
+    if (sizeToAlloc < 32)
+        return 0x80070216;
+
+    auto dstBuffer = make_unique_nothrow<char[]>(sizeToAlloc);
+    if (!dstBuffer)
+        return E_OUTOFMEMORY;
+
+    auto dstRgnData = reinterpret_cast<RGNDATA*>(dstBuffer.get());
+    dstRgnData->rdh = {};
+    dstRgnData->rdh.dwSize = sizeof(dstRgnData->rdh);
+    dstRgnData->rdh.iType = RDH_RECTANGLES;
+    dstRgnData->rdh.nCount = prd->rdh.nCount;
+    SetRect(&dstRgnData->rdh.rcBound, -1, -1, -1, -1);
+
+    long const v62 = std::max(margins.cxLeftWidth - 1, 0);
+    long const v63 = std::max(margins.cyTopHeight - 1, 0);
+
+    NINEGRIDPOS limit;
+    limit.xLeft = prcDest->left + margins.cxLeftWidth;
+    limit.yTop = prcDest->top + margins.cyTopHeight;
+    limit.xRight = prcDest->right - margins.cxRightWidth;
+    limit.yBottom = prcDest->bottom - margins.cyBottomHeight;
+
+    long xLeftOffset = psizeSrc->cx - margins.cxRightWidth - margins.cxLeftWidth;
+    long yTopOffset = psizeSrc->cy - margins.cyBottomHeight - margins.cyTopHeight;
+    int v61 = limit.xRight - limit.xLeft;
+    int v68 = limit.yBottom - limit.yTop;
+    if (xLeftOffset == 0) {
+        v61 = 0;
+        xLeftOffset = 1;
+    }
+
+    if (!yTopOffset) {
+        v68 = 0;
+        yTopOffset = 1;
+    }
+
+    RECT v41;
+    int v28 = 2 * prd->rdh.nCount;
+    if (v28 > 0) {
+        char const* v30 = &prd->Buffer[prd->rdh.nRgnSize];
+        auto pptSrc = reinterpret_cast<POINT const*>(prd->Buffer);
+        auto pptAlloc = reinterpret_cast<POINT*>(dstRgnData->Buffer);
+
+        for (int i = v28; i; ++pptSrc, ++pptAlloc, ++v30) {
+            auto v310 = *v30;
+            if (v310 == 0) {
+                pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
+                pptAlloc->y = prcDest->top + std::min(v63, pptSrc->y);
+            } else if (v310 == 1) {
+                pptAlloc->x = limit.xLeft + v61 * pptSrc->x / xLeftOffset;
+                pptAlloc->y = prcDest->top + std::min(v63, pptSrc->y);
+            } else if (v310 == 2) {
+                pptAlloc->x = limit.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->y = prcDest->top + std::min(v63, pptSrc->y);
+            } else if (v310 == 3) {
+                pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
+                pptAlloc->y = limit.yTop + v68 * pptSrc->y / yTopOffset;
+            } else if (v310 == 4) {
+                pptAlloc->x = limit.xLeft + v61 * pptSrc->x / xLeftOffset;
+                pptAlloc->y = limit.yTop + v68 * pptSrc->y / yTopOffset;
+            } else if (v310 == 5) {
+                pptAlloc->x = limit.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->y = limit.yTop + v68 * pptSrc->y / yTopOffset;
+            } else if (v310 == 6) {
+                pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
+                pptAlloc->y = limit.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+            } else if (v310 == 7) {
+                pptAlloc->x = limit.xLeft + v61 * pptSrc->x / xLeftOffset;
+                pptAlloc->y = limit.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+            } else if (v310 == 8) {
+                pptAlloc->x = limit.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->y = limit.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+            }
+        }
+    }
+
+    SetRect(&v41, -1, -1, -1, -1);
+    RECT* v27 = (RECT*)dstRgnData->Buffer;
+    for (int i = 0; i < dstRgnData->rdh.nCount; ++i)
+        _InPlaceUnionRect(&v41, &v27[i]);
+
+    dstRgnData->rdh.rcBound = v41;
+
+    HRGN hrgn = ExtCreateRegion(nullptr, sizeToAlloc, dstRgnData);
+    if (!hrgn)
+        return MakeErrorLast();
+
+    *phrgn = hrgn;
+    return S_OK;
+}
+
+HRESULT CImageFile::GetBackgroundRegion(
+    CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect, HRGN* pRegion)
+{
+    HRESULT hr = S_OK;
+    DIBINFO const* pdi = SelectCorrectImageFile(pRender, hdc, pRect, 0, nullptr);
+
+    if (pdi->iRgnListOffset != 0 && pRender->_pbSharableData) {
+        auto rgnListHdr = reinterpret_cast<REGIONLISTHDR*>(&pRender->_pbSharableData[pdi->iRgnListOffset]);
+        int* rgnList = (int*)((char*)rgnListHdr + 8);
+
+        if (iStateId > rgnListHdr->cStates - 1)
+            iStateId = 0;
+
+        if (auto iRgnDataOffset = rgnList[iStateId]) {
+            auto rgnData = (RGNDATA*)(&pRender->_pbSharableData[iRgnDataOffset] + sizeof(ENTRYHDR));
+
+            SIZE sz = {};
+            MARGINS marDest = _SizingMargins;
+            ScaleMargins(&marDest, hdc, pRender, pdi, &sz, nullptr, nullptr);
+
+            SIZE szSrcImage{pdi->iSingleWidth, pdi->iSingleHeight};
+            HRGN hrgn;
+            hr = ScaleRectsAndCreateRegion(rgnData, pRect, &marDest, &szSrcImage, &hrgn);
+            if (SUCCEEDED(hr))
+                *pRegion = hrgn;
+            return hr;
+        }
+    }
+
+    HRGN hrgn = CreateRectRgn(pRect->left, pRect->top, pRect->right, pRect->bottom);
+    if (!hrgn)
+        return MakeErrorLast();
+
+    *pRegion = hrgn;
+    return hr;
+}
+
+HRESULT CImageFile::HitTestBackground(
+    CRenderObj* pRender, HDC hdc, int iStateId, DWORD dwHTFlags,
+    RECT const* pRect, HRGN hrgn, POINT ptTest, WORD* pwHitCode)
+{
+    *pwHitCode = 0;
+    if (!PtInRect(pRect, ptTest))
+        return S_OK;
+
+    HRESULT hr = S_OK;
+
+    GdiRegionHandle hrgnBk;
+    if (!hrgn && _ImageInfo.fPartiallyTransparent) {
+        hr = GetBackgroundRegion(pRender, hdc, iStateId, pRect, hrgnBk.CloseAndGetAddressOf());
+        if (hr >= 0)
+            hrgn = hrgnBk;
+    }
+
+    MARGINS margins = {};
+    if (dwHTFlags & HTTB_SYSTEMSIZINGMARGINS && dwHTFlags & HTTB_RESIZINGBORDER
+        && !(dwHTFlags & HTTB_SIZINGTEMPLATE)) {
+        int cxBorder = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+        if (dwHTFlags & HTTB_RESIZINGBORDER_LEFT)
+            margins.cxLeftWidth = cxBorder;
+        if (dwHTFlags & HTTB_RESIZINGBORDER_RIGHT)
+            margins.cxRightWidth = cxBorder;
+        if (dwHTFlags & HTTB_RESIZINGBORDER_TOP)
+            margins.cyTopHeight = cxBorder;
+        if (dwHTFlags & HTTB_RESIZINGBORDER_BOTTOM)
+            margins.cyBottomHeight = cxBorder;
+    } else {
+        ENSURE_HR(GetScaledContentMargins(pRender, hdc, pRect, &margins));
+    }
+
+    if (hrgn) {
+        RECT rgnBox;
+        if (!GetRgnBox(hrgn, &rgnBox))
+            return hr;
+        if (dwHTFlags & HTTB_SIZINGTEMPLATE)
+            *pwHitCode = HitTestTemplate(dwHTFlags, &rgnBox, hrgn, &margins, &ptTest);
+        else
+            *pwHitCode = HitTestRect(dwHTFlags, &rgnBox, &margins, &ptTest);
+    } else {
+        *pwHitCode = HitTestRect(dwHTFlags, pRect, &margins, &ptTest);
     }
 
     return hr;

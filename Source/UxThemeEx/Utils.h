@@ -6,6 +6,12 @@
 namespace uxtheme
 {
 
+template<typename T, typename U>
+constexpr T narrow_cast(U&& u) noexcept
+{
+    return static_cast<T>(std::forward<U>(u));
+}
+
 namespace details
 {
 template<typename T>
@@ -145,7 +151,7 @@ static T AlignTo(T value, T alignment)
 long TraceHResult(long hresult, char const* file = nullptr,
     int lineNumber = 0, char const* function = nullptr);
 
-inline DWORD MakeErrorLast()
+inline HRESULT MakeErrorLast()
 {
     DWORD ec = GetLastError();
     if (ec)

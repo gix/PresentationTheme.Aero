@@ -23,7 +23,7 @@ THEMEEXAPI_(HTHEME) UxOpenThemeData(
     _In_opt_ HWND hwnd,
     _In_ LPCWSTR pszClassList);
 
-THEMEAPI_(HTHEME) UxOpenThemeDataEx(
+THEMEEXAPI_(HTHEME) UxOpenThemeDataEx(
     _In_ HTHEMEFILE hThemeFile,
     _In_opt_ HWND hwnd,
     _In_ LPCWSTR pszClassList,

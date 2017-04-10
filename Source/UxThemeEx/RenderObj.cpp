@@ -612,8 +612,8 @@ HRESULT CRenderObj::GetPropertyOrigin(
         v15 = *(WORD *)v13;
         if (*(WORD *)v13 == 10)
         {
-            if ((signed int)partId <= 0
-                || (signed int)partId >= *(BYTE *)(v14 + 12)
+            if ((int)partId <= 0
+                || (int)partId >= *(BYTE *)(v14 + 12)
                 || (v17 = *(DWORD *)(v14 + 4 * partId + 16), v17 == -1))
             {
                 v17 = *(DWORD *)(v14 + 16);
@@ -622,8 +622,8 @@ HRESULT CRenderObj::GetPropertyOrigin(
             ptr = &v11[v17];
         } else if (v15 == 11)
         {
-            if ((signed int)stateId <= 0
-                || (signed int)stateId >= *(BYTE *)v14
+            if ((int)stateId <= 0
+                || (int)stateId >= *(BYTE *)v14
                 || (v21 = *(DWORD *)(v14 + 4 * stateId + 8), v21 == -1))
             {
                 v21 = *(DWORD *)(v14 + 8);
@@ -637,7 +637,7 @@ HRESULT CRenderObj::GetPropertyOrigin(
             if (iTarget == -1)
             {
                 v16 = (DWORD)stateId == 0;
-                if ((signed int)stateId > 0)
+                if ((int)stateId > 0)
                 {
                     if (origin == PO_STATE)
                         goto LABEL_23;
@@ -957,7 +957,7 @@ HRESULT CRenderObj::PrepareRegionDataForScaling(
     v12 = v6 - pMargins->cxRightWidth;
     v13 = v7 + pMargins->cyTopHeight;
     v14 = v8 - pMargins->cyBottomHeight;
-    if ((signed int)v11 > 0)
+    if ((int)v11 > 0)
     {
         v15 = v11;
         do

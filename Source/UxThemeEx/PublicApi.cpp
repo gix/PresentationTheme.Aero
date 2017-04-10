@@ -1,3 +1,5 @@
+#include "UxThemeEx.h"
+
 #include "BorderFill.h"
 #include "Global.h"
 #include "RenderList.h"
@@ -5,7 +7,6 @@
 #include "TextDraw.h"
 #include "ThemeLoader.h"
 #include "Utils.h"
-#include "UxThemeEx.h"
 
 #include <map>
 #include <mutex>
@@ -14,14 +15,6 @@
 #include <strsafe.h>
 
 using namespace uxtheme;
-
-#if !defined(BUILD_UXTHEMEEX)
-#define THEMEEXAPI          EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
-#define THEMEEXAPI_(type)   EXTERN_C DECLSPEC_IMPORT type STDAPICALLTYPE
-#else
-#define THEMEEXAPI          STDAPI
-#define THEMEEXAPI_(type)   STDAPI_(type)
-#endif
 
 namespace uxtheme
 {
@@ -182,13 +175,13 @@ static HRESULT _DrawEdge(HDC hdc, RECT const* pDestRect, unsigned uEdge,
     return S_OK;
 }
 
-static wchar_t const pszAppName[] = {0};
+static wchar_t const g_pszAppName[] = {0};
 
 static wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset)
 {
     if (pThemeFile && pThemeFile->_pbSharableData && iOffset > 0)
         return (wchar_t const*)((char*)pThemeFile->_pbSharableData + iOffset);
-    return pszAppName;
+    return g_pszAppName;
 }
 
 static HRESULT MatchThemeClass(
@@ -260,6 +253,16 @@ static ATOM const UnkProp_A912 = 0xA912;
 static ATOM const WindowThemeProp = 0xA914;
 static ATOM const UnkProp_A915 = 0xA915;
 
+static bool GetStringProp(HWND hwnd, ATOM prop, wchar_t* buffer, size_t bufferSize)
+{
+    auto handle = GetPropW(hwnd, reinterpret_cast<LPCWSTR>(prop));
+    if (!handle)
+        return false;
+
+    auto atom = narrow_cast<ATOM>(reinterpret_cast<uintptr_t>(handle));
+    return handle && GetAtomNameW(atom, buffer, bufferSize);
+}
+
 static HRESULT MatchThemeClassList(
     HWND hwnd, wchar_t const* pszClassIdList, CUxThemeFile* pThemeFile,
     int* piOffset, int* piAppNameOffset, int* piClassNameOffset)
@@ -272,11 +275,9 @@ static HRESULT MatchThemeClassList(
 
     wchar_t* pszAppName = nullptr;
     if (hwnd) {
-        auto pv1 = GetPropW(hwnd, (LPCWSTR)SubIdListProp);
-        if (pv1 && GetAtomNameW((ATOM)pv1, subIdListBuffer, 260))
+        if (GetStringProp(hwnd, SubIdListProp, subIdListBuffer, 260))
             pszClassIdList = subIdListBuffer;
-        auto pv2 = GetPropW(hwnd, (LPCWSTR)SubAppNameProp);
-        if (pv2 && GetAtomNameW((ATOM)pv2, appNameBuffer, 260))
+        if (GetStringProp(hwnd, SubAppNameProp, appNameBuffer, 260))
             pszAppName = appNameBuffer;
     }
 
@@ -336,7 +337,7 @@ HTHEME OpenThemeDataExInternal(
     }
 
     if (!pszClassIdList) {
-        SetLastError(E_POINTER);
+        SetLastError((DWORD)E_POINTER);
         return nullptr;
     }
 
@@ -887,7 +888,7 @@ THEMEEXAPI_(BOOL) UxGetThemeSysBool(
     _In_opt_ HTHEME hTheme,
     _In_ int iBoolId)
 {
-    SetLastError(E_NOTIMPL); //FIXME
+    SetLastError((DWORD)E_NOTIMPL); //FIXME
     return FALSE;
 }
 
@@ -896,7 +897,7 @@ THEMEEXAPI_(COLORREF) UxGetThemeSysColor(
     _In_opt_ HTHEME hTheme,
     _In_ int iColorId)
 {
-    SetLastError(E_NOTIMPL); //FIXME
+    SetLastError((DWORD)E_NOTIMPL); //FIXME
     return 0;
 }
 
@@ -905,7 +906,7 @@ THEMEEXAPI_(HBRUSH) UxGetThemeSysColorBrush(
     _In_opt_ HTHEME hTheme,
     _In_ int iColorId)
 {
-    SetLastError(E_NOTIMPL); //FIXME
+    SetLastError((DWORD)E_NOTIMPL); //FIXME
     return nullptr;
 }
 
@@ -983,7 +984,7 @@ THEMEEXAPI_(int) UxGetThemeSysSize(
     _In_opt_ HTHEME hTheme,
     _In_ int iSizeId)
 {
-    SetLastError(E_NOTIMPL); //FIXME
+    SetLastError((DWORD)E_NOTIMPL); //FIXME
     return 0;
 }
 
@@ -1121,9 +1122,34 @@ THEMEEXAPI UxHitTestThemeBackground(
     _In_ POINT ptTest,
     _Out_ WORD* pwHitTestCode)
 {
-    //FIXME
-    return HitTestThemeBackground(hTheme, hdc, iPartId, iStateId, dwOptions,
-                                  pRect, hrgn, ptTest, pwHitTestCode);
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    CDrawBase* partObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+    ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
+
+    if (partObj->_eBgType == BT_BORDERFILL) {
+        auto borderFill = static_cast<CBorderFill*>(partObj);
+        return borderFill->HitTestBackground(
+            renderObj,
+            iStateId,
+            dwOptions,
+            pRect,
+            hrgn,
+            ptTest,
+            pwHitTestCode);
+    } else {
+        auto imageFile = static_cast<CImageFile*>(partObj);
+        return imageFile->HitTestBackground(
+            renderObj,
+            hdc,
+            iStateId,
+            dwOptions,
+            pRect,
+            hrgn,
+            ptTest,
+            pwHitTestCode);
+    }
 }
 
 THEMEEXAPI UxDrawThemeEdge(
@@ -1179,15 +1205,13 @@ static HRESULT DrawThemeIconEx(
     IMAGELISTDRAWPARAMS* pImageListParams = pParams;
 
     if (!pParams) {
-        params.fStyle = 1;
-        params.rgbBk = -1;
-        params.rgbFg = -1;
+        params.fStyle = ILD_TRANSPARENT;
+        params.rgbBk = CLR_NONE;
+        params.rgbFg = CLR_NONE;
         pImageListParams = &params;
         if (!pRect)
             return E_INVALIDARG;
     }
-
-    //ENSURE_HR(EnsureUxCtrlLoaded());
 
     CThemeApiHelper helper;
     CRenderObj* renderObj;
@@ -1263,10 +1287,10 @@ THEMEEXAPI UxDrawThemeIcon(
     params.y = pRect->top;
     params.cy = pRect->bottom - pRect->top;
     params.hdcDst = hdc;
-    params.rgbBk = -1;
-    params.rgbFg = -1;
+    params.rgbBk = CLR_NONE;
+    params.rgbFg = CLR_NONE;
     params.himl = himl;
-    params.fStyle = TRUE;
+    params.fStyle = ILD_TRANSPARENT;
 
     CThemeApiHelper helper;
     ENSURE_HR(DrawThemeIconEx(hThemeFile, hTheme, hdc, iPartId, iStateId, pRect,
@@ -1359,7 +1383,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
     _In_opt_ RECT const* prc)
 {
     HWND hwndParent;
-    signed int v9;
+    int v9;
     HRGN v10;
     HRGN v11;
     int v12;
@@ -1376,10 +1400,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
     int v24;
     int v25;
     DWORD v26;
-    char v27;
-    char v28;
-    char v29;
-    signed int v30;
+    int v30;
     char top;
     int topa;
     UINT flags;
@@ -1448,13 +1469,9 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
             SendMessageW(hwndParent, WM_ERASEBKGND, (WPARAM)hdc, 0i64);
             SendMessageW(hwndParent, WM_PRINTCLIENT, (WPARAM)hdc, 4i64);
             top = 1;
-            if (dwFlags & 4)
-            {
-                v28 = GetBoundsRect(hdc, &rect, 0);
-                v29 = 1;
-                if ((v28 & 3) == 1)
-                    v29 = 0;
-                top = v29;
+            if (dwFlags & 4) {
+                UINT v28 = GetBoundsRect(hdc, &rect, 0);
+                top = (v28 & (DCB_ACCUMULATE | DCB_RESET)) != DCB_RESET;
                 SetBoundsRect(hdc, 0i64, flags);
             }
             SetViewportOrgEx(hdc, point.x, point.y, 0i64);
@@ -1514,9 +1531,8 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
                 --v25;
             }
             Rectangle(hdc, v24, topa, v25, flagsa);
-            v27 = GetBoundsRect(hdc, &rect, 0);
+            v15 = (GetBoundsRect(hdc, &rect, 0) & 3) == 1;
             SetBoundsRect(hdc, 0i64, (UINT)v23);
-            v15 = (v27 & 3) == 1;
             SelectObject(hdc, v38);
             SelectObject(hdc, v22);
             goto LABEL_18;

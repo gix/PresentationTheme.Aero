@@ -76,6 +76,11 @@ struct PARTOBJHDR
     int iStateId;
 };
 
+struct REGIONLISTHDR
+{
+    char cStates;
+};
+
 struct __declspec(align(4)) PARTJUMPTABLEHDR
 {
     int iBaseClassIndex;

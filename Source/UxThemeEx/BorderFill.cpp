@@ -1,6 +1,7 @@
 ﻿#include "BorderFill.h"
 #include "RenderObj.h"
 #include <algorithm>
+#include "DrawHelp.h"
 
 namespace uxtheme
 {
@@ -219,6 +220,14 @@ HRESULT CBorderFill::DrawComplexBackground(
     BOOL fBorder, BOOL fContent, RECT const* pClipRect)
 {
     return E_NOTIMPL;
+}
+
+HRESULT CBorderFill::HitTestBackground(
+    CRenderObj* pRender, int iStateId, DWORD dwHTFlags, RECT const* pRect,
+    HRGN hrgn, POINT ptTest, WORD* pwHitCode)
+{
+    *pwHitCode = HitTestRect(dwHTFlags, pRect, &_ContentMargins, &ptTest);
+    return S_OK;
 }
 
 } // namespace uxtheme

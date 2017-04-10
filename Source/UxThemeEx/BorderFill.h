@@ -23,6 +23,9 @@ struct CBorderFill : CDrawBase
     HRESULT GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect);
     HRESULT DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions);
     HRESULT DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion, BOOL fBorder, BOOL fContent, RECT const* pClipRect);
+    HRESULT HitTestBackground(
+        CRenderObj* pRender, int iStateId, DWORD dwHTFlags, RECT const* pRect,
+        HRGN hrgn, POINT ptTest, WORD* pwHitCode);
 
     int _fNoDraw;
     BORDERTYPE _eBorderType;

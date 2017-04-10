@@ -204,11 +204,11 @@ HRESULT CTextDraw::DrawTextW(
     int iStateId, wchar_t const* pszText, unsigned dwCharCount,
     unsigned dwTextFlags, RECT* pRect, DTTOPTS const* pOptions)
 {
-    signed int isComposited;
+    int isComposited;
     COLORREF oldTextColor;
-    signed int hasChangedTextColor;
+    int hasChangedTextColor;
     POINT shadowOffset;
-    signed int hasShadowType;
+    int hasShadowType;
     HRESULT hr;
     HFONT v26;
     unsigned flags;
@@ -226,7 +226,7 @@ HRESULT CTextDraw::DrawTextW(
     COLORREF crShadow;
     int applyOverlay;
     HPEN hhh;
-    signed int hasCallback;
+    int hasCallback;
     int borderSize;
     COLORREF crBorder;
     HGDIOBJ oldFont;

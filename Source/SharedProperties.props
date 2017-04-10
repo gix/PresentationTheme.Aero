@@ -24,8 +24,8 @@
       <PreprocessorDefinitions>__STDC_WANT_LIB_EXT1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions>_CRT_STDIO_ISO_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <!-- Target Windows 7 -->
-      <PreprocessorDefinitions>_WIN32_WINNT=0x0601;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!-- Target Windows 8 -->
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Windows SDK -->
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Enable C++ standard library features removed in C++17 for boost compat. -->

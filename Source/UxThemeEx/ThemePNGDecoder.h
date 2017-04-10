@@ -12,9 +12,9 @@ public:
     HRESULT _Init();
     HRESULT ConvertToDIB(char const* lpBits, unsigned cbDIB, int* pf32bpp);
 
-    _BITMAPHEADER* GetBitmapHeader()
+    BITMAPHEADER* GetBitmapHeader()
     {
-        return reinterpret_cast<_BITMAPHEADER*>(
+        return reinterpret_cast<BITMAPHEADER*>(
             _stream.GetBuffer(nullptr) + sizeof(BITMAPFILEHEADER));
     }
 

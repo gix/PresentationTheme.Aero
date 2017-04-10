@@ -34,6 +34,10 @@ struct CImageFile : CDrawBase
                              int iStateId, RECT* pRect, int fForceStretch,
                              MARGINS* pmarDest, float xMarginFactor,
                              float yMarginFactor, DTBGOPTS const* pOptions);
+    HRESULT GetBackgroundRegion(CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect, HRGN* pRegion);
+    HRESULT HitTestBackground(CRenderObj* pRender, HDC hdc, int iStateId,
+                              DWORD dwHTFlags, RECT const* pRect, HRGN hrgn,
+                              POINT ptTest, WORD* pwHitCode);
     HRESULT GetBackgroundExtent(CRenderObj* pRender, HDC hdc, RECT const* pContentRect, RECT* pExtentRect);
     void GetOffsets(int iStateId, DIBINFO const* pdi, int* piXOffset, int* piYOffset) const;
     HRESULT BuildRgnData(unsigned* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi, CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen);

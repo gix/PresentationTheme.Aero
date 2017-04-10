@@ -8,6 +8,10 @@
 #include <cassert>
 #include <vssym32.h>
 #include <strsafe.h>
+#include <array>
+
+using std::array;
+using std::nothrow;
 
 namespace uxtheme
 {
@@ -58,7 +62,7 @@ enum VSRESOURCETYPE
     VSRT_STREAM = 3,
 };
 
-struct _VSRESOURCE
+struct VSRESOURCE
 {
     VSRESOURCETYPE type;
     unsigned uResID;
@@ -171,11 +175,11 @@ static wchar_t c_szGlobalsElement[] = L"globals";
 static wchar_t c_szSysmetsElement[] = L"sysmetrics";
 static wchar_t c_szTimingFunctionElement_0[] = L"timingfunction";
 
-static wchar_t const pszAppName[] = L"";
+static wchar_t const g_pszAppName[] = L"";
 
-static _VSRECORD* GetNextVSRecord(_VSRECORD* pRec, int cbBuf, int* pcbPos)
+static VSRECORD* GetNextVSRecord(VSRECORD* pRec, int cbBuf, int* pcbPos)
 {
-    int size = sizeof(_VSRECORD);
+    int size = sizeof(VSRECORD);
     if (!pRec->uResID)
         size += pRec->cbData;
 
@@ -190,13 +194,13 @@ static _VSRECORD* GetNextVSRecord(_VSRECORD* pRec, int cbBuf, int* pcbPos)
 }
 
 static HRESULT _AllocateRecordPlusData(
-    void const * pvData, unsigned cbData, _VSRECORD** ppRecord, int* pcbRecord)
+    void const * pvData, unsigned cbData, VSRECORD** ppRecord, int* pcbRecord)
 {
     *ppRecord = nullptr;
     *pcbRecord = 0;
 
-    auto size = sizeof(_VSRECORD) + cbData;
-    auto record = new(cbData, std::nothrow) _VSRECORD();
+    auto size = sizeof(VSRECORD) + cbData;
+    auto record = new(cbData, std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -375,7 +379,7 @@ static HRESULT _ParseStringToken(
     for (auto c = *ppsz; *c && !wcschr(delim, *c); ++c)
         ++length;
 
-    wchar_t* token = new(std::nothrow) wchar_t[length + 1];
+    auto token = new(std::nothrow) wchar_t[length + 1];
     if (token) {
         StringCchCopyNW(token, length + 1, *ppsz, length);
         *ppszString = token;
@@ -513,23 +517,23 @@ static HRESULT GetResourceOffset(
     if (size == 0)
         return MakeErrorLast();
 
-    *pdwOffset = (uintptr_t)res - (uintptr_t)hInst;
+    *pdwOffset = narrow_cast<unsigned>((uintptr_t)res - (uintptr_t)hInst);
     *pdwBytes = size;
     return S_OK;
 }
 
 static HRESULT AllocImageFileRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return E_ABORT;
 }
 
 static HRESULT AllocImageFileResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) _VSRECORD();
+    auto record = new(std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -541,11 +545,11 @@ static HRESULT AllocImageFileResRecord(
     record->cbData = cbType;
 
     *ppRecord = record;
-    *pcbRecord = sizeof(_VSRECORD);
+    *pcbRecord = sizeof(VSRECORD);
     return S_OK;
 }
 
-static HRESULT LoadImageFileRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadImageFileRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                                 int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -581,7 +585,7 @@ static void DestroyImageFileRes(void* pvData)
 }
 
 static HRESULT AllocEnumRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     int value = *(int*)pszValue;
@@ -589,7 +593,7 @@ static HRESULT AllocEnumRecord(
 }
 
 static HRESULT AllocStringRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     int length = lstrlenW(pszValue);
@@ -597,7 +601,7 @@ static HRESULT AllocStringRecord(
 }
 
 static HRESULT AllocIntRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     int value;
@@ -606,7 +610,7 @@ static HRESULT AllocIntRecord(
 }
 
 static HRESULT AllocAtlasInputImageRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     char pvData[16];
@@ -614,10 +618,10 @@ static HRESULT AllocAtlasInputImageRecord(
 }
 
 static HRESULT AllocAtlasImageResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) _VSRECORD();
+    auto record = new(std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -629,12 +633,12 @@ static HRESULT AllocAtlasImageResRecord(
     record->cbData = 8;
 
     *ppRecord = record;
-    *pcbRecord = sizeof(_VSRECORD);
+    *pcbRecord = sizeof(VSRECORD);
 
     return S_OK;
 }
 
-static HRESULT LoadDiskStreamRes(HMODULE hInst, _VSRECORD* pRecord,
+static HRESULT LoadDiskStreamRes(HMODULE hInst, VSRECORD* pRecord,
                                  void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -653,7 +657,7 @@ static HRESULT LoadDiskStreamRes(HMODULE hInst, _VSRECORD* pRecord,
 }
 
 static HRESULT AllocBoolRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     BOOL value;
@@ -663,7 +667,7 @@ static HRESULT AllocBoolRecord(
 }
 
 static HRESULT AllocRGBRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     int values[3];
@@ -676,59 +680,59 @@ static HRESULT AllocRGBRecord(
 }
 
 static HRESULT AllocRectRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocPositionRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocFontRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocIntlistRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocAnimationRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocFloatRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocFloatListRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocStringResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) _VSRECORD();
+    auto record = new(std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -742,13 +746,13 @@ static HRESULT AllocStringResRecord(
     record->cbData = cbType;
 
     *ppRecord = record;
-    *pcbRecord = sizeof(_VSRECORD);
+    *pcbRecord = sizeof(VSRECORD);
     return S_OK;
 }
 
 static HRESULT AllocFontResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     if (cbType < sizeof(LOGFONTW))
         return E_INVALIDARG;
@@ -765,8 +769,8 @@ static HRESULT AllocFontResRecord(
 }
 
 static HRESULT AllocIntlistResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     int* values;
     int count;
@@ -780,20 +784,20 @@ static HRESULT AllocIntlistResRecord(
                                 pvsr, pEcx);
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord,
+static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord,
                              wchar_t* pszData, int cchData)
 {
     *pszData = 0;
     return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0 ? 0x80070490 : 0;
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                              int* pcbData)
 {
     return LoadStringRes(hInst, pRecord, (wchar_t*)pvData, *pcbData / sizeof(wchar_t));
 }
 
-static HRESULT LoadIntRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadIntRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                           int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -806,7 +810,7 @@ static HRESULT LoadIntRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
     return ParseIntegerToken(&cbuffer, L", ", (int*)pvData);
 }
 
-static HRESULT LoadBoolRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadBoolRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                            int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -817,7 +821,7 @@ static HRESULT LoadBoolRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
     return _ParseBool(buffer, (BOOL*)pvData);
 }
 
-static HRESULT LoadRectRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadRectRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                            int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -839,7 +843,7 @@ static HRESULT LoadRectRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
     return S_OK;
 }
 
-static HRESULT LoadRGBRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadRGBRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -857,20 +861,20 @@ static HRESULT LoadRGBRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* 
 }
 
 static HRESULT AllocStreamResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
 static HRESULT AllocDiskStreamResRecord(
-    wchar_t const* pszValue, _VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, _VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT LoadStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadStreamRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                              int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -890,7 +894,7 @@ static HRESULT LoadStreamRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
     return S_OK;
 }
 
-static HRESULT LoadPositionRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
+static HRESULT LoadPositionRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
                                int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
@@ -910,7 +914,7 @@ static HRESULT LoadPositionRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData,
     return S_OK;
 }
 
-static HRESULT LoadIntlistRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadIntlistRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -922,18 +926,18 @@ static HRESULT LoadIntlistRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, i
     int pcIntegers;
     ENSURE_HR(ParseIntlist(buffer, &integers, &pcIntegers));
 
-    size_t cBytes = 4 * pcIntegers;
+    size_t cBytes = sizeof(int) * pcIntegers;
     if (cBytes > *pcbData)
         cBytes = *pcbData;
 
     memcpy(pvData, integers, cBytes);
-    *pcbData = cBytes;
+    *pcbData = narrow_cast<int>(cBytes);
     delete[] integers;
 
     return S_OK;
 }
 
-static HRESULT LoadFontRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadFontRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData || *pcbData < sizeof(LOGFONTW))
         return E_INVALIDARG;
@@ -946,10 +950,14 @@ static HRESULT LoadFontRes(HMODULE hInst, _VSRECORD* pRecord, void* pvData, int*
 struct PARSETABLE
 {
     THEMEPRIMITIVEID tpi;
-    HRESULT(*pfnAlloc)(const wchar_t *, _VSRECORD **, int, int *, VSERRORCONTEXT *);
-    HRESULT(*pfnAllocRes)(const wchar_t *, _VSRECORD **, int, int *, unsigned, _VSRESOURCE *, VSERRORCONTEXT *);
-    HRESULT(*pfnLoad)(HINSTANCE__ *, _VSRECORD *, void *, int *);
-    void(*pfnUnload)(void *);
+    HRESULT(*pfnAlloc)(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                       int* pcbRecord, VSERRORCONTEXT* pEcx);
+    HRESULT(*pfnAllocRes)(wchar_t const* pszValue, VSRECORD** ppRecord,
+                          int cbType, int* pcbRecord, unsigned uResID,
+                          VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx);
+    HRESULT(*pfnLoad)(HMODULE hInst, VSRECORD* pRecord, void* pvData,
+                      int* pcbData);
+    void(*pfnUnload)(void* pvData);
 };
 
 static PARSETABLE parse_table[34] = {
@@ -1014,46 +1022,36 @@ static HRESULT _TerminateSection(
     return pfnCB->AddIndex(pszApp, pszClass, iPart, iState, iStartOfSection, length);
 }
 
-void _ParseClassName(
+static void _ParseClassName(
     wchar_t const* pszClassSpec, wchar_t* pszAppNameBuf, unsigned cchAppNameBuf,
     wchar_t* pszClassNameBuf, unsigned cchClassNameBuf)
 {
-    wchar_t const* classSpecPtr;
-    wchar_t* v9;
-    unsigned v10;
-    signed __int64 v11;
-
     *pszAppNameBuf = 0;
-    classSpecPtr = pszClassSpec;
-    v9 = pszClassNameBuf;
-    v10 = 0;
-    if (*pszClassSpec)
-    {
-        v11 = 0;
-        do
-        {
-            if (v10 >= 0x103)
-                break;
-            if (58 == *classSpecPtr && 58 == classSpecPtr[1])
-            {
-                StringCchCopyNW(pszAppNameBuf, cchAppNameBuf, pszClassSpec, (signed int)(v11 >> 1));
-                classSpecPtr += 2;
-                v9 = pszClassNameBuf;
-                v11 += 4;
-                v10 = 0;
-            }
-            v11 += 2;
-            *v9 = *classSpecPtr;
-            ++classSpecPtr;
-            ++v9;
-            ++v10;
-        } while (*classSpecPtr);
+    wchar_t* dst = pszClassNameBuf;
+    unsigned v10 = 0;
+    size_t count = 0;
+
+    wchar_t const* src = pszClassSpec;
+    while (*src && v10 < 259) {
+        if (src[0] == L':' && src[1] == L':') {
+            StringCchCopyNW(pszAppNameBuf, cchAppNameBuf, pszClassSpec, count);
+            src += 2;
+            count += 2;
+            dst = pszClassNameBuf;
+            v10 = 0;
+            continue;
+        }
+
+        ++count;
+        *dst++ = *src++;
+        ++v10;
     }
-    *v9 = 0;
+
+    *dst = 0;
 }
 
 static HRESULT LoadVSRecordData(
-    HMODULE hInstVS, _VSRECORD* pRecord, void* pvBuf, int* pcbBuf)
+    HMODULE hInstVS, VSRECORD* pRecord, void* pvBuf, int* pcbBuf)
 {
     if (!pRecord || !pcbBuf)
         return E_INVALIDARG;
@@ -1081,7 +1079,7 @@ static HRESULT LoadVSRecordData(
     }
 }
 
-static void UnloadVSRecordData(_VSRECORD* pRecord, void* pvBuf)
+static void UnloadVSRecordData(VSRECORD* pRecord, void* pvBuf)
 {
     if (pRecord && pvBuf) {
         int id = GetThemePrimitiveID(pRecord->lSymbolVal, pRecord->lType);
@@ -1147,7 +1145,7 @@ static uint8_t PremultiplyChannel(uint8_t channel, uint8_t alpha)
     //         => (z+0x80 + (z+0x80)>>8 ) >> 8
     //         = lround(z/255.0) for z in [0..0xfe02]
     unsigned pre = channel * alpha + 0x80;
-    return (pre + (pre >> 8)) >> 8;
+    return static_cast<uint8_t>((pre + (pre >> 8)) >> 8);
 }
 
 static unsigned PremultiplyColor(unsigned rgba)
@@ -1181,7 +1179,7 @@ static unsigned PremultiplyColor(unsigned rgba, uint8_t alpha)
 
 static unsigned AlphaBlend(unsigned rgbDst, unsigned rgbaSrc)
 {
-    unsigned invSrcAlpha = ~(rgbaSrc >> 24) & 0xFF;
+    uint8_t invSrcAlpha = ~(rgbaSrc >> 24) & 0xFF;
     if (invSrcAlpha == 0)
         return rgbaSrc; // Source is opaque.
 
@@ -1291,48 +1289,35 @@ void Convert24to32BPP(char* pBytes, BITMAPINFOHEADER* pBitmapHdr)
     }
 }
 
-static HRESULT _ReadVSVariant(char* pbVariantList, int cbVariantList, int* pcbPos, wchar_t** ppszName, wchar_t** ppszSize, wchar_t** ppszColor)
+static HRESULT _ReadVSVariant(char* pbVariantList, int cbVariantList, int* pcbPos,
+                              wchar_t** ppszName, wchar_t** ppszSize,
+                              wchar_t** ppszColor)
 {
-    HRESULT v6; // edi@1
-    int v10; // ebp@3
-    wchar_t*** v11; // r14@3
-    unsigned __int64 v12; // rsi@5
-    wchar_t** v13; // r12@6
-    signed __int64 v14; // ax@7
-    wchar_t* v15; // rax@9
-    HRESULT hr; // eax@12
-
-    v6 = 0;
     if (cbVariantList < 4 || *pcbPos >= cbVariantList)
         return STRSAFE_E_END_OF_FILE;
 
-    v10 = 0;
-    v11 = &ppszName;
-    while (1) {
-        if ((unsigned __int64)v10 >= 3)
-            return v6;
-        v12 = *(DWORD *)&pbVariantList[*pcbPos];
-        if (!(DWORD)v12)
-            break;
-        *pcbPos += 4;
-        v13 = *v11;
-        if (*v11)
-        {
-            v14 = 2 * v12;
-            v15 = (wchar_t *)malloc(v14);
-            *v13 = v15;
-            if (!v15)
+    for (wchar_t** ppsz : {ppszName, ppszSize, ppszColor}) {
+        unsigned length;
+        std::memcpy(&length, &pbVariantList[*pcbPos], sizeof(length));
+        if (length == 0)
+            return E_INVALIDARG;
+
+        *pcbPos += sizeof(length);
+
+        if (ppsz) {
+            auto str = new(std::nothrow) wchar_t[length];
+            *ppsz = str;
+            if (!str)
                 return E_OUTOFMEMORY;
-            StringCchCopyNW(v15, (unsigned)v12, (const wchar_t *)&pbVariantList[*pcbPos], (unsigned)(v12 - 1));
+            StringCchCopyNW(str, length, (wchar_t const*)&pbVariantList[*pcbPos], length - 1);
         }
-        ++v10;
-        ++v11;
-        *pcbPos += Align8(2 * v12);
+
+        *pcbPos += Align8(sizeof(wchar_t) * length);
         if (*pcbPos >= cbVariantList)
-            return v6;
+            break;
     }
-    hr = E_INVALIDARG;
-    return hr;
+
+    return S_OK;
 }
 
 HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, int fGlobal, int fIsLiteVisualStyle)
@@ -1403,7 +1388,7 @@ HRESULT CVSUnpack::LoadRootMap(IParserCallBack* pfnCB)
     int classIdx = _FindClass(c_szDocumentationElement);
 
     int pcbPos = 0;
-    for (auto it = static_cast<_VSRECORD*>(buf); it; it = GetNextVSRecord(it, cbBuf, &pcbPos)) {
+    for (auto it = static_cast<VSRECORD*>(buf); it; it = GetNextVSRecord(it, cbBuf, &pcbPos)) {
         if (it->iClass == classIdx)
             ENSURE_HR(_AddVSDataRecord(pfnCB, _hInst, it));
     }
@@ -1425,113 +1410,86 @@ HRESULT CVSUnpack::GetVariantMap(void** ppvVMap, int* pcbVMap)
     return S_OK;
 }
 
-HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant, wchar_t const* pszSizeVariant, void** pvMap, int* pcbMap)
+HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
+                                wchar_t const* pszSizeVariant,
+                                void** pvMap, int* pcbMap)
 {
-    signed int v5; // edi@1
-    signed int v10; // ebx@1
-    int* v11; // r12@6
-    int pcbVMap; // [sp+30h] [bp-30h]@5
-    wchar_t* ppszName; // [sp+38h] [bp-28h]@8
-    wchar_t* v15; // [sp+40h] [bp-20h]@8
-    wchar_t* dst; // [sp+48h] [bp-18h]@8
-    void* ppvVMap; // [sp+50h] [bp-10h]@5
-    int pcbPos; // [sp+98h] [bp+38h]@6
+    if (!pszColorVariant || !*pszColorVariant)
+        return E_INVALIDARG;
+    if (!pszSizeVariant || !*pszSizeVariant)
+        return E_INVALIDARG;
 
-    v5 = 0;
-    v10 = -2147024809;
-    if (pszColorVariant)
-    {
-        if (*pszColorVariant)
-        {
-            if (pszSizeVariant)
-            {
-                if (*pszSizeVariant)
-                {
-                    v10 = GetVariantMap(&ppvVMap, &pcbVMap);
-                    if (v10 >= 0)
-                    {
-                        v11 = pcbMap;
-                        pcbPos = 0;
-                        do
-                        {
-                            if (v10 < 0)
-                                break;
-                            ppszName = 0;
-                            v15 = 0;
-                            dst = 0;
-                            v10 = _ReadVSVariant((char*)ppvVMap, pcbVMap, &pcbPos, &ppszName, &dst, &v15);
-                            if (v10 >= 0)
-                            {
-                                if (!AsciiStrCmpI(dst, pszSizeVariant) && !AsciiStrCmpI(v15, pszColorVariant))
-                                {
-                                    v5 = 1;
-                                    v10 = GetPtrToResource(_hInst, L"VARIANT", ppszName, pvMap, (unsigned *)v11);
-                                }
-                                free(ppszName);
-                                ppszName = 0;
-                                free(v15);
-                                v15 = 0;
-                                free(dst);
-                            }
-                        } while (!v5);
-                        if (!v5)
-                            v10 = -2147024809;
-                    }
-                }
-            }
+    void* vmap;
+    int cbVMap;
+
+    HRESULT hr = GetVariantMap(&vmap, &cbVMap);
+    if (hr < 0)
+        return hr;
+
+    int v5 = 0;
+    int pcbPos = 0;
+    do {
+        if (hr < 0)
+            break;
+        wchar_t* name = nullptr;
+        wchar_t* size = nullptr;
+        wchar_t* color = nullptr;
+        hr = _ReadVSVariant((char*)vmap, cbVMap, &pcbPos, &name, &size, &color);
+        if (hr < 0)
+            continue;
+
+        if (!AsciiStrCmpI(size, pszSizeVariant) && !AsciiStrCmpI(color, pszColorVariant)) {
+            v5 = 1;
+            hr = GetPtrToResource(_hInst, L"VARIANT", name, pvMap, (unsigned*)pcbMap);
         }
-    }
-    return (unsigned)v10;
+
+        delete[] name;
+        delete[] color;
+        delete[] size;
+    } while (!v5);
+
+    if (!v5)
+        return E_INVALIDARG;
+
+    return hr;
 }
 
 HRESULT CVSUnpack::LoadClassDataMap(
     wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB)
 {
-    HRESULT hr = S_OK; // ebx@1
-    signed int currClassId; // er12@2
-    __int32 sysmetsElementId; // eax@2 MAPDST
-    int iStartOfSection; // er15@2
-    _VSRECORD* pRec; // rdi@2
-    bool hasDelayedRecords; // er13@2
-    __int64 isNewClass; // rcx@4
-    unsigned isNewPart; // er8@4
-    bool isNewState; // zf@4
-    int v17; // eax@31
-    int iState; // [sp+30h] [bp-98h]@2
-    bool hasPlateauRecords; // [sp+34h] [bp-94h]@2
-    int iPart; // [sp+38h] [bp-90h]@2
-    bool hasGlobalsSection; // [sp+3Ch] [bp-8Ch]@2
-    bool hasSysmetsSection; // [sp+40h] [bp-88h]@2
-    __int32 globalsElementId; // [sp+44h] [bp-84h]@2
-    int cbBuf; // [sp+48h] [bp-80h]@1
-    void* pvMap; // [sp+58h] [bp-70h]@1
-    int pcbPos; // [sp+60h] [bp-68h]@2
-    wchar_t pszClass[230]; // [sp+70h] [bp-58h]@2
-    wchar_t pszApp[260]; // [sp+248h] [bp+180h]@2
-
+    void* pvMap;
+    int cbBuf;
     ENSURE_HR(GetClassData(pszColor, pszSize, &pvMap, &cbBuf));
 
-    pcbPos = 0;
-    iPart = 0;
-    iState = 0;
-    currClassId = -1;
-    hasGlobalsSection = 0;
-    hasSysmetsSection = 0;
-    globalsElementId = _FindClass(c_szGlobalsElement);
-    sysmetsElementId = _FindClass(c_szSysmetsElement);
-    iStartOfSection = -1;
-    pRec = (_VSRECORD *)pvMap;
-    pszClass[0] = 0;
-    pszApp[0] = 0;
     _pbClassData = pvMap;
     _cbClassData = cbBuf;
-    hasDelayedRecords = 1;
-    hasPlateauRecords = 0;
-    if (pRec) {
+
+    int pcbPos = 0;
+    int globalsElementId = _FindClass(c_szGlobalsElement);
+    int sysmetsElementId = _FindClass(c_szSysmetsElement);
+    int startOfSection = -1;
+
+    bool hasDelayedRecords = true;
+    bool hasPlateauRecords = false;
+    bool hasGlobalsSection = false;
+    bool hasSysmetsSection = false;
+
+    int currClassId = -1;
+    int currPartId = 0;
+    int currStateId = 0;
+
+    wchar_t pszClass[230];
+    wchar_t pszApp[260];
+    pszClass[0] = 0;
+    pszApp[0] = 0;
+
+    HRESULT hr = S_OK;
+
+    if (auto pRec = static_cast<VSRECORD*>(pvMap)) {
         while (hr >= 0) {
-            isNewClass = currClassId != pRec->iClass;
-            isNewPart = iPart != pRec->iPart;
-            isNewState = iState != pRec->iState;
+            bool isNewClass = currClassId != pRec->iClass;
+            bool isNewPart = currPartId != pRec->iPart;
+            bool isNewState = currStateId != pRec->iState;
 
             if (isNewClass || isNewPart || isNewState) {
                 if (hasDelayedRecords)
@@ -1541,8 +1499,9 @@ HRESULT CVSUnpack::LoadClassDataMap(
                 if (hasPlateauRecords)
                     ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
-                if (iStartOfSection >= 0)
-                    ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass, iPart, iState, iStartOfSection));
+                if (startOfSection >= 0)
+                    ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass,
+                                                currPartId, currStateId, startOfSection));
 
                 pszApp[0] = 0;
                 pszClass[0] = 0;
@@ -1551,12 +1510,12 @@ HRESULT CVSUnpack::LoadClassDataMap(
 
                 _ParseClassName(_rgClassNames[pRec->iClass].c_str(), pszApp, 260, pszClass, 230);
 
-                hasDelayedRecords = 0;
-                hasPlateauRecords = 0;
+                hasDelayedRecords = false;
+                hasPlateauRecords = false;
                 if (pRec->iClass == globalsElementId) {
-                    hasGlobalsSection = 1;
+                    hasGlobalsSection = true;
                 } else if (pRec->iClass == sysmetsElementId) {
-                    hasSysmetsSection = 1;
+                    hasSysmetsSection = true;
                 } else {
                     if (!hasGlobalsSection) {
                         hr = _GenerateEmptySection(pfnCB, nullptr, L"globals", 0, 0);
@@ -1572,30 +1531,32 @@ HRESULT CVSUnpack::LoadClassDataMap(
                             return hr;
                     }
 
-                    if (isNewClass && (pRec->iPart || pRec->iState)) {
+                    bool v17;
+                    if (isNewClass && (pRec->iPart != 0 || pRec->iState != 0)) {
                         ENSURE_HR(_GenerateEmptySection(pfnCB, pszApp, pszClass, 0, 0));
-                        v17 = 0;
+                        v17 = true;
                     } else {
-                        v17 = iState;
+                        v17 = currStateId == 0;
                     }
 
-                    if (isNewPart && pRec->iState && !v17)
+                    if (isNewPart && pRec->iState != 0 && v17)
                         ENSURE_HR(_GenerateEmptySection(pfnCB, pszApp, pszClass, pRec->iPart, 0));
                 }
 
                 currClassId = pRec->iClass;
-                iPart = pRec->iPart;
-                iState = pRec->iState;
-                iStartOfSection = pfnCB->GetNextDataIndex();
+                currPartId = pRec->iPart;
+                currStateId = pRec->iState;
+                startOfSection = pfnCB->GetNextDataIndex();
             }
 
             if (_DelayRecord(pRec)) {
                 hr = _SaveRecord(pRec);
-                hasDelayedRecords = 1;
+                hasDelayedRecords = true;
             } else if (pRec->lSymbolVal >= TMT_5131 && pRec->lSymbolVal <= TMT_5142) {
                 hr = _SavePlateauRecord(pRec);
-                hasPlateauRecords = 1;
-            } else if (pRec->iClass == globalsElementId && pRec->lSymbolVal >= 5128 && pRec->lSymbolVal <= 5130)
+                hasPlateauRecords = true;
+            } else if (pRec->iClass == globalsElementId
+                       && pRec->lSymbolVal >= TMT_5128 && pRec->lSymbolVal <= TMT_5130)
                 hr = _InitializePlateauPpiMapping(pRec);
             else
                 hr = _AddVSDataRecord(pfnCB, _hInst, pRec);
@@ -1615,8 +1576,8 @@ HRESULT CVSUnpack::LoadClassDataMap(
     if (hasPlateauRecords)
         ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
-    if (iStartOfSection >= 0)
-        ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass, iPart, iState, iStartOfSection));
+    if (startOfSection >= 0)
+        ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass, currPartId, currStateId, startOfSection));
 
     return hr;
 }
@@ -1664,21 +1625,21 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
     int currPart = 0;
 
     int pos = 0;
-    for (auto pRec = static_cast<_VSRECORD*>(pbBuf); pRec != nullptr;
+    for (auto pRec = static_cast<VSRECORD*>(pbBuf); pRec != nullptr;
          pRec = GetNextVSRecord(pRec, cbBuf, &pos)) {
         if (hr < 0)
             break;
 
         if (currClass != pRec->iClass) {
             currClass = pRec->iClass;
-            hr = _GenerateEmptySection(pfnCB, pszAppName,
+            hr = _GenerateEmptySection(pfnCB, g_pszAppName,
                                        _rgClassNames[pRec->iClass].c_str(), 0, 0);
         }
 
         if (currClass != timingClass && currPart != pRec->iPart) {
             currPart = pRec->iPart;
             hr = _GenerateEmptySection(
-                pfnCB, pszAppName, _rgClassNames[pRec->iClass].c_str(),
+                pfnCB, g_pszAppName, _rgClassNames[pRec->iClass].c_str(),
                 pRec->iPart, 0);
         }
 
@@ -1688,7 +1649,7 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
             if (hr >= 0)
                 hr = _TerminateSection(
                     pfnCB,
-                    pszAppName,
+                    g_pszAppName,
                     _rgClassNames[pRec->iClass].c_str(),
                     pRec->iPart,
                     pRec->iState,
@@ -1701,11 +1662,11 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
 
 HRESULT CVSUnpack::_FindVSRecord(
     void* pvRecBuf, int cbRecBuf, int iClass, int iPart, int iState,
-    int lSymbolVal, _VSRECORD** ppRec)
+    int lSymbolVal, VSRECORD** ppRec)
 {
     int pcbPos = 0;
 
-    auto pRec = (_VSRECORD*)pvRecBuf;
+    auto pRec = (VSRECORD*)pvRecBuf;
     if (iClass > -1) {
         while (pRec) {
             if (pRec->iClass == iClass && pRec->iPart == iPart &&
@@ -1726,7 +1687,7 @@ HRESULT CVSUnpack::_GetPropertyValue(
     void* pvBits, int cbBits, int iClass, int iPart, int iState, int lSymbolVal,
     void* pvValue, int* pcbValue)
 {
-    _VSRECORD* pRecord;
+    VSRECORD* pRecord;
     HRESULT hr = _FindVSRecord(pvBits, cbBits, iClass, iPart, iState, lSymbolVal, &pRecord);
     if (FAILED(hr))
         return hr;
@@ -1783,9 +1744,9 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
         1;
 
     DWORD const imageSize = iImageCount * 4 * width * height;
-    size_t const cBytes = sizeof(_BITMAPHEADER) + imageSize;
+    size_t const cBytes = sizeof(BITMAPHEADER) + imageSize;
 
-    auto header = static_cast<_BITMAPHEADER*>(malloc(cBytes));
+    auto header = static_cast<BITMAPHEADER*>(malloc(cBytes));
     if (!header)
         return E_OUTOFMEMORY;
 
@@ -1853,7 +1814,7 @@ HRESULT CVSUnpack::_EnsureBufferSize(unsigned cbBytes)
     return S_OK;
 }
 
-bool CVSUnpack::_IsTrueSizeImage(_VSRECORD* pRec)
+bool CVSUnpack::_IsTrueSizeImage(VSRECORD* pRec)
 {
     SIZINGTYPE type = ST_STRETCH;
     int size = sizeof(type);
@@ -1865,7 +1826,7 @@ bool CVSUnpack::_IsTrueSizeImage(_VSRECORD* pRec)
 }
 
 HRESULT CVSUnpack::_ExpandVSRecordForColor(
-    IParserCallBack* pfnCB, _VSRECORD* pRec, char* pbData, int cbData, bool* pfIsColor)
+    IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsColor)
 {
     *pfIsColor = false;
 
@@ -1884,7 +1845,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(
             if (!IsHighContrastMode())
                 return S_FALSE;
 
-            _VSRECORD* r;
+            VSRECORD* r;
             HRESULT hr = _FindVSRecord(_pbClassData, _cbClassData, pRec->iClass,
                                        pRec->iPart, pRec->iState,
                                        entry.lHCSymbolVal, &r);
@@ -1896,7 +1857,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(
 }
 
 HRESULT CVSUnpack::_ExpandVSRecordForMargins(
-    IParserCallBack* pfnCB, _VSRECORD* pRec, char* pbData, int cbData, bool* pfIsMargins)
+    IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsMargins)
 {
     *pfIsMargins = false;
 
@@ -1930,7 +1891,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForMargins(
     return S_FALSE;
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, char* pbData, int cbData)
+HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData)
 {
     HRESULT hr;
     if (_fIsLiteVisualStyle) {
@@ -1943,34 +1904,32 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, 
             return hr;
     }
 
-    int bitmapIdx; // er15@11
-    signed int v17; // er13@12
-    char* v18; // rax@16
-    char ePrimVal; // r13@28
-    int v24; // edx@31
-    int v25; // er12@31
-    LPVOID v26; // rax@31
-    _BITMAPHEADER* bmpInfoHeader; // rsi@44
-    void* v44; // r15@46
-    char v47; // r13@63
-    rsize_t v49; // r15@73
-    char* v50; // rax@73
-    signed int v54; // eax@89
-    char* v72; // rax@110
-    int v74; // er15@115
-    int v79; // er8@120
-    bool v80; // cf@120
-    char v82; // al@126
+    int bitmapIdx;
+    int v17;
+    unsigned char ePrimVal;
+    int v25;
+    LPVOID v26;
+    BITMAPHEADER* bmpInfoHeader;
+    void* v44;
+    char v47;
+    rsize_t v49;
+    char* v50;
+    int v54;
+    char* v72;
+    int v74;
+    int v79;
+    bool v80;
+    char v82;
 
-    char* pfncb; // [sp+60h] [bp-68h]@1
-    int partiallyTransparent; // [sp+68h] [bp-60h]@10
-    int iImageCount; // [sp+70h] [bp-58h]@1
-    int pvBuf; // [sp+74h] [bp-54h]@63
-    int pcbNewBitmap; // [sp+78h] [bp-50h]@1
-    LPVOID lpMem; // [sp+80h] [bp-48h]@1
-    char* v97; // [sp+88h] [bp-40h]@1
-    _VSRECORD* pRecord; // [sp+C8h] [bp+0h]@115
-    HDC hDC; // [sp+D0h] [bp+8h]@58
+    char* pfncb;
+    int partiallyTransparent;
+    int iImageCount;
+    int pvBuf;
+    int pcbNewBitmap;
+    LPVOID lpMem;
+    char* v97;
+    VSRECORD* pRecord;
+    HDC hDC;
 
     _IMAGEPROPERTIES* pImageProperties = nullptr;
     bool pImageProperties_a = false;
@@ -1985,7 +1944,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, 
     pcbNewBitmap = 0;
     pfncb = 0;
 
-    int sTypeNum;
+    short sTypeNum;
     int v16;
 
     switch (pRec->lSymbolVal) {
@@ -2079,6 +2038,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, _VSRECORD* pRec, 
 
 LABEL_98:
     hr = 0;
+    int indicesIdx = 0;
+
     if (!_rgBitmapIndices) {
         hr = E_FAIL;
         goto LABEL_24;
@@ -2088,7 +2049,6 @@ LABEL_98:
     partiallyTransparent = 0;
     pvBuf = 0;
     bmpInfoHeader = 0;
-    int indicesIdx = 0;
     v17 = 0;
     int v88;
 
@@ -2159,7 +2119,7 @@ LABEL_98:
             if (hr < 0)
                 goto LABEL_36;
 
-            bmpInfoHeader = (_BITMAPHEADER*)lpMem;
+            bmpInfoHeader = (BITMAPHEADER*)lpMem;
             v16 = pImageProperties_unknown;
         } else {
             auto hdr = (BITMAPHDR*)pbData;
@@ -2179,7 +2139,7 @@ LABEL_98:
                 bmpInfoHeader = _pDecoder->GetBitmapHeader();
                 v16 = pImageProperties_unknown;
             } else {
-                bmpInfoHeader = (_BITMAPHEADER*)hdr->buffer;
+                bmpInfoHeader = (BITMAPHEADER*)hdr->buffer;
             }
         }
 
@@ -2352,7 +2312,7 @@ LABEL_98:
             goto LABEL_70;
         }
     } else {
-        ePrimVal = -41;
+        ePrimVal = TMT_BITMAPREF;
         goto LABEL_29;
     }
 
@@ -2413,8 +2373,7 @@ LABEL_29:
             int values[] = {12, bitmapIdx, partiallyTransparent};
             hr = pfnCB->AddData(sTypeNum, ePrimVal, values, sizeof(values));
         } else {
-            _BITMAPHEADER Dst = {};
-            v24 = bmpInfoHeader->bmih.biWidth;
+            BITMAPHEADER Dst = {};
             Dst.bmih.biSize = sizeof(BITMAPINFOHEADER);
             Dst.bmih.biWidth = bmpInfoHeader->bmih.biWidth;
             Dst.bmih.biHeight = bmpInfoHeader->bmih.biHeight;
@@ -2422,16 +2381,16 @@ LABEL_29:
             Dst.bmih.biBitCount = 32;
             Dst.bmih.biCompression = 3;
             Dst.bmih.biClrUsed = 3;
-            Dst.bmih.biSizeImage = 4 * v24 * Dst.bmih.biHeight;
+            Dst.bmih.biSizeImage = 4 * bmpInfoHeader->bmih.biWidth * Dst.bmih.biHeight;
             Dst.masks[0] = 0xFF0000;
             Dst.masks[1] = 0xFF00;
 
-            v25 = sizeof(TMBITMAPHEADER) + sizeof(_BITMAPHEADER) +
-                4 * bmpInfoHeader->bmih.biWidth * Dst.bmih.biHeight;
+            v25 = sizeof(TMBITMAPHEADER) + sizeof(BITMAPHEADER) +
+                4 * Dst.bmih.biWidth * Dst.bmih.biHeight;
 
             v26 = malloc(v25);
             if (v26) {
-                auto v29 = (_BITMAPHEADER*)((char*)v26 + sizeof(TMBITMAPHEADER));
+                auto v29 = (BITMAPHEADER*)((char*)v26 + sizeof(TMBITMAPHEADER));
                 if (bmpInfoHeader->bmih.biBitCount == 32) {
                     memcpy(v29, bmpInfoHeader, v25 - sizeof(TMBITMAPHEADER));
                 } else {
@@ -2468,14 +2427,14 @@ LABEL_24:
 }
 
 HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
-                                    _VSRECORD* pRec)
+                                    VSRECORD* pRec)
 {
-    char localBuffer[256];
+    array<char, 256> localBuffer;
     int pcbBuf = pRec->cbData;
 
-    char* pvBuf = localBuffer;
-    if (pRec->cbData > 256) {
-        pvBuf = new(std::nothrow) char[pRec->cbData];
+    char* pvBuf = localBuffer.data();
+    if (pRec->cbData > localBuffer.size()) {
+        pvBuf = new(nothrow) char[pRec->cbData];
         if (!pvBuf)
             return E_OUTOFMEMORY;
     }
@@ -2494,13 +2453,13 @@ HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
         }
     }
 
-    if (pvBuf != localBuffer)
+    if (pvBuf != localBuffer.data())
         delete[] pvBuf;
 
     return hr;
 }
 
-HRESULT CVSUnpack::_InitializePlateauPpiMapping(_VSRECORD* pRec)
+HRESULT CVSUnpack::_InitializePlateauPpiMapping(VSRECORD* pRec)
 {
     int value;
     int size = 4;
@@ -2526,7 +2485,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     bool hasMinDpiRecord = false;
 
     for (int i = 0; i < plateauCount; ++i) {
-        _VSRECORD* it = _rgImageDpiRec[i];
+        VSRECORD* it = _rgImageDpiRec[i];
         if (!it) {
             plateauFlags[i] = 2;
             continue;
@@ -2572,7 +2531,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     {
         int idx = 0;
         char* v28 = plateauFlags;
-        for (_VSRECORD* rec : _rgImageDpiRec) {
+        for (VSRECORD* rec : _rgImageDpiRec) {
             if (*v28 == 1) {
                 hr = _FixSymbolAndAddVSDataRecord(
                     pfnCB, rec, Map_Ordinal_To_MINDPI(idx));
@@ -2585,7 +2544,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     {
         int idx = 0;
         char* v28 = plateauFlags;
-        for (_VSRECORD* rec : _rgImageRec) {
+        for (VSRECORD* rec : _rgImageRec) {
             if (rec && *v28) {
                 hr = _FixSymbolAndAddVSDataRecord(
                     pfnCB, rec, Map_Ordinal_To_IMAGEFILE(idx));
@@ -2598,7 +2557,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     {
         int idx = 0;
         char* v35 = plateauFlags;
-        for (_VSRECORD* rec : _rgComposedImageRec) {
+        for (VSRECORD* rec : _rgComposedImageRec) {
             if (rec && *v35) {
                 hr = _FixSymbolAndAddVSDataRecord(
                     pfnCB, rec, Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
@@ -2616,11 +2575,11 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
 
 HRESULT CVSUnpack::_FlushDelayedPlateauRecords(IParserCallBack* pfnCB)
 {
-    int idx; // rsi@1
-    signed int v6; // ebp@1
-    int v8; // eax@1
-    bool* v10; // r8@1
-    int* v11; // r9@1
+    int idx;
+    int v6;
+    int v8;
+    bool* v10;
+    int* v11;
 
     HRESULT hr = S_OK;
     idx = -1;
@@ -2679,7 +2638,7 @@ HRESULT CVSUnpack::_AddScaledBackgroundDataRecord(IParserCallBack* pfnCB)
     return S_OK;
 }
 
-HRESULT CVSUnpack::_SavePlateauRecord(_VSRECORD* pRec)
+HRESULT CVSUnpack::_SavePlateauRecord(VSRECORD* pRec)
 {
     int symbol = pRec->lSymbolVal;
     int idx;
@@ -2722,28 +2681,28 @@ HRESULT CVSUnpack::_SavePlateauRecord(_VSRECORD* pRec)
 }
 
 HRESULT CVSUnpack::_FixSymbolAndAddVSDataRecord(
-    IParserCallBack* pfnCB, _VSRECORD* pRec, int lSymbolVal)
+    IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal)
 {
-    char buffer[sizeof(_VSRECORD) + 260];
+    char buffer[sizeof(VSRECORD) + 260];
 
     if (pRec->lSymbolVal != lSymbolVal) {
         if (pRec->uResID) {
-            memcpy(&buffer, pRec, sizeof(_VSRECORD));
+            memcpy(&buffer, pRec, sizeof(VSRECORD));
         } else {
-            size_t size = sizeof(_VSRECORD) + pRec->cbData;
-            if (size > 292)
+            size_t size = sizeof(VSRECORD) + pRec->cbData;
+            if (size > countof(buffer))
                 return E_FAIL;
             memcpy(&buffer, pRec, size);
         }
 
-        pRec = reinterpret_cast<_VSRECORD*>(&buffer);
+        pRec = reinterpret_cast<VSRECORD*>(&buffer);
         pRec->lSymbolVal = lSymbolVal;
     }
 
     return _AddVSDataRecord(pfnCB, _hInst, pRec);
 }
 
-HRESULT CVSUnpack::_SaveRecord(_VSRECORD* pRec)
+HRESULT CVSUnpack::_SaveRecord(VSRECORD* pRec)
 {
     int symbol = pRec->lSymbolVal;
 
@@ -2780,7 +2739,7 @@ HRESULT CVSUnpack::_SaveRecord(_VSRECORD* pRec)
     return S_OK;
 }
 
-bool CVSUnpack::_DelayRecord(_VSRECORD* pRec)
+bool CVSUnpack::_DelayRecord(VSRECORD* pRec)
 {
     switch (pRec->lSymbolVal) {
     case TMT_MINDPI1:

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Primitives.h"
 #include <windows.h>
-#include <cassert>
 
 namespace uxtheme
 {

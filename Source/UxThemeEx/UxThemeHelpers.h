@@ -21,6 +21,8 @@
 #define TMT_DIBDATA7 23
 
 #define TMT_TRANSPARENTMARGINS 5107
+#define TMT_5128 5128
+#define TMT_5130 5130
 #define TMT_5131 5131
 #define TMT_5132 5132
 #define TMT_5133 5133
@@ -79,7 +81,7 @@ enum HIGHCONTRASTCOLOR
     HCC_COLOR_WINDOWTEXT = 0xC,
 };
 
-struct _BITMAPHEADER
+struct BITMAPHEADER
 {
     BITMAPINFOHEADER bmih;
     unsigned masks[3];

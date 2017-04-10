@@ -5,6 +5,7 @@
 
 namespace uxtheme
 {
+struct CUxThemeFile;
 
 void ClearDebugInfo();
 
@@ -22,4 +23,7 @@ void ValidatePtr(PARTOBJHDR const* hdr);
 void ValidatePtr(CTextDraw const* hdr);
 void ValidatePtr(CDrawBase const* hdr);
 
+HRESULT DumpThemeToTextFile(CUxThemeFile* themeFile, wchar_t const* binPath,
+                            wchar_t const* textPath);
+HRESULT DumpLoadedThemeToTextFile(wchar_t const* binPath, wchar_t const* textPath);
 } // namespace uxtheme

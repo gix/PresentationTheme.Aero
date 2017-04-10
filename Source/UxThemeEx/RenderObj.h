@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "ImageFile.h"
 #include "Primitives.h"
+#include "Utils.h"
 #include "VSUnpack.h"
 
-#include <vector>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 namespace uxtheme
 {
@@ -91,6 +92,16 @@ struct __declspec(align(8)) CRenderObj
                int iTargetDpi, bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags);
     ~CRenderObj();
 
+    HBITMAP BitmapIndexToHandle(int index) const
+    {
+        return _phBitmapsArray[index].hBitmap;
+    }
+
+    void SetBitmapHandle(int iBitmapIndex, HBITMAP hbmp)
+    {
+        _phBitmapsArray[iBitmapIndex].hBitmap = hbmp;
+    }
+
     static HRESULT Create(CUxThemeFile* pThemeFile, int iCacheSlot,
                           int iThemeOffset, int iAppNameOffset,
                           int iClassNameOffset, long long iUniqueId,
@@ -122,7 +133,6 @@ struct __declspec(align(8)) CRenderObj
     HRESULT GetTransitionDuration(int iPartId, int iStateIdFrom, int iStateIdTo, int iPropId, DWORD* pdwDuration);
     HRESULT ExternalGetPosition(int iPartId, int iStateId, int iPropId, POINT* pPoint) const;
     HRESULT ExternalGetRect(int iPartId, int iStateId, int iPropId, RECT* pRect) const;
-    bool _IsDWMAtlas() const;
     HRESULT ExternalGetStream(int iPartId, int iStateId, int iPropId, void** ppvStream, DWORD* pcbStream, HINSTANCE hInst) const;
     HRESULT ExternalGetString(int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff);
 
@@ -146,9 +156,13 @@ struct __declspec(align(8)) CRenderObj
 
     int GetThemeOffset() const
     {
-        return (uintptr_t)_pbSectionData - (uintptr_t)_pbSharableData;
+        return narrow_cast<int>((uintptr_t)_pbSectionData - (uintptr_t)_pbSharableData);
     }
 
+private:
+    bool _IsDWMAtlas() const;
+
+public:
     CUxThemeFile* _pThemeFile;
     int _iCacheSlot;
     int64_t _iUniqueId;

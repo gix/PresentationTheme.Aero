@@ -137,6 +137,15 @@ using ThreadHandle = Handle<ThreadHandleTraits>;
 struct FileMappingHandleTraits : NullIsInvalidHandleTraits {};
 using FileMappingHandle = Handle<FileMappingHandleTraits>;
 
+struct FileViewHandleTraits
+{
+    using HandleType = void*;
+    constexpr static HandleType InvalidHandle() noexcept { return nullptr; }
+    constexpr static bool IsValid(HandleType h) noexcept { return h != InvalidHandle(); }
+    static void Close(HandleType h) noexcept { ::UnmapViewOfFile(h); }
+};
+using FileViewHandle = Handle<FileViewHandleTraits>;
+
 struct ModuleHandleTraits
 {
     using HandleType = HMODULE;
