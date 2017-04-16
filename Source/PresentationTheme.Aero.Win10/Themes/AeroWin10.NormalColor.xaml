@@ -3611,7 +3611,6 @@
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto" MinWidth="19"/>
-              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -3640,7 +3639,7 @@
                             Margin="19,0,0,0"
                             Grid.Row="1"
                             Grid.Column="0"
-                            Grid.ColumnSpan="3"/>
+                            Grid.ColumnSpan="2"/>
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="False">
@@ -3712,7 +3711,6 @@
                         </ColumnDefinition.MaxWidth>
                       </ColumnDefinition>
                       <ColumnDefinition Width="Auto" MinWidth="19"/>
-                      <ColumnDefinition Width="Auto"/>
                       <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
@@ -3820,7 +3818,6 @@
           <Grid>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="Auto" MinWidth="19"/>
-              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -3849,7 +3846,7 @@
                             Margin="19,0,0,0"
                             Grid.Row="1"
                             Grid.Column="0"
-                            Grid.ColumnSpan="3"/>
+                            Grid.ColumnSpan="2"/>
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="False">
@@ -3938,7 +3935,6 @@
                         </ColumnDefinition.MaxWidth>
                       </ColumnDefinition>
                       <ColumnDefinition Width="Auto" MinWidth="19"/>
-                      <ColumnDefinition Width="Auto"/>
                       <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
