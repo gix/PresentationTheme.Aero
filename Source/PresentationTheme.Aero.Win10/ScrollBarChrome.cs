@@ -49,26 +49,26 @@
 
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         public Brush Background
         {
-            get { return (Brush)GetValue(BackgroundProperty); }
-            set { SetValue(BackgroundProperty, value); }
+            get => (Brush)GetValue(BackgroundProperty);
+            set => SetValue(BackgroundProperty, value);
         }
 
         public Brush LightBorderBrush
         {
-            get { return (Brush)GetValue(LightBorderBrushProperty); }
-            set { SetValue(LightBorderBrushProperty, value); }
+            get => (Brush)GetValue(LightBorderBrushProperty);
+            set => SetValue(LightBorderBrushProperty, value);
         }
 
         public Brush DarkBorderBrush
         {
-            get { return (Brush)GetValue(DarkBorderBrushProperty); }
-            set { SetValue(DarkBorderBrushProperty, value); }
+            get => (Brush)GetValue(DarkBorderBrushProperty);
+            set => SetValue(DarkBorderBrushProperty, value);
         }
 
         protected override Size MeasureOverride(Size constraint)

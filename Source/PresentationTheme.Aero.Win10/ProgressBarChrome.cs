@@ -40,8 +40,8 @@
 
         public ProgressBar Bar
         {
-            get { return (ProgressBar)GetValue(BarProperty); }
-            set { SetValue(BarProperty, value); }
+            get => (ProgressBar)GetValue(BarProperty);
+            set => SetValue(BarProperty, value);
         }
 
         static ProgressBarChrome()
@@ -62,8 +62,8 @@
 
         public bool IsIndeterminate
         {
-            get { return (bool)GetValue(IsIndeterminateProperty); }
-            set { SetValue(IsIndeterminateProperty, value); }
+            get => (bool)GetValue(IsIndeterminateProperty);
+            set => SetValue(IsIndeterminateProperty, value);
         }
 
         public static readonly DependencyProperty OrientationProperty =
@@ -79,8 +79,8 @@
 
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         public override void OnApplyTemplate()

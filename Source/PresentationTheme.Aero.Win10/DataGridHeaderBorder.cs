@@ -22,74 +22,38 @@ namespace PresentationTheme.Aero.Win10
 
         public bool IsHovered
         {
-            get
-            {
-                return (bool)this.GetValue(DataGridHeaderBorder.IsHoveredProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.IsHoveredProperty, value);
-            }
+            get => (bool)this.GetValue(DataGridHeaderBorder.IsHoveredProperty);
+            set => this.SetValue(DataGridHeaderBorder.IsHoveredProperty, value);
         }
 
         public bool IsPressed
         {
-            get
-            {
-                return (bool)this.GetValue(DataGridHeaderBorder.IsPressedProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.IsPressedProperty, value);
-            }
+            get => (bool)this.GetValue(DataGridHeaderBorder.IsPressedProperty);
+            set => this.SetValue(DataGridHeaderBorder.IsPressedProperty, value);
         }
 
         public bool IsClickable
         {
-            get
-            {
-                return (bool)this.GetValue(DataGridHeaderBorder.IsClickableProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.IsClickableProperty, value);
-            }
+            get => (bool)this.GetValue(DataGridHeaderBorder.IsClickableProperty);
+            set => this.SetValue(DataGridHeaderBorder.IsClickableProperty, value);
         }
 
         public ListSortDirection? SortDirection
         {
-            get
-            {
-                return (ListSortDirection?)this.GetValue(DataGridHeaderBorder.SortDirectionProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.SortDirectionProperty, (object)value);
-            }
+            get => (ListSortDirection?)this.GetValue(DataGridHeaderBorder.SortDirectionProperty);
+            set => this.SetValue(DataGridHeaderBorder.SortDirectionProperty, (object)value);
         }
 
         public bool IsSelected
         {
-            get
-            {
-                return (bool)this.GetValue(DataGridHeaderBorder.IsSelectedProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.IsSelectedProperty, value);
-            }
+            get => (bool)this.GetValue(DataGridHeaderBorder.IsSelectedProperty);
+            set => this.SetValue(DataGridHeaderBorder.IsSelectedProperty, value);
         }
 
         public Orientation Orientation
         {
-            get
-            {
-                return (Orientation)this.GetValue(DataGridHeaderBorder.OrientationProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.OrientationProperty, (object)value);
-            }
+            get => (Orientation)this.GetValue(DataGridHeaderBorder.OrientationProperty);
+            set => this.SetValue(DataGridHeaderBorder.OrientationProperty, (object)value);
         }
 
         private bool UsingBorderImplementation
@@ -104,26 +68,14 @@ namespace PresentationTheme.Aero.Win10
 
         public Brush SeparatorBrush
         {
-            get
-            {
-                return (Brush)this.GetValue(DataGridHeaderBorder.SeparatorBrushProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.SeparatorBrushProperty, (object)value);
-            }
+            get => (Brush)this.GetValue(DataGridHeaderBorder.SeparatorBrushProperty);
+            set => this.SetValue(DataGridHeaderBorder.SeparatorBrushProperty, (object)value);
         }
 
         public Visibility SeparatorVisibility
         {
-            get
-            {
-                return (Visibility)this.GetValue(DataGridHeaderBorder.SeparatorVisibilityProperty);
-            }
-            set
-            {
-                this.SetValue(DataGridHeaderBorder.SeparatorVisibilityProperty, (object)value);
-            }
+            get => (Visibility)this.GetValue(DataGridHeaderBorder.SeparatorVisibilityProperty);
+            set => this.SetValue(DataGridHeaderBorder.SeparatorVisibilityProperty, (object)value);
         }
 
         private Thickness DefaultPadding

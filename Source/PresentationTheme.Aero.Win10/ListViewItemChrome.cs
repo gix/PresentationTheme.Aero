@@ -171,8 +171,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderFocused
         {
-            get { return (bool)GetValue(RenderFocusedProperty); }
-            set { SetValue(RenderFocusedProperty, value); }
+            get => (bool)GetValue(RenderFocusedProperty);
+            set => SetValue(RenderFocusedProperty, value);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderMouseOver
         {
-            get { return (bool)GetValue(RenderMouseOverProperty); }
-            set { SetValue(RenderMouseOverProperty, value); }
+            get => (bool)GetValue(RenderMouseOverProperty);
+            set => SetValue(RenderMouseOverProperty, value);
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderSelected
         {
-            get { return (bool)GetValue(RenderSelectedProperty); }
-            set { SetValue(RenderSelectedProperty, value); }
+            get => (bool)GetValue(RenderSelectedProperty);
+            set => SetValue(RenderSelectedProperty, value);
         }
 
         /// <summary>
@@ -198,8 +198,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderInactive
         {
-            get { return (bool)GetValue(RenderInactiveProperty); }
-            set { SetValue(RenderInactiveProperty, value); }
+            get => (bool)GetValue(RenderInactiveProperty);
+            set => SetValue(RenderInactiveProperty, value);
         }
 
         private Pen BorderPen
@@ -321,8 +321,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public FrameworkElement ParentScope
         {
-            get { return (FrameworkElement)GetValue(ParentScopeProperty); }
-            set { SetValue(ParentScopeProperty, value); }
+            get => (FrameworkElement)GetValue(ParentScopeProperty);
+            set => SetValue(ParentScopeProperty, value);
         }
 
         #endregion

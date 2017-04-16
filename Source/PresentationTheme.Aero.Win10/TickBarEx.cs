@@ -25,8 +25,8 @@
         /// </summary>
         public Brush SelectionTickBrush
         {
-            get { return (Brush)GetValue(SelectionTickBrushProperty); }
-            set { SetValue(SelectionTickBrushProperty, value); }
+            get => (Brush)GetValue(SelectionTickBrushProperty);
+            set => SetValue(SelectionTickBrushProperty, value);
         }
 
         #endregion

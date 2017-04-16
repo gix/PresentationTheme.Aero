@@ -22,8 +22,8 @@
         /// </summary>
         public bool RenderEnabled
         {
-            get { return (bool)GetValue(RenderEnabledProperty); }
-            set { SetValue(RenderEnabledProperty, value); }
+            get => (bool)GetValue(RenderEnabledProperty);
+            set => SetValue(RenderEnabledProperty, value);
         }
 
         #endregion
@@ -45,8 +45,8 @@
         /// </summary>
         public bool RenderReadOnly
         {
-            get { return (bool)GetValue(RenderReadOnlyProperty); }
-            set { SetValue(RenderReadOnlyProperty, value); }
+            get => (bool)GetValue(RenderReadOnlyProperty);
+            set => SetValue(RenderReadOnlyProperty, value);
         }
 
         #endregion
@@ -68,8 +68,8 @@
         /// </summary>
         public bool RenderHot
         {
-            get { return (bool)GetValue(RenderHotProperty); }
-            set { SetValue(RenderHotProperty, value); }
+            get => (bool)GetValue(RenderHotProperty);
+            set => SetValue(RenderHotProperty, value);
         }
 
         #endregion
@@ -91,8 +91,8 @@
         /// </summary>
         public bool RenderFocused
         {
-            get { return (bool)GetValue(RenderFocusedProperty); }
-            set { SetValue(RenderFocusedProperty, value); }
+            get => (bool)GetValue(RenderFocusedProperty);
+            set => SetValue(RenderFocusedProperty, value);
         }
 
         #endregion

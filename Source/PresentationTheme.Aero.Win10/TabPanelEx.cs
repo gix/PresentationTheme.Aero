@@ -24,8 +24,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public object SelectedTab
         {
-            get { return (object)GetValue(SelectedTabProperty); }
-            set { SetValue(SelectedTabProperty, value); }
+            get => (object)GetValue(SelectedTabProperty);
+            set => SetValue(SelectedTabProperty, value);
         }
 
         #endregion

@@ -203,8 +203,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public Thickness Padding
         {
-            get { return (Thickness)GetValue(PaddingProperty); }
-            set { SetValue(PaddingProperty, value); }
+            get => (Thickness)GetValue(PaddingProperty);
+            set => SetValue(PaddingProperty, value);
         }
 
         /// <summary>
@@ -213,8 +213,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderHot
         {
-            get { return (bool)GetValue(RenderHotProperty); }
-            set { SetValue(RenderHotProperty, value); }
+            get => (bool)GetValue(RenderHotProperty);
+            set => SetValue(RenderHotProperty, value);
         }
 
         /// <summary>
@@ -223,8 +223,8 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public bool RenderPressed
         {
-            get { return (bool)GetValue(RenderPressedProperty); }
-            set { SetValue(RenderPressedProperty, value); }
+            get => (bool)GetValue(RenderPressedProperty);
+            set => SetValue(RenderPressedProperty, value);
         }
 
         /// <summary>
@@ -232,15 +232,15 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public ListSortDirection? SortDirection
         {
-            get { return (ListSortDirection?)GetValue(SortDirectionProperty); }
-            set { SetValue(SortDirectionProperty, value); }
+            get => (ListSortDirection?)GetValue(SortDirectionProperty);
+            set => SetValue(SortDirectionProperty, value);
         }
 
         /// <summary>Gets or sets the separator visibility.</summary>
         public Visibility SeparatorVisibility
         {
-            get { return (Visibility)GetValue(SeparatorVisibilityProperty); }
-            set { SetValue(SeparatorVisibilityProperty, value); }
+            get => (Visibility)GetValue(SeparatorVisibilityProperty);
+            set => SetValue(SeparatorVisibilityProperty, value);
         }
 
         private Brush BackgroundBrush

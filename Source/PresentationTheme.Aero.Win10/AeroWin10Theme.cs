@@ -12,8 +12,8 @@
 
         public static bool? UseAnimationsOverride
         {
-            get { return DynamicVisualStateManager.Instance.UseAnimationsOverride; }
-            set { DynamicVisualStateManager.Instance.UseAnimationsOverride = value; }
+            get => DynamicVisualStateManager.Instance.UseAnimationsOverride;
+            set => DynamicVisualStateManager.Instance.UseAnimationsOverride = value;
         }
 
         public static ResourceDictionary CreateResourceDictionary()

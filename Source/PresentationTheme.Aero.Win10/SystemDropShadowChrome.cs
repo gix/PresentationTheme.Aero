@@ -40,14 +40,14 @@ namespace PresentationTheme.Aero.Win10
 
         public Color Color
         {
-            get { return (Color)GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get => (Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
         }
 
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         private static bool IsCornerRadiusValid(object value)
