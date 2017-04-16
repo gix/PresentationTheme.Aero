@@ -49,7 +49,7 @@ public:
     HRESULT PackMetrics();
     HRESULT CopyDummyNonSharableDataToLive();
     HRESULT CreateReuseSection(wchar_t const* pszSharableSectionName, void** phReuseSection);
-    HRESULT CopyNonSharableDataToLive(void* hReuseSection);
+    HRESULT CopyNonSharableDataToLive(HANDLE hReuseSection);
     HRESULT PackAndLoadTheme(void* hFile,
                              wchar_t const* pszThemeName,
                              wchar_t const* pszColorParam,

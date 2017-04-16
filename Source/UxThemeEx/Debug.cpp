@@ -15,11 +15,6 @@
 #include <ntstatus.h>
 #include "UxThemeFile.h"
 
-NTSYSAPI NTSTATUS NTAPI NtOpenSection(
-    _Out_ PHANDLE            SectionHandle,
-    _In_  ACCESS_MASK        DesiredAccess,
-    _In_  POBJECT_ATTRIBUTES ObjectAttributes);
-
 namespace uxtheme
 {
 
@@ -117,97 +112,6 @@ void ValidatePtr(CTextDraw const* obj)
     if (!contains(textObjs, obj))
         FailFast();
 }
-
-
-
-
-struct ROOTSECTION
-{
-    wchar_t szSharableSectionName[260];
-    wchar_t szNonSharableSectionName[260];
-    unsigned dwClientChangeNumber;
-};
-
-struct SectionHandleTraits : NullIsInvalidHandleTraits {};
-using SectionHandle = Handle<SectionHandleTraits>;
-
-class Section
-{
-public:
-    Section(DWORD desiredSectionAccess, DWORD desiredViewAccess)
-        : desiredSectionAccess(desiredSectionAccess)
-        , desiredViewAccess(desiredViewAccess)
-    {
-    }
-
-    HRESULT OpenSection(wchar_t const* sectionName, bool mapView)
-    {
-        UNICODE_STRING name;
-        RtlInitUnicodeString(&name, sectionName);
-        OBJECT_ATTRIBUTES objA = {};
-        InitializeObjectAttributes(&objA, &name, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
-
-        ModuleHandle ntdllHandle{LoadLibraryW(L"ntdll.dll")};
-        SectionHandle sectionHandle;
-        decltype(NtOpenSection)* NtOpenSectionPtr = (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle, "NtOpenSection");
-
-        NTSTATUS st = NtOpenSectionPtr(sectionHandle.CloseAndGetAddressOf(),
-                                       desiredSectionAccess, &objA);
-        if (st != STATUS_SUCCESS)
-            return st;
-
-        //SectionHandle sectionHandle{OpenFileMappingW(desiredSectionAccess, FALSE, sectionName)};
-        //if (!sectionHandle)
-        //    return MakeErrorLast();
-
-        if (mapView) {
-            FileViewHandle sectionData{MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
-            if (!sectionData)
-                return MakeErrorLast();
-
-            this->sectionData = std::move(sectionData);
-        }
-
-        this->sectionHandle = std::move(sectionHandle);
-        return S_OK;
-    }
-
-    void* View() const { return sectionData.Get(); }
-
-protected:
-    SectionHandle sectionHandle;
-    FileViewHandle sectionData;
-    DWORD desiredSectionAccess;
-    DWORD desiredViewAccess;
-};
-
-class RootSection : public Section
-{
-public:
-    RootSection(DWORD desiredSectionAccess, DWORD desiredViewAccess)
-        : Section(desiredSectionAccess, desiredViewAccess)
-    {
-        DWORD sessionId = NtCurrentTeb()->ProcessEnvironmentBlock->SessionId;
-        if (sessionId)
-            StringCchPrintfW(sectionName, 260, L"\\Sessions\\%d\\Windows\\ThemeSection", sessionId);
-        else
-            StringCchPrintfW(sectionName, 260, L"\\Windows\\ThemeSection");
-    }
-
-    HRESULT GetRootSectionData(ROOTSECTION** ppRootSection)
-    {
-        *ppRootSection = nullptr;
-        ENSURE_HR(OpenSection(sectionName, true));
-        if (!sectionData)
-            return E_OUTOFMEMORY;
-
-        *ppRootSection = static_cast<ROOTSECTION*>(sectionData.Get());
-        return S_OK;
-    }
-
-private:
-    wchar_t sectionName[260];
-};
 
 static void GetStrings(THEMEHDR const* hdr, std::vector<std::wstring>& strings)
 {
@@ -567,52 +471,51 @@ static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
 
 static void DumpTheme(THEMEHDR const* theme, FileHandle& bin, LogFile& log)
 {
-    DWORD bytesWritten;
-    WriteFile(bin, theme, theme->dwTotalLength,
-              &bytesWritten, nullptr);
-    bin.Close();
-
     DumpSectionIndex(theme, log);
 
     std::vector<std::wstring> str1;
     GetStrings(theme, str1);
 }
 
-HRESULT DumpThemeToTextFile(CUxThemeFile* themeFile, wchar_t const* binPath,
-                            wchar_t const* textPath)
+HRESULT DumpLoadedThemeToTextFile(HTHEMEFILE hThemeFile, wchar_t const* path,
+                                  bool packed, bool fullInfo)
 {
-    FileHandle h{CreateFileW(binPath, GENERIC_WRITE, 0, nullptr,
-                             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+    if (packed) {
+        FileHandle file{CreateFileW(path, GENERIC_WRITE, 0, nullptr,
+                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
 
-    LogFile log{textPath};
-    if (!log.Open())
-        return E_FAIL;
+        THEMEHDR const* theme = nullptr;
 
-    DumpTheme(themeFile->_pbSharableData, h, log);
-    return S_OK;
+        DWORD bytesWritten;
+        WriteFile(file, theme, theme->dwTotalLength, &bytesWritten, nullptr);
+    } else {
+        LogFile log{path};
+        if (!log.Open())
+            return E_FAIL;
+
+        DumpTheme(themeFile->_pbSharableData, h, log);
+        return S_OK;
+    }
 }
 
-HRESULT DumpLoadedThemeToTextFile(wchar_t const* binPath, wchar_t const* textPath)
+HRESULT DumpSystemThemeToTextFile(wchar_t const* path, bool packed, bool fullInfo)
 {
     RootSection rootSection(FILE_MAP_READ, FILE_MAP_READ);
     ROOTSECTION* rootSectionData;
-    HRESULT hr = rootSection.GetRootSectionData(&rootSectionData);
-    if (SUCCEEDED(hr)) {
-        Section section(FILE_MAP_READ, FILE_MAP_READ);
-        hr = section.OpenSection(rootSectionData->szSharableSectionName, true);
-        if (SUCCEEDED(hr)) {
-            auto hdr = static_cast<THEMEHDR const*>(section.View());
+    ENSURE_HR(rootSection.GetRootSectionData(&rootSectionData));
 
-            FileHandle h{CreateFileW(binPath, GENERIC_WRITE, 0, nullptr,
-                                     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
-            LogFile log{textPath};
-            if (!log.Open())
-                return E_FAIL;
-            DumpTheme(hdr, h, log);
-        }
-    }
+    Section section(FILE_MAP_READ, FILE_MAP_READ);
+    ENSURE_HR(section.OpenSection(rootSectionData->szSharableSectionName, true));
+    auto hdr = static_cast<THEMEHDR const*>(section.View());
 
-    return hr;
+    FileHandle h{CreateFileW(textFile, GENERIC_WRITE, 0, nullptr,
+                             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+    LogFile log{textPath};
+    if (!log.Open())
+        return E_FAIL;
+    DumpTheme(hdr, h, log);
+
+    return S_OK;
 }
 
 } // namespace uxtheme

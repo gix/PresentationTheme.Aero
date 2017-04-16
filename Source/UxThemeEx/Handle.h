@@ -155,4 +155,7 @@ struct ModuleHandleTraits
 };
 using ModuleHandle = Handle<ModuleHandleTraits>;
 
+struct SectionHandleTraits : NullIsInvalidHandleTraits {};
+using SectionHandle = Handle<SectionHandleTraits>;
+
 } // namespace ffmf

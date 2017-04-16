@@ -7,18 +7,6 @@ namespace uxtheme
 
 struct CUxThemeFile
 {
-    char _szHead[8];
-    THEMEHDR* _pbSharableData;
-    void* _hSharableSection;
-    char* _pbNonSharableData;
-    void* _hNonSharableSection;
-    unsigned _Debug_Generation;
-    unsigned _Debug_ChangeID;
-    char _szTail[4];
-
-    int _cbSharableData = 0;
-    int _cbNonSharableData = 0;
-
     CUxThemeFile();
     ~CUxThemeFile();
 
@@ -44,6 +32,19 @@ struct CUxThemeFile
                         int fReserve);
     void CloseFile();
     LOGFONTW const* GetFontByIndex(unsigned short index) const;
+    HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
+
+    char _szHead[8];
+    THEMEHDR* _pbSharableData;
+    void* _hSharableSection;
+    char* _pbNonSharableData;
+    void* _hNonSharableSection;
+    unsigned _Debug_Generation;
+    unsigned _Debug_ChangeID;
+    char _szTail[4];
+
+    int _cbSharableData = 0;
+    int _cbNonSharableData = 0;
 };
 
 } // namespace uxtheme

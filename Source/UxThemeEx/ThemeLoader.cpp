@@ -818,7 +818,7 @@ static HRESULT GenerateNonSharableData(HANDLE hReuseSection, void* pNonSharableD
     return S_OK;
 }
 
-HRESULT CThemeLoader::CopyNonSharableDataToLive(void* hReuseSection)
+HRESULT CThemeLoader::CopyNonSharableDataToLive(HANDLE hReuseSection)
 {
     void* ptr = VirtualAlloc(
         _LoadingThemeFile._pbNonSharableData,

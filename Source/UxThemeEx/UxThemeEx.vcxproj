@@ -38,10 +38,12 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\SharedProperties.props" />
+    <Import Project="..\..\ThirdParty\GSL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\SharedProperties.props" />
+    <Import Project="..\..\ThirdParty\GSL.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,6 +97,7 @@
     <ClCompile Include="PublicApi.cpp" />
     <ClCompile Include="RenderList.cpp" />
     <ClCompile Include="RenderObj.cpp" />
+    <ClCompile Include="Sections.cpp" />
     <ClCompile Include="TextDraw.cpp" />
     <ClCompile Include="ThemeLoader.cpp" />
     <ClCompile Include="ThemeMemStream.cpp" />
@@ -121,6 +124,7 @@
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="RenderList.h" />
     <ClInclude Include="RenderObj.h" />
+    <ClInclude Include="Sections.h" />
     <ClInclude Include="TextDraw.h" />
     <ClInclude Include="ThemeLoader.h" />
     <ClInclude Include="ThemeMemStream.h" />

@@ -369,14 +369,14 @@ HTHEME OpenThemeDataExInternal(
 
 struct CThemeApiHelper
 {
-    wchar_t const* _pszFuncName = nullptr;
-    int _iRenderSlotNum = -1;
-    int _iEntryValue = -1;
-
     ~CThemeApiHelper() { CloseHandle(); }
 
     HRESULT OpenHandle(HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** pRender);
     void CloseHandle();
+
+    wchar_t const* _pszFuncName = nullptr;
+    int _iRenderSlotNum = -1;
+    int _iEntryValue = -1;
 };
 
 HRESULT CThemeApiHelper::OpenHandle(
