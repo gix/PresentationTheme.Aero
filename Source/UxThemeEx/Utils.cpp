@@ -8,6 +8,11 @@
 namespace uxtheme
 {
 
+bool IsHighContrastMode()
+{
+    return false;
+}
+
 static wchar_t const* StringFromError(wchar_t* buffer, size_t size, long ec)
 {
     assert(buffer);

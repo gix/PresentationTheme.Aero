@@ -11,6 +11,7 @@
 namespace uxtheme
 {
 
+struct CRenderList;
 struct CTextDraw;
 struct CUxThemeFile;
 
@@ -119,6 +120,7 @@ struct __declspec(align(8)) CRenderObj
     int GetValueIndex(int iPartId, int iStateId, int iTarget) const;
     bool IsPartDefined(int iPartId, int iStateId);
     HRESULT GetPropertyOrigin(int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin);
+    BYTE const* GetLastValidThemeByte() const;
 
     HRESULT ExternalGetBitmap(HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap);
     HRESULT ExternalGetBool(int iPartId, int iStateId, int iPropId, int* pfVal) const;
@@ -142,7 +144,7 @@ struct __declspec(align(8)) CRenderObj
     PARTOBJHDR* GetNextPartObject(MIXEDPTRS* u);
 
     template<typename T>
-    T* FindClassPartObject(char* const pb, int iPartId, int iStateId);
+    T* FindClassPartObject(BYTE* const pb, int iPartId, int iStateId);
 
     template<class T>
     T* FindBaseClassPartObject(int iPartId, int iStateId);
@@ -152,11 +154,21 @@ struct __declspec(align(8)) CRenderObj
 
     template<typename T>
     HRESULT GetPartObject(int iPartId, int iStateId, T** ppvObj);
-    HRESULT PrepareRegionDataForScaling(RGNDATA* pRgnData, RECT*const prcImage, _MARGINS* pMargins);
+    HRESULT PrepareRegionDataForScaling(RGNDATA* pRgnData, RECT*const prcImage, MARGINS* pMargins);
+
+    int GetAssociatedDpi() const { return _iAssociatedDpi; }
+    bool IsStronglyAssociatedDpi() const { return _fIsStronglyAssociatedDpi; }
 
     int GetThemeOffset() const
     {
         return narrow_cast<int>((uintptr_t)_pbSectionData - (uintptr_t)_pbSharableData);
+    }
+
+    LOGFONTW const* GetFont(int index) const
+    {
+        if (index < 0 || index >= countof(_ptm->lfFonts))
+            return nullptr;
+        return &_ptm->lfFonts[index];
     }
 
 private:
@@ -166,9 +178,9 @@ public:
     CUxThemeFile* _pThemeFile;
     int _iCacheSlot;
     int64_t _iUniqueId;
-    char* _pbSharableData;
-    char* _pbSectionData;
-    char* _pbNonSharableData;
+    BYTE* _pbSharableData;
+    BYTE* _pbSectionData;
+    BYTE* _pbNonSharableData;
     HBITMAP64* _phBitmapsArray;
     bool _fCacheEnabled;
     bool _fCloseThemeFile;
@@ -177,6 +189,8 @@ public:
     wchar_t const* _pszClassName;
     std::vector<std::unique_ptr<CStateIdObjectCache>> _pParts;
     unsigned _dwOtdFlags;
+
+private:
     std::unique_ptr<CImageDecoder> _pPngDecoder;
     std::unique_ptr<CImageEncoder> _pPngEncoder;
     std::unique_ptr<CRenderCache> _pCacheObj;
@@ -186,9 +200,5 @@ public:
     int _iAssociatedDpi;
     bool _fIsStronglyAssociatedDpi;
 };
-
-int ScaleThemeSize(HDC hdc, _In_ CRenderObj const* pRender, int iValue);
-void ScaleThemeFont(HDC hdc, _In_ CRenderObj const* pRender, _In_ LOGFONTW* plf);
-void ScaleFontForScreenDpi(_In_ LOGFONTW* plf);
 
 } // namespace uxtheme

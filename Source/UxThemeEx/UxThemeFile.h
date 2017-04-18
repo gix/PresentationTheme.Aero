@@ -31,14 +31,18 @@ struct CUxThemeFile
                         int iNonSharableSectionLength,
                         int fReserve);
     void CloseFile();
+    HRESULT OpenFromHandle(HANDLE hSharableSection, HANDLE hNonSharableSection,
+                           DWORD desiredAccess, bool cleanupOnFailure);
+    HRESULT ValidateThemeData(bool fullCheck) const;
+    bool ValidateObj() const;
     LOGFONTW const* GetFontByIndex(unsigned short index) const;
-    HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
+    static HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
 
     char _szHead[8];
     THEMEHDR* _pbSharableData;
-    void* _hSharableSection;
-    char* _pbNonSharableData;
-    void* _hNonSharableSection;
+    HANDLE _hSharableSection;
+    BYTE* _pbNonSharableData;
+    HANDLE _hNonSharableSection;
     unsigned _Debug_Generation;
     unsigned _Debug_ChangeID;
     char _szTail[4];

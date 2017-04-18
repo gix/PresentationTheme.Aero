@@ -383,7 +383,7 @@ HRESULT CImageFile::CreateScaledBackgroundImage(
     TMBITMAPHEADER* hdr = pRender->GetBitmapHeader(offset);
     HBITMAP scaledDDB = CreateScaledDDB(hbmp);
     if (scaledDDB) {
-        pRender->_phBitmapsArray[hdr->iBitmapIndex].hBitmap = scaledDDB;
+        pRender->SetBitmapHandle(hdr->iBitmapIndex, scaledDDB);
         hdr->fPartiallyTransparent = imageToScale->fPartiallyTransparent;
 
         _ScaledImageInfo = *imageToScale;
@@ -694,7 +694,7 @@ HRESULT CImageFile::SetImageInfo(
         pRender->ExternalGetBool(iPartId, iStateId, TMT_ALPHATHRESHOLD, &pdi->iAlphaThreshold) < 0)
         pdi->iAlphaThreshold = 255;
 
-    HBITMAP hbmp = pRender->_phBitmapsArray[tmhdr->iBitmapIndex].hBitmap;
+    HBITMAP hbmp = pRender->BitmapIndexToHandle(tmhdr->iBitmapIndex);
 
     int width, height;
     if (hbmp) {
@@ -919,7 +919,7 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
 
     dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
     if (GetScreenDpi() == dpiX || g_fForcedDpi) {
-        dpiY = pRender->_iAssociatedDpi;
+        dpiY = pRender->GetAssociatedDpi();
         v33 = dpiY;
     } else {
         dpiX_1 = GetDeviceCaps(hdc, LOGPIXELSX);
@@ -1063,7 +1063,7 @@ HRESULT CImageFile::DrawImageInfo(
             if (pdi->iDibOffset > 0) {
                 pThemeBitmapHeader = pRender->GetBitmapHeader(pdi->iDibOffset);
                 fStock = 0;
-                if (pRender->_phBitmapsArray[pThemeBitmapHeader->iBitmapIndex].hBitmap)
+                if (pRender->BitmapIndexToHandle(pThemeBitmapHeader->iBitmapIndex))
                     fStock = 1;
             }
         }

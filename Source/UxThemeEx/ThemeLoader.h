@@ -29,16 +29,19 @@ public:
     HRESULT AddBaseClass(int idClass, int idBaseClass) override;
     int GetScreenPpi() override;
 
-    HRESULT AllocateThemeFileBytes(char* upb, unsigned dwAdditionalLen);
-    HRESULT EmitEntryHdr(MIXEDPTRS* u, short propnum, char privnum);
+    HRESULT AllocateThemeFileBytes(BYTE* upb, unsigned dwAdditionalLen);
+    HRESULT EmitEntryHdr(MIXEDPTRS* u, short propnum, BYTE privnum);
     int EndEntry(MIXEDPTRS* u);
     BOOL IndexExists(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId);
     HRESULT AddMissingParent(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId);
-    HRESULT AddDataInternal(short sTypeNum, char ePrimVal, void const* pData, unsigned dwLen);
+    HRESULT AddDataInternal(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen);
     void FreeLocalTheme();
-    HRESULT LoadTheme(HINSTANCE hInst, wchar_t const* pszThemeName, HANDLE* phReuseSection, BOOL fGlobalTheme);
+    HRESULT LoadTheme(HINSTANCE hInst, wchar_t const* pszThemeName,
+                      wchar_t const* pszColorParam,
+                      wchar_t const*pszSizeParam, HANDLE* phReuseSection,
+                      BOOL fGlobalTheme);
     HRESULT EmitString(MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc, int* piOffSet);
-    HRESULT EmitObject(MIXEDPTRS* u, short propnum, char privnum, void* pHdr, unsigned dwHdrLen, void* pObj, unsigned dwObjLen, CRenderObj*);
+    HRESULT EmitObject(MIXEDPTRS* u, short propnum, unsigned char privnum, void* pHdr, unsigned dwHdrLen, void* pObj, unsigned dwObjLen, CRenderObj*);
     HRESULT MakeStockObject(CRenderObj* pRender, DIBINFO* pdi);
     HRESULT PackImageFileInfo(DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT EmitAndCopyBlock(MIXEDPTRS* u, void const* pSrc, unsigned dwLen);
@@ -50,7 +53,7 @@ public:
     HRESULT CopyDummyNonSharableDataToLive();
     HRESULT CreateReuseSection(wchar_t const* pszSharableSectionName, void** phReuseSection);
     HRESULT CopyNonSharableDataToLive(HANDLE hReuseSection);
-    HRESULT PackAndLoadTheme(void* hFile,
+    HRESULT PackAndLoadTheme(HANDLE hFile,
                              wchar_t const* pszThemeName,
                              wchar_t const* pszColorParam,
                              wchar_t const* pszSizeParam,
@@ -59,7 +62,7 @@ public:
                              unsigned cchSharableSectionName,
                              wchar_t* pszNonSharableSectionName,
                              unsigned cchNonSharableSectionName,
-                             void** phReuseSection,
+                             HANDLE* phReuseSection,
                              PFNALLOCSECTIONS pfnAllocSections);
     HRESULT CopyLocalThemeToLive(void* hFile,
                                  int iTotalLength,
@@ -80,7 +83,7 @@ public:
     int _iSysMetricsOffset;
     int _iGlobalsTextObj;
     int _iGlobalsDrawObj;
-    char* _pbLocalData;
+    BYTE* _pbLocalData;
     int _iLocalLen;
     std::vector<APPCLASSLOCAL> _LocalIndexes;
     ENTRYHDR* _pbEntryHdrs[5];

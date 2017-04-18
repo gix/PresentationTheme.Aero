@@ -114,13 +114,13 @@ HRESULT CRenderList::OpenRenderObject(
 
     std::lock_guard<std::mutex> lock(_csListLock);
 
-    int freeSlot = -1;
+    int nextAvailSlot = -1;
 
     for (int i = 0; i < _RenderEntries.size(); ++i) {
         auto& entry = _RenderEntries[i];
         if (!entry.pRenderObj) {
-            if (freeSlot == -1)
-                freeSlot = i;
+            if (nextAvailSlot == -1)
+                nextAvailSlot = i;
             continue;
         }
 
@@ -128,8 +128,8 @@ HRESULT CRenderList::OpenRenderObject(
         if (!entry.fClosing &&
             obj->_pThemeFile == pThemeFile &&
             obj->GetThemeOffset() == iThemeOffset &&
-            obj->_iAssociatedDpi == iTargetDpi &&
-            obj->_fIsStronglyAssociatedDpi == 0) {
+            obj->GetAssociatedDpi() == iTargetDpi &&
+            !obj->IsStronglyAssociatedDpi()) {
             ++entry.iRefCount;
             *phTheme = MakeThemeHandle(i, entry.dwRecycleNum);
             return S_OK;
@@ -154,16 +154,16 @@ HRESULT CRenderList::OpenRenderObject(
     entry.iInUseCount = 0;
     entry.iLoadId = iLoadId;
 
-    int slot;
-    if (freeSlot == -1) {
+    int usedSlot;
+    if (nextAvailSlot == -1) {
         _RenderEntries.push_back(entry);
-        slot = _RenderEntries.size() - 1;
+        usedSlot = _RenderEntries.size() - 1;
     } else {
-        _RenderEntries[freeSlot] = entry;
-        slot = freeSlot;
+        _RenderEntries[nextAvailSlot] = entry;
+        usedSlot = nextAvailSlot;
     }
 
-    *phTheme = MakeThemeHandle(slot, entry.dwRecycleNum);
+    *phTheme = MakeThemeHandle(usedSlot, entry.dwRecycleNum);
     return S_OK;
 }
 

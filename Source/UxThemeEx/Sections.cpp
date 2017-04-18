@@ -17,6 +17,7 @@ Section::Section(DWORD desiredSectionAccess, DWORD desiredViewAccess)
     : desiredSectionAccess(desiredSectionAccess)
     , desiredViewAccess(desiredViewAccess)
 {
+    sectionName[0] = 0;
 }
 
 HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
@@ -49,10 +50,27 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
     return S_OK;
 }
 
-RootSection::RootSection(DWORD desiredSectionAccess, DWORD desiredViewAccess)
+DataSection::DataSection(DWORD desiredSectionAccess, DWORD desiredViewAccess)
     : Section(desiredSectionAccess, desiredViewAccess)
 {
-    DWORD sessionId = NtCurrentTeb()->ProcessEnvironmentBlock->SessionId;
+}
+
+HRESULT DataSection::MakeThemeDataSectionName(wchar_t* pszFullName, unsigned cchMax,
+                                              ThemeDataNamespace dataNamespace,
+                                              unsigned ulSessionID)
+{
+    if (dataNamespace == ThemeDataNamespace::Global || ulSessionID == 0)
+        return StringCchPrintfW(pszFullName, 260, L"\\Windows\\Theme%u", cchMax);
+    if (dataNamespace == ThemeDataNamespace::Session)
+        return StringCchPrintfW(pszFullName, 260, L"\\Sessions\\%d\\Windows\\Theme%u");
+
+    *pszFullName = 0;
+    return S_OK;
+}
+
+RootSection::RootSection(ULONG sessionId, DWORD desiredSectionAccess, DWORD desiredViewAccess)
+    : Section(desiredSectionAccess, desiredViewAccess)
+{
     if (sessionId)
         StringCchPrintfW(sectionName.data(), sectionName.size(),
                          L"\\Sessions\\%d\\Windows\\ThemeSection", sessionId);

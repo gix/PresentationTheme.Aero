@@ -13,6 +13,7 @@
 #include <CommCtrl.h>
 #include <CommonControls.h>
 #include <strsafe.h>
+#include "ScalingUtil.h"
 
 using namespace uxtheme;
 
@@ -398,6 +399,20 @@ void CThemeApiHelper::CloseHandle()
 
 } // namespace uxtheme
 
+struct LOADTHEMEFORTESTPARAMS
+{
+    unsigned int cbSize;
+    const wchar_t *pszThemeName;
+    const wchar_t *pszColorParam;
+    const wchar_t *pszSizeParam;
+    unsigned __int16 wDesiredLangID;
+    int iDesiredDpi;
+    int rgConnectedDpis[7];
+    int fEmulateGlobal;
+    int fForceHighContrast;
+    CUxThemeFile *pLoadedUxThemeFile;
+};
+
 THEMEEXAPI UxOpenThemeFile(
     _In_ wchar_t const* themeFileName,
     _Out_ HTHEMEFILE* phThemeFile)
@@ -405,10 +420,23 @@ THEMEEXAPI UxOpenThemeFile(
     HMODULE module;
     ENSURE_HR(LoadThemeLibrary(themeFileName, &module, nullptr));
 
-    FileMappingHandle reuseSection;
+    wchar_t const* colorParam = L"NormalColor";
+    wchar_t const* sizeParam = L"NormalSize";
+
+    LOADTHEMEFORTESTPARAMS tp = {};
+    tp.cbSize = sizeof(tp);
+    tp.pszThemeName = themeFileName;
+    tp.pszColorParam = colorParam;
+    tp.pszSizeParam = sizeParam;
+    auto LoaderLoadThemeForTesting = (HRESULT(__stdcall*)(LOADTHEMEFORTESTPARAMS*))GetProcAddress(
+        GetModuleHandleW(L"uxtheme"), (LPCSTR)127);
+    HRESULT hr = LoaderLoadThemeForTesting(&tp);
 
     CThemeLoader loader;
-    ENSURE_HR(loader.LoadTheme(module, themeFileName, reuseSection.CloseAndGetAddressOf(), TRUE));
+
+    FileMappingHandle reuseSection;
+    ENSURE_HR(loader.LoadTheme(module, themeFileName, colorParam, sizeParam,
+                               reuseSection.CloseAndGetAddressOf(), TRUE));
 
     std::unique_ptr<CUxThemeFile> themeFile(new CUxThemeFile(std::move(loader._LoadingThemeFile)));
 
@@ -595,7 +623,7 @@ THEMEEXAPI UxGetThemeBool(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetBool(iPartId, iStateId, iPropId, pfVal));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetBool(iPartId, iStateId, iPropId, pfVal));
     return S_OK;
 }
 
@@ -613,7 +641,7 @@ THEMEEXAPI UxGetThemeColor(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetInt(iPartId, iStateId, iPropId, (int*)pColor));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetInt(iPartId, iStateId, iPropId, (int*)pColor));
     return S_OK;
 }
 
@@ -641,7 +669,7 @@ THEMEEXAPI UxGetThemeEnumValue(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetEnumValue(iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetEnumValue(iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -660,7 +688,7 @@ THEMEEXAPI UxGetThemeFilename(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetString(iPartId, iStateId, iPropId,
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetString(iPartId, iStateId, iPropId,
                                            pszThemeFileName, cchMaxBuffChars));
     return S_OK;
 }
@@ -680,7 +708,7 @@ THEMEEXAPI UxGetThemeFont(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetFont(hdc, iPartId, iStateId, iPropId,
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetFont(hdc, iPartId, iStateId, iPropId,
                                          TRUE, pFont));
     return S_OK;
 }
@@ -699,7 +727,7 @@ THEMEEXAPI UxGetThemeInt(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetInt(iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetInt(iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -717,7 +745,7 @@ THEMEEXAPI UxGetThemeIntList(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetIntList(iPartId, iStateId, iPropId, pIntList));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetIntList(iPartId, iStateId, iPropId, pIntList));
     return S_OK;
 }
 
@@ -737,7 +765,7 @@ THEMEEXAPI UxGetThemeMargins(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetMargins(hdc, iPartId, iStateId, iPropId,
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetMargins(hdc, iPartId, iStateId, iPropId,
                                             prc, pMargins));
     return S_OK;
 }
@@ -757,7 +785,7 @@ THEMEEXAPI UxGetThemeMetric(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetMetric(hdc, iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetMetric(hdc, iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -802,7 +830,7 @@ THEMEEXAPI UxGetThemePosition(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetPosition(iPartId, iStateId, iPropId, pPoint));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetPosition(iPartId, iStateId, iPropId, pPoint));
     return S_OK;
 }
 
@@ -838,7 +866,7 @@ THEMEEXAPI UxGetThemeRect(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetRect(iPartId, iStateId, iPropId, pRect));
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetRect(iPartId, iStateId, iPropId, pRect));
     return S_OK;
 }
 
@@ -858,7 +886,7 @@ THEMEEXAPI UxGetThemeStream(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetStream(iPartId, iStateId, iPropId,
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetStream(iPartId, iStateId, iPropId,
                                            ppvStream, pcbStream, hInst));
     return S_OK;
 }
@@ -878,7 +906,7 @@ THEMEEXAPI UxGetThemeString(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->ExternalGetString(iPartId, iStateId, iPropId, pszBuff,
+    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetString(iPartId, iStateId, iPropId, pszBuff,
                                            cchMaxBuffChars));
     return S_OK;
 }
@@ -928,7 +956,7 @@ THEMEEXAPI UxGetThemeSysFont(
         return E_INVALIDARG;
 
     if (renderObj) {
-        *plf = renderObj->_ptm->lfFonts[iFontId - TMT_FIRSTFONT];
+        *plf = *renderObj->GetFont(iFontId - TMT_FIRSTFONT);
         ScaleFontForScreenDpi(plf);
         return S_OK;
     }

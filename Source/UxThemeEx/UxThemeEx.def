@@ -50,3 +50,5 @@ EXPORTS
 	UxHook
 	UxUnhook
 	UxBroadcastThemeChange
+	DumpLoadedThemeToTextFile
+	DumpSystemThemeToTextFile

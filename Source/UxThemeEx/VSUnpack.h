@@ -31,13 +31,13 @@ struct VSRECORD
     }
 };
 
-struct _HCIMAGEPROPERTIES
+struct HCIMAGEPROPERTIES
 {
     int lHCBorderColor;
     int lHCBackgroundColor;
 };
 
-struct _IMAGEPROPERTIES
+struct IMAGEPROPERTIES
 {
     unsigned dwBorderColor;
     unsigned dwBackgroundColor;
@@ -78,14 +78,14 @@ struct CVSUnpack
     void* _pbClassData = nullptr;
     int _cbClassData = 0;
     std::vector<std::wstring> _rgClassNames;
-    void* _hSymbols = nullptr;
-    int _fGlobal = 1;
-    char* _rgfPartiallyTransparent = nullptr;
+    HANDLE _hSymbols = nullptr;
+    BOOL _fGlobal = TRUE;
+    BYTE* _rgfPartiallyTransparent = nullptr;
     int* _rgBitmapIndices = nullptr;
     unsigned _cBitmaps = 0;
     unsigned _cbBuffer = 0;
-    char* _pBuffer = nullptr;
-    int _fIsLiteVisualStyle = 0;
+    BYTE* _pBuffer = nullptr;
+    BOOL _fIsLiteVisualStyle = FALSE;
     VSRECORD* _rgImageDpiRec[7] = {};
     VSRECORD* _rgImageRec[7] = {};
     VSRECORD* _rgComposedImageRec[7] = {};
@@ -99,7 +99,8 @@ struct CVSUnpack
 
     static bool _DelayRecord(VSRECORD* pRec);
 
-    HRESULT Initialize(HMODULE hInstSrc, int nVersion, int fGlobal, int fIsLiteVisualStyle);
+    HRESULT Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
+                       BOOL fIsLiteVisualStyle);
 
     HRESULT GetRootMap(void** ppvRMap, int* pcbRMap);
     HRESULT GetVariantMap(void** ppvVMap, int* pcbVMap);
@@ -111,8 +112,8 @@ struct CVSUnpack
 
     HRESULT _FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart, int iState, int lSymbolVal, VSRECORD** ppRec);
     HRESULT _GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart, int iState, int lSymbolVal, void* pvValue, int* pcbValue);
-    HRESULT _GetImagePropertiesForHC(_IMAGEPROPERTIES** ppImageProperties, _HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount);
-    HRESULT _CreateImageFromProperties(_IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins, MARGINS* pTransparentMargins, char** ppbNewBitmap, int* pcbNewBitmap);
+    HRESULT _GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties, HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount);
+    HRESULT _CreateImageFromProperties(IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins, MARGINS* pTransparentMargins, char** ppbNewBitmap, int* pcbNewBitmap);
     HRESULT _EnsureBufferSize(unsigned cbBytes);
     HRESULT _ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsColor);
     HRESULT _ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsMargins);

@@ -91,7 +91,7 @@ static void fill_zero(T(&arr)[N])
 template<typename T>
 static std::enable_if_t<std::is_pointer_v<T>> fill_zero(T ptr)
 {
-    using V = std::remove_pointer<T>;
+    using V = std::remove_pointer_t<T>;
     static_assert(std::is_trivially_copyable<V>::value, "T must be trivially copyable.");
     std::fill_n(reinterpret_cast<char*>(ptr), sizeof(V), 0);
 }
@@ -136,10 +136,21 @@ static T AlignTo(T value, T alignment)
     return value;
 }
 
+bool IsHighContrastMode();
+
 #define ENSURE_HR(expr) \
     do { \
         HRESULT hr_ = (expr); \
         if (FAILED(hr_)) { \
+            TRACE_HR(hr_); \
+            return hr_; \
+        } \
+    } while (false)
+
+#define ENSURE_HR_EX(exclude, expr) \
+    do { \
+        HRESULT hr_ = (expr); \
+        if (hr_ != (exclude) && FAILED(hr_)) { \
             TRACE_HR(hr_); \
             return hr_; \
         } \

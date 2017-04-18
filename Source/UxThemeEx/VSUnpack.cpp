@@ -267,7 +267,6 @@ static int String2Number(wchar_t const* psz)
             break;
 
         value = (value * base) + digit;
-        ++psz;
     }
 
     return sign * value;
@@ -1090,11 +1089,6 @@ static void UnloadVSRecordData(VSRECORD* pRecord, void* pvBuf)
     }
 }
 
-static BOOL IsHighContrastMode()
-{
-    return FALSE;
-}
-
 static DWORD MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
 {
     switch (hcColor) {
@@ -1320,7 +1314,14 @@ static HRESULT _ReadVSVariant(char* pbVariantList, int cbVariantList, int* pcbPo
     return S_OK;
 }
 
-HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, int fGlobal, int fIsLiteVisualStyle)
+template<typename T>
+static T* AllocateZero(size_t n)
+{
+    return (T*)calloc(n, sizeof(BYTE));
+}
+
+HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
+                              BOOL fIsLiteVisualStyle)
 {
     _hInst = hInstSrc;
     _nVersion = nVersion;
@@ -1358,7 +1359,7 @@ HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, int fGlobal, int f
     for (unsigned i = 0; i < _cBitmaps; ++i)
         _rgBitmapIndices[i] = -1;
 
-    _rgfPartiallyTransparent = new(std::nothrow) char[(_cBitmaps / 8) + 1];
+    _rgfPartiallyTransparent = (BYTE*)calloc((_cBitmaps / CHAR_BIT) + 1, sizeof(BYTE));
     if (!_rgfPartiallyTransparent)
         return E_OUTOFMEMORY;
 
@@ -1695,9 +1696,9 @@ HRESULT CVSUnpack::_GetPropertyValue(
 }
 
 HRESULT CVSUnpack::_GetImagePropertiesForHC(
-    _IMAGEPROPERTIES** ppImageProperties, _HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount)
+    IMAGEPROPERTIES** ppImageProperties, HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount)
 {
-    auto props = new(std::nothrow) _IMAGEPROPERTIES[iImageCount];
+    auto props = new(std::nothrow) IMAGEPROPERTIES[iImageCount];
     if (!props)
         return E_OUTOFMEMORY;
 
@@ -1725,7 +1726,7 @@ HRESULT CVSUnpack::_GetImagePropertiesForHC(
 }
 
 HRESULT CVSUnpack::_CreateImageFromProperties(
-    _IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins,
+    IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins,
     MARGINS* pTransparentMargins, char** ppbNewBitmap, int* pcbNewBitmap)
 {
     MARGINS const transparentMargin = pTransparentMargins ? *pTransparentMargins : MARGINS();
@@ -1802,7 +1803,7 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
 HRESULT CVSUnpack::_EnsureBufferSize(unsigned cbBytes)
 {
     if (cbBytes > _cbBuffer) {
-        auto newBuffer = (char*)malloc(cbBytes);
+        auto newBuffer = (BYTE*)malloc(cbBytes);
         if (!newBuffer)
             return E_OUTOFMEMORY;
         free(_pBuffer);
@@ -1891,16 +1892,27 @@ HRESULT CVSUnpack::_ExpandVSRecordForMargins(
     return S_FALSE;
 }
 
+static bool TestBit(BYTE const* array, int n)
+{
+    return (array[n / CHAR_BIT] & (1 << (n % CHAR_BIT))) != 0;
+}
+
+static void SetBit(BYTE* array, int n)
+{
+    array[n / CHAR_BIT] |= 1 << (n % CHAR_BIT);
+}
+
 HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData)
 {
     HRESULT hr;
     if (_fIsLiteVisualStyle) {
-        bool isColor;
-        hr = _ExpandVSRecordForColor(pfnCB, pRec, pbData, cbData, &isColor);
-        if (isColor)
+        bool fIsColor;
+        hr = _ExpandVSRecordForColor(pfnCB, pRec, pbData, cbData, &fIsColor);
+        if (fIsColor)
             return hr;
-        hr = _ExpandVSRecordForMargins(pfnCB, pRec, pbData, cbData, &isColor);
-        if (isColor)
+        bool fIsMargins;
+        hr = _ExpandVSRecordForMargins(pfnCB, pRec, pbData, cbData, &fIsMargins);
+        if (fIsMargins)
             return hr;
     }
 
@@ -1925,32 +1937,31 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
     int partiallyTransparent;
     int iImageCount;
     int pvBuf;
-    int pcbNewBitmap;
+    int cbNewBitmap;
     LPVOID lpMem;
     char* v97;
     VSRECORD* pRecord;
     HDC hDC;
 
-    _IMAGEPROPERTIES* pImageProperties = nullptr;
-    bool pImageProperties_a = false;
+    IMAGEPROPERTIES* pImageProperties = nullptr;
+    bool fComposedImage = false;
     bool pImageProperties_b = false;
     char pImageProperties_c = 0;
-    int pImageProperties_unknown = 0;
 
     hr = 0;
     v97 = 0;
     iImageCount = 0;
     lpMem = 0;
-    pcbNewBitmap = 0;
+    cbNewBitmap = 0;
     pfncb = 0;
 
-    short sTypeNum;
-    int v16;
+    short lDibSymbolVal;
+    int fSimplifiedImage;
 
     switch (pRec->lSymbolVal) {
     case TMT_IMAGEFILE:
-        sTypeNum = 2;
-        v16 = 0;
+        lDibSymbolVal = 2;
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     case TMT_IMAGEFILE1:
@@ -1960,13 +1971,13 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
     case TMT_IMAGEFILE5:
     case TMT_IMAGEFILE6:
     case TMT_IMAGEFILE7:
-        sTypeNum = Map_IMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
-        v16 = 0;
+        lDibSymbolVal = Map_IMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     case TMT_GLYPHIMAGEFILE:
-        sTypeNum = TMT_GLYPHDIBDATA;
-        v16 = 0;
+        lDibSymbolVal = TMT_GLYPHDIBDATA;
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     case TMT_5100:
@@ -1974,10 +1985,10 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
         if (IsHighContrastMode())
             return 0;
 
-        sTypeNum = TMT_DIBDATA;
-        v16 = 1;
-        pImageProperties = reinterpret_cast<_IMAGEPROPERTIES*>(pbData);
-        iImageCount = cbData / sizeof(_IMAGEPROPERTIES);
+        lDibSymbolVal = TMT_DIBDATA;
+        fSimplifiedImage = 1;
+        pImageProperties = reinterpret_cast<IMAGEPROPERTIES*>(pbData);
+        iImageCount = cbData / sizeof(IMAGEPROPERTIES);
         goto LABEL_98;
     }
 
@@ -1986,13 +1997,13 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
         if (!IsHighContrastMode())
             return 0;
 
-        sTypeNum = TMT_DIBDATA;
-        v16 = 1;
-        iImageCount = cbData / sizeof(_HCIMAGEPROPERTIES);
+        lDibSymbolVal = TMT_DIBDATA;
+        fSimplifiedImage = 1;
+        iImageCount = cbData / sizeof(HCIMAGEPROPERTIES);
         v97 = pbData;
         hr = _GetImagePropertiesForHC(
             &pImageProperties,
-            reinterpret_cast<_HCIMAGEPROPERTIES*>(pbData),
+            reinterpret_cast<HCIMAGEPROPERTIES*>(pbData),
             iImageCount);
         if (hr < 0)
             return hr;
@@ -2003,15 +2014,15 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
         return IsHighContrastMode() != 0;
 
     case TMT_5143:
-        sTypeNum = TMT_DIBDATA;
-        pImageProperties_a = 1;
-        v16 = 0;
+        lDibSymbolVal = TMT_DIBDATA;
+        fComposedImage = 1;
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     case TMT_5149:
-        sTypeNum = TMT_GLYPHDIBDATA;
-        pImageProperties_a = 1;
-        v16 = 0;
+        lDibSymbolVal = TMT_GLYPHDIBDATA;
+        fComposedImage = 1;
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     case TMT_COMPOSEDIMAGEFILE1:
@@ -2021,9 +2032,9 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
     case TMT_COMPOSEDIMAGEFILE5:
     case TMT_COMPOSEDIMAGEFILE6:
     case TMT_COMPOSEDIMAGEFILE7:
-        sTypeNum = Map_COMPOSEDIMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
-        pImageProperties_a = 1;
-        v16 = 0;
+        lDibSymbolVal = Map_COMPOSEDIMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
+        fComposedImage = 1;
+        fSimplifiedImage = 0;
         goto LABEL_131;
 
     LABEL_131:
@@ -2038,7 +2049,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
 
 LABEL_98:
     hr = 0;
-    int indicesIdx = 0;
+    int iRes = 0;
 
     if (!_rgBitmapIndices) {
         hr = E_FAIL;
@@ -2050,19 +2061,19 @@ LABEL_98:
     pvBuf = 0;
     bmpInfoHeader = 0;
     v17 = 0;
-    int v88;
+    int cbNewBitmap_;
 
-    if (!v16) {
-        indicesIdx = pRec->uResID - 501;
-        if (indicesIdx < 0) {
+    if (!fSimplifiedImage) {
+        iRes = pRec->uResID - 501;
+        if (iRes < 0) {
             hr = E_FAIL;
             goto LABEL_24;
         }
 
         unsigned cBitmapsOld = _cBitmaps;
-        if (indicesIdx < _cBitmaps) {
-            bitmapIdx = _rgBitmapIndices[indicesIdx];
-            partiallyTransparent = _rgfPartiallyTransparent[indicesIdx / CHAR_BIT] & (1 << (indicesIdx & (CHAR_BIT - 1)));
+        if (iRes < _cBitmaps) {
+            bitmapIdx = _rgBitmapIndices[iRes];
+            partiallyTransparent = TestBit(_rgfPartiallyTransparent, iRes);
         } else {
             _cBitmaps = 2 * cBitmapsOld;
             int* newBitmapIndices = (int*)realloc(_rgBitmapIndices, sizeof(_rgBitmapIndices[0]) * (2 * cBitmapsOld));
@@ -2074,7 +2085,7 @@ LABEL_98:
                 if (_cBitmaps > cBitmapsOld)
                     std::fill(&_rgBitmapIndices[cBitmapsOld], &_rgBitmapIndices[_cBitmaps], -1);
 
-                auto v71 = (char*)realloc(_rgfPartiallyTransparent, (_cBitmaps / CHAR_BIT) + 1);
+                auto v71 = (BYTE*)realloc(_rgfPartiallyTransparent, (_cBitmaps / CHAR_BIT) + 1);
                 if (!v71)
                     hr = E_OUTOFMEMORY;
                 else
@@ -2082,7 +2093,7 @@ LABEL_98:
             }
         }
 
-        v16 = 0;
+        fSimplifiedImage = 0;
         v17 = 0;
     }
 
@@ -2090,7 +2101,7 @@ LABEL_98:
         return hr;
 
     if (bitmapIdx == -1 || !_fGlobal) {
-        if (v16) {
+        if (fSimplifiedImage) {
             MARGINS sizingMargins = {};
             int v90_ = sizeof(sizingMargins);
             auto v37_ = _GetPropertyValue(
@@ -2115,12 +2126,11 @@ LABEL_98:
                     &sizingMargins,
                     &transparentMargins,
                     (char **)&lpMem,
-                    &pcbNewBitmap);
+                    &cbNewBitmap);
             if (hr < 0)
                 goto LABEL_36;
 
             bmpInfoHeader = (BITMAPHEADER*)lpMem;
-            v16 = pImageProperties_unknown;
         } else {
             auto hdr = (BITMAPHDR*)pbData;
             if (hdr->size) {
@@ -2137,7 +2147,6 @@ LABEL_98:
                     goto LABEL_24;
                 v17 = 1;
                 bmpInfoHeader = _pDecoder->GetBitmapHeader();
-                v16 = pImageProperties_unknown;
             } else {
                 bmpInfoHeader = (BITMAPHEADER*)hdr->buffer;
             }
@@ -2145,19 +2154,19 @@ LABEL_98:
 
         v44 = 0;
         int height = bmpInfoHeader->bmih.biHeight;
-        if (pImageProperties_a)
+        if (fComposedImage)
             height /= 2;
 
-        v88 = 4 * bmpInfoHeader->bmih.biWidth * height;
+        cbNewBitmap_ = 4 * bmpInfoHeader->bmih.biWidth * height;
         partiallyTransparent = 0;
         if (v17) {
             partiallyTransparent = pvBuf;
             if (partiallyTransparent) {
-                if (!v16)
-                    _rgfPartiallyTransparent[indicesIdx / CHAR_BIT] |= 1 << (indicesIdx & (CHAR_BIT - 1));
+                if (!fSimplifiedImage)
+                    SetBit(_rgfPartiallyTransparent, iRes);
             }
         } else {
-            if (v16) {
+            if (fSimplifiedImage) {
                 if (!v97 && iImageCount > 0) {
                     auto prop = pImageProperties;
                     for (int v12 = 0; v12 < iImageCount; ++v12, ++prop) {
@@ -2170,7 +2179,7 @@ LABEL_98:
                 }
             } else if (bmpInfoHeader->bmih.biBitCount == 32) {
                 partiallyTransparent = 1;
-                _rgfPartiallyTransparent[indicesIdx / CHAR_BIT] |= 1 << (indicesIdx & (CHAR_BIT - 1));
+                SetBit(_rgfPartiallyTransparent, iRes);
             }
         }
 
@@ -2199,7 +2208,7 @@ LABEL_98:
         } else goto LABEL_71;
 
     LABEL_71a:
-        pcbNewBitmap = 0;
+        cbNewBitmap = 0;
         v47 = 0;
         pvBuf = 0;
         pImageProperties_c = 0;
@@ -2220,8 +2229,8 @@ LABEL_98:
             {
                 pImageProperties_c = 1;
                 flag1 = true;
-                indicesIdx = c1;
-                pcbNewBitmap = MapEnumToSysColor(c1);
+                iRes = c1;
+                cbNewBitmap = MapEnumToSysColor(c1);
             }
 
             HIGHCONTRASTCOLOR c2;
@@ -2237,7 +2246,7 @@ LABEL_98:
             {
                 v47 = 1;
                 flag2 = true;
-                indicesIdx = c2;
+                iRes = c2;
                 pvBuf = MapEnumToSysColor(c2);
             }
 
@@ -2245,7 +2254,7 @@ LABEL_98:
                 goto LABEL_126;
         }
 
-        if (!pImageProperties_a) {
+        if (!fComposedImage) {
             v82 = 0;
         } else {
         LABEL_126:
@@ -2258,25 +2267,25 @@ LABEL_98:
         if (!v82)
             goto LABEL_71;
 
-        hr = _EnsureBufferSize(v88);
+        hr = _EnsureBufferSize(cbNewBitmap_);
         if (hr < 0)
             goto LABEL_70;
-        v72 = (char*)malloc(v88);
+        v72 = (char*)malloc(cbNewBitmap_);
         pfncb = v72;
         if (!v72) {
             v44 = v72;
             goto LABEL_70;
         } else {
-            if (pImageProperties_a)
+            if (fComposedImage)
             {
                 v74 = 1;
-                v88 = 4;
+                cbNewBitmap_ = 4;
                 iImageCount = 1;
                 if (_FindVSRecord(
                     _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
                     pRec->iState, TMT_IMAGECOUNT, &pRecord) >= 0)
                 {
-                    hr = LoadVSRecordData(_hInst, pRecord, &iImageCount, &v88);
+                    hr = LoadVSRecordData(_hInst, pRecord, &iImageCount, &cbNewBitmap_);
                     if (hr < 0) {
                         v44 = pfncb;
                         goto LABEL_70;
@@ -2295,7 +2304,7 @@ LABEL_98:
                         (char *)pfncb,
                         &bmpInfoHeader->bmih,
                         v79,
-                        (unsigned *)((unsigned __int64)&pcbNewBitmap & -(signed __int64)v80),
+                        (unsigned *)((unsigned __int64)&cbNewBitmap & -(signed __int64)v80),
                         (unsigned *)((unsigned __int64)&pvBuf & -(signed __int64)(v47 != 0)));
                     goto LABEL_70;
                 }
@@ -2323,8 +2332,8 @@ LABEL_70:
     LABEL_71:
         if (hr >= 0) {
             if (bmpInfoHeader->bmih.biBitCount == 32) {
-                v49 = v88;
-                v50 = (char *)malloc(v88);
+                v49 = cbNewBitmap_;
+                v50 = (char *)malloc(cbNewBitmap_);
                 pfncb = v50;
                 if (!v50) {
                     v44 = v50;
@@ -2335,7 +2344,7 @@ LABEL_70:
                 hr = _EnsureBufferSize(4 * bmpInfoHeader->bmih.biWidth * bmpInfoHeader->bmih.biHeight);
                 if (hr < 0)
                     goto LABEL_75;
-                v50 = (char *)malloc(v88);
+                v50 = (char *)malloc(cbNewBitmap_);
                 pfncb = v50;
                 if (!v50) {
                     v44 = v50;
@@ -2356,22 +2365,25 @@ LABEL_75:
         ePrimVal = TMT_HBITMAP;
         short w = bmpInfoHeader->bmih.biWidth;
         short h = bmpInfoHeader->bmih.biHeight;
-        if (pImageProperties_a)
+        if (fComposedImage)
             h /= 2;
 
         bitmapIdx = pfnCB->AddToDIBDataArray(v44, w, h);
         if (bitmapIdx == -1) {
             hr = E_FAIL;
-        } else if (!pImageProperties_unknown) {
-            _rgBitmapIndices[indicesIdx] = bitmapIdx;
+        } else if (!fSimplifiedImage) {
+            _rgBitmapIndices[iRes] = bitmapIdx;
         }
     }
 
 LABEL_29:
     if (hr >= 0) {
         if (_fGlobal) {
-            int values[] = {12, bitmapIdx, partiallyTransparent};
-            hr = pfnCB->AddData(sTypeNum, ePrimVal, values, sizeof(values));
+            TMBITMAPHEADER tmhdr;
+            tmhdr.dwSize = sizeof(tmhdr);
+            tmhdr.iBitmapIndex = bitmapIdx;
+            tmhdr.fPartiallyTransparent = partiallyTransparent;
+            hr = pfnCB->AddData(lDibSymbolVal, ePrimVal, &tmhdr, sizeof(tmhdr));
         } else {
             BITMAPHEADER Dst = {};
             Dst.bmih.biSize = sizeof(BITMAPINFOHEADER);
@@ -2403,11 +2415,11 @@ LABEL_29:
             }
 
             if (hr >= 0) {
-                auto hdr = static_cast<TMBITMAPHEADER*>(v26);
-                hdr->dwSize = 12;
-                hdr->iBitmapIndex = bitmapIdx;
-                hdr->fPartiallyTransparent = partiallyTransparent;
-                hr = pfnCB->AddData(sTypeNum, 2, v26, v25);
+                auto tmhdr = static_cast<TMBITMAPHEADER*>(v26);
+                tmhdr->dwSize = sizeof(tmhdr);
+                tmhdr->iBitmapIndex = bitmapIdx;
+                tmhdr->fPartiallyTransparent = partiallyTransparent;
+                hr = pfnCB->AddData(lDibSymbolVal, 2, v26, v25);
                 free(v26);
             }
         }

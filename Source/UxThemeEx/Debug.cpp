@@ -1,9 +1,11 @@
 ﻿#include "Debug.h"
 
 #include "BorderFill.h"
+#include "Global.h"
 #include "Handle.h"
 #include "ImageFile.h"
 #include "Utils.h"
+#include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
 
 #include <array>
@@ -13,7 +15,6 @@
 #include <winnt.h>
 #include <winternl.h>
 #include <ntstatus.h>
-#include "UxThemeFile.h"
 
 namespace uxtheme
 {
@@ -134,7 +135,6 @@ static int FormatImpl(char* buffer, size_t bufferSize, T const& value)
 template<typename T>
 static int Format(char* buffer, size_t bufferSize, T const& value)
 {
-
     return FormatImpl(buffer, bufferSize, value);
 }
 
@@ -198,6 +198,16 @@ int Format(char* buffer, size_t bufferSize, unsigned long const& value)
     return sprintf_s(buffer, bufferSize, "%lu", value);
 }
 
+int Format(char* buffer, size_t bufferSize, char const* value)
+{
+    return sprintf_s(buffer, bufferSize, "%s", value);
+}
+
+int Format(char* buffer, size_t bufferSize, wchar_t const* value)
+{
+    return sprintf_s(buffer, bufferSize, "%ls", value);
+}
+
 template<>
 int Format(char* buffer, size_t bufferSize, POINT const& value)
 {
@@ -222,6 +232,13 @@ int Format(char* buffer, size_t bufferSize, MARGINS const& value)
 {
     return sprintf_s(buffer, bufferSize, "(l:%d,r:%d,t:%d,b:%d)",
                      value.cxLeftWidth, value.cxRightWidth, value.cyTopHeight, value.cyBottomHeight);
+}
+
+template<>
+int Format(char* buffer, size_t bufferSize, FILETIME const& value)
+{
+    return sprintf_s(buffer, bufferSize, "0x%llX",
+                     ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
 }
 
 class LogFile
@@ -273,6 +290,34 @@ public:
         WriteFile(hFile, buffer, 1, &written, nullptr);
     }
 
+    template<typename T, typename U>
+    void LogPair(char const* key, T const& value, U const& value2)
+    {
+        WriteIndent();
+
+        DWORD written;
+
+        int len = sprintf_s(buffer, countof(buffer), "%s: ", key);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        len = Format(buffer, countof(buffer), value);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        buffer[0] = ' ';
+        buffer[1] = '(';
+        WriteFile(hFile, buffer, 2, &written, nullptr);
+
+        len = Format(buffer, countof(buffer), value2);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        buffer[0] = ')';
+        buffer[1] = '\n';
+        WriteFile(hFile, buffer, 2, &written, nullptr);
+    }
+
     void LogPair(char const* key, DIBINFO const& value)
     {
         Log("%s:\n", key);
@@ -291,6 +336,12 @@ public:
         LogPair("szMinSize", value.szMinSize);
 
         Outdent();
+    }
+
+    template<size_t N>
+    void LogPair(char const* key, wchar_t const (&value)[N])
+    {
+        LogPair(key, (wchar_t const*)value);
     }
 
     template<typename T, size_t N>
@@ -334,7 +385,7 @@ private:
     int indentLevel = 0;
 };
 
-static void Dump(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
+static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
 {
     if (drawObj->_eBgType == BT_IMAGEFILE) {
         auto imageFile = (CImageFile*)drawObj;
@@ -394,7 +445,7 @@ static void Dump(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
 
 static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
 {
-    log.Log("  (%05d %05u) %05u\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
+    log.Log("  (%05u %05u) %05u\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
 
     log.Indent();
 
@@ -440,14 +491,46 @@ static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
     } else if (entry->usTypeNum == TMT_DRAWOBJ) {
         auto objHdr = (PARTOBJHDR*)(entry + 1);
         log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
-        Dump(log, hdr, (CDrawBase*)(objHdr + 1));
+        DumpDrawObj(log, hdr, (CDrawBase*)(objHdr + 1));
     }
 
     log.Outdent();
 }
 
+static void DumpHeader(THEMEHDR const* hdr, LogFile& log)
+{
+    log.Log("THEMEHDR\n");
+    log.Log("========================================\n");
+
+    log.LogPair("szSignature", hdr->szSignature);
+    log.LogPair("dwVersion", hdr->dwVersion);
+    log.LogPair("ftModifTimeStamp", hdr->ftModifTimeStamp);
+    log.LogPair("dwTotalLength", hdr->dwTotalLength);
+    log.LogPair("iDllNameOffset", hdr->iDllNameOffset, (wchar_t const*)Advance(hdr, hdr->iDllNameOffset));
+    log.LogPair("iColorParamOffset", hdr->iColorParamOffset, (wchar_t const*)Advance(hdr, hdr->iColorParamOffset));
+    log.LogPair("iSizeParamOffset", hdr->iSizeParamOffset, (wchar_t const*)Advance(hdr, hdr->iSizeParamOffset));
+    log.LogPair("dwLangID", hdr->dwLangID);
+    log.LogPair("iLoadDPI", hdr->iLoadDPI);
+    log.LogPair("dwLoadDPIs", hdr->dwLoadDPIs);
+    log.LogPair("iLoadPPI", hdr->iLoadPPI);
+    log.LogPair("iStringsOffset", hdr->iStringsOffset);
+    log.LogPair("iStringsLength", hdr->iStringsLength);
+    log.LogPair("iSectionIndexOffset", hdr->iSectionIndexOffset);
+    log.LogPair("iSectionIndexLength", hdr->iSectionIndexLength);
+    log.LogPair("iGlobalsOffset", hdr->iGlobalsOffset);
+    log.LogPair("iGlobalsTextObjOffset", hdr->iGlobalsTextObjOffset);
+    log.LogPair("iGlobalsDrawObjOffset", hdr->iGlobalsDrawObjOffset);
+    log.LogPair("iSysMetricsOffset", hdr->iSysMetricsOffset);
+    log.LogPair("iFontsOffset", hdr->iFontsOffset);
+    log.LogPair("cFonts", hdr->cFonts);
+    log.Log("\n");
+}
+
 static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
 {
+    log.Log("SectionIndex\n");
+    log.Log("========================================\n");
+
     auto begin = (APPCLASSLIVE*)Advance(hdr, hdr->iSectionIndexOffset);
     auto end = Advance(begin, hdr->iSectionIndexLength);
 
@@ -457,7 +540,7 @@ static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
         auto className = p->AppClassInfo.iClassNameIndex ?
             (wchar_t const*)Advance(hdr, p->AppClassInfo.iClassNameIndex) : L"<no class>";
 
-        log.Log("%-10ls %-30ls  %05d %05d %05d\n",
+        log.Log("%-10ls %-30ls  idx:%05d len:%05d base:%05d\n",
                 appName, className, p->iIndex, p->iLen, p->iBaseClassIndex);
 
         auto be = (ENTRYHDR*)Advance(hdr, p->iIndex);
@@ -467,55 +550,103 @@ static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
             DumpEntry(log, hdr, pe);
         }
     }
+
+    log.Log("\n");
 }
 
-static void DumpTheme(THEMEHDR const* theme, FileHandle& bin, LogFile& log)
+static void DumpFonts(THEMEHDR const* hdr, LogFile& log)
 {
-    DumpSectionIndex(theme, log);
+    log.Log("Fonts\n");
+    log.Log("========================================\n");
+
+    auto fonts = (LOGFONTW const*)Advance(hdr, hdr->iFontsOffset);
+
+    for (int i = 0; i < hdr->cFonts; ++i) {
+        auto const& font = fonts[i];
+        log.Log("Font %d\n", i);
+        log.Indent();
+        log.LogPair("lfHeight", font.lfHeight);
+        log.LogPair("lfWidth", font.lfWidth);
+        log.LogPair("lfEscapement", font.lfEscapement);
+        log.LogPair("lfOrientation", font.lfOrientation);
+        log.LogPair("lfWeight", font.lfWeight);
+        log.LogPair("lfItalic", font.lfItalic);
+        log.LogPair("lfUnderline", font.lfUnderline);
+        log.LogPair("lfStrikeOut", font.lfStrikeOut);
+        log.LogPair("lfCharSet", font.lfCharSet);
+        log.LogPair("lfOutPrecision", font.lfOutPrecision);
+        log.LogPair("lfClipPrecision", font.lfClipPrecision);
+        log.LogPair("lfQuality", font.lfQuality);
+        log.LogPair("lfPitchAndFamily", font.lfPitchAndFamily);
+        log.LogPair("lfFaceName", font.lfFaceName);
+        log.Outdent();
+    }
+
+    log.Log("\n");
+}
+
+static HRESULT WriteFileAllBytes(wchar_t const* path, void const* ptr, unsigned length)
+{
+    FileHandle file{CreateFileW(path, GENERIC_WRITE, 0, nullptr,
+                                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+
+    while (length > 0) {
+        DWORD bytesWritten;
+        if (!WriteFile(file, ptr, length, &bytesWritten, nullptr))
+            return MakeErrorLast();
+
+        length -= bytesWritten;
+        ptr = Advance(ptr, bytesWritten);
+    }
+
+    return S_OK;
+}
+
+static HRESULT DumpThemeFile(CUxThemeFile* themeFile, wchar_t const* path,
+                             bool packed, bool fullInfo)
+{
+    THEMEHDR const* themeHdr = themeFile->_pbSharableData;
+
+    if (packed)
+        return WriteFileAllBytes(path, themeHdr, themeHdr->dwTotalLength);
+
+    LogFile log{path};
+    if (!log.Open())
+        return E_FAIL;
 
     std::vector<std::wstring> str1;
-    GetStrings(theme, str1);
+    GetStrings(themeHdr, str1);
+
+    DumpHeader(themeHdr, log);
+    DumpSectionIndex(themeHdr, log);
+    DumpFonts(themeHdr, log);
+    return S_OK;
 }
 
 HRESULT DumpLoadedThemeToTextFile(HTHEMEFILE hThemeFile, wchar_t const* path,
                                   bool packed, bool fullInfo)
 {
-    if (packed) {
-        FileHandle file{CreateFileW(path, GENERIC_WRITE, 0, nullptr,
-                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
-
-        THEMEHDR const* theme = nullptr;
-
-        DWORD bytesWritten;
-        WriteFile(file, theme, theme->dwTotalLength, &bytesWritten, nullptr);
-    } else {
-        LogFile log{path};
-        if (!log.Open())
-            return E_FAIL;
-
-        DumpTheme(themeFile->_pbSharableData, h, log);
-        return S_OK;
-    }
+    auto themeFile = ThemeFileFromHandle(hThemeFile);
+    if (!themeFile)
+        return E_HANDLE;
+    return DumpThemeFile(themeFile, path, packed, fullInfo);
 }
 
 HRESULT DumpSystemThemeToTextFile(wchar_t const* path, bool packed, bool fullInfo)
 {
-    RootSection rootSection(FILE_MAP_READ, FILE_MAP_READ);
-    ROOTSECTION* rootSectionData;
-    ENSURE_HR(rootSection.GetRootSectionData(&rootSectionData));
+    SectionHandle sharableSection;
+    SectionHandle nonSharableSection;
 
-    Section section(FILE_MAP_READ, FILE_MAP_READ);
-    ENSURE_HR(section.OpenSection(rootSectionData->szSharableSectionName, true));
-    auto hdr = static_cast<THEMEHDR const*>(section.View());
+    ENSURE_HR(CUxThemeFile::GetGlobalTheme(
+        sharableSection.CloseAndGetAddressOf(),
+        nonSharableSection.CloseAndGetAddressOf()));
 
-    FileHandle h{CreateFileW(textFile, GENERIC_WRITE, 0, nullptr,
-                             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
-    LogFile log{textPath};
-    if (!log.Open())
-        return E_FAIL;
-    DumpTheme(hdr, h, log);
+    CUxThemeFile themeFile;
+    ENSURE_HR(themeFile.OpenFromHandle(sharableSection, nonSharableSection, FILE_MAP_READ, true));
+    sharableSection.Detach();
+    nonSharableSection.Detach();
 
-    return S_OK;
+    return DumpThemeFile(&themeFile, path, packed, fullInfo);
 }
 
 } // namespace uxtheme

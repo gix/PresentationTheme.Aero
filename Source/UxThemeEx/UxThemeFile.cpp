@@ -1,9 +1,11 @@
 ﻿#include "UxThemeFile.h"
 
+#include "Sections.h"
 #include "Utils.h"
 #include <cassert>
 #include <strsafe.h>
-#include "Sections.h"
+#include <winternl.h>
+#include <memoryapi.h>
 
 namespace uxtheme
 {
@@ -33,9 +35,18 @@ HRESULT CUxThemeFile::CreateFileW(
     unsigned cchNonSharableSectionName, int iNonSharableSectionLength,
     int fReserve)
 {
-    _pbSharableData = (THEMEHDR*)VirtualAlloc(nullptr, iSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
+    DWORD flags = PAGE_READWRITE;
+    if (fReserve)
+        flags |= SEC_RESERVE;
+    _hSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags,
+                                           0, iSharableSectionLength, nullptr);
+    _pbSharableData = (THEMEHDR*)MapViewOfFile(_hSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     _cbSharableData = iSharableSectionLength;
-    _pbNonSharableData = (char*)VirtualAlloc(nullptr, iNonSharableSectionLength, MEM_RESERVE, PAGE_READWRITE);
+
+    _hNonSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr,
+                                              flags, 0, iNonSharableSectionLength,
+                                              nullptr);
+    _pbNonSharableData = (BYTE*)MapViewOfFile(_hNonSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     _cbNonSharableData = iNonSharableSectionLength;
     return S_OK;
 }
@@ -48,11 +59,11 @@ void CUxThemeFile::CloseFile()
     }
 
     if (_pbSharableData)
-        VirtualFree(_pbSharableData, 0, MEM_RELEASE);
+        UnmapViewOfFile(_pbSharableData);
     if (_hSharableSection)
         CloseHandle(_hSharableSection);
     if (_pbNonSharableData)
-        VirtualFree(_pbNonSharableData, 0, MEM_RELEASE);
+        UnmapViewOfFile(_pbNonSharableData);
     if (_hNonSharableSection)
         CloseHandle(_hNonSharableSection);
 
@@ -60,6 +71,65 @@ void CUxThemeFile::CloseFile()
     _hSharableSection = nullptr;
     _pbNonSharableData = nullptr;
     _hNonSharableSection = nullptr;
+}
+
+HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection,
+                                     HANDLE hNonSharableSection,
+                                     DWORD desiredAccess, bool cleanupOnFailure)
+{
+    if (_pbSharableData || _pbNonSharableData)
+        CloseFile();
+
+    HRESULT hr = S_OK;
+
+    _pbSharableData = (THEMEHDR*)MapViewOfFile(hSharableSection, desiredAccess, 0, 0, 0);
+    _hSharableSection = hSharableSection;
+    if (!_pbSharableData)
+        hr = MakeErrorLast();
+
+    _pbNonSharableData = (BYTE*)MapViewOfFile(hNonSharableSection, desiredAccess, 0, 0, 0);
+    _hNonSharableSection = hNonSharableSection;
+    if (!_pbNonSharableData)
+        hr = MakeErrorLast();
+
+    if (SUCCEEDED(hr)) {
+        hr = ValidateThemeData(true);
+        if (FAILED(hr)) {
+            CloseFile();
+            hr = 0x8007000B;
+        }
+    }
+
+    if (FAILED(hr) && cleanupOnFailure) {
+        _pbSharableData = nullptr;
+        _hSharableSection = nullptr;
+        _pbNonSharableData = nullptr;
+        _hNonSharableSection = nullptr;
+    }
+
+    return hr;
+}
+
+HRESULT CUxThemeFile::ValidateThemeData(bool fullCheck) const
+{
+    if (!ValidateObj())
+        return 0x8007054F;
+
+    auto hdr = _pbSharableData;
+    if (!hdr
+        || memcmp(hdr->szSignature, "BEGINTHM", 8) != 0
+        || hdr->dwVersion != 65543
+        || !_pbNonSharableData
+        || !(*_pbNonSharableData & 1))
+        return 0x8007000B;
+
+    return S_OK;
+}
+
+bool CUxThemeFile::ValidateObj() const
+{
+    return memcmp(_szHead, "thmfile\0", 8) == 0 &&
+           memcmp(_szTail, "end\0", 4) == 0;
 }
 
 LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
@@ -74,69 +144,24 @@ LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
 
 HRESULT CUxThemeFile::GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection)
 {
-    RootSection rootSection(FILE_MAP_READ, FILE_MAP_READ);
-    ROOTSECTION* rootSectionData;
-    ENSURE_HR(rootSection.GetRootSectionData(&rootSectionData));
+    *phSharableSection = nullptr;
+    *phNonSharableSection = nullptr;
 
-    Section section(FILE_MAP_READ, FILE_MAP_READ);
-    ENSURE_HR(section.OpenSection(rootSectionData->szSharableSectionName, true));
-    auto hdr = static_cast<THEMEHDR const*>(section.View());
+    PEB* peb = NtCurrentTeb()->ProcessEnvironmentBlock;
+    RootSection rootSection(peb->SessionId, FILE_MAP_READ, FILE_MAP_READ);
+    DataSection sharableSection(FILE_MAP_READ, FILE_MAP_READ);
+    DataSection nonSharableSection(FILE_MAP_READ, FILE_MAP_READ);
 
+    ROOTSECTION* pRootSection = nullptr;
+    ENSURE_HR(rootSection.GetRootSectionData(&pRootSection));
+    if (!pRootSection->szSharableSectionName[0] || !pRootSection->szNonSharableSectionName[0])
+        return 0x80070490;
 
-
-    PEB *pPEB; // rax@1
-    signed int v5; // ebx@1
-    const wchar_t *v6; // rdi@3
-    ROOTSECTION *ppRootSection; // [sp+20h] [bp-C0h]@1
-    CSection_2 v9; // [sp+30h] [bp-B0h]@1
-    CSection v10; // [sp+240h] [bp+160h]@1
-    CRootSection v11; // [sp+470h] [bp+390h]@1
-
-    *phSharableSection = 0i64;
-    *phNonSharableSection = 0i64;
-    pPEB = (_PEB *)*MK_FP(__GS__, 96i64);
-    ppRootSection = 0i64;
-    CRootSection::CRootSection(&v11, pPEB->SessionId, 4u, 4u);
-    v10._dwDesiredSectionAccess = 4;
-    _mm_store_si128((__m128i *)&v10._hSection, 0i64);
-    _mm_store_si128((__m128i *)&v9._hSection, 0i64);
-    v10._dwDesiredViewAccess = 4;
-    v10._szSectionName[0] = 0;
-    v10.vfptr = (CSectionVtbl *)&CDataSection::`vftable';
-        v9._dwDesiredSectionAccess = 4;
-    v9._dwDesiredViewAccess = 4;
-    v9._szSectionName[0] = 0;
-    v9.vfptr = (CSectionVtbl *)&CDataSection::`vftable';
-        v5 = CRootSection::GetRootSectionData(&v11, &ppRootSection);
-    if (v5 >= 0)
-    {
-        if (ppRootSection->szSharableSectionName[0]
-            && (v6 = ppRootSection->szNonSharableSectionName, ppRootSection->szNonSharableSectionName[0]))
-        {
-            v5 = CSection::OpenSection(&v10, ppRootSection->szSharableSectionName, 0);
-            if (v5 >= 0)
-            {
-                v5 = CSection::OpenSection((CSection *)&v9, v6, 0);
-                if (v5 >= 0)
-                {
-                    *phSharableSection = v10._hSection;
-                    *phNonSharableSection = v9._hSection;
-                    v10._hSection = 0i64;
-                    v9._hSection = 0i64;
-                }
-            }
-        } else
-        {
-            v5 = -2147023728;
-        }
-    }
-    v9.vfptr = (CSectionVtbl *)&CDataSection::`vftable';
-        CSection::~CSection((CSection *)&v9);
-    v10.vfptr = (CSectionVtbl *)&CDataSection::`vftable';
-        CSection::~CSection(&v10);
-    v11.vfptr = (CSectionVtbl *)CRootSection::`vftable';
-        CSection::~CSection((CSection *)&v11.vfptr);
-    return (unsigned int)v5;
+    ENSURE_HR(sharableSection.Open(pRootSection->szSharableSectionName, false));
+    ENSURE_HR(nonSharableSection.Open(pRootSection->szNonSharableSectionName, false));
+    sharableSection.DetachSectionHandle(phSharableSection);
+    nonSharableSection.DetachSectionHandle(phNonSharableSection);
+    return S_OK;
 }
 
 } // namespace uxtheme

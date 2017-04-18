@@ -20,6 +20,7 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DrawHelp.cpp" />
     <ClCompile Include="Sections.cpp" />
+    <ClCompile Include="ScalingUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UxThemeEx.def" />
@@ -49,5 +50,7 @@
     <ClInclude Include="GdiHandles.h" />
     <ClInclude Include="DrawHelp.h" />
     <ClInclude Include="Sections.h" />
+    <ClInclude Include="WinInternal.h" />
+    <ClInclude Include="ScalingUtil.h" />
   </ItemGroup>
 </Project>

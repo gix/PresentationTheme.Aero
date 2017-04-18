@@ -31,13 +31,13 @@ struct DIBDATA
 
 union MIXEDPTRS
 {
-    char* pb;
+    BYTE* pb;
     char* pc;
     unsigned short* pw;
     short* ps;
     wchar_t* px;
     int* pi;
-    unsigned* pdw;
+    DWORD* pdw;
     POINT* ppt;
     SIZE* psz;
     RECT* prc;
@@ -45,9 +45,9 @@ union MIXEDPTRS
 
 struct ENTRYHDR
 {
-    short usTypeNum;
-    unsigned char ePrimVal;
-    unsigned dwDataLen;
+    USHORT usTypeNum;
+    BYTE ePrimVal;
+    DWORD dwDataLen;
 
     ENTRYHDR* Next()
     {

@@ -1,9 +1,10 @@
 ﻿#include "TextDraw.h"
 
 #include "RenderObj.h"
-#include <vssym32.h>
+#include "ScalingUtil.h"
 #include "Utils.h"
 #include "UxThemeEx.h"
+#include <vssym32.h>
 
 namespace uxtheme
 {
