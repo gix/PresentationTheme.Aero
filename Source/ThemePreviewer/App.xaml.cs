@@ -61,7 +61,7 @@
             uxThemeOverride = new UxThemeOverride();
 
             OverrideNativeTheme(
-                @"C:\Users\nrieck\dev\PresentationTheme.Aero\Data\10.0.14393.0\aerolite.msstyles")
+                @"C:\Users\nrieck\dev\PresentationTheme.Aero\Data\10.0.15063.0\aero.msstyles")
                 .Forget();
         }
 

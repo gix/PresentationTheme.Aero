@@ -10,14 +10,17 @@
         public DataGridSampleNative()
         {
             InitializeComponent();
-            dataGridView1.DataSource = new ItemsCollection();
+            grid.DataSource = new ItemsCollection();
 
             options = new OptionList();
-            options.AddOption("Enabled", dataGridView1, t => t.Enabled);
-            options.AddOption("Multiple Rows", dataGridView1, c => c.MultiSelect);
-            options.AddOption("Full Row Select", dataGridView1, c => c.SelectionMode,
+            options.AddOption("Enabled", grid, t => t.Enabled);
+            options.AddOption("Multiple Rows", grid, c => c.MultiSelect);
+            options.AddOption("Full Row Select", grid, c => c.SelectionMode,
                 DataGridViewSelectionMode.FullRowSelect,
                 DataGridViewSelectionMode.RowHeaderSelect);
+            options.AddOption("Show Grid Lines", grid, c => c.CellBorderStyle,
+                DataGridViewCellBorderStyle.Single,
+                DataGridViewCellBorderStyle.None);
         }
 
         public IReadOnlyList<Option> Options => options;

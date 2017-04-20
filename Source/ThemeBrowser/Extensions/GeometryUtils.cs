@@ -1,4 +1,4 @@
-namespace StyleInspector.Extensions
+namespace ThemeBrowser.Extensions
 {
     using System;
     using System.Linq;

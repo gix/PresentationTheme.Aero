@@ -1,10 +1,8 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using StyleCore;
-    using StyleCore.Native;
 
     public class ThemePartViewModel : ThemePropertyContainer
     {
@@ -28,6 +26,7 @@ namespace StyleInspector
         public ThemeClassViewModel Parent { get; }
         public int Id => Part.Id;
         public string Name => Part.Name;
+        public bool IsDefined => !Part.IsUndefined;
 
         public string DisplayName => Name != null ? Name + " [" + Id + "]" : "[Part " + Id + "]";
         public IReadOnlyList<ThemeStateViewModel> States => states;

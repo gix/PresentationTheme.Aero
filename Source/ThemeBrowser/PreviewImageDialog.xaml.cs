@@ -1,9 +1,8 @@
-﻿namespace StyleInspector
+﻿namespace ThemeBrowser
 {
     using System;
     using System.ComponentModel;
     using System.Drawing;
-    using System.IO;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Controls;
@@ -11,7 +10,6 @@
     using System.Windows.Documents;
     using System.Windows.Input;
     using System.Windows.Media;
-    using System.Windows.Media.Imaging;
     using Extensions;
     using StyleCore.Native;
     using Brushes = System.Windows.Media.Brushes;
@@ -346,10 +344,8 @@
         private readonly Thumb bottomLeft;
         private readonly Thumb bottomRight;
 
-        // To store and manage the adorner's visual children.
         private readonly VisualCollection visualChildren;
 
-        // Initialize the ResizingAdorner.
         public ResizingAdorner(UIElement adornedElement)
             : base(adornedElement)
         {

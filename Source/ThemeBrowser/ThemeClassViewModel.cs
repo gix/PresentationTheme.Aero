@@ -1,4 +1,4 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using System.Collections.Generic;
     using System.Linq;

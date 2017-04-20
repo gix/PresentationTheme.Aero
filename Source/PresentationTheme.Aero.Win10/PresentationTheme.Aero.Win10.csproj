@@ -50,6 +50,7 @@
     <Compile Include="ExplorerStyles.cs" />
     <Compile Include="FrameworkExtensions.cs" />
     <Compile Include="GridViewColumnHeaderChrome.cs" />
+    <Compile Include="InvertThicknessConverter.cs" />
     <Compile Include="ListViewItemChrome.cs" />
     <Compile Include="ProgressBarChrome.cs" />
     <Compile Include="ScrollBarChrome.cs" />

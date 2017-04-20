@@ -74,6 +74,7 @@
             this.explorerTreeView.FadeInOutExpandos = false;
             this.explorerTreeView.FullRowSelect = true;
             this.explorerTreeView.HideSelection = false;
+            this.explorerTreeView.HotTracking = true;
             this.explorerTreeView.Location = new System.Drawing.Point(3, 364);
             this.explorerTreeView.MultiSelect = false;
             this.explorerTreeView.Name = "explorerTreeView";

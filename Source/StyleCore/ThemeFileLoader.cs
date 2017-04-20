@@ -66,12 +66,14 @@ namespace StyleCore
 
             themeFile.VariantMap = vmap;
             themeFile.ClassNames = classNames;
-            SafeThemeFileHandle themeFileHandle;
-            UxThemeExNativeMethods.UxOpenThemeFile(filePath, out themeFileHandle).ThrowIfFailed();
+            UxThemeExNativeMethods.UxOpenThemeFile(filePath, out var themeFileHandle).ThrowIfFailed();
             themeFile.NativeThemeFile = themeFileHandle;
 
             ReadProperties(themeFile, "RMAP", "RMAP");
             ReadProperties(themeFile, "VARIANT", vmap.Name);
+
+            foreach (var @class in themeFile.Classes)
+                AddKnownPartsAndStates(@class);
 
             var classMap = themeFile.Classes.ToDictionary(x => x.Name);
             var classNames2 = themeFile.ClassNames.Skip(4).ToList();
@@ -79,10 +81,8 @@ namespace StyleCore
                 var className = classNames2[entry.Key];
                 var baseClassName = classNames2[entry.Value];
 
-                ThemeClass @class;
-                ThemeClass baseClass;
-                if (classMap.TryGetValue(className, out @class) &&
-                    classMap.TryGetValue(baseClassName, out baseClass))
+                if (classMap.TryGetValue(className, out ThemeClass @class) &&
+                    classMap.TryGetValue(baseClassName, out ThemeClass baseClass))
                     @class.BaseClass = baseClass;
             }
 
@@ -173,17 +173,14 @@ namespace StyleCore
                 var recordId = recordCount++;
                 var record = data.Read<VSRecord>(ref offset);
                 if (cls == null || record.Class != currClass) {
-                    string appName = null;
                     string fullName = themeFile.ClassNames[record.Class];
                     string className = fullName;
-                    ParseClassName(ref className, out appName);
+                    ParseClassName(ref className, out string appName);
 
                     globals = className == "globals";
 
                     cls = themeFile.AddClass(fullName, appName, className);
                     currClass = record.Class;
-
-                    AddKnownPartsAndStates(cls);
                 }
 
                 object value;
@@ -204,9 +201,15 @@ namespace StyleCore
         private void AddKnownPartsAndStates(ThemeClass cls)
         {
             foreach (var partInfo in ThemeInfo.GetParts(cls.ClassName)) {
+                bool partDefined = cls.FindPart(partInfo.Item1) != null;
                 var part = cls.AddPart(partInfo.Item1, partInfo.Item2);
-                foreach (var stateInfo in ThemeInfo.GetStates(part))
-                    part.AddState(stateInfo.Item1, stateInfo.Item2);
+                part.IsUndefined = !partDefined;
+
+                foreach (var stateInfo in ThemeInfo.GetStates(part)) {
+                    bool stateDefined = part.FindState(stateInfo.Item1) != null;
+                    var state = part.AddState(stateInfo.Item1, stateInfo.Item2);
+                    state.IsUndefined = !stateDefined;
+                }
             }
         }
 
@@ -255,7 +258,7 @@ namespace StyleCore
                         value = data.ReadZString(offset);
                         return true;
                     case TPID.ENUM:
-                        value = data.ReadInt32(offset);
+                        value = GetEnum(data.ReadInt32(offset), (TMT)record.SymbolVal);
                         return true;
                     case TPID.BOOL:
                         value = data.ReadInt32(offset) == 1;
@@ -360,6 +363,28 @@ namespace StyleCore
             }
         }
 
+        private object GetEnum(int value, TMT symbolVal)
+        {
+            switch (symbolVal) {
+                case TMT.BGTYPE: return (BGTYPE)value;
+                case TMT.IMAGELAYOUT: return (IMAGELAYOUT)value;
+                case TMT.BORDERTYPE: return (BORDERTYPE)value;
+                case TMT.FILLTYPE: return (FILLTYPE)value;
+                case TMT.SIZINGTYPE: return (SIZINGTYPE)value;
+                case TMT.HALIGN: return (HALIGN)value;
+                case TMT.CONTENTALIGNMENT: return (CONTENTALIGNMENT)value;
+                case TMT.VALIGN: return (VALIGN)value;
+                case TMT.OFFSETTYPE: return (OFFSETTYPE)value;
+                case TMT.ICONEFFECT: return (ICONEFFECT)value;
+                case TMT.TEXTSHADOWTYPE: return (TEXTSHADOWTYPE)value;
+                case TMT.GLYPHTYPE: return (GLYPHTYPE)value;
+                case TMT.IMAGESELECTTYPE: return (IMAGESELECTTYPE)value;
+                case TMT.TRUESIZESCALINGTYPE: return (TRUESIZESCALINGTYPE)value;
+                case TMT.GLYPHFONTSIZINGTYPE: return (GLYPHFONTSIZINGTYPE)value;
+                default: return value;
+            }
+        }
+
         private bool LoadImageFileRes(SafeModuleHandle module, uint resId, out object value)
         {
             ResInfoHandle resInfo = module.FindResourceEx("IMAGE", (int)resId, 0);
@@ -381,8 +406,7 @@ namespace StyleCore
 
             string str = ResourceUnsafeNativeMethods.LoadString(module, resId);
 
-            FontInfo info;
-            if (TryParseFontSpec(str, out info)) {
+            if (TryParseFontSpec(str, out FontInfo info)) {
                 value = info;
                 return true;
             }
@@ -411,8 +435,7 @@ namespace StyleCore
 
             string str = ResourceUnsafeNativeMethods.LoadString(module, resId);
 
-            RECT rect;
-            if (TryParseRectSpec(str, out rect)) {
+            if (TryParseRectSpec(str, out RECT rect)) {
                 value = rect;
                 return true;
             }
@@ -580,11 +603,9 @@ namespace StyleCore
 
         private bool TryParseFontSpec(string spec, out FontInfo info)
         {
-            int pointSize;
-
             var parts = spec.Split(new[] { ", " }, StringSplitOptions.None);
             if (parts.Length == 3 &&
-                int.TryParse(parts[1], NumberStyles.None, null, out pointSize)) {
+                int.TryParse(parts[1], NumberStyles.None, null, out int pointSize)) {
                 info = new FontInfo(parts[0], pointSize, parts[2]);
                 return true;
             }
@@ -681,7 +702,6 @@ namespace StyleCore
         private readonly List<ThemeClass> classes = new List<ThemeClass>();
         private ThemeClass globals;
         private bool globalsSearched;
-        private SafeThemeFileHandle nativeThemeFile;
 
         public ThemeFile(string filePath, SafeModuleHandle style, SafeModuleHandle mui)
         {
@@ -834,7 +854,7 @@ namespace StyleCore
             if (part != null)
                 return part;
 
-            part = new ThemePart(this, partId, partName);
+            part = new ThemePart(this, partId, partName ?? ThemeInfo.GetPartName(ClassName, partId));
             if (partId == 0)
                 classPart = part;
             else
@@ -916,6 +936,7 @@ namespace StyleCore
 
         public IReadOnlyList<ThemeState> States => states;
         public IReadOnlyList<ThemeProperty> Properties => properties;
+        public bool IsUndefined { get; set; }
 
         public ThemeState FindState(int stateId)
         {
@@ -929,7 +950,7 @@ namespace StyleCore
         {
             ThemeState state = FindState(stateId);
             if (state == null) {
-                state = new ThemeState(this, stateId, name);
+                state = new ThemeState(this, stateId, name ?? ThemeInfo.GetStateName(Parent.ClassName, Id, stateId));
                 if (stateId == 0)
                     partState = state;
                 else
@@ -1047,6 +1068,7 @@ namespace StyleCore
         public string Name { get; }
 
         public IReadOnlyList<ThemeProperty> Properties => properties;
+        public bool IsUndefined { get; set; }
 
         public ThemeProperty FindProperty(TMT propertyId)
         {
@@ -1190,9 +1212,18 @@ namespace StyleCore
             return new Color(a, r, g, b);
         }
 
-        public byte A { get; set; }
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
+        public byte A { get; }
+        public byte R { get; }
+        public byte G { get; }
+        public byte B { get; }
+
+        public uint ToArgb()
+        {
+            return
+                (uint)A << 24 |
+                (uint)R << 16 |
+                (uint)G << 8 |
+                (uint)B << 0;
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace StyleInspector
+﻿namespace ThemeBrowser
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Drawing;
+    using System.ComponentModel;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -14,7 +14,6 @@
     using System.Windows.Data;
     using System.Windows.Input;
     using System.Windows.Interop;
-    using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Win32;
     using StyleCore;
@@ -23,16 +22,22 @@
     public class MainWindowViewModel : ViewModel
     {
         private readonly object mutex = new object();
-        private ThemeFileViewModel themeFile;
+        private string title;
+        private bool isEnabled = true;
+        private ThemeFileBase themeFile;
         private ObservableCollection<ThemeRawProperty> allProperties;
         private List<TransitionDuration> transitionDurations;
         private object selectedItem;
         private object content;
+        private ProgressInfo taskProgress;
 
         public MainWindowViewModel()
         {
             OpenCommand = new DelegateCommand(Open);
             CompareCommand = new DelegateCommand(Compare);
+            DumpLoadedThemeCommand = new AsyncDelegateCommand(
+                DumpLoadedTheme, () => ThemeFile is ThemeFileViewModel);
+            DumpSystemThemeCommand = new AsyncDelegateCommand(DumpSystemTheme);
             ExitCommand = new DelegateCommand(Exit);
             CopyVisualStatesCommand = new AsyncDelegateCommand<object>(CopyVisualStates);
             SaveImageCommand = new AsyncDelegateCommand<ThemeBitmapViewModel>(OnSaveImage, CanSaveImage);
@@ -41,6 +46,19 @@
             PreviewImageCommand = new AsyncDelegateCommand<ThemeBitmapViewModel>(PreviewImage);
             AllProperties = new ObservableCollection<ThemeRawProperty>();
             BindingOperations.EnableCollectionSynchronization(AllProperties, mutex);
+            Title = "Theme Browser";
+        }
+
+        public string Title
+        {
+            get => title;
+            set => SetProperty(ref title, value);
+        }
+
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set => SetProperty(ref isEnabled, value);
         }
 
         private Window MainWindow => Application.Current.MainWindow;
@@ -66,7 +84,7 @@
                         input.CopyTo(output);
                 }
             } catch (Exception ex) {
-                MessageBox.Show(MainWindow, "Failed to save", ex.Message);
+                ShowError(ex, "Failed to save image");
             }
 
             return Task.CompletedTask;
@@ -88,7 +106,7 @@
                         SaveUnpremultipliedImage(output, input);
                 }
             } catch (Exception ex) {
-                MessageBox.Show(MainWindow, "Failed to save", ex.Message);
+                ShowError(ex, "Failed to save image");
             }
 
             return Task.CompletedTask;
@@ -285,31 +303,46 @@
             return Task.CompletedTask;
         }
 
-        public async void TryLoadTheme(string styleFilePath)
+        public Task TryLoadTheme(string styleFilePath)
         {
-            try {
+            return RunExclusive(async progress => {
+                progress.TaskName = "Loading theme";
                 var newThemeFile = await Task.Run(() => LoadTheme(styleFilePath));
                 ThemeFile?.Dispose();
                 ThemeFile = newThemeFile;
-            } catch (Exception ex) {
-                MessageBox.Show(ex.Message, "Failed to open file");
-            }
+                Title = $"Theme Browser - {styleFilePath}";
+            }, "Failed to open theme");
         }
 
-        public async void TryLoadAndCompareThemes(string styleFilePath1, string styleFilePath2)
+        public Task TryLoadAndCompareThemes(string styleFilePath1, string styleFilePath2)
+        {
+            return RunExclusive(async progress => {
+                progress.TaskName = "Loading first theme";
+                var theme1 = await Task.Run(() => LoadTheme(styleFilePath1));
+
+                progress.TaskName = "Loading second theme";
+                var theme2 = await Task.Run(() => LoadTheme(styleFilePath2));
+
+                progress.TaskName = "Comparing themes";
+                ThemeFile?.Dispose();
+                ThemeFile = await Task.Run(() => new ThemeFileComparisonBuilder().CompareThemes(theme1, theme2));
+
+                Title = $"Theme Browser - {styleFilePath1} / {styleFilePath2}";
+            }, "Failed to open theme");
+        }
+
+        private async Task RunExclusive(Func<ProgressInfo, Task> action, string failureMessage)
         {
             try {
-                var theme1 = await Task.Run(() => LoadTheme(styleFilePath1));
-                var theme2 = await Task.Run(() => LoadTheme(styleFilePath2));
-                ThemeFile?.Dispose();
-                CompareThemes(theme1, theme2);
+                IsEnabled = false;
+                TaskProgress = new ProgressInfo();
+                await action(TaskProgress);
             } catch (Exception ex) {
-                MessageBox.Show(ex.Message, "Failed to open file");
+                ShowError(ex, failureMessage);
+            } finally {
+                IsEnabled = true;
+                TaskProgress = null;
             }
-        }
-
-        private void CompareThemes(ThemeFileViewModel theme1, ThemeFileViewModel theme2)
-        {
         }
 
         private void Open()
@@ -344,6 +377,53 @@
             TryLoadAndCompareThemes(firstTheme, secondTheme);
         }
 
+        private async Task DumpLoadedTheme()
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            dialog.Title = "Dump To File";
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var outputFilePath = dialog.FileName;
+
+            var hr = await Task.Run(() => {
+                var nativeThemeFile = ((ThemeFileViewModel)ThemeFile).ThemeFile.NativeThemeFile;
+                return UxThemeExNativeMethods.DumpLoadedThemeToTextFile(
+                    nativeThemeFile, outputFilePath, false, true);
+            });
+
+            if (hr.Failed())
+                ShowError(hr, "Failed to dump theme");
+        }
+
+        private async Task DumpSystemTheme()
+        {
+            var dialog = new SaveFileDialog();
+            dialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            dialog.Title = "Dump To File";
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var outputFilePath = dialog.FileName;
+
+            var hr = await Task.Run(() => UxThemeExNativeMethods.DumpSystemThemeToTextFile(
+                outputFilePath, false, true));
+
+            if (hr.Failed())
+                ShowError(hr, "Failed to dump theme");
+        }
+
+        private void ShowError(Exception exception, string message)
+        {
+            MessageBox.Show(MainWindow, message, exception.Message);
+        }
+
+        private void ShowError(HResult hr, string message)
+        {
+            MessageBox.Show(MainWindow, message, new Win32Exception((int)hr).Message);
+        }
+
         private ThemeFileViewModel LoadTheme(string styleFilePath)
         {
             return new ThemeFileViewModel(
@@ -356,6 +436,8 @@
         }
 
         public ICommand OpenCommand { get; }
+        public ICommand DumpLoadedThemeCommand { get; }
+        public ICommand DumpSystemThemeCommand { get; }
         public ICommand CompareCommand { get; }
         public ICommand ExitCommand { get; }
         public ICommand CopyVisualStatesCommand { get; }
@@ -364,7 +446,7 @@
         public ICommand TraceImageCommand { get; }
         public ICommand PreviewImageCommand { get; }
 
-        public ThemeFileViewModel ThemeFile
+        public ThemeFileBase ThemeFile
         {
             get => themeFile;
             set => SetProperty(ref themeFile, value);
@@ -412,6 +494,12 @@
             set => SetProperty(ref content, value);
         }
 
+        public ProgressInfo TaskProgress
+        {
+            get => taskProgress;
+            set => SetProperty(ref taskProgress, value);
+        }
+
         public class TransitionDuration
         {
             public TransitionDuration(string stateFrom, string stateTo, uint? duration)
@@ -445,10 +533,13 @@
 
         private void DumpThemePart(IntPtr hwnd, string className, ThemePartViewModel part, ThemeStateViewModel state)
         {
+            var themeFileModel = (themeFile as ThemeFileViewModel)?.ThemeFile;
+            if (themeFileModel == null)
+                return;
+
             hwnd = IntPtr.Zero;
             using (IThemeData nativeTheme = ThemeData.Open(hwnd, className))
-            using (IThemeData theme = UxThemeExData.Open(
-                    themeFile.ThemeFile.NativeThemeFile, hwnd, className)) {
+            using (IThemeData theme = UxThemeExData.Open(themeFileModel.NativeThemeFile, hwnd, className)) {
                 if (!theme.IsValid)
                     return;
 
@@ -582,8 +673,10 @@
                 var stateIds = Enumerable.Range(1, states.Count);
                 foreach (var stateFrom in stateIds) {
                     foreach (var stateTo in stateIds) {
-                        uint duration;
-                        HResult hr = theme.GetThemeTransitionDuration(partId, stateFrom, stateTo, (int)TMT.TRANSITIONDURATIONS, out duration);
+                        HResult hr = theme.GetThemeTransitionDuration(
+                            partId, stateFrom, stateTo,
+                            (int)TMT.TRANSITIONDURATIONS, out uint duration);
+
                         if (hr.Succeeded())
                             durations.Add(new TransitionDuration(
                                 states[stateFrom - 1].DisplayName,
@@ -601,76 +694,29 @@
             if (SelectedItem == null)
                 return null;
 
+            ContextMenu menu;
+            switch (SelectedItem) {
+                case ThemeClassViewModel @class:
+                    menu = new ContextMenu();
+                    menu.Items.Add(new MenuItem {
+                        Header = "Copy Visual States to clipboard",
+                        Command = CopyVisualStatesCommand,
+                        CommandParameter = @class
+                    });
 
-            var @class = SelectedItem as ThemeClassViewModel;
-            if (@class != null) {
-                var menu = new ContextMenu();
-                menu.Items.Add(new MenuItem {
-                    Header = "Copy Visual States to clipboard",
-                    Command = CopyVisualStatesCommand,
-                    CommandParameter = @class
-                });
-                return menu;
-            }
+                    return menu;
 
-            var part = SelectedItem as ThemePartViewModel;
-            if (part != null) {
-                var menu = new ContextMenu();
-                menu.Items.Add(new MenuItem {
-                    Header = "Copy Visual States to clipboard",
-                    Command = CopyVisualStatesCommand,
-                    CommandParameter = part
-                });
-                return menu;
+                case ThemePartViewModel part:
+                    menu = new ContextMenu();
+                    menu.Items.Add(new MenuItem {
+                        Header = "Copy Visual States to clipboard",
+                        Command = CopyVisualStatesCommand,
+                        CommandParameter = part
+                    });
+                    return menu;
             }
 
             return null;
-        }
-    }
-
-    internal class BitmapValue
-    {
-        public BitmapValue(BitmapSource source)
-        {
-            Source = source;
-        }
-
-        public BitmapSource Source { get; }
-    }
-
-    public class ThemeRawProperty
-    {
-        public ThemeRawProperty(
-            int propId, string name, ThemePropertyType type, PropertyOrigin origin, object value)
-        {
-            PropId = propId;
-            Name = name;
-            Type = type;
-            Origin = origin;
-            Value = value;
-        }
-
-        public int PropId { get; }
-        public string Name { get; }
-        public ThemePropertyType Type { get; }
-        public PropertyOrigin Origin { get; }
-        public object Value { get; }
-    }
-
-    public static class ThemeDataExtensions
-    {
-        public static ImageSource GetThemeBitmapAsImageSource(
-            this IThemeData themeData, int partId, int stateId, int propertyId)
-        {
-            var hbmp = themeData.GetThemeBitmap(partId, stateId, propertyId);
-            if (hbmp == null)
-                return null;
-
-            var source = Imaging.CreateBitmapSourceFromHBitmap(
-                hbmp.Value, IntPtr.Zero, Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
-            source.Freeze();
-            return source;
         }
     }
 }

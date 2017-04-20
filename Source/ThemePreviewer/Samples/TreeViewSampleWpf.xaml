@@ -16,7 +16,7 @@
     <TreeView x:Name="treeView1" Margin="3"
               aero10:TreeViewService.FullRowSelect="True"/>
     <TreeView x:Name="treeView2" Margin="3" Grid.Row="1"
-              Style="{DynamicResource {x:Static aero10:ExplorerStyles.TreeViewStyleKey}}"
-              aero10:TreeViewService.FullRowSelect="True"/>
+              aero10:TreeViewService.FullRowSelect="True"
+              aero10:TreeViewService.UseExplorerStyle="True"/>
   </Grid>
 </UserControl>

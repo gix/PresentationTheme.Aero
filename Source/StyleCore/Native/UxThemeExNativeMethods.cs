@@ -6,8 +6,6 @@ namespace StyleCore.Native
 
     public static class UxThemeExNativeMethods
     {
-        private const string UxthemeLib = "uxtheme.dll";
-
         [DllImport("UxThemeEx")]
         public static extern HResult UxOpenThemeFile(
             [MarshalAs(UnmanagedType.LPWStr)] string themeFileName,
@@ -105,15 +103,15 @@ namespace StyleCore.Native
             int iPropId,
             [MarshalAs(UnmanagedType.U4)] out PropertyOrigin pOrigin);
 
-        [DllImport(UxthemeLib)]
+        [DllImport("uxtheme")]
         public static extern HResult GetThemeSysFont(SafeThemeHandle hTheme, int iFontID, [Out] LOGFONT pFont);
-        [DllImport(UxthemeLib)]
+        [DllImport("uxtheme")]
         public static extern HResult GetThemeSysString(SafeThemeHandle hTheme, int iStringID, StringBuilder pszStringBuff, int cchMaxStringChars);
-        [DllImport(UxthemeLib)]
+        [DllImport("uxtheme")]
         public static extern bool GetThemeSysBool(SafeThemeHandle hTheme, int iBoolId);
-        [DllImport(UxthemeLib)]
+        [DllImport("uxtheme")]
         public static extern int GetThemeSysColor(SafeThemeHandle hTheme, int iColorID);
-        [DllImport(UxthemeLib)]
+        [DllImport("uxtheme")]
         public static extern HResult GetThemeSysInt(SafeThemeHandle hTheme, int iIntId, out int piValue);
 
         [DllImport("UxThemeEx")]
@@ -127,5 +125,13 @@ namespace StyleCore.Native
 
         [DllImport("UxThemeEx")]
         public static extern void UxBroadcastThemeChange();
+
+        [DllImport("UxThemeEx", ExactSpelling = true, CharSet = CharSet.Unicode)]
+        public static extern HResult DumpLoadedThemeToTextFile(
+            SafeThemeFileHandle hThemeFile, string path, bool packed, bool fullInfo);
+
+        [DllImport("UxThemeEx", ExactSpelling = true, CharSet = CharSet.Unicode)]
+        public static extern HResult DumpSystemThemeToTextFile(
+            string path, bool packed, bool fullInfo);
     }
 }

@@ -1,4 +1,4 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using System.Windows;
     using System.Windows.Controls;

@@ -1,4 +1,4 @@
-namespace StyleInspector.Extensions
+namespace ThemeBrowser.Extensions
 {
     using System.Diagnostics;
     using System.Windows.Media;
@@ -29,6 +29,15 @@ namespace StyleInspector.Extensions
             double r = sr + dr * (1.0 - a);
 
             return ((uint)b << 0) | ((uint)g << 8) | ((uint)r << 16) | (0xFFu << 24);
+        }
+
+        public static uint ToArgb(this Color color)
+        {
+            return
+                (uint)color.A << 24 |
+                (uint)color.R << 16 |
+                (uint)color.G << 8 |
+                (uint)color.B << 0;
         }
     }
 }

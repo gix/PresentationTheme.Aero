@@ -88,6 +88,16 @@ namespace StyleCore
             return GetClass(part.Parent.Name).GetStates(part.Id);
         }
 
+        public static string GetPartName(string className, int partId)
+        {
+            return GetClass(className).Parts.FirstOrDefault(x => x.Item1 == partId)?.Item2;
+        }
+
+        public static string GetStateName(string className, int partId, int stateId)
+        {
+            return GetClass(className).GetStates(partId).FirstOrDefault(x => x.Item1 == stateId)?.Item2;
+        }
+
         public static ThemePropertyType GetPropertyType(TMT property)
         {
             switch (property) {

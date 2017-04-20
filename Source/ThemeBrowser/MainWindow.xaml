@@ -1,23 +1,33 @@
-﻿<Window x:Class="StyleInspector.MainWindow"
+﻿<Window x:Class="ThemeBrowser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StyleInspector"
+        xmlns:local="clr-namespace:ThemeBrowser"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:themeBrowser="clr-namespace:ThemeBrowser"
         xmlns:styleCore="clr-namespace:StyleCore;assembly=StyleCore"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:MainWindowViewModel}}"
         x:Name="root"
-        Title="MainWindow"
+        Title="{Binding Title}"
         Width="1200"
         Height="800"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
+        IsEnabled="{Binding IsEnabled}"
         FocusManager.FocusedElement="{Binding RelativeSource={x:Static RelativeSource.Self}, Mode=OneTime}">
   <Window.Resources>
     <local:BindingProxy x:Key="DataContextProxy" Data="{Binding}"/>
+
+    <Style x:Key="VertSplitter" TargetType="GridSplitter">
+      <Setter Property="Width" Value="6"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
 
     <GroupStyle x:Key="OriginGroupStyle">
       <GroupStyle.ContainerStyle>
@@ -39,13 +49,31 @@
         </Style>
       </GroupStyle.ContainerStyle>
     </GroupStyle>
-    <DataTemplate DataType="{x:Type local:ThemeFileViewModel}">
-    </DataTemplate>
     <DataTemplate x:Key="ThemePropertyItem" DataType="{x:Type local:ThemePropertyViewModel}">
       <TextBlock Text="{Binding PropertyId}"/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:NamedItemContainer}">
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:ThemePropertyComparisonViewModel}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+          <TextBlock Text="{Binding PropertyId}"/>
+          <TextBlock Text="{Binding DisplayName}"/>
+          <TextBlock Text="{Binding PrimitiveType}"/>
+        </StackPanel>
+        <ContentControl Grid.Row="1" Grid.Column="0" Content="{Binding OldProperty.Value}"/>
+        <ContentControl Grid.Row="1" Grid.Column="1" Content="{Binding NewProperty.Value}"/>
+      </Grid>
     </DataTemplate>
 
     <local:ColorToBrushConverter x:Key="ColorToBrushConverter" IgnoreAlpha="True"/>
@@ -137,6 +165,10 @@
             <CollectionViewSource.GroupDescriptions>
               <PropertyGroupDescription PropertyName="SimpleOrigin"/>
             </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+              <scm:SortDescription PropertyName="SimpleOrigin"/>
+              <scm:SortDescription PropertyName="DisplayName"/>
+            </CollectionViewSource.SortDescriptions>
           </CollectionViewSource>
         </Grid.Resources>
         <DataGrid ItemsSource="{Binding Source={StaticResource PropertiesView}}" IsReadOnly="True"
@@ -162,7 +194,7 @@
     <DataTemplate DataType="{x:Type local:ThemeClassViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesTemplate}"/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type local:ThemePartViewModel}">
+    <DataTemplate DataType="{x:Type themeBrowser:ThemePartViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesTemplate}"/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type local:ThemeStateViewModel}">
@@ -171,61 +203,181 @@
     <DataTemplate DataType="{x:Type ImageSource}">
       <Image Source="{Binding}"/>
     </DataTemplate>
-  </Window.Resources>
-  <DockPanel>
-    <Menu DockPanel.Dock="Top">
-      <MenuItem Header="_File">
-        <MenuItem Header="_Open…" Command="{Binding OpenCommand}"/>
-        <MenuItem Header="_Compare…" Command="{Binding CompareCommand}"/>
-        <Separator/>
-        <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
-      </MenuItem>
-    </Menu>
-    <Grid>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="2*"/>
-      </Grid.ColumnDefinitions>
+
+    <DataTemplate DataType="{x:Type local:ThemeFileViewModel}">
       <Grid>
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
           <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="7">
-          <TextBlock Text="{Binding ThemeFile.FileName, StringFormat='File: {0}'}" ToolTip="{Binding ThemeFile.FilePath}"/>
-          <TextBlock Text="{Binding ThemeFile.Version, StringFormat='Version: {0}'}"/>
-          <TextBlock Text="{Binding ThemeFile.VariantMap.Name, StringFormat='Variant.Name: {0}'}"/>
-          <TextBlock Text="{Binding ThemeFile.VariantMap.Size, StringFormat='Variant.Size: {0}'}"/>
-          <TextBlock Text="{Binding ThemeFile.VariantMap.Color, StringFormat='Variant.Color: {0}'}"/>
-        </StackPanel>
-        <TreeView x:Name="treeView"
-                  Grid.Row="1"
+        <Border>
+          <StackPanel Margin="7">
+            <TextBlock Text="{Binding FileName, StringFormat='File: {0}'}" ToolTip="{Binding FilePath}"/>
+            <TextBlock Text="{Binding Version, StringFormat='Version: {0}'}"/>
+            <TextBlock Text="{Binding VariantMap.Name, StringFormat='Variant.Name: {0}'}"/>
+            <TextBlock Text="{Binding VariantMap.Size, StringFormat='Variant.Size: {0}'}"/>
+            <TextBlock Text="{Binding VariantMap.Color, StringFormat='Variant.Color: {0}'}"/>
+          </StackPanel>
+        </Border>
+        <TreeView Grid.Row="1" x:Name="treeView"
+                  ItemsSource="{Binding Classes}"
                   BorderThickness="0"
-                  ItemsSource="{Binding ThemeFile.Classes}"
-                  ContextMenuOpening="OnTreeViewContextMenuOpening">
+                  ContextMenuOpening="OnTreeViewContextMenuOpening"
+                  SelectedItemChanged="OnSelectedItemChanged">
           <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type local:ThemeClassViewModel}"
-                                      ItemsSource="{Binding Children}">
+                                        ItemsSource="{Binding Children}">
               <TextBlock Text="{Binding Name, Mode=OneWay}"/>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type local:ThemePartViewModel}"
-                                      ItemsSource="{Binding States}">
+            <HierarchicalDataTemplate DataType="{x:Type themeBrowser:ThemePartViewModel}"
+                                        ItemsSource="{Binding States}">
               <TextBlock Text="{Binding DisplayName}"/>
+              <HierarchicalDataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsDefined, Mode=OneTime}" Value="False">
+                  <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </DataTrigger>
+              </HierarchicalDataTemplate.Triggers>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type local:NamedItemContainer}"
-                                      ItemsSource="{Binding Items}">
+                                        ItemsSource="{Binding Items}">
               <TextBlock Text="{Binding Name, Mode=OneWay}"/>
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:ThemeStateViewModel}">
               <TextBlock Text="{Binding DisplayName}"/>
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsDefined, Mode=OneTime}" Value="False">
+                  <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </DataTrigger>
+              </DataTemplate.Triggers>
             </DataTemplate>
           </TreeView.Resources>
         </TreeView>
       </Grid>
-      <GridSplitter Grid.Row="0" Grid.Column="1" Width="6" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+    </DataTemplate>
 
-      <TabControl Grid.Row="0" Grid.Column="2">
+    <DataTemplate DataType="{x:Type local:ThemeFileComparisonViewModel}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border>
+          <StackPanel Margin="7">
+            <TextBlock Text="{Binding OldThemeFile.FileName, StringFormat='Old File: {0}'}" ToolTip="{Binding OldThemeFile.FilePath}"/>
+            <TextBlock Text="{Binding OldThemeFile.Version, StringFormat='Version: {0}'}"/>
+            <TextBlock Text="{Binding OldThemeFile.VariantMap.Name, StringFormat='Variant.Name: {0}'}"/>
+            <TextBlock Text="{Binding OldThemeFile.VariantMap.Size, StringFormat='Variant.Size: {0}'}"/>
+            <TextBlock Text="{Binding OldThemeFile.VariantMap.Color, StringFormat='Variant.Color: {0}'}"/>
+            <TextBlock Text="{Binding NewThemeFile.FileName, StringFormat='New File: {0}'}" ToolTip="{Binding NewThemeFile.FilePath}"/>
+            <TextBlock Text="{Binding NewThemeFile.Version, StringFormat='Version: {0}'}"/>
+            <TextBlock Text="{Binding NewThemeFile.VariantMap.Name, StringFormat='Variant.Name: {0}'}"/>
+            <TextBlock Text="{Binding NewThemeFile.VariantMap.Size, StringFormat='Variant.Size: {0}'}"/>
+            <TextBlock Text="{Binding NewThemeFile.VariantMap.Color, StringFormat='Variant.Color: {0}'}"/>
+          </StackPanel>
+        </Border>
+        <TreeView Grid.Row="1" x:Name="treeView"
+                  ItemsSource="{Binding Classes}"
+                  BorderThickness="0"
+                  ContextMenuOpening="OnTreeViewContextMenuOpening"
+                  SelectedItemChanged="OnSelectedItemChanged">
+          <TreeView.Resources>
+            <local:ComparisonResultToBrushConverter x:Key="ComparisonResultToBrushConverter"/>
+            <HierarchicalDataTemplate DataType="{x:Type local:ThemeClassComparisonViewModel}"
+                                      ItemsSource="{Binding Parts}">
+              <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Comparison, Converter={StaticResource ComparisonResultToBrushConverter}}"/>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type themeBrowser:ThemePartComparisonViewModel}"
+                                      ItemsSource="{Binding States}">
+              <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Comparison, Converter={StaticResource ComparisonResultToBrushConverter}}"/>
+            </HierarchicalDataTemplate>
+            <DataTemplate DataType="{x:Type local:ThemeStateComparisonViewModel}">
+              <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Comparison, Converter={StaticResource ComparisonResultToBrushConverter}}"/>
+            </DataTemplate>
+          </TreeView.Resources>
+        </TreeView>
+      </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="PropertiesComparisonTemplate" DataType="{x:Type local:ThemePropertyComparisonContainer}">
+      <Grid>
+        <DataGrid ItemsSource="{Binding Properties}" IsReadOnly="True"
+                  AutoGenerateColumns="False" GridLinesVisibility="None">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Id" Binding="{Binding DisplayName}"/>
+            <DataGridTextColumn Header="Type" Binding="{Binding PrimitiveType}"/>
+            <DataGridTemplateColumn Header="Old Value" Width="*">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <ContentPresenter Content="{Binding OldProperty.Value}"/>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="New Value" Width="*">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <ContentPresenter Content="{Binding NewProperty.Value}"/>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </Grid>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type local:ThemeClassComparisonViewModel}">
+      <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesComparisonTemplate}"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type themeBrowser:ThemePartComparisonViewModel}">
+      <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesComparisonTemplate}"/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type local:ThemeStateComparisonViewModel}">
+      <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesComparisonTemplate}"/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:ProgressInfo}">
+      <Border Padding="10" Background="#CCEEEEEE" BorderThickness="1"
+              BorderBrush="#CCCCCCCC" HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              MinWidth="300">
+        <StackPanel>
+          <TextBlock Text="{Binding TaskName}" Margin="0,0,0,6"/>
+          <ProgressBar IsIndeterminate="True" BorderThickness="0" Height="4"
+                       Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                       Background="Transparent"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </Window.Resources>
+  <i:Interaction.Behaviors>
+    <local:ShowProgressAdornerBehavior Progress="{Binding TaskProgress}"/>
+  </i:Interaction.Behaviors>
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open…" Command="{Binding OpenCommand}"/>
+        <MenuItem Header="_Compare…" Command="{Binding CompareCommand}"/>
+        <MenuItem Header="_Dump loaded theme…" Command="{Binding DumpLoadedThemeCommand}"/>
+        <MenuItem Header="_Dump system theme…" Command="{Binding DumpSystemThemeCommand}"/>
+        <Separator/>
+        <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+      </MenuItem>
+    </Menu>
+
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="2*"/>
+      </Grid.ColumnDefinitions>
+      <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+              BorderThickness="0,0,1,0"
+              BorderBrush="{Binding BorderBrush, ElementName=tabControl}">
+        <ContentControl Content="{Binding ThemeFile}"/>
+      </Border>
+
+      <GridSplitter Grid.Row="0" Grid.Column="1" Style="{StaticResource VertSplitter}"/>
+
+      <TabControl x:Name="tabControl" Grid.Row="0" Grid.Column="2"
+                  BorderThickness="1,1,0,0">
         <TabItem Header="Selected">
           <ContentPresenter Content="{Binding Content}"/>
         </TabItem>

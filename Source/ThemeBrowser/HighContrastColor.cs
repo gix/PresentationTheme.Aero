@@ -1,4 +1,4 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using StyleCore;
     using Color = System.Windows.Media.Color;
@@ -13,7 +13,7 @@ namespace StyleInspector
         public HIGHCONTRASTCOLOR Index { get; }
         public Color Color => ThemeExtensions.ColorFromArgb(MapEnumToSysColor(Index));
 
-        static int MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
+        private static int MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
         {
             switch (hcColor) {
                 case HIGHCONTRASTCOLOR.ACTIVECAPTION: return NativeMethods.GetSysColor(SysColor.COLOR_ACTIVECAPTION);

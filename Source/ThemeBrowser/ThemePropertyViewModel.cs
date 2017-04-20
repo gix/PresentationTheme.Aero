@@ -1,4 +1,4 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using System;
     using System.Collections.Generic;
@@ -39,13 +39,18 @@ namespace StyleInspector
 
         private static object ConvertValue(ThemeProperty property)
         {
-            var bitmap = property.Value as ThemeBitmap;
-            if (bitmap != null)
-                return new ThemeBitmapViewModel(bitmap);
-            if (property.Value is Color)
-                return ((Color)property.Value).ToWpfColor();
-            if (property.Value is HIGHCONTRASTCOLOR)
-                return new HighContrastColor(((HIGHCONTRASTCOLOR)property.Value));
+            switch (property.Value) {
+                case ThemeBitmap bitmap:
+                    return new ThemeBitmapViewModel(bitmap);
+                case Color color:
+                    return color.ToWpfColor();
+                case HIGHCONTRASTCOLOR hcc:
+                    return new HighContrastColor(hcc);
+            }
+
+            if (property.Value != null && property.Value.GetType().IsEnum)
+                return $"{property.Value} [{(int)property.Value}]";
+
             return property.Value;
         }
 
@@ -95,21 +100,21 @@ namespace StyleInspector
 
     public class ThemeBitmapViewModel : ViewModel
     {
-        private readonly ThemeBitmap themeBitmap;
         private readonly Lazy<BitmapImage> bitmap;
 
         public ThemeBitmapViewModel(ThemeBitmap themeBitmap)
         {
-            this.themeBitmap = themeBitmap;
+            ThemeBitmap = themeBitmap;
             bitmap = new Lazy<BitmapImage>(LoadBitmap);
         }
 
-        public int ImageId => themeBitmap.ImageId;
+        public ThemeBitmap ThemeBitmap { get; }
+        public int ImageId => ThemeBitmap.ImageId;
         public BitmapImage Bitmap => bitmap.Value;
 
         public Stream OpenStream()
         {
-            return themeBitmap.OpenStream();
+            return ThemeBitmap.OpenStream();
         }
 
         public BitmapImage LoadBitmap()

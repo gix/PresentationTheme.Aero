@@ -1,11 +1,16 @@
-namespace StyleInspector
+namespace ThemeBrowser
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using StyleCore;
 
-    public class ThemeFileViewModel : IDisposable
+    public abstract class ThemeFileBase : ViewModel, IDisposable
+    {
+        public abstract void Dispose();
+    }
+
+    public class ThemeFileViewModel : ThemeFileBase
     {
         private readonly ThemeFile themeFile;
         private readonly List<ThemeClassViewModel> classes;
@@ -48,7 +53,7 @@ namespace StyleInspector
         public IReadOnlyList<ThemePropertyViewModel> Properties => properties;
         public ThemeFile ThemeFile => themeFile;
 
-        public void Dispose()
+        public override void Dispose()
         {
             themeFile.Dispose();
         }

@@ -44,6 +44,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ThemePreviewer.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
@@ -230,19 +233,10 @@
     <Compile Include="Theme.cs" />
     <Compile Include="ThemeUtils.cs" />
     <Compile Include="UxThemeOverride.cs" />
+    <Compile Include="ViewModel.cs" />
     <EmbeddedResource Include="Samples\ListBoxSampleNative.resx">
       <DependentUpon>ListBoxSampleNative.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Samples\ButtonSampleNative.resx">
       <DependentUpon>ButtonSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -379,6 +373,9 @@
       <Project>{8bb1d809-ea59-490f-9867-80e031ce691c}</Project>
       <Name>PresentationTheme.Aero.Win7</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ThemePreviewer.ico" />
   </ItemGroup>
   <Import Project="..\SharedPropertiesDotNet.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

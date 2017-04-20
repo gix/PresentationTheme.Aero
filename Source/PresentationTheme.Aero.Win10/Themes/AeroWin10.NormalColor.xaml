@@ -970,7 +970,7 @@
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="0"
-                          MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+                                  MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
               </Grid.ColumnDefinitions>
               <Border x:Name="defaultedBorder"
                       Grid.Column="1"
@@ -978,14 +978,14 @@
                       BorderBrush="Transparent"
                       SnapsToDevicePixels="True">
                 <Path x:Name="glyph"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Fill="{StaticResource ComboBox.Glyph.Normal}"
-                    Data="F1 M0.65,8.1 L1.354,7.396 5.354,11.396 5,11.75 4.646,11.396 8.646,7.396 9.354,8.104 5,12.457 4.646,12.104 0.646,8.104 z"
-                    Margin="0,0,1.5,0"
-                    Width="10"
-                    Height="19"
-                    Stretch="None"/>
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Center"
+                      Fill="{StaticResource ComboBox.Glyph.Normal}"
+                      Data="F1 M0.65,8.1 L1.354,7.396 5.354,11.396 5,11.75 4.646,11.396 8.646,7.396 9.354,8.104 5,12.457 4.646,12.104 0.646,8.104 z"
+                      Margin="0,0,1.5,0"
+                      Width="10"
+                      Height="19"
+                      Stretch="None"/>
               </Border>
               <ContentPresenter x:Name="contentPresenter"
                                 Grid.Column="0"
@@ -3427,60 +3427,6 @@
 
   <!-- TreeView ============================================================ -->
 
-  <Style TargetType="{x:Type TreeView}">
-    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Padding" Value="1"/>
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TreeView}">
-          <Border x:Name="border"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True">
-            <ScrollViewer x:Name="scrollViewer"
-                          Background="{TemplateBinding Background}"
-                          CanContentScroll="False"
-                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-              <ItemsPresenter/>
-            </ScrollViewer>
-          </Border>
-          <ControlTemplate.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="border" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-            </Trigger>
-            <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-              <Setter TargetName="scrollViewer" Property="CanContentScroll"
-                      Value="True"/>
-            </Trigger>
-          </ControlTemplate.Triggers>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
   <PathGeometry x:Key="TreeArrow">
     <PathGeometry.Figures>
       <PathFigureCollection>
@@ -3596,171 +3542,141 @@
     </Setter>
   </Style>
 
-  <Style TargetType="{x:Type TreeViewItem}">
-    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="HorizontalContentAlignment"
-            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="VerticalContentAlignment"
-            Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="Padding" Value="2,1,2,2"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TreeViewItem}">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" MinWidth="19"/>
-              <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition/>
-            </Grid.RowDefinitions>
-            <ToggleButton x:Name="Expander"
-                          Style="{StaticResource TreeViewExpanderStyle}"
-                          Margin="3,0,0,0"
-                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                          ClickMode="Press"/>
-            <Border x:Name="Bd"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    Padding="{TemplateBinding Padding}"
-                    SnapsToDevicePixels="True">
-              <ContentPresenter x:Name="PART_Header"
-                                ContentSource="Header"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-            </Border>
-            <ItemsPresenter x:Name="ItemsHost"
-                            Margin="19,0,0,0"
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"/>
-          </Grid>
-          <ControlTemplate.Triggers>
-            <Trigger Property="IsExpanded" Value="False">
-              <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-            </Trigger>
-            <Trigger Property="HasItems" Value="False">
-              <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
-            </Trigger>
-            <Trigger Property="IsSelected" Value="True">
-              <Setter TargetName="Bd" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-              <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-            </Trigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition Property="IsSelected" Value="True"/>
-                <Condition Property="IsSelectionActive" Value="False"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
-              <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
-            </MultiTrigger>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-            </Trigger>
-          </ControlTemplate.Triggers>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
+  <ControlTemplate x:Key="TreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="19"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <ToggleButton x:Name="Expander"
+                    Style="{StaticResource TreeViewExpanderStyle}"
+                    Margin="3,0,0,0"
+                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                    ClickMode="Press"/>
+      <Border x:Name="Bd"
+              Grid.Row="0"
+              Grid.Column="1"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              Padding="{TemplateBinding Padding}"
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              SnapsToDevicePixels="True">
+        <ContentPresenter x:Name="PART_Header"
+                          ContentSource="Header"
+                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+      </Border>
+      <ItemsPresenter x:Name="ItemsHost"
+                      Margin="19,0,0,0"
+                      Grid.Row="1"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="2"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsExpanded" Value="False">
+        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
       </Trigger>
-      <Trigger Property="aero10:TreeViewService.FullRowSelect" Value="True">
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate TargetType="{x:Type TreeViewItem}">
-              <Grid>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Border x:Name="Bd"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                  <Grid>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="1e300">
-                        <ColumnDefinition.MaxWidth>
-                          <Binding RelativeSource="{RelativeSource TemplatedParent}"
-                                   Converter="{x:Static aero10:TreeViewItemLevelConverter.Instance}">
-                            <Binding.ConverterParameter>
-                              <system:Int32>19</system:Int32>
-                            </Binding.ConverterParameter>
-                          </Binding>
-                        </ColumnDefinition.MaxWidth>
-                      </ColumnDefinition>
-                      <ColumnDefinition Width="Auto" MinWidth="19"/>
-                      <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
-                                  Style="{StaticResource TreeViewExpanderStyle}"
-                                  Margin="3,0,0,0"
-                                  IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                  ClickMode="Press"/>
-                    <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
-                                      ContentSource="Header"
-                                      Margin="{TemplateBinding Padding}"
-                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                  </Grid>
-                </Border>
-                <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
-              </Grid>
-              <ControlTemplate.Triggers>
-                <Trigger Property="IsExpanded" Value="False">
-                  <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-                </Trigger>
-                <Trigger Property="HasItems" Value="False">
-                  <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
-                </Trigger>
-                <Trigger Property="IsSelected" Value="True">
-                  <Setter TargetName="Bd" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                  <Setter Property="Foreground"
-                                    Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-                </Trigger>
-                <MultiTrigger>
-                  <MultiTrigger.Conditions>
-                    <Condition Property="IsSelected" Value="True"/>
-                    <Condition Property="IsSelectionActive" Value="False"/>
-                  </MultiTrigger.Conditions>
-                  <Setter TargetName="Bd" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
-                  <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
-                </MultiTrigger>
-                <Trigger Property="IsEnabled" Value="False">
-                  <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                </Trigger>
-              </ControlTemplate.Triggers>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
+      <Trigger Property="HasItems" Value="False">
+        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
       </Trigger>
-    </Style.Triggers>
-  </Style>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter TargetName="Bd" Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
+      </MultiTrigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="TreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <Border x:Name="Bd"
+              Grid.Row="0"
+              Grid.Column="0"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              SnapsToDevicePixels="True">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1e300">
+              <ColumnDefinition.MaxWidth>
+                <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                         Converter="{x:Static aero10:TreeViewItemLevelConverter.Instance}">
+                  <Binding.ConverterParameter>
+                    <system:Int32>19</system:Int32>
+                  </Binding.ConverterParameter>
+                </Binding>
+              </ColumnDefinition.MaxWidth>
+            </ColumnDefinition>
+            <ColumnDefinition Width="Auto" MinWidth="19"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
+                        Style="{StaticResource TreeViewExpanderStyle}"
+                        Margin="3,0,0,0"
+                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                        ClickMode="Press"/>
+          <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
+                            ContentSource="Header"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Grid>
+      </Border>
+      <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsExpanded" Value="False">
+        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+      </Trigger>
+      <Trigger Property="HasItems" Value="False">
+        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+      </Trigger>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter TargetName="Bd" Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
+      </MultiTrigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
 
   <Geometry x:Key="ExplorerTreeViewGlyphPlus">
     F1M4.88,5.12L6.119,3.881 10.119,7.881 10.737,8.5 6.119,13.119 4.881,11.881 8.881,7.881 9.5,8.5 8.881,9.119 4.881,5.119z
@@ -3802,94 +3718,247 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}" TargetType="{x:Type TreeViewItem}">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
+  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="19"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <ToggleButton x:Name="Expander"
+                    Style="{StaticResource ExplorerTreeViewExpanderStyle}"
+                    Margin="3,0,0,0"
+                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                    ClickMode="Press"/>
+      <Border x:Name="Bd"
+              Grid.Row="0"
+              Grid.Column="1"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              Padding="{TemplateBinding Padding}"
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              SnapsToDevicePixels="True">
+        <ContentPresenter x:Name="PART_Header"
+                          ContentSource="Header"
+                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+      </Border>
+      <ItemsPresenter x:Name="ItemsHost"
+                      Margin="19,0,0,0"
+                      Grid.Row="1"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="2"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsExpanded" Value="False">
+        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+      </Trigger>
+      <Trigger Property="HasItems" Value="False">
+        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+      </MultiTrigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <aero10:InvertThicknessConverter x:Key="InvertMarginConverter"/>
+
+  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <Border x:Name="Bd"
+              Grid.Row="0"
+              Grid.Column="0"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              SnapsToDevicePixels="True">
+        <Grid Margin="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource InvertMarginConverter}}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1e300">
+              <ColumnDefinition.MaxWidth>
+                <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                         Converter="{x:Static aero10:TreeViewItemLevelConverter.Instance}">
+                  <Binding.ConverterParameter>
+                    <system:Int32>19</system:Int32>
+                  </Binding.ConverterParameter>
+                </Binding>
+              </ColumnDefinition.MaxWidth>
+            </ColumnDefinition>
+            <ColumnDefinition Width="Auto" MinWidth="19"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
+                        Style="{StaticResource ExplorerTreeViewExpanderStyle}"
+                        Margin="3,0,0,0"
+                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                        ClickMode="Press"/>
+          <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
+                            ContentSource="Header"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Grid>
+      </Border>
+      <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsExpanded" Value="False">
+        <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
+      </Trigger>
+      <Trigger Property="HasItems" Value="False">
+        <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+      </MultiTrigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="ExplorerTreeView.Template" TargetType="{x:Type TreeView}">
+    <Border x:Name="border"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            SnapsToDevicePixels="True">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="scrollViewer" Grid.Row="1"
+                      Background="{TemplateBinding Background}"
+                      Focusable="False"
+                      CanContentScroll="False"
+                      HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                      VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                      Padding="{TemplateBinding Padding}"
+                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+          <ItemsPresenter/>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="border" Property="Background"
+                Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+      </Trigger>
+      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
+        <Setter TargetName="scrollViewer" Property="CanContentScroll"
+                Value="True"/>
+      </Trigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <Style TargetType="{x:Type TreeView}">
+    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="HorizontalContentAlignment"
-            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="VerticalContentAlignment"
-            Value="{Binding VerticalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="Padding" Value="3,0,3,1"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Padding" Value="1"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+    <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TreeViewItem}">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" MinWidth="19"/>
-              <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition/>
-            </Grid.RowDefinitions>
-            <ToggleButton x:Name="Expander"
-                          Style="{StaticResource ExplorerTreeViewExpanderStyle}"
-                          Margin="3,0,0,0"
-                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                          ClickMode="Press"/>
-            <Border x:Name="Bd"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    Padding="{TemplateBinding Padding}"
-                    SnapsToDevicePixels="True">
-              <ContentPresenter x:Name="PART_Header"
-                                ContentSource="Header"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-            </Border>
-            <ItemsPresenter x:Name="ItemsHost"
-                            Margin="19,0,0,0"
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"/>
-          </Grid>
+        <ControlTemplate TargetType="{x:Type TreeView}">
+          <Border x:Name="border"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <ScrollViewer x:Name="scrollViewer"
+                          Background="{TemplateBinding Background}"
+                          CanContentScroll="False"
+                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+              <ItemsPresenter/>
+            </ScrollViewer>
+          </Border>
           <ControlTemplate.Triggers>
-            <Trigger Property="IsExpanded" Value="False">
-              <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-            </Trigger>
-            <Trigger Property="HasItems" Value="False">
-              <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
-            </Trigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
-                <Condition Property="IsSelected" Value="True"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
-            </MultiTrigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
-                <Condition Property="IsSelected" Value="False"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
-            </MultiTrigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
-                <Condition Property="IsSelected" Value="True"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
-            </MultiTrigger>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition Property="IsSelected" Value="True"/>
-                <Condition Property="IsSelectionActive" Value="False"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
-            </MultiTrigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+              <Setter TargetName="border" Property="Background"
+                      Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+            </Trigger>
+            <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
+              <Setter TargetName="scrollViewer" Property="CanContentScroll"
+                      Value="True"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -3905,99 +3974,78 @@
           </Setter.Value>
         </Setter>
       </Trigger>
-      <Trigger Property="aero10:TreeViewService.FullRowSelect" Value="True">
-        <Setter Property="Padding" Value="1,0,0,1"/>
-        <Setter Property="Template">
+      <Trigger Property="aero10:TreeViewService.UseExplorerStyle" Value="True">
+        <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style TargetType="{x:Type TreeViewItem}">
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="HorizontalContentAlignment"
+            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="VerticalContentAlignment"
+            Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="Padding" Value="2,1,2,2"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Template" Value="{StaticResource TreeViewItem.Template.Default}"/>
+    <Style.Triggers>
+      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
+        <Setter Property="ItemsPanel">
           <Setter.Value>
-            <ControlTemplate TargetType="{x:Type TreeViewItem}">
-              <Grid>
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Border x:Name="Bd"
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                  <Grid>
-                    <Grid.ColumnDefinitions>
-                      <ColumnDefinition Width="1e300">
-                        <ColumnDefinition.MaxWidth>
-                          <Binding RelativeSource="{RelativeSource TemplatedParent}"
-                                   Converter="{x:Static aero10:TreeViewItemLevelConverter.Instance}">
-                            <Binding.ConverterParameter>
-                              <system:Int32>19</system:Int32>
-                            </Binding.ConverterParameter>
-                          </Binding>
-                        </ColumnDefinition.MaxWidth>
-                      </ColumnDefinition>
-                      <ColumnDefinition Width="Auto" MinWidth="19"/>
-                      <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
-                                  Style="{StaticResource ExplorerTreeViewExpanderStyle}"
-                                  Margin="3,0,0,0"
-                                  IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                  ClickMode="Press"/>
-                    <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
-                                      ContentSource="Header"
-                                      Margin="{TemplateBinding Padding}"
-                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                  </Grid>
-                </Border>
-                <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
-              </Grid>
-              <ControlTemplate.Triggers>
-                <Trigger Property="IsExpanded" Value="False">
-                  <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
-                </Trigger>
-                <Trigger Property="HasItems" Value="False">
-                  <Setter TargetName="Expander" Property="Visibility" Value="Hidden"/>
-                </Trigger>
-                <MultiTrigger>
-                  <MultiTrigger.Conditions>
-                    <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsSelected" Value="True"/>
-                  </MultiTrigger.Conditions>
-                  <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-                  <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
-                </MultiTrigger>
-                <MultiTrigger>
-                  <MultiTrigger.Conditions>
-                    <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
-                    <Condition Property="IsSelected" Value="False"/>
-                  </MultiTrigger.Conditions>
-                  <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-                  <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
-                </MultiTrigger>
-                <MultiTrigger>
-                  <MultiTrigger.Conditions>
-                    <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
-                    <Condition Property="IsSelected" Value="True"/>
-                  </MultiTrigger.Conditions>
-                  <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-                  <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
-                </MultiTrigger>
-                <MultiTrigger>
-                  <MultiTrigger.Conditions>
-                    <Condition Property="IsSelected" Value="True"/>
-                    <Condition Property="IsSelectionActive" Value="False"/>
-                  </MultiTrigger.Conditions>
-                  <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-                  <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
-                </MultiTrigger>
-                <Trigger Property="IsEnabled" Value="False">
-                  <Setter Property="Foreground"
-                      Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                </Trigger>
-              </ControlTemplate.Triggers>
-            </ControlTemplate>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel/>
+            </ItemsPanelTemplate>
           </Setter.Value>
         </Setter>
+      </Trigger>
+      <Trigger Property="aero10:TreeViewService.FullRowSelect" Value="True">
+        <Setter Property="Template" Value="{StaticResource TreeViewItem.Template.FullRowSelect}"/>
+      </Trigger>
+      <Trigger Property="aero10:TreeViewService.UseExplorerStyle" Value="True">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <!--<Setter Property="Padding" Value="3,0,3,1"/>-->
+        <Setter Property="Padding" Value="1,0,1,1"/>
+        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero10:TreeViewService.FullRowSelect" Value="True"/>
+          <Condition Property="aero10:TreeViewService.UseExplorerStyle" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Padding" Value="2,1,2,2"/>
+        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
+      </MultiTrigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}" TargetType="{x:Type TreeViewItem}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="HorizontalContentAlignment"
+            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="VerticalContentAlignment"
+            Value="{Binding VerticalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="Padding" Value="3,0,3,1"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
+    <Style.Triggers>
+      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
+        <Setter Property="ItemsPanel">
+          <Setter.Value>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel/>
+            </ItemsPanelTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      <Trigger Property="aero10:TreeViewService.FullRowSelect" Value="True">
+        <Setter Property="Padding" Value="1,0,0,1"/>
+        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -4017,43 +4065,7 @@
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type TreeView}">
-          <Border x:Name="border"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  SnapsToDevicePixels="True">
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-              </Grid.RowDefinitions>
-              <ScrollViewer x:Name="scrollViewer" Grid.Row="1"
-                            Background="{TemplateBinding Background}"
-                            Focusable="False"
-                            CanContentScroll="False"
-                            HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                            Padding="{TemplateBinding Padding}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                <ItemsPresenter/>
-              </ScrollViewer>
-            </Grid>
-          </Border>
-          <ControlTemplate.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="border" Property="Background"
-                      Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-            </Trigger>
-            <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-              <Setter TargetName="scrollViewer" Property="CanContentScroll"
-                      Value="True"/>
-            </Trigger>
-          </ControlTemplate.Triggers>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
+    <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
     <Style.Triggers>
       <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
         <Setter Property="ItemsPanel">
