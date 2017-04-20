@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationLoader.cpp" />
     <ClCompile Include="BorderFill.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DllMain.cpp" />
@@ -112,6 +113,7 @@
     <None Include="UxThemeEx.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationLoader.h" />
     <ClInclude Include="BorderFill.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DpiInfo.h" />

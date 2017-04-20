@@ -427,7 +427,7 @@ static void AppendFontResComment(
 static HRESULT ParseFont(
     wchar_t const* pszValue, LOGFONTW* plf, size_t cchComment, wchar_t* pszComment)
 {
-    fill_zero(plf);
+    fill_zero(*plf);
     plf->lfWeight = 400;
     plf->lfCharSet = 1;
 
@@ -568,7 +568,7 @@ static HRESULT LoadImageFileRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
             return hr;
         }
         if (!((*((WORD*)data + 14) - 24) & 0xFFF7)) {
-            *(void**)pvData = (char*)data + 14;
+            *(void**)pvData = (BYTE*)data + 14;
             *((DWORD*)pvData + 2) = 0;
             *pcbData = 16;
             return hr;
@@ -682,28 +682,48 @@ static HRESULT AllocRectRecord(
     wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    RECT rect;
+    int count = 4;
+    ENSURE_HR(ParseIntegerTokenList(&pszValue, (int*)&rect, &count));
+    ENSURE_HR(_AllocateRecordPlusData(&rect, sizeof(rect), ppRecord, pcbRecord));
+    return S_OK;
 }
 
 static HRESULT AllocPositionRecord(
     wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    POINT pt;
+    int count = 2;
+    ENSURE_HR(ParseIntegerTokenList(&pszValue, (int*)&pt, &count));
+    ENSURE_HR(_AllocateRecordPlusData(&pt, sizeof(pt), ppRecord, pcbRecord));
+    return S_OK;
 }
 
 static HRESULT AllocFontRecord(
     wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    LOGFONTW lf;
+    if (cbType < sizeof(lf))
+        return E_INVALIDARG;
+
+    ENSURE_HR(ParseFont(pszValue, &lf, 0, nullptr));
+    ENSURE_HR(_AllocateRecordPlusData(&lf, sizeof(lf), ppRecord, pcbRecord));
+    return S_OK;
 }
 
 static HRESULT AllocIntlistRecord(
     wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
     VSERRORCONTEXT* pEcx)
 {
-    return TRACE_HR(E_NOTIMPL);
+    int* values;
+    int count;
+    ENSURE_HR(ParseIntlist(pszValue, &values, &count));
+
+    HRESULT hr = _AllocateRecordPlusData(values, sizeof(int) * count, ppRecord, pcbRecord);
+    delete[] values;
+    return hr;
 }
 
 static HRESULT AllocAnimationRecord(
@@ -787,7 +807,7 @@ static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord,
                              wchar_t* pszData, int cchData)
 {
     *pszData = 0;
-    return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0 ? 0x80070490 : 0;
+    return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0 ? HRESULT_FROM_WIN32(ERROR_NOT_FOUND) : 0;
 }
 
 static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
@@ -1002,7 +1022,7 @@ static HRESULT _GenerateEmptySection(
 {
     int begin = pfnCB->GetNextDataIndex();
     int value = 0;
-    if (FAILED(pfnCB->AddData(TMT_12, TMT_12, &value, sizeof(value))))
+    if (FAILED(pfnCB->AddData(TMT_JUMPTOPARENT, TMT_JUMPTOPARENT, &value, sizeof(value))))
         return E_FAIL;
 
     int length = pfnCB->GetNextDataIndex() - begin;
@@ -1014,7 +1034,7 @@ static HRESULT _TerminateSection(
     int iPart, int iState, int iStartOfSection)
 {
     int value = 0;
-    if (FAILED(pfnCB->AddData(TMT_12, TMT_12, &value, sizeof(value))))
+    if (FAILED(pfnCB->AddData(TMT_JUMPTOPARENT, TMT_JUMPTOPARENT, &value, sizeof(value))))
         return E_FAIL;
 
     int length = pfnCB->GetNextDataIndex() - iStartOfSection;
@@ -1115,9 +1135,9 @@ T SwapRGB(T value)
     return ((value & 0xFF) << 16) | (value & 0xFF00) | ((value >> 16) & 0xFF);
 }
 
-static char* GetBitmapBits(BITMAPINFOHEADER* header)
+static BYTE* GetBitmapBits(BITMAPINFOHEADER* header)
 {
-    return reinterpret_cast<char*>(header) + header->biSize + 4 * header->biClrUsed;
+    return reinterpret_cast<BYTE*>(header) + header->biSize + 4 * header->biClrUsed;
 }
 
 static uint8_t PremultiplyChannel(uint8_t channel, uint8_t alpha)
@@ -1190,7 +1210,7 @@ static unsigned AlphaBlend(unsigned rgbDst, unsigned rgbaSrc)
     return rgbaSrc + ((a << 24) | (b << 16) | (g << 8) | r);
 }
 
-static unsigned Colorize(unsigned rgbaSrc, unsigned rgbTint)
+static unsigned PixelPremultiplyAlpha(unsigned rgbaSrc, unsigned rgbTint)
 {
     unsigned alpha = rgbaSrc >> 24;
     unsigned color = rgbTint | (alpha << 24);
@@ -1203,19 +1223,19 @@ static unsigned Colorize(unsigned rgbaSrc, unsigned rgbTint)
     return PremultiplyColor(color);
 }
 
-void ColorizeGlyphByAlpha(char* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned dwRGBColor)
+void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned rgbColor)
 {
-    int const tint = SwapRGB(dwRGBColor);
+    unsigned const tint = SwapRGB(rgbColor);
     unsigned const* src = reinterpret_cast<unsigned*>(GetBitmapBits(pBitmapHdr));
     unsigned* dst = reinterpret_cast<unsigned*>(pBytes);
 
     for (int i = 0; i < pBitmapHdr->biWidth * pBitmapHdr->biHeight; ++i)
-        *dst++ = Colorize(*src++, tint);
+        *dst++ = PixelPremultiplyAlpha(*src++, tint);
 }
 
 static void ColorizeAndComposeImages(
-    char* pDstImageBytes, char* pSrcBGImageBytes, char* pSrcFGImageBytes,
-    SIZE imageSize, unsigned* pdwBGColor, unsigned* pdwFGColor)
+    BYTE* pDstImageBytes, BYTE* pSrcBGImageBytes, BYTE* pSrcFGImageBytes,
+    SIZE imageSize, unsigned* pBGColor, unsigned* pFGColor)
 {
     auto srcFg = reinterpret_cast<unsigned*>(pSrcFGImageBytes);
     auto srcBg = reinterpret_cast<unsigned*>(pSrcBGImageBytes);
@@ -1223,15 +1243,15 @@ static void ColorizeAndComposeImages(
 
     for (long i = imageSize.cx * imageSize.cy; i; --i) {
         unsigned fgClr;
-        if (pdwFGColor)
-            fgClr = Colorize(*srcFg, SwapRGB(*pdwFGColor));
+        if (pFGColor)
+            fgClr = PixelPremultiplyAlpha(*srcFg, SwapRGB(*pFGColor));
         else
             fgClr = *srcFg;
         ++srcFg;
 
         unsigned bgClr;
-        if (pdwBGColor)
-            bgClr = Colorize(*srcBg, SwapRGB(*pdwBGColor));
+        if (pBGColor)
+            bgClr = PixelPremultiplyAlpha(*srcBg, SwapRGB(*pBGColor));
         else
             bgClr = *srcBg;
         ++srcBg;
@@ -1244,33 +1264,33 @@ static void ColorizeAndComposeImages(
 }
 
 void ColorizeGlyphByAlphaComposition(
-    char* pBytes, BITMAPINFOHEADER* pBitmapHdr, int iImageCount,
-    unsigned* pdwGlyphBGColor, unsigned* pdwGlyphColor)
+    BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, int iImageCount,
+    unsigned* pGlyphBGColor, unsigned* pGlyphColor)
 {
     SIZE size;
     size.cx = pBitmapHdr->biWidth;
     size.cy = pBitmapHdr->biHeight / (2 * iImageCount);
 
     int const byteCount = 4 * size.cx * size.cy;
-    char* srcFg = GetBitmapBits(pBitmapHdr);
-    char* srcBg = srcFg + byteCount;
+    BYTE* srcFg = GetBitmapBits(pBitmapHdr);
+    BYTE* srcBg = srcFg + byteCount;
 
     for (int i = 0; i < iImageCount; ++i) {
-        ColorizeAndComposeImages(pBytes, srcBg, srcFg, size, pdwGlyphBGColor, pdwGlyphColor);
+        ColorizeAndComposeImages(pBytes, srcBg, srcFg, size, pGlyphBGColor, pGlyphColor);
         pBytes += byteCount;
         srcFg += 2 * byteCount;
         srcBg += 2 * byteCount;
     }
 }
 
-void Convert24to32BPP(char* pBytes, BITMAPINFOHEADER* pBitmapHdr)
+void Convert24to32BPP(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr)
 {
     long const stride = pBitmapHdr->biWidth;
     long const v5 = 3 * (stride + 1) & 0xFFFFFFFC;
 
-    auto const* src = (unsigned char*)GetBitmapBits(pBitmapHdr);
+    auto const* src = (BYTE*)GetBitmapBits(pBitmapHdr);
     for (long row = 0; row < pBitmapHdr->biHeight; ++row) {
-        unsigned* pRow = (unsigned *)&pBytes[4 * row * stride];
+        unsigned* pRow = (unsigned*)&pBytes[4 * row * stride];
 
         for (long col = 0; col < stride; ++col) {
             unsigned char r = src[3 * col];
@@ -1283,7 +1303,7 @@ void Convert24to32BPP(char* pBytes, BITMAPINFOHEADER* pBitmapHdr)
     }
 }
 
-static HRESULT _ReadVSVariant(char* pbVariantList, int cbVariantList, int* pcbPos,
+static HRESULT _ReadVSVariant(BYTE* pbVariantList, int cbVariantList, int* pcbPos,
                               wchar_t** ppszName, wchar_t** ppszSize,
                               wchar_t** ppszColor)
 {
@@ -1352,14 +1372,14 @@ HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
     }
 
     _cBitmaps = 1000;
-    _rgBitmapIndices = new(std::nothrow) int[_cBitmaps];
+    _rgBitmapIndices = make_unique_malloc<int[]>(_cBitmaps);
     if (!_rgBitmapIndices)
         return E_OUTOFMEMORY;
 
     for (unsigned i = 0; i < _cBitmaps; ++i)
         _rgBitmapIndices[i] = -1;
 
-    _rgfPartiallyTransparent = (BYTE*)calloc((_cBitmaps / CHAR_BIT) + 1, sizeof(BYTE));
+    _rgfPartiallyTransparent = make_unique_calloc<BYTE[]>((_cBitmaps / CHAR_BIT) + 1);
     if (!_rgfPartiallyTransparent)
         return E_OUTOFMEMORY;
 
@@ -1435,7 +1455,7 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
         wchar_t* name = nullptr;
         wchar_t* size = nullptr;
         wchar_t* color = nullptr;
-        hr = _ReadVSVariant((char*)vmap, cbVMap, &pcbPos, &name, &size, &color);
+        hr = _ReadVSVariant((BYTE*)vmap, cbVMap, &pcbPos, &name, &size, &color);
         if (hr < 0)
             continue;
 
@@ -1608,7 +1628,7 @@ int CVSUnpack::_FindClass(wchar_t const* pszClass)
         ++idx;
     }
 
-    return 0xFFFFFFFF;
+    return -1;
 }
 
 HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
@@ -1681,7 +1701,7 @@ HRESULT CVSUnpack::_FindVSRecord(
     }
 
     *ppRec = nullptr;
-    return 0x80070491;
+    return HRESULT_FROM_WIN32(ERROR_NO_MATCH);
 }
 
 HRESULT CVSUnpack::_GetPropertyValue(
@@ -1698,7 +1718,7 @@ HRESULT CVSUnpack::_GetPropertyValue(
 HRESULT CVSUnpack::_GetImagePropertiesForHC(
     IMAGEPROPERTIES** ppImageProperties, HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount)
 {
-    auto props = new(std::nothrow) IMAGEPROPERTIES[iImageCount];
+    auto props = make_unique_nothrow<IMAGEPROPERTIES[]>(iImageCount);
     if (!props)
         return E_OUTOFMEMORY;
 
@@ -1720,16 +1740,18 @@ HRESULT CVSUnpack::_GetImagePropertiesForHC(
             ((backgroundColor >> 16) & 0xFF);
     }
 
-    *ppImageProperties = props;
+    *ppImageProperties = props.release();
 
     return S_OK;
 }
 
 HRESULT CVSUnpack::_CreateImageFromProperties(
-    IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins,
-    MARGINS* pTransparentMargins, char** ppbNewBitmap, int* pcbNewBitmap)
+    IMAGEPROPERTIES const* pImageProperties, int iImageCount,
+    MARGINS const* pSizingMargins, MARGINS const* pTransparentMargins,
+    BYTE** ppbNewBitmap, int* pcbNewBitmap)
 {
-    MARGINS const transparentMargin = pTransparentMargins ? *pTransparentMargins : MARGINS();
+    MARGINS const transparentMargin =
+        pTransparentMargins ? *pTransparentMargins : MARGINS();
 
     int const width =
         transparentMargin.cxLeftWidth +
@@ -1747,10 +1769,11 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
     DWORD const imageSize = iImageCount * 4 * width * height;
     size_t const cBytes = sizeof(BITMAPHEADER) + imageSize;
 
-    auto header = static_cast<BITMAPHEADER*>(malloc(cBytes));
-    if (!header)
+    auto newBitmap = make_unique_malloc<BYTE[]>(cBytes);
+    if (!newBitmap)
         return E_OUTOFMEMORY;
 
+    auto header = reinterpret_cast<BITMAPHEADER*>(newBitmap.get());
     header->bmih.biXPelsPerMeter = 0;
     header->bmih.biYPelsPerMeter = 0;
     header->bmih.biClrImportant = 0;
@@ -1795,7 +1818,7 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
         }
     }
 
-    *ppbNewBitmap = reinterpret_cast<char*>(header);
+    *ppbNewBitmap = newBitmap.release();
     *pcbNewBitmap = static_cast<int>(cBytes);
     return S_OK;
 }
@@ -1803,12 +1826,11 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
 HRESULT CVSUnpack::_EnsureBufferSize(unsigned cbBytes)
 {
     if (cbBytes > _cbBuffer) {
-        auto newBuffer = (BYTE*)malloc(cbBytes);
+        auto newBuffer = make_unique_malloc<BYTE[]>(cbBytes);
         if (!newBuffer)
             return E_OUTOFMEMORY;
-        free(_pBuffer);
 
-        _pBuffer = newBuffer;
+        _pBuffer = std::move(newBuffer);
         _cbBuffer = cbBytes;
     }
 
@@ -1823,11 +1845,12 @@ bool CVSUnpack::_IsTrueSizeImage(VSRECORD* pRec)
                           pRec->iState, TMT_SIZINGTYPE, &type, &size) < 0)
         return false;
 
-    return (type & 0xFFFFFFFD) == 0 ? S_FALSE : S_OK;
+    return (type & ~ST_TILE) == 0;
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordForColor(
-    IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsColor)
+HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB,
+                                           VSRECORD* pRec, BYTE* pbData,
+                                           int cbData, bool* pfIsColor)
 {
     *pfIsColor = false;
 
@@ -1857,8 +1880,9 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(
     return S_OK;
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordForMargins(
-    IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsMargins)
+HRESULT CVSUnpack::_ExpandVSRecordForMargins(IParserCallBack* pfnCB,
+                                             VSRECORD* pRec, BYTE* pbData,
+                                             int cbData, bool* pfIsMargins)
 {
     *pfIsMargins = false;
 
@@ -1874,7 +1898,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForMargins(
             _pbClassData, _cbClassData, pRec->iClass, pRec->iPart, pRec->iState,
             TMT_TRANSPARENTMARGINS, &margins, &size);
         if (hr < 0)
-            return hr == 0x80070491 ? S_FALSE : hr;
+            return hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH) ? S_FALSE : hr;
 
         margins.cxLeftWidth += sizingMargins->cxLeftWidth;
         margins.cxRightWidth += sizingMargins->cxRightWidth;
@@ -1902,7 +1926,8 @@ static void SetBit(BYTE* array, int n)
     array[n / CHAR_BIT] |= 1 << (n % CHAR_BIT);
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData)
+HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                       BYTE* pbData, int cbData)
 {
     HRESULT hr;
     if (_fIsLiteVisualStyle) {
@@ -1925,21 +1950,21 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
     void* v44;
     char v47;
     rsize_t v49;
-    char* v50;
+    BYTE* v50;
     int v54;
-    char* v72;
+    BYTE* v72;
     int v74;
     int v79;
     bool v80;
     char v82;
 
-    char* pfncb;
+    BYTE* pfncb;
     int partiallyTransparent;
     int iImageCount;
     int pvBuf;
     int cbNewBitmap;
     LPVOID lpMem;
-    char* v97;
+    BYTE* v97;
     VSRECORD* pRecord;
     HDC hDC;
 
@@ -2013,13 +2038,13 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, c
     case TMT_5102:
         return IsHighContrastMode() != 0;
 
-    case TMT_5143:
+    case TMT_COMPOSEDIMAGEFILE:
         lDibSymbolVal = TMT_DIBDATA;
         fComposedImage = 1;
         fSimplifiedImage = 0;
         goto LABEL_131;
 
-    case TMT_5149:
+    case TMT_COMPOSEDGLYPHIMAGEFILE:
         lDibSymbolVal = TMT_GLYPHDIBDATA;
         fComposedImage = 1;
         fSimplifiedImage = 0;
@@ -2073,23 +2098,17 @@ LABEL_98:
         unsigned cBitmapsOld = _cBitmaps;
         if (iRes < _cBitmaps) {
             bitmapIdx = _rgBitmapIndices[iRes];
-            partiallyTransparent = TestBit(_rgfPartiallyTransparent, iRes);
+            partiallyTransparent = TestBit(_rgfPartiallyTransparent.get(), iRes);
         } else {
             _cBitmaps = 2 * cBitmapsOld;
-            int* newBitmapIndices = (int*)realloc(_rgBitmapIndices, sizeof(_rgBitmapIndices[0]) * (2 * cBitmapsOld));
-            if (!newBitmapIndices) {
+            if (!realloc(_rgBitmapIndices, sizeof(_rgBitmapIndices[0]) * (2 * cBitmapsOld))) {
                 hr = E_OUTOFMEMORY;
             } else {
-                _rgBitmapIndices = newBitmapIndices;
-
                 if (_cBitmaps > cBitmapsOld)
                     std::fill(&_rgBitmapIndices[cBitmapsOld], &_rgBitmapIndices[_cBitmaps], -1);
 
-                auto v71 = (BYTE*)realloc(_rgfPartiallyTransparent, (_cBitmaps / CHAR_BIT) + 1);
-                if (!v71)
+                if (!realloc(_rgfPartiallyTransparent, (_cBitmaps / CHAR_BIT) + 1))
                     hr = E_OUTOFMEMORY;
-                else
-                    _rgfPartiallyTransparent = v71;
             }
         }
 
@@ -2125,7 +2144,7 @@ LABEL_98:
                     iImageCount,
                     &sizingMargins,
                     &transparentMargins,
-                    (char **)&lpMem,
+                    (BYTE**)&lpMem,
                     &cbNewBitmap);
             if (hr < 0)
                 goto LABEL_36;
@@ -2142,7 +2161,7 @@ LABEL_98:
 
                 if (hr < 0)
                     goto LABEL_24;
-                hr = _pDecoder->ConvertToDIB((const char *)hdr->buffer, hdr->size, (int *)&pvBuf);
+                hr = _pDecoder->ConvertToDIB((BYTE const*)hdr->buffer, hdr->size, (int *)&pvBuf);
                 if (hr < 0)
                     goto LABEL_24;
                 v17 = 1;
@@ -2163,7 +2182,7 @@ LABEL_98:
             partiallyTransparent = pvBuf;
             if (partiallyTransparent) {
                 if (!fSimplifiedImage)
-                    SetBit(_rgfPartiallyTransparent, iRes);
+                    SetBit(_rgfPartiallyTransparent.get(), iRes);
             }
         } else {
             if (fSimplifiedImage) {
@@ -2179,7 +2198,7 @@ LABEL_98:
                 }
             } else if (bmpInfoHeader->bmih.biBitCount == 32) {
                 partiallyTransparent = 1;
-                SetBit(_rgfPartiallyTransparent, iRes);
+                SetBit(_rgfPartiallyTransparent.get(), iRes);
             }
         }
 
@@ -2270,7 +2289,7 @@ LABEL_98:
         hr = _EnsureBufferSize(cbNewBitmap_);
         if (hr < 0)
             goto LABEL_70;
-        v72 = (char*)malloc(cbNewBitmap_);
+        v72 = (BYTE*)malloc(cbNewBitmap_);
         pfncb = v72;
         if (!v72) {
             v44 = v72;
@@ -2301,7 +2320,7 @@ LABEL_98:
                     v80 = pImageProperties_c != 0;
                     pImageProperties_c = -pImageProperties_c;
                     ColorizeGlyphByAlphaComposition(
-                        (char *)pfncb,
+                        pfncb,
                         &bmpInfoHeader->bmih,
                         v79,
                         (unsigned *)((unsigned __int64)&cbNewBitmap & -(signed __int64)v80),
@@ -2311,7 +2330,7 @@ LABEL_98:
                 v44 = pfncb;
             } else {
                 if (v47) {
-                    ColorizeGlyphByAlpha((char *)v72, &bmpInfoHeader->bmih, pvBuf);
+                    ColorizeGlyphByAlpha(v72, &bmpInfoHeader->bmih, pvBuf);
                     v44 = pfncb;
                 } else {
                     v44 = v72;
@@ -2333,7 +2352,7 @@ LABEL_70:
         if (hr >= 0) {
             if (bmpInfoHeader->bmih.biBitCount == 32) {
                 v49 = cbNewBitmap_;
-                v50 = (char *)malloc(cbNewBitmap_);
+                v50 = (BYTE*)malloc(cbNewBitmap_);
                 pfncb = v50;
                 if (!v50) {
                     v44 = v50;
@@ -2344,7 +2363,7 @@ LABEL_70:
                 hr = _EnsureBufferSize(4 * bmpInfoHeader->bmih.biWidth * bmpInfoHeader->bmih.biHeight);
                 if (hr < 0)
                     goto LABEL_75;
-                v50 = (char *)malloc(cbNewBitmap_);
+                v50 = (BYTE*)malloc(cbNewBitmap_);
                 pfncb = v50;
                 if (!v50) {
                     v44 = v50;
@@ -2408,7 +2427,7 @@ LABEL_29:
                 } else {
                     *v29 = *bmpInfoHeader;
                     v29->masks[2] = 0xFF;
-                    Convert24to32BPP((char *)v26 + 64, &bmpInfoHeader->bmih);
+                    Convert24to32BPP((BYTE*)v26 + 64, &bmpInfoHeader->bmih);
                 }
             } else {
                 hr = E_OUTOFMEMORY;
@@ -2441,12 +2460,12 @@ LABEL_24:
 HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
                                     VSRECORD* pRec)
 {
-    array<char, 256> localBuffer;
+    array<BYTE, 256> localBuffer;
     int pcbBuf = pRec->cbData;
 
-    char* pvBuf = localBuffer.data();
+    BYTE* pvBuf = localBuffer.data();
     if (pRec->cbData > localBuffer.size()) {
-        pvBuf = new(nothrow) char[pRec->cbData];
+        pvBuf = new(nothrow) BYTE[pRec->cbData];
         if (!pvBuf)
             return E_OUTOFMEMORY;
     }
@@ -2491,7 +2510,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
                   "Size mismatch");
 
     int minDpis[7] = {-1, -1, -1, -1, -1, -1, -1};
-    char plateauFlags[7] = {};
+    BYTE plateauFlags[7] = {};
 
     HRESULT hr = S_OK;
     bool hasMinDpiRecord = false;
@@ -2524,58 +2543,43 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
             } else
                 continue;
 
-            int v18 = -1;
+            int flagIdx = -1;
             int v20 = 0x7FFFFFFF;
             for (int i = 0; i < plateauCount; ++i) {
                 if (minDpis[i] != -1 && dpi >= minDpis[i] && dpi - minDpis[i] < v20) {
-                    v18 = i;
+                    flagIdx = i;
                     v20 = dpi - minDpis[i];
                     if (dpi == minDpis[i])
                         break;
                 }
             }
 
-            if (v18 != -1)
-                plateauFlags[v18] = 1;
+            if (flagIdx != -1)
+                plateauFlags[flagIdx] = 1;
         }
     }
 
-    {
-        int idx = 0;
-        char* v28 = plateauFlags;
-        for (VSRECORD* rec : _rgImageDpiRec) {
-            if (*v28 == 1) {
-                hr = _FixSymbolAndAddVSDataRecord(
-                    pfnCB, rec, Map_Ordinal_To_MINDPI(idx));
-                ++idx;
-            }
-            ++v28;
+    for (int i = 0, idx = 0; i < _rgImageDpiRec.size(); ++i) {
+        if (plateauFlags[i] == 1) {
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgImageDpiRec[i], Map_Ordinal_To_MINDPI(idx));
+            ++idx;
         }
     }
 
-    {
-        int idx = 0;
-        char* v28 = plateauFlags;
-        for (VSRECORD* rec : _rgImageRec) {
-            if (rec && *v28) {
-                hr = _FixSymbolAndAddVSDataRecord(
-                    pfnCB, rec, Map_Ordinal_To_IMAGEFILE(idx));
-                ++idx;
-            }
-            ++v28;
+    for (int i = 0, idx = 0; i < _rgImageRec.size(); ++i) {
+        if (_rgImageRec[i] && plateauFlags[i] != 0) {
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgImageRec[i], Map_Ordinal_To_IMAGEFILE(idx));
+            ++idx;
         }
     }
 
-    {
-        int idx = 0;
-        char* v35 = plateauFlags;
-        for (VSRECORD* rec : _rgComposedImageRec) {
-            if (rec && *v35) {
-                hr = _FixSymbolAndAddVSDataRecord(
-                    pfnCB, rec, Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
-                ++idx;
-            }
-            ++v35;
+    for (int i = 0, idx = 0; i < _rgComposedImageRec.size(); ++i) {
+        if (_rgComposedImageRec[i] && plateauFlags[i] != 0) {
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgComposedImageRec[i], Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
+            ++idx;
         }
     }
 
@@ -2597,8 +2601,8 @@ HRESULT CVSUnpack::_FlushDelayedPlateauRecords(IParserCallBack* pfnCB)
     idx = -1;
     v6 = 0x7FFFFFFF;
     v8 = pfnCB->GetScreenPpi();
-    v10 = _rgPlateauRec;
-    v11 = _rgPlateauPpiMapping;
+    v10 = _rgPlateauRec.data();
+    v11 = _rgPlateauPpiMapping.data();
     for (int v9 = 0; v9 < 7; ++v9)
     {
         if (*v10 && v8 - *v11 >= 0 && v8 - *v11 < v6)

@@ -6,11 +6,10 @@
 
 namespace uxtheme
 {
-struct CTextDraw;
-struct CDrawBase;
-struct CUxThemeFile;
-
-struct CRenderObj;
+class CDrawBase;
+class CRenderObj;
+class CTextDraw;
+class CUxThemeFile;
 
 struct RENDER_OBJ_ENTRY
 {
@@ -19,12 +18,13 @@ struct RENDER_OBJ_ENTRY
     int iRefCount;
     int iInUseCount;
     int iLoadId;
-    int fClosing;
+    bool fClosing;
     HWND hwnd;
 };
 
-struct CRenderList
+class CRenderList
 {
+public:
     void FreeRenderObjects(int iThemeFileLoadId);
     BOOL DeleteCheck(RENDER_OBJ_ENTRY* pEntry);
 
@@ -38,6 +38,7 @@ struct CRenderList
                              bool fForNonClientUse, void** phTheme);
     HRESULT CloseRenderObject(HTHEME hTheme);
 
+private:
     std::mutex _csListLock;
     std::vector<RENDER_OBJ_ENTRY> _RenderEntries;
     int _iNextUniqueId = 0;

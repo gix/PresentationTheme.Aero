@@ -10,7 +10,7 @@ class CThemePNGDecoder
 {
 public:
     HRESULT _Init();
-    HRESULT ConvertToDIB(char const* lpBits, unsigned cbDIB, int* pf32bpp);
+    HRESULT ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, int* pf32bpp);
 
     BITMAPHEADER* GetBitmapHeader()
     {
@@ -19,7 +19,7 @@ public:
     }
 
 private:
-    CThemeMemStream _stream{0, FALSE};
+    ThemeMemStream _stream{0, false};
     bool _bInited = false;
     IWICImagingFactory* _pICodecFactory = nullptr;
     IWICComponentInfo* _pInfo1 = nullptr;

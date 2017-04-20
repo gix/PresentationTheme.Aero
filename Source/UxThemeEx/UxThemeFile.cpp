@@ -33,7 +33,7 @@ HRESULT CUxThemeFile::CreateFileW(
     wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
     int iSharableSectionLength, wchar_t* pszNonSharableSectionName,
     unsigned cchNonSharableSectionName, int iNonSharableSectionLength,
-    int fReserve)
+    bool fReserve)
 {
     DWORD flags = PAGE_READWRITE;
     if (fReserve)
@@ -96,7 +96,7 @@ HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection,
         hr = ValidateThemeData(true);
         if (FAILED(hr)) {
             CloseFile();
-            hr = 0x8007000B;
+            hr = HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
         }
     }
 
@@ -113,7 +113,7 @@ HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection,
 HRESULT CUxThemeFile::ValidateThemeData(bool fullCheck) const
 {
     if (!ValidateObj())
-        return 0x8007054F;
+        return HRESULT_FROM_WIN32(ERROR_INTERNAL_ERROR);
 
     auto hdr = _pbSharableData;
     if (!hdr
@@ -121,7 +121,7 @@ HRESULT CUxThemeFile::ValidateThemeData(bool fullCheck) const
         || hdr->dwVersion != 65543
         || !_pbNonSharableData
         || !(*_pbNonSharableData & 1))
-        return 0x8007000B;
+        return HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
 
     return S_OK;
 }
@@ -137,7 +137,7 @@ LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
     if (index >= _pbSharableData->cFonts)
         assert("FRE: index < pHeader->cFonts");
 
-    auto ptr = reinterpret_cast<char*>(&_pbSharableData[index]) +
+    auto ptr = reinterpret_cast<BYTE*>(&_pbSharableData[index]) +
         _pbSharableData->iFontsOffset;
     return reinterpret_cast<LOGFONTW const*>(ptr);
 }
@@ -155,7 +155,7 @@ HRESULT CUxThemeFile::GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSha
     ROOTSECTION* pRootSection = nullptr;
     ENSURE_HR(rootSection.GetRootSectionData(&pRootSection));
     if (!pRootSection->szSharableSectionName[0] || !pRootSection->szNonSharableSectionName[0])
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     ENSURE_HR(sharableSection.Open(pRootSection->szSharableSectionName, false));
     ENSURE_HR(nonSharableSection.Open(pRootSection->szNonSharableSectionName, false));

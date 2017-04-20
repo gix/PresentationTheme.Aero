@@ -29,4 +29,15 @@ void ScaleFontForScreenDpi(_In_ LOGFONTW* plf)
         plf->lfHeight = MulDiv(plf->lfHeight, GetScreenDpi(), 96);
 }
 
+void ScaleMargins(MARGINS* margins, unsigned targetDpi)
+{
+    if (!margins)
+        return;
+
+    margins->cxLeftWidth = MulDiv(margins->cxLeftWidth, targetDpi, 96);
+    margins->cxRightWidth = MulDiv(margins->cxRightWidth, targetDpi, 96);
+    margins->cyTopHeight = MulDiv(margins->cyTopHeight, targetDpi, 96);
+    margins->cyBottomHeight = MulDiv(margins->cyBottomHeight, targetDpi, 96);
+}
+
 } // namespace uxtheme

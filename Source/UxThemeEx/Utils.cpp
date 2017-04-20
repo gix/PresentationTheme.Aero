@@ -1,5 +1,6 @@
 ﻿#include "Utils.h"
 
+#include "UxThemeFile.h"
 #include <cassert>
 #include <strsafe.h>
 #include <tlhelp32.h>
@@ -8,9 +9,105 @@
 namespace uxtheme
 {
 
+HRESULT SafeStringCchCopyW(
+    wchar_t* pszDest, size_t cchDest, wchar_t const* pszSrc)
+{
+    if (!pszDest)
+        return E_INVALIDARG;
+
+    if (cchDest) {
+        if (pszSrc)
+            return StringCchCopyW(pszDest, cchDest, pszSrc);
+        *pszDest = 0;
+    }
+
+    return S_OK;
+}
+
+HRESULT SaveClipRegion::Save(HDC hdc)
+{
+    if (!hRegion) {
+        hRegion = CreateRectRgn(0, 0, 1, 1);
+        if (!hRegion)
+            return MakeErrorLast();
+    }
+
+    int clipRgn = GetClipRgn(hdc, hRegion);
+    if (clipRgn == -1)
+        return MakeErrorLast();
+
+    if (clipRgn == 0)
+        hRegion.Reset();
+
+    saved = true;
+    return S_OK;
+}
+
+HRESULT SaveClipRegion::Restore(HDC hdc)
+{
+    if (saved)
+        SelectClipRgn(hdc, hRegion);
+    return S_OK;
+}
+
+HRESULT MemoryDC::OpenDC(HDC hdcSource, int width, int height)
+{
+    HRESULT hr = S_OK;
+    bool fDeskDC = false;
+    if (!hdcSource) {
+        hdcSource = GetWindowDC(nullptr);
+        if (!hdcSource) {
+            hr = MakeErrorLast();
+            goto done;
+        }
+
+        fDeskDC = true;
+    }
+
+    hBitmap = CreateCompatibleBitmap(hdcSource, width, height);
+
+    if (!hBitmap ||
+        (hdc = CreateCompatibleDC(hdcSource), !hdc) ||
+        (hOldBitmap = (HBITMAP)SelectObject(hdc, hBitmap), !hOldBitmap))
+        hr = MakeErrorLast();
+
+    if (fDeskDC)
+        ReleaseDC(nullptr, hdcSource);
+
+done:
+    if (FAILED(hr))
+        CloseDC();
+    return hr;
+}
+
+void MemoryDC::CloseDC()
+{
+    if (hOldBitmap) {
+        SelectObject(hdc, hOldBitmap);
+        hOldBitmap = nullptr;
+    }
+    if (hdc) {
+        DeleteDC(hdc);
+        hdc = nullptr;
+    }
+    if (hBitmap) {
+        DeleteObject(hBitmap);
+        hBitmap = nullptr;
+    }
+}
+
 bool IsHighContrastMode()
 {
     return false;
+}
+
+static wchar_t const g_pszAppName[] = {0};
+
+wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset)
+{
+    if (pThemeFile && pThemeFile->ThemeHeader() && iOffset > 0)
+        return (wchar_t const*)((BYTE*)pThemeFile->ThemeHeader() + iOffset);
+    return g_pszAppName;
 }
 
 static wchar_t const* StringFromError(wchar_t* buffer, size_t size, long ec)
@@ -120,10 +217,10 @@ int AsciiStrCmpI(wchar_t const* dst, wchar_t const* src)
 
     if (dst) {
         if (src) {
-            v3 = (char *)dst - (char *)src;
+            v3 = (BYTE*)dst - (BYTE*)src;
             do
             {
-                v4 = *(const wchar_t *)((char *)src + v3);
+                v4 = *(const wchar_t *)((BYTE*)src + v3);
                 if ((unsigned __int16)(v4 - 65) <= 0x19u)
                     v4 += 32;
                 v5 = *src;

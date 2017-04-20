@@ -12,6 +12,37 @@
 
 using HTHEMEFILE = HANDLE;
 
+enum TA_PROPERTY_PRIV
+{
+    TAP_BACKGROUNDPARTID = 0x100,
+    TAP_TUNINGLEVEL = 0x101,
+    TAP_PERSPECTIVE = 0x102,
+};
+
+enum TA_TRANSFORM_TYPE_PRIV
+{
+    TATT_ROTATE_2D = 0x100,
+    TATT_SKEW_2D = 0x101,
+    TATT_TRANSLATE_3D = 0x102,
+    TATT_SCALE_3D = 0x103,
+    TATT_ROTATE_3D = 0x104,
+    TATT_SKEW_3D = 0x105,
+};
+
+struct TA_TRANSFORM_3D
+{
+    TA_TRANSFORM header;
+    float rX;
+    float rY;
+    float rZ;
+    float rInitialX;
+    float rInitialY;
+    float rInitialZ;
+    float rOriginX;
+    float rOriginY;
+    float rOriginZ;
+};
+
 THEMEEXAPI UxOpenThemeFile(
     _In_ wchar_t const* themeFileName,
     _Out_ HTHEMEFILE* phThemeFile);

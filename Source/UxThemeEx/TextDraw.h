@@ -8,10 +8,11 @@
 namespace uxtheme
 {
 
-struct CRenderObj;
+class CRenderObj;
 
-struct CTextDraw
+class CTextDraw
 {
+public:
     static BOOL KeyProperty(int iPropId);
     HRESULT PackProperties(CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT GetTextExtent(CRenderObj* pRender, HDC hdc, int iPartId, int iStateId,
@@ -24,22 +25,22 @@ struct CTextDraw
                       DTTOPTS const* pOptions);
 
     int _fComposited;
-    unsigned _crText;
-    unsigned _crEdgeLight;
-    unsigned _crEdgeHighlight;
-    unsigned _crEdgeShadow;
-    unsigned _crEdgeDkShadow;
-    unsigned _crEdgeFill;
+    COLORREF _crText;
+    COLORREF _crEdgeLight;
+    COLORREF _crEdgeHighlight;
+    COLORREF _crEdgeShadow;
+    COLORREF _crEdgeDkShadow;
+    COLORREF _crEdgeFill;
     POINT _ptShadowOffset;
     unsigned _crShadow;
     TEXTSHADOWTYPE _eShadowType;
     int _iBorderSize;
-    unsigned _crBorder;
-    unsigned _crGlow;
+    COLORREF _crBorder;
+    COLORREF _crGlow;
     int _fApplyOverlay;
     int _iGlowSize;
     int _iGlowIntensity;
-    unsigned __int16 _iFontIndex;
+    unsigned short _iFontIndex;
     int _fItalicFont;
     int _iSourcePartId;
     int _iSourceStateId;

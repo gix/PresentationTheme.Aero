@@ -1,9 +1,11 @@
 ﻿#include "Debug.h"
 
+#include "AnimationLoader.h"
 #include "BorderFill.h"
 #include "Global.h"
 #include "Handle.h"
 #include "ImageFile.h"
+#include "RenderObj.h"
 #include "Utils.h"
 #include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
@@ -14,7 +16,6 @@
 #include <strsafe.h>
 #include <winnt.h>
 #include <winternl.h>
-#include <ntstatus.h>
 
 namespace uxtheme
 {
@@ -127,118 +128,122 @@ static void GetStrings(THEMEHDR const* hdr, std::vector<std::wstring>& strings)
 }
 
 template<typename T, typename = std::enable_if_t<std::is_enum_v<T>, T>>
-static int FormatImpl(char* buffer, size_t bufferSize, T const& value)
+static int Format(char* buffer, size_t bufferSize, T const& value)
 {
     return sprintf_s(buffer, bufferSize, "%d", value);
 }
 
-template<typename T>
-static int Format(char* buffer, size_t bufferSize, T const& value)
-{
-    return FormatImpl(buffer, bufferSize, value);
-}
-
-template<>
-int Format(char* buffer, size_t bufferSize, void* const& value)
+static int Format(char* buffer, size_t bufferSize, void* value)
 {
     return sprintf_s(buffer, bufferSize, "%p", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, void const* const& value)
+static int Format(char* buffer, size_t bufferSize, void const* value)
 {
     return sprintf_s(buffer, bufferSize, "%p", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, char const& value)
+static int Format(char* buffer, size_t bufferSize, char value)
 {
     return sprintf_s(buffer, bufferSize, "%d", (int)value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, unsigned char const& value)
+static int Format(char* buffer, size_t bufferSize, int8_t value)
+{
+    return sprintf_s(buffer, bufferSize, "%d", (int)value);
+}
+
+static int Format(char* buffer, size_t bufferSize, uint8_t value)
 {
     return sprintf_s(buffer, bufferSize, "%u", (unsigned)value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, short const& value)
+static int Format(char* buffer, size_t bufferSize, int16_t value)
 {
     return sprintf_s(buffer, bufferSize, "%d", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, unsigned short const& value)
+static int Format(char* buffer, size_t bufferSize, uint16_t value)
 {
     return sprintf_s(buffer, bufferSize, "%u", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, int const& value)
+static int Format(char* buffer, size_t bufferSize, int32_t value)
 {
     return sprintf_s(buffer, bufferSize, "%d", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, unsigned const& value)
+static int Format(char* buffer, size_t bufferSize, uint32_t value)
 {
     return sprintf_s(buffer, bufferSize, "%u", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, long const& value)
+static int Format(char* buffer, size_t bufferSize, long value)
 {
     return sprintf_s(buffer, bufferSize, "%ld", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, unsigned long const& value)
+static int Format(char* buffer, size_t bufferSize, unsigned long value)
 {
     return sprintf_s(buffer, bufferSize, "%lu", value);
 }
 
-int Format(char* buffer, size_t bufferSize, char const* value)
+static int Format(char* buffer, size_t bufferSize, int64_t value)
+{
+    return sprintf_s(buffer, bufferSize, "%lld", value);
+}
+
+static int Format(char* buffer, size_t bufferSize, uint64_t value)
+{
+    return sprintf_s(buffer, bufferSize, "%llu", value);
+}
+
+static int Format(char* buffer, size_t bufferSize, char const* value)
 {
     return sprintf_s(buffer, bufferSize, "%s", value);
 }
 
-int Format(char* buffer, size_t bufferSize, wchar_t const* value)
+static int Format(char* buffer, size_t bufferSize, wchar_t const* value)
 {
     return sprintf_s(buffer, bufferSize, "%ls", value);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, POINT const& value)
+static int Format(char* buffer, size_t bufferSize, float value)
+{
+    return sprintf_s(buffer, bufferSize, "%g", value);
+}
+
+static int Format(char* buffer, size_t bufferSize, double value)
+{
+    return sprintf_s(buffer, bufferSize, "%g", value);
+}
+
+static int Format(char* buffer, size_t bufferSize, POINT const& value)
 {
     return sprintf_s(buffer, bufferSize, "(%ld,%ld)", value.x, value.y);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, SIZE const& value)
+static int Format(char* buffer, size_t bufferSize, SIZE const& value)
 {
     return sprintf_s(buffer, bufferSize, "(%ld,%ld)", value.cx, value.cy);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, RECT const& value)
+static int Format(char* buffer, size_t bufferSize, RECT const& value)
 {
     return sprintf_s(buffer, bufferSize, "(%ld,%ld,%ld,%ld)",
                      value.left, value.top, value.right, value.bottom);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, MARGINS const& value)
+static int Format(char* buffer, size_t bufferSize, MARGINS const& value)
 {
     return sprintf_s(buffer, bufferSize, "(l:%d,r:%d,t:%d,b:%d)",
                      value.cxLeftWidth, value.cxRightWidth, value.cyTopHeight, value.cyBottomHeight);
 }
 
-template<>
-int Format(char* buffer, size_t bufferSize, FILETIME const& value)
+static int Format(char* buffer, size_t bufferSize, FILETIME const& value)
 {
     return sprintf_s(buffer, bufferSize, "0x%llX",
-                     ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
+        ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
 }
 
 class LogFile
@@ -443,58 +448,177 @@ static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
     }
 }
 
+static void DumpAnimationTransform(TA_TRANSFORM const* transform, LogFile& log)
+{
+    switch (static_cast<int>(transform->eTransformType)) {
+    case TATT_TRANSLATE_2D:
+    case TATT_SCALE_2D:
+    case TATT_ROTATE_2D:
+    case TATT_SKEW_2D:
+    {
+        auto t = reinterpret_cast<TA_TRANSFORM_2D const*>(transform);
+        log.LogPair("header.eTransformType", t->header.eTransformType);
+        log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
+        log.LogPair("header.dwStartTime", t->header.dwStartTime);
+        log.LogPair("header.dwDurationTime", t->header.dwDurationTime);
+        log.LogPair("header.eFlags", t->header.eFlags);
+        log.LogPair("rX", t->rX);
+        log.LogPair("rY", t->rY);
+        log.LogPair("rInitialX", t->rInitialX);
+        log.LogPair("rInitialY", t->rInitialY);
+        log.LogPair("rOriginX", t->rOriginX);
+        log.LogPair("rOriginY", t->rOriginY);
+        break;
+    }
+    case TATT_OPACITY:
+    {
+        auto t = reinterpret_cast<TA_TRANSFORM_OPACITY const*>(transform);
+        log.LogPair("header.eTransformType", t->header.eTransformType);
+        log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
+        log.LogPair("header.dwStartTime", t->header.dwStartTime);
+        log.LogPair("header.dwDurationTime", t->header.dwDurationTime);
+        log.LogPair("header.eFlags", t->header.eFlags);
+        log.LogPair("rOpacity", t->rOpacity);
+        log.LogPair("rInitialOpacity", t->rInitialOpacity);
+        break;
+    }
+    case TATT_CLIP:
+    {
+        auto t = reinterpret_cast<TA_TRANSFORM_CLIP const*>(transform);
+        log.LogPair("header.eTransformType", t->header.eTransformType);
+        log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
+        log.LogPair("header.dwStartTime", t->header.dwStartTime);
+        log.LogPair("header.dwDurationTime", t->header.dwDurationTime);
+        log.LogPair("header.eFlags", t->header.eFlags);
+        log.LogPair("rLeft", t->rLeft);
+        log.LogPair("rTop", t->rTop);
+        log.LogPair("rRight", t->rRight);
+        log.LogPair("rBottom", t->rBottom);
+        log.LogPair("rInitialLeft", t->rInitialLeft);
+        log.LogPair("rInitialTop", t->rInitialTop);
+        log.LogPair("rInitialRight", t->rInitialRight);
+        log.LogPair("rInitialBottom", t->rInitialBottom);
+        break;
+    }
+    case TATT_TRANSLATE_3D:
+    case TATT_SCALE_3D:
+    case TATT_ROTATE_3D:
+    case TATT_SKEW_3D:
+    {
+        auto t = reinterpret_cast<TA_TRANSFORM_3D const*>(transform);
+        log.LogPair("header.eTransformType", t->header.eTransformType);
+        log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
+        log.LogPair("header.dwStartTime", t->header.dwStartTime);
+        log.LogPair("header.dwDurationTime", t->header.dwDurationTime);
+        log.LogPair("header.eFlags", t->header.eFlags);
+        log.LogPair("rX", t->rX);
+        log.LogPair("rY", t->rY);
+        log.LogPair("rZ", t->rZ);
+        log.LogPair("rInitialX", t->rInitialX);
+        log.LogPair("rInitialY", t->rInitialY);
+        log.LogPair("rInitialZ", t->rInitialZ);
+        log.LogPair("rOriginX", t->rOriginX);
+        log.LogPair("rOriginY", t->rOriginY);
+        log.LogPair("rOriginZ", t->rOriginZ);
+        break;
+    }
+    default:
+        log.Log("<unknown transform type>\n");
+        log.LogPair("eTransformType", transform->eTransformType);
+        log.LogPair("dwTimingFunctionId", transform->dwTimingFunctionId);
+        log.LogPair("dwStartTime", transform->dwStartTime);
+        log.LogPair("dwDurationTime", transform->dwDurationTime);
+        log.LogPair("eFlags", transform->eFlags);
+        break;
+    }
+}
+
 static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
 {
-    log.Log("  (%05u %05u) %05u\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
+    log.Indent();
+    log.Log("Entry(%05u, %05u, len:%05u)\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
 
     log.Indent();
-
-    if (entry->usTypeNum == TMT_PARTJUMPTBL) {
+    if (entry->usTypeNum == TMT_PARTJUMPTABLE) {
         auto jumpTableHdr = (PARTJUMPTABLEHDR*)(entry + 1);
         auto jumpTable = (int*)(jumpTableHdr + 1);
-        log.Log("  iBaseClassIndex: %d\n", jumpTableHdr->iBaseClassIndex);
-        log.Log("  iFirstDrawObjIndex: %d\n", jumpTableHdr->iFirstDrawObjIndex);
-        log.Log("  iFirstTextObjIndex: %d\n", jumpTableHdr->iFirstTextObjIndex);
-        log.Log("  cParts: %d\n", jumpTableHdr->cParts);
+        log.Log("iBaseClassIndex: %d\n", jumpTableHdr->iBaseClassIndex);
+        log.Log("iFirstDrawObjIndex: %d\n", jumpTableHdr->iFirstDrawObjIndex);
+        log.Log("iFirstTextObjIndex: %d\n", jumpTableHdr->iFirstTextObjIndex);
+        log.Log("cParts: %d\n", jumpTableHdr->cParts);
         for (int i = 0; i < jumpTableHdr->cParts; ++i)
-            log.Log("  [%d] %d\n", i, jumpTable[i]);
-    } else if (entry->usTypeNum == TMT_STATEJUMPTBL) {
+            log.Log("[%d] %d\n", i, jumpTable[i]);
+    } else if (entry->usTypeNum == TMT_STATEJUMPTABLE) {
         auto jumpTableHdr = (STATEJUMPTABLEHDR*)(entry + 1);
         auto jumpTable = (int*)(jumpTableHdr + 1);
-        log.Log("  cStates: %d\n", jumpTableHdr->cStates);
+        log.Log("cStates: %d\n", jumpTableHdr->cStates);
         for (int i = 0; i < jumpTableHdr->cStates; ++i)
-            log.Log("  [%d] %d\n", i, jumpTable[i]);
-    } else if (entry->usTypeNum == TMT_IMAGEINFO) {
-        auto data = (char*)(entry + 1);
-        auto imageCount = *(char*)data;
-        log.Log("  ImageCount: %d\n", imageCount);
+            log.Log("[%d] %d\n", i, jumpTable[i]);
+    } else if (entry->usTypeNum == TMT_JUMPTOPARENT) {
+        auto data = (int64_t*)(entry + 1);
+        log.LogPair("index", *data);
+    } else if (entry->usTypeNum == TMT_RGNLIST) {
+        auto data = (BYTE*)(entry + 1);
+        auto imageCount = *(BYTE*)data;
+        log.Log("ImageCount: %d\n", imageCount);
 
         auto regionOffsets = (int*)(data + 8);
 
         for (unsigned i = 0; i < imageCount; ++i)
-            log.Log("  [Region %d]: %d\n", i, regionOffsets[i]);
+            log.Log("[Region %d]: %d\n", i, regionOffsets[i]);
 
         for (unsigned i = 0; i < imageCount; ++i)
-            DumpEntry(log, hdr, (ENTRYHDR*)((char*)hdr + regionOffsets[i]));
-    } else if (entry->usTypeNum == TMT_REGIONDATA) {
+            DumpEntry(log, hdr, (ENTRYHDR*)((BYTE*)hdr + regionOffsets[i]));
+    } else if (entry->usTypeNum == TMT_RGNDATA) {
         auto data = (RGNDATA*)(entry + 1);
-        log.Log("  rdh.nCount:   %lu\n", data->rdh.nCount);
-        log.Log("  rdh.nRgnSize: %lu\n", data->rdh.nRgnSize);
-        log.Log("  rdh.rcBound: (%d,%d,%d,%d)\n", data->rdh.rcBound.left,
+        log.Log("rdh.nCount:   %lu\n", data->rdh.nCount);
+        log.Log("rdh.nRgnSize: %lu\n", data->rdh.nRgnSize);
+        log.Log("rdh.rcBound: (%d,%d,%d,%d)\n", data->rdh.rcBound.left,
                 data->rdh.rcBound.top, data->rdh.rcBound.right,
                 data->rdh.rcBound.bottom);
         auto rects = (RECT*)data->Buffer;
         for (DWORD i = 0; i < data->rdh.nCount; ++i) {
-            log.Log("  [%lu]: (%d,%d,%d,%d)\n", i, rects[i].left,
+            log.Log("[%lu]: (%d,%d,%d,%d)\n", i, rects[i].left,
                     rects[i].top, rects[i].right, rects[i].bottom);
         }
     } else if (entry->usTypeNum == TMT_DRAWOBJ) {
         auto objHdr = (PARTOBJHDR*)(entry + 1);
         log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
         DumpDrawObj(log, hdr, (CDrawBase*)(objHdr + 1));
+    } else if (entry->usTypeNum == TMT_ANIMATION) {
+        auto header = (CTransformSerializer::Header*)(entry + 1);
+        log.LogPair("cbSize", header->_cbSize);
+        log.LogPair("dwOffsetProperty", header->_dwOffsetProperty);
+        log.LogPair("dwOffsetTransform", header->_dwOffsetTransform);
+        AnimationProperty const* prop = header->Property(entry->dwDataLen);
+        log.Log("[AnimationProperty]\n");
+        log.Indent();
+        log.LogPair("eFlags", prop->eFlags);
+        log.LogPair("dwTransformCount", prop->dwTransformCount);
+        log.LogPair("dwStaggerDelay", prop->dwStaggerDelay);
+        log.LogPair("dwStaggerDelayCap", prop->dwStaggerDelayCap);
+        log.LogPair("rStaggerDelayFactor", prop->rStaggerDelayFactor);
+        log.LogPair("dwZIndex", prop->dwZIndex);
+        log.LogPair("dwBackgroundPartId", prop->dwBackgroundPartId);
+        log.LogPair("dwTuningLevel", prop->dwTuningLevel);
+        log.LogPair("rPerspective", prop->rPerspective);
+        log.Outdent();
+
+        auto transform = header->Transform();
+        auto const end = (TA_TRANSFORM const*)Advance(entry, entry->dwDataLen);
+        for (int i = 0; transform < end; ++i) {
+            log.Log("[Transform %d]\n", i);
+            log.Indent();
+            DumpAnimationTransform(transform, log);
+            log.Outdent();
+            transform = Advance(transform, CTransformSerializer::GetTransformSize(transform));
+        }
+    } else if (entry->usTypeNum == TMT_TIMINGFUNCTION) {
+        auto timingFunction = (TA_TIMINGFUNCTION const*)(entry + 1);
+        log.LogPair("eTimingFunctionType", timingFunction->eTimingFunctionType);
     }
 
-    log.Outdent();
+    log.Outdent(2);
 }
 
 static void DumpHeader(THEMEHDR const* hdr, LogFile& log)
@@ -605,7 +729,7 @@ static HRESULT WriteFileAllBytes(wchar_t const* path, void const* ptr, unsigned 
 static HRESULT DumpThemeFile(CUxThemeFile* themeFile, wchar_t const* path,
                              bool packed, bool fullInfo)
 {
-    THEMEHDR const* themeHdr = themeFile->_pbSharableData;
+    THEMEHDR const* themeHdr = themeFile->ThemeHeader();
 
     if (packed)
         return WriteFileAllBytes(path, themeHdr, themeHdr->dwTotalLength);

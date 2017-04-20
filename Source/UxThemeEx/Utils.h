@@ -1,4 +1,5 @@
 #pragma once
+#include "GdiHandles.h"
 #include <algorithm>
 #include <memory>
 #include <windows.h>
@@ -14,20 +15,20 @@ constexpr T narrow_cast(U&& u) noexcept
 
 namespace details
 {
-template<typename T>
+template<typename T, typename D = std::default_delete<T>>
 struct unique_if
 {
-    using unique_single = std::unique_ptr<T>;
+    using unique_single = std::unique_ptr<T, D>;
 };
 
-template<typename T>
-struct unique_if<T[]>
+template<typename T, typename D>
+struct unique_if<T[], D>
 {
-    using unique_array_unknown_bound = std::unique_ptr<T[]>;
+    using unique_array_unknown_bound = std::unique_ptr<T[], D>;
 };
 
-template<typename T, size_t N>
-struct unique_if<T[N]>
+template<typename T, typename D, size_t N>
+struct unique_if<T[N], D>
 {
     using unique_array_known_bound = void;
 };
@@ -36,14 +37,14 @@ struct unique_if<T[N]>
 
 template<typename T, typename... Args>
 typename details::unique_if<T>::unique_single
-  make_unique_nothrow(Args&&... args)
+make_unique_nothrow(Args&&... args)
 {
     return std::unique_ptr<T>(new(std::nothrow) T(std::forward<Args>(args)...));
 }
 
 template<typename T>
 typename details::unique_if<T>::unique_array_unknown_bound
-  make_unique_nothrow(size_t size)
+make_unique_nothrow(size_t size)
 {
     using Elem = std::remove_extent_t<T>;
     return std::unique_ptr<T>(new(std::nothrow) Elem[size]());
@@ -51,7 +52,70 @@ typename details::unique_if<T>::unique_array_unknown_bound
 
 template<typename T, typename... Args>
 typename details::unique_if<T>::unique_array_known_bound
-  make_unique_nothrow(Args&&...) = delete;
+make_unique_nothrow(Args&&...) = delete;
+
+
+struct FreeDeleter
+{
+    void operator()(void* ptr) const noexcept { free(ptr); }
+};
+
+template<typename T>
+using malloc_ptr = std::unique_ptr<T, FreeDeleter>;
+
+template<typename T, typename... Args>
+typename details::unique_if<T, FreeDeleter>::unique_single
+make_unique_malloc(size_t size)
+{
+    return malloc_ptr<T>{static_cast<T*>(std::malloc(size))};
+}
+
+template<typename T>
+typename details::unique_if<T, FreeDeleter>::unique_array_unknown_bound
+make_unique_malloc(size_t count)
+{
+    using E = std::remove_extent_t<T>;
+    return malloc_ptr<T>(static_cast<E*>(std::malloc(count * sizeof(E))));
+}
+
+template<typename T, typename... Args>
+typename details::unique_if<T, FreeDeleter>::unique_array_known_bound
+make_unique_malloc(Args&&...) = delete;
+
+
+template<typename T, typename... Args>
+typename details::unique_if<T, FreeDeleter>::unique_single
+make_unique_calloc(size_t size)
+{
+    return malloc_ptr<T>{static_cast<T*>(std::calloc(1, size))};
+}
+
+template<typename T>
+typename details::unique_if<T, FreeDeleter>::unique_array_unknown_bound
+make_unique_calloc(size_t count)
+{
+    using E = std::remove_extent_t<T>;
+    return malloc_ptr<T>(static_cast<E*>(std::calloc(count, sizeof(E))));
+}
+
+template<typename T, typename... Args>
+typename details::unique_if<T, FreeDeleter>::unique_array_known_bound
+make_unique_calloc(Args&&...) = delete;
+
+using std::realloc;
+
+template<typename T>
+bool realloc(malloc_ptr<T>& ptr, size_t size)
+{
+    void* newPtr = std::realloc(ptr.get(), size);
+    if (newPtr) {
+        ptr.release();
+        ptr.reset(static_cast<typename malloc_ptr<T>::element_type*>(newPtr));
+        return true;
+    }
+
+    return false;
+}
 
 
 template<typename T>
@@ -82,18 +146,17 @@ static void fill(T(&arr)[N], T const& val)
     std::fill_n(arr, N, val);
 }
 
+template<typename T, typename = std::enable_if_t<!std::is_pointer_v<T>>>
+static void fill_zero(T& value)
+{
+    static_assert(std::is_trivially_copyable_v<T>);
+    std::fill_n(reinterpret_cast<char*>(&value), sizeof(value), 0);
+}
+
 template<typename T, size_t N>
 static void fill_zero(T(&arr)[N])
 {
     std::fill_n(arr, N, T());
-}
-
-template<typename T>
-static std::enable_if_t<std::is_pointer_v<T>> fill_zero(T ptr)
-{
-    using V = std::remove_pointer_t<T>;
-    static_assert(std::is_trivially_copyable<V>::value, "T must be trivially copyable.");
-    std::fill_n(reinterpret_cast<char*>(ptr), sizeof(V), 0);
 }
 
 
@@ -136,7 +199,62 @@ static T AlignTo(T value, T alignment)
     return value;
 }
 
+HRESULT SafeStringCchCopyW(
+    wchar_t* pszDest, size_t cchDest, wchar_t const* pszSrc);
+
+class SaveClipRegion
+{
+public:
+    HRESULT Save(HDC hdc);
+    HRESULT Restore(HDC hdc);
+
+private:
+    GdiRegionHandle hRegion;
+    bool saved = false;
+};
+
+struct OptionalDC
+{
+    OptionalDC(HDC hdc)
+    {
+        if (!hdc)
+            this->hdc = GetWindowDC(nullptr);
+    }
+
+    ~OptionalDC()
+    {
+        if (hdc)
+            ReleaseDC(nullptr, hdc);
+    }
+
+    HDC Get() const { return hdc; }
+    operator HDC() const { return hdc; }
+    explicit operator bool() const { return hdc != nullptr; }
+
+private:
+    HDC hdc = nullptr;
+};
+
+class MemoryDC
+{
+public:
+    ~MemoryDC() { CloseDC(); }
+
+    HRESULT OpenDC(HDC hdcSource, int width, int height);
+    void CloseDC();
+
+    HDC Get() const { return hdc; }
+
+private:
+    HDC hdc = nullptr;
+    HBITMAP hBitmap = nullptr;
+    HBITMAP hOldBitmap = nullptr;
+};
+
 bool IsHighContrastMode();
+
+class CUxThemeFile;
+wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset);
 
 #define ENSURE_HR(expr) \
     do { \
@@ -160,7 +278,7 @@ bool IsHighContrastMode();
     (true ? ::uxtheme::TraceHResult((hr), __FILE__, __LINE__, __FUNCTION__) : (hr))
 
 long TraceHResult(long hresult, char const* file = nullptr,
-    int lineNumber = 0, char const* function = nullptr);
+                  int lineNumber = 0, char const* function = nullptr);
 
 inline HRESULT MakeErrorLast()
 {

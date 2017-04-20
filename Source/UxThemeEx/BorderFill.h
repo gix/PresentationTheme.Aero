@@ -7,19 +7,21 @@
 namespace uxtheme
 {
 
-struct CRenderObj;
+class CRenderObj;
 
-struct CBorderFill : CDrawBase
+class CBorderFill : public CDrawBase
 {
-    static BOOL KeyProperty(int iPropId);
-    HRESULT PackProperties(CRenderObj* pRender, int fNoDraw, int iPartId, int iStateId);
-    HRESULT GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz);
+public:
+    static bool KeyProperty(int iPropId);
+    HRESULT PackProperties(CRenderObj* pRender, bool fNoDraw, int iPartId, int iStateId);
+    HRESULT GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz) const;
 
     bool IsBackgroundPartiallyTransparent() const
     {
         return _eBorderType != 0 || _fNoDraw;
     }
 
+    HRESULT GetBackgroundRegion(CRenderObj* pRender, RECT const* pRect, HRGN* pRegion);
     HRESULT GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect);
     HRESULT DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions);
     HRESULT DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion, BOOL fBorder, BOOL fContent, RECT const* pClipRect);
@@ -27,7 +29,7 @@ struct CBorderFill : CDrawBase
         CRenderObj* pRender, int iStateId, DWORD dwHTFlags, RECT const* pRect,
         HRGN hrgn, POINT ptTest, WORD* pwHitCode);
 
-    int _fNoDraw;
+    BOOL _fNoDraw;
     BORDERTYPE _eBorderType;
     unsigned _crBorder;
     int _iBorderSize;
@@ -38,7 +40,7 @@ struct CBorderFill : CDrawBase
     int _iDibOffset;
     MARGINS _ContentMargins;
     int _iGradientPartCount;
-    unsigned _crGradientColors[5];
+    COLORREF _crGradientColors[5];
     int _iGradientRatios[5];
     int _iSourcePartId;
     int _iSourceStateId;

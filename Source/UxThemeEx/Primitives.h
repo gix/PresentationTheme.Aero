@@ -9,9 +9,9 @@ namespace uxtheme
 struct THEMEMETRICS
 {
     LOGFONTW lfFonts[9];
-    unsigned crColors[31];
+    COLORREF crColors[31];
     int iSizes[10];
-    int fBools[1];
+    BOOL fBools[1];
     int iStringOffsets[4];
     int iInts[1];
 };
@@ -49,16 +49,28 @@ struct ENTRYHDR
     BYTE ePrimVal;
     DWORD dwDataLen;
 
+    BYTE* Data()
+    {
+        return reinterpret_cast<BYTE*>(
+            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR));
+    }
+
+    BYTE const* Data() const
+    {
+        return reinterpret_cast<BYTE*>(
+            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR));
+    }
+
     ENTRYHDR* Next()
     {
         return reinterpret_cast<ENTRYHDR*>(
-            (reinterpret_cast<uintptr_t>(this) + sizeof*this + dwDataLen));
+            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR) + dwDataLen);
     }
 
     ENTRYHDR const* Next() const
     {
         return reinterpret_cast<ENTRYHDR*>(
-            (reinterpret_cast<uintptr_t>(this) + sizeof*this + dwDataLen));
+            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR) + dwDataLen);
     }
 };
 
@@ -81,7 +93,7 @@ struct REGIONLISTHDR
     char cStates;
 };
 
-struct __declspec(align(4)) PARTJUMPTABLEHDR
+struct alignas(4) PARTJUMPTABLEHDR
 {
     int iBaseClassIndex;
     int iFirstDrawObjIndex;
@@ -89,7 +101,7 @@ struct __declspec(align(4)) PARTJUMPTABLEHDR
     char cParts;
 };
 
-struct __declspec(align(8)) STATEJUMPTABLEHDR
+struct alignas(8) STATEJUMPTABLEHDR
 {
     char cStates;
 };
@@ -156,7 +168,7 @@ union HBITMAP64
     void* hBitmap64;
 };
 
-struct __declspec(align(8)) DIBINFO
+struct alignas(8) DIBINFO
 {
     HBITMAP64 uhbm;
     int iDibOffset;
@@ -164,8 +176,8 @@ struct __declspec(align(8)) DIBINFO
     int iSingleHeight;
     int iRgnListOffset;
     SIZINGTYPE eSizingType;
-    int fBorderOnly;
-    int fPartiallyTransparent;
+    BOOL fBorderOnly;
+    BOOL fPartiallyTransparent;
     int iAlphaThreshold;
     int iMinDpi;
     SIZE szMinSize;
@@ -173,17 +185,17 @@ struct __declspec(align(8)) DIBINFO
 
 struct TRUESTRETCHINFO
 {
-    int fForceStretch;
-    int fFullStretch;
+    BOOL fForceStretch;
+    BOOL fFullStretch;
     SIZE szDrawSize;
 };
 
 struct REUSEDATAHDR
 {
-    wchar_t szSharableSectionName[260];
+    wchar_t szSharableSectionName[MAX_PATH];
     int iDIBReuseRecordsCount;
     int iDIBReuseRecordsOffset;
-    unsigned dwTotalLength;
+    DWORD dwTotalLength;
 };
 
 } // namespace uxtheme

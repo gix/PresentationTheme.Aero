@@ -11,15 +11,14 @@
 namespace uxtheme
 {
 
-struct CRenderList;
-struct CTextDraw;
-struct CUxThemeFile;
+struct AnimationProperty;
+class CRenderList;
+class CTextDraw;
+class CUxThemeFile;
 
-struct CStateIdObjectCache
+class CStateIdObjectCache
 {
-    std::vector<CDrawBase*> DrawObjs;
-    std::vector<CTextDraw*> TextObjs;
-
+public:
     template<typename T>
     HRESULT Expand(int cStates)
     {
@@ -32,6 +31,10 @@ struct CStateIdObjectCache
 
     template<typename T>
     std::vector<T*>& GetObjects();
+
+private:
+    std::vector<CDrawBase*> DrawObjs;
+    std::vector<CTextDraw*> TextObjs;
 };
 
 template<>
@@ -46,20 +49,17 @@ inline std::vector<CTextDraw*>& CStateIdObjectCache::GetObjects<CTextDraw>()
     return TextObjs;
 }
 
-struct DiagnosticAnimationXML
+class CImageDecoder
 {
 };
 
-struct CImageDecoder
+class CImageEncoder
 {
 };
 
-struct CImageEncoder
+class CRenderCache
 {
-};
-
-struct CRenderCache
-{
+public:
     CRenderCache(CRenderObj* pRenderObj);
     void FreeDisplayFontHandle();
     HRESULT GetScaledFontHandle(HDC hdc, LOGFONTW const* plfUnscaled, HFONT* phFont);
@@ -73,23 +73,11 @@ private:
     LOGFONTW _lfDisplayFont;
 };
 
-struct AnimationProperty
+class alignas(8) CRenderObj
 {
-    TA_PROPERTY_FLAG eFlags;
-    unsigned dwTransformCount;
-    unsigned dwStaggerDelay;
-    unsigned dwStaggerDelayCap;
-    float rStaggerDelayFactor;
-    unsigned dwZIndex;
-    unsigned dwBackgroundPartId;
-    unsigned dwTuningLevel;
-    float rPerspective;
-};
-
-struct __declspec(align(8)) CRenderObj
-{
+public:
     CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
-               int iClassNameOffset, long long iUniqueId, bool fEnableCache,
+               int iClassNameOffset, int64_t iUniqueId, bool fEnableCache,
                int iTargetDpi, bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags);
     ~CRenderObj();
 
@@ -105,38 +93,48 @@ struct __declspec(align(8)) CRenderObj
 
     static HRESULT Create(CUxThemeFile* pThemeFile, int iCacheSlot,
                           int iThemeOffset, int iAppNameOffset,
-                          int iClassNameOffset, long long iUniqueId,
+                          int iClassNameOffset, int64_t iUniqueId,
                           bool fEnableCache, CDrawBase* pBaseObj,
                           CTextDraw* pTextObj, int iTargetDpi,
                           bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags,
                           CRenderObj** ppObj);
 
-    void GetEffectiveDpi(HDC hdc, int* px, int* py);
+    void GetEffectiveDpi(HDC hdc, int* px, int* py) const;
     TMBITMAPHEADER* GetBitmapHeader(int iDibOffset) const;
     bool GetFontTableIndex(int iPartId, int iStateId, int iPropId, unsigned short* pFontIndex) const;
     CRenderCache* GetCacheObject();
+
     HRESULT GetCachedDisplayFontHandle(HDC hdc, LOGFONTW const& lf, HFONT* phFont);
     HRESULT GetScaledFontHandle(HDC hdc, unsigned short FontIndex, HFONT* phFont);
+
+    void ReturnFontHandle(HFONT hFont)
+    {
+        if (hFont && !_fCacheEnabled)
+            DeleteObject(hFont);
+    }
+
     int GetValueIndex(int iPartId, int iStateId, int iTarget) const;
-    bool IsPartDefined(int iPartId, int iStateId);
-    HRESULT GetPropertyOrigin(int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin);
+    bool IsPartDefined(int iPartId, int iStateId) const;
+    HRESULT GetPropertyOrigin(int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin) const;
     BYTE const* GetLastValidThemeByte() const;
 
-    HRESULT ExternalGetBitmap(HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap);
+    HRESULT ExternalGetBitmap(HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap) const;
     HRESULT ExternalGetBool(int iPartId, int iStateId, int iPropId, int* pfVal) const;
     HRESULT ExternalGetEnumValue(int iPartId, int iStateId, int iPropId, int* piVal) const;
-    HRESULT ExternalGetFont(HDC hdc, int iPartId, int iStateId, int iPropId, int fWantHdcScaling, LOGFONTW* pFont) const;
+    HRESULT ExternalGetFont(HDC hdc, int iPartId, int iStateId, int iPropId, bool fWantHdcScaling, LOGFONTW* pFont) const;
     HRESULT ExternalGetInt(int iPartId, int iStateId, int iPropId, int* piVal) const;
     HRESULT ExternalGetIntList(int iPartId, int iStateId, int iPropId, INTLIST* pIntList) const;
     HRESULT ExternalGetMargins(HDC hdc, int iPartId, int iStateId, int iPropId,
                                RECT const* formal, MARGINS* pMargins) const;
-    HRESULT ExternalGetMetric(HDC hdc, int iPartId, int iStateId, int iPropId, int* piVal);
-    HRESULT GetAnimationProperty(int iPartId, int iStateId, AnimationProperty** ppAnimationProperty);
-    HRESULT GetTransitionDuration(int iPartId, int iStateIdFrom, int iStateIdTo, int iPropId, DWORD* pdwDuration);
+    HRESULT ExternalGetMetric(HDC hdc, int iPartId, int iStateId, int iPropId, int* piVal) const;
+    HRESULT GetAnimationProperty(int iPartId, int iStateId, AnimationProperty const** ppAnimationProperty) const;
+    HRESULT GetAnimationTransform(int iPartId, int iStateId, DWORD dwIndex, TA_TRANSFORM const** ppAnimationTransform) const;
+    HRESULT GetTransitionDuration(int iPartId, int iStateIdFrom, int iStateIdTo, int iPropId, DWORD* pdwDuration) const;
+    HRESULT GetTimingFunction(int iTimingFunctionId, TA_TIMINGFUNCTION const** ppTimingFunc) const;
     HRESULT ExternalGetPosition(int iPartId, int iStateId, int iPropId, POINT* pPoint) const;
     HRESULT ExternalGetRect(int iPartId, int iStateId, int iPropId, RECT* pRect) const;
     HRESULT ExternalGetStream(int iPartId, int iStateId, int iPropId, void** ppvStream, DWORD* pcbStream, HINSTANCE hInst) const;
-    HRESULT ExternalGetString(int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff);
+    HRESULT ExternalGetString(int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff) const;
 
     HRESULT ExpandPartObjectCache(int cParts);
 
@@ -154,7 +152,7 @@ struct __declspec(align(8)) CRenderObj
 
     template<typename T>
     HRESULT GetPartObject(int iPartId, int iStateId, T** ppvObj);
-    HRESULT PrepareRegionDataForScaling(RGNDATA* pRgnData, RECT*const prcImage, MARGINS* pMargins);
+    HRESULT PrepareRegionDataForScaling(RGNDATA* pRgnData, RECT const* prcImage, MARGINS* pMargins);
 
     int GetAssociatedDpi() const { return _iAssociatedDpi; }
     bool IsStronglyAssociatedDpi() const { return _fIsStronglyAssociatedDpi; }
@@ -169,6 +167,14 @@ struct __declspec(align(8)) CRenderObj
         if (index < 0 || index >= countof(_ptm->lfFonts))
             return nullptr;
         return &_ptm->lfFonts[index];
+    }
+
+    bool IsReady() const;
+
+    ENTRYHDR* GetEntryHeader(int index) const
+    {
+        return reinterpret_cast<ENTRYHDR*>(
+            _pbSharableData + index - sizeof(ENTRYHDR));
     }
 
 private:
@@ -195,8 +201,6 @@ private:
     std::unique_ptr<CImageEncoder> _pPngEncoder;
     std::unique_ptr<CRenderCache> _pCacheObj;
     std::mutex _lock;
-    DiagnosticAnimationXML*_pDiagnosticXML;
-    bool _fDiagnosticModeEnabled;
     int _iAssociatedDpi;
     bool _fIsStronglyAssociatedDpi;
 };

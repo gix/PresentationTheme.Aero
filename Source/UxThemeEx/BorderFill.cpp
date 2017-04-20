@@ -1,12 +1,12 @@
 ﻿#include "BorderFill.h"
 #include "RenderObj.h"
-#include <algorithm>
 #include "DrawHelp.h"
+#include <algorithm>
 
 namespace uxtheme
 {
 
-BOOL CBorderFill::KeyProperty(int iPropId)
+bool CBorderFill::KeyProperty(int iPropId)
 {
     switch (iPropId) {
     case TMT_BORDERSIZE:
@@ -28,15 +28,16 @@ BOOL CBorderFill::KeyProperty(int iPropId)
     case TMT_BGTYPE:
     case TMT_BORDERTYPE:
     case TMT_FILLTYPE:
-        return TRUE;
+        return true;
 
     default:
-        return FALSE;
+        return false;
     }
 }
 
-HRESULT CBorderFill::PackProperties(CRenderObj* pRender, int fNoDraw, int iPartId, int iStateId)
+HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPartId, int iStateId)
 {
+    static_assert(std::is_trivially_copyable_v<CBorderFill>);
     memset(this, 0, sizeof(CBorderFill));
 
     _iSourcePartId = iPartId;
@@ -101,7 +102,7 @@ HRESULT CBorderFill::PackProperties(CRenderObj* pRender, int fNoDraw, int iPartI
     return S_OK;
 }
 
-HRESULT CBorderFill::GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz)
+HRESULT CBorderFill::GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz) const
 {
     if (eSize == TS_MIN) {
         psz->cx = std::max(1, 2 * _iBorderSize);
@@ -113,6 +114,42 @@ HRESULT CBorderFill::GetPartSize(THEMESIZE eSize, _Out_ SIZE* psz)
         return E_INVALIDARG;
     }
 
+    return S_OK;
+}
+
+HRESULT CBorderFill::GetBackgroundRegion(CRenderObj* pRender, RECT const* pRect,
+                                         HRGN* pRegion)
+{
+    if (!IsBackgroundPartiallyTransparent()) {
+        HRGN hrgn = CreateRectRgn(pRect->left, pRect->top, pRect->right, pRect->bottom);
+        if (!hrgn)
+            return MakeErrorLast();
+
+        *pRegion = hrgn;
+        return S_OK;
+    }
+
+    MemoryDC hdcMemory;
+    ENSURE_HR(hdcMemory.OpenDC(nullptr, pRect->right - pRect->left,
+                               pRect->bottom - pRect->top));
+
+    if (!BeginPath(hdcMemory.Get()))
+        return MakeErrorLast();
+
+    DTBGOPTS opts;
+    opts.dwSize = sizeof(opts);
+    opts.dwFlags = DTBG_COMPUTINGREGION;
+    opts.rcClip = {};
+
+    ENSURE_HR(DrawBackground(pRender, hdcMemory.Get(), pRect, &opts));
+    if (!EndPath(hdcMemory.Get()))
+        return MakeErrorLast();
+
+    HRGN hrgn = PathToRegion(hdcMemory.Get());
+    if (!hrgn)
+        return MakeErrorLast();
+
+    *pRegion = hrgn;
     return S_OK;
 }
 
@@ -197,8 +234,7 @@ HRESULT CBorderFill::DrawBackground(
         }
 
         if (fContent) {
-            RECT rc;
-            rc = *pRect;
+            RECT rc = *pRect;
             rc.right -= _iBorderSize;
             rc.top += _iBorderSize;
             rc.bottom -= _iBorderSize;

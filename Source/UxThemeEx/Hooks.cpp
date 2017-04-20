@@ -60,7 +60,7 @@ typedef union tagUAHMENUITEMMETRICS
 typedef struct tagUAHMENUPOPUPMETRICS
 {
     int rgcx[4];
-    int fUnused : 1;
+    BOOL fUnused : 1;
 } UAHMENUPOPUPMETRICS, *PUAHMENUPOPUPMETRICS;
 
 typedef struct tagUAHMENUITEM
@@ -135,42 +135,54 @@ using namespace uxtheme;
 
 static std::unordered_map<HTHEME, HTHEME> g_ThemeHandleMap;
 
+#define DECLARE_HOOK_INFO(name) \
+    HookTraceInfo<decltype(name)> PFn ## name
+
 union HookHandles
 {
     struct TypedHooks
     {
-        HookTraceInfo<decltype(OpenThemeData)> PFnOpenThemeData;
-        HookTraceInfo<decltype(OpenThemeDataEx)> PFnOpenThemeDataEx;
-        HookTraceInfo<decltype(GetThemeBackgroundContentRect)> PFnGetThemeBackgroundContentRect;
-        HookTraceInfo<decltype(GetThemeBackgroundExtent)> PFnGetThemeBackgroundExtent;
-        HookTraceInfo<decltype(GetThemeBitmap)> PFnGetThemeBitmap;
-        HookTraceInfo<decltype(GetThemeBool)> PFnGetThemeBool;
-        HookTraceInfo<decltype(GetThemeColor)> PFnGetThemeColor;
-        HookTraceInfo<decltype(GetThemeEnumValue)> PFnGetThemeEnumValue;
-        HookTraceInfo<decltype(GetThemeFilename)> PFnGetThemeFilename;
-        HookTraceInfo<decltype(GetThemeFont)> PFnGetThemeFont;
-        HookTraceInfo<decltype(GetThemeInt)> PFnGetThemeInt;
-        HookTraceInfo<decltype(GetThemeIntList)> PFnGetThemeIntList;
-        HookTraceInfo<decltype(GetThemeMargins)> PFnGetThemeMargins;
-        HookTraceInfo<decltype(GetThemeMetric)> PFnGetThemeMetric;
-        HookTraceInfo<decltype(GetThemePartSize)> PFnGetThemePartSize;
-        HookTraceInfo<decltype(GetThemePosition)> PFnGetThemePosition;
-        HookTraceInfo<decltype(GetThemePropertyOrigin)> PFnGetThemePropertyOrigin;
-        HookTraceInfo<decltype(GetThemeRect)> PFnGetThemeRect;
-        HookTraceInfo<decltype(GetThemeSysFont)> PFnGetThemeSysFont;
-        HookTraceInfo<decltype(GetThemeStream)> PFnGetThemeStream;
-        HookTraceInfo<decltype(GetThemeString)> PFnGetThemeString;
-        HookTraceInfo<decltype(GetThemeTextExtent)> PFnGetThemeTextExtent;
-        HookTraceInfo<decltype(GetThemeTextMetrics)> PFnGetThemeTextMetrics;
-        HookTraceInfo<decltype(GetThemeTransitionDuration)> PFnGetThemeTransitionDuration;
-        HookTraceInfo<decltype(IsThemePartDefined)> PFnIsThemePartDefined;
-        HookTraceInfo<decltype(IsThemeBackgroundPartiallyTransparent)> PFnIsThemeBackgroundPartiallyTransparent;
-        HookTraceInfo<decltype(DrawThemeEdge)> PFnDrawThemeEdge;
-        HookTraceInfo<decltype(DrawThemeIcon)> PFnDrawThemeIcon;
-        HookTraceInfo<decltype(DrawThemeBackground)> PFnDrawThemeBackground;
-        HookTraceInfo<decltype(DrawThemeBackgroundEx)> PFnDrawThemeBackgroundEx;
-        HookTraceInfo<decltype(DrawThemeText)> PFnDrawThemeText;
-        HookTraceInfo<decltype(DrawThemeTextEx)> PFnDrawThemeTextEx;
+        DECLARE_HOOK_INFO(OpenThemeData);
+        DECLARE_HOOK_INFO(OpenThemeDataEx);
+        DECLARE_HOOK_INFO(GetThemeAnimationProperty);
+        DECLARE_HOOK_INFO(GetThemeAnimationTransform);
+        DECLARE_HOOK_INFO(GetThemeBackgroundContentRect);
+        DECLARE_HOOK_INFO(GetThemeBackgroundExtent);
+        DECLARE_HOOK_INFO(GetThemeBackgroundRegion);
+        DECLARE_HOOK_INFO(GetThemeBitmap);
+        DECLARE_HOOK_INFO(GetThemeBool);
+        DECLARE_HOOK_INFO(GetThemeColor);
+        DECLARE_HOOK_INFO(GetThemeEnumValue);
+        DECLARE_HOOK_INFO(GetThemeFilename);
+        DECLARE_HOOK_INFO(GetThemeFont);
+        DECLARE_HOOK_INFO(GetThemeInt);
+        DECLARE_HOOK_INFO(GetThemeIntList);
+        DECLARE_HOOK_INFO(GetThemeMargins);
+        DECLARE_HOOK_INFO(GetThemeMetric);
+        DECLARE_HOOK_INFO(GetThemePartSize);
+        DECLARE_HOOK_INFO(GetThemePosition);
+        DECLARE_HOOK_INFO(GetThemePropertyOrigin);
+        DECLARE_HOOK_INFO(GetThemeRect);
+        DECLARE_HOOK_INFO(GetThemeStream);
+        DECLARE_HOOK_INFO(GetThemeString);
+        DECLARE_HOOK_INFO(GetThemeSysBool);
+        DECLARE_HOOK_INFO(GetThemeSysColor);
+        DECLARE_HOOK_INFO(GetThemeSysColorBrush);
+        DECLARE_HOOK_INFO(GetThemeSysFont);
+        DECLARE_HOOK_INFO(GetThemeSysSize);
+        DECLARE_HOOK_INFO(GetThemeSysString);
+        DECLARE_HOOK_INFO(GetThemeTextExtent);
+        DECLARE_HOOK_INFO(GetThemeTextMetrics);
+        DECLARE_HOOK_INFO(GetThemeTimingFunction);
+        DECLARE_HOOK_INFO(GetThemeTransitionDuration);
+        DECLARE_HOOK_INFO(IsThemePartDefined);
+        DECLARE_HOOK_INFO(IsThemeBackgroundPartiallyTransparent);
+        DECLARE_HOOK_INFO(DrawThemeEdge);
+        DECLARE_HOOK_INFO(DrawThemeIcon);
+        DECLARE_HOOK_INFO(DrawThemeBackground);
+        DECLARE_HOOK_INFO(DrawThemeBackgroundEx);
+        DECLARE_HOOK_INFO(DrawThemeText);
+        DECLARE_HOOK_INFO(DrawThemeTextEx);
         HookTraceInfo<HTHEME(HWND hwnd, wchar_t const* pszClassIdList,
                              unsigned dwFlags, wchar_t const* pszApiName,
                              int iForDPI)> PFnOpenThemeDataExInternal;
@@ -247,6 +259,44 @@ static HRESULT WINAPI CloseThemeDataHook(
 
     return CloseThemeData(hTheme);
 }
+
+static HRESULT WINAPI GetThemeAnimationPropertyHook(
+    _In_ HTHEME hTheme,
+    _In_ int iStoryboardId,
+    _In_ int iTargetId,
+    _In_ TA_PROPERTY eProperty,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) VOID *pvProperty,
+    _In_ DWORD cbSize,
+    _Out_ DWORD *pcbSizeOut)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeAnimationProperty(
+            g_OverrideTheme, hThemeOverride, iStoryboardId, iTargetId,
+            eProperty, pvProperty, cbSize, pcbSizeOut);
+    return GetThemeAnimationProperty(hTheme, iStoryboardId, iTargetId,
+                                     eProperty, pvProperty, cbSize, pcbSizeOut);
+}
+
+static HRESULT WINAPI GetThemeAnimationTransformHook(
+    _In_ HTHEME hTheme,
+    _In_ int iStoryboardId,
+    _In_ int iTargetId,
+    _In_ DWORD dwTransformIndex,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TRANSFORM *pTransform,
+    _In_ DWORD cbSize,
+    _Out_ DWORD *pcbSizeOut)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeAnimationTransform(
+            g_OverrideTheme, hThemeOverride, iStoryboardId, iTargetId,
+            dwTransformIndex, pTransform, cbSize, pcbSizeOut);
+    return GetThemeAnimationTransform(hTheme, iStoryboardId, iTargetId,
+                                      dwTransformIndex, pTransform, cbSize,
+                                      pcbSizeOut);
+}
+
 static HRESULT WINAPI GetThemeBackgroundContentRectHook(
     _In_ HTHEME hTheme,
     _In_opt_ HDC hdc,
@@ -279,6 +329,23 @@ static HRESULT WINAPI GetThemeBackgroundExtentHook(
             pContentRect, pExtentRect);
     return GetThemeBackgroundExtent(hTheme, hdc, iPartId, iStateId,
                                     pContentRect, pExtentRect);
+}
+
+static HRESULT WINAPI GetThemeBackgroundRegionHook(
+    _In_ HTHEME hTheme,
+    _In_opt_ HDC hdc,
+    _In_ int iPartId,
+    _In_ int iStateId,
+    _In_ LPCRECT pRect,
+    _Out_ HRGN* pRegion)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBackgroundRegion(
+            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+            pRect, pRegion);
+    return GetThemeBackgroundRegion(hTheme, hdc, iPartId, iStateId,
+                                    pRect, pRegion);
 }
 
 static HRESULT WINAPI GetThemeBitmapHook(
@@ -488,6 +555,39 @@ static HRESULT WINAPI GetThemeRectHook(
     return GetThemeRect(hTheme, iPartId, iStateId, iPropId, pRect);
 }
 
+static BOOL WINAPI GetThemeSysBoolHook(
+    _In_opt_ HTHEME hTheme,
+    _In_ int iBoolId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysBool(
+            g_OverrideTheme, hThemeOverride, iBoolId);
+    return GetThemeSysBool(hTheme, iBoolId);
+}
+
+static COLORREF WINAPI GetThemeSysColorHook(
+    _In_opt_ HTHEME hTheme,
+    _In_ int iColorId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysColor(
+            g_OverrideTheme, hThemeOverride, iColorId);
+    return GetThemeSysColor(hTheme, iColorId);
+}
+
+static HBRUSH WINAPI GetThemeSysColorBrushHook(
+    _In_opt_ HTHEME hTheme,
+    _In_ int iColorId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysColorBrush(
+            g_OverrideTheme, hThemeOverride, iColorId);
+    return GetThemeSysColorBrush(hTheme, iColorId);
+}
+
 static HRESULT WINAPI GetThemeSysFontHook(
     _In_opt_ HTHEME hTheme,
     _In_ int iFontId,
@@ -498,6 +598,32 @@ static HRESULT WINAPI GetThemeSysFontHook(
         return UxGetThemeSysFont(
             g_OverrideTheme, hThemeOverride, iFontId, plf);
     return GetThemeSysFont(hTheme, iFontId, plf);
+}
+
+static HRESULT WINAPI GetThemeSysSizeHook(
+    _In_opt_ HTHEME hTheme,
+    _In_ int iSizeId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysSize(
+            g_OverrideTheme, hThemeOverride, iSizeId);
+    return GetThemeSysSize(hTheme, iSizeId);
+}
+
+static HRESULT WINAPI GetThemeSysStringHook(
+    _In_ HTHEME hTheme,
+    _In_ int iStringId,
+    _Out_writes_(cchMaxStringChars) LPWSTR pszStringBuff,
+    _In_ int cchMaxStringChars)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysString(
+            g_OverrideTheme, hThemeOverride, iStringId, pszStringBuff,
+            cchMaxStringChars);
+    return GetThemeSysString(hTheme, iStringId, pszStringBuff,
+                             cchMaxStringChars);
 }
 
 static HRESULT WINAPI GetThemeStreamHook(
@@ -567,6 +693,22 @@ static HRESULT WINAPI GetThemeTextMetricsHook(
         return UxGetThemeTextMetrics(
             g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, ptm);
     return GetThemeTextMetrics(hTheme, hdc, iPartId, iStateId, ptm);
+}
+
+static HRESULT WINAPI GetThemeTimingFunctionHook(
+    _In_ HTHEME hTheme,
+    _In_ int iTimingFunctionId,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TIMINGFUNCTION* pTimingFunction,
+    _In_ DWORD cbSize,
+    _Out_ DWORD* pcbSizeOut)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeTimingFunction(
+            g_OverrideTheme, hThemeOverride, iTimingFunctionId, pTimingFunction,
+            cbSize, pcbSizeOut);
+    return GetThemeTimingFunction(hTheme, iTimingFunctionId, pTimingFunction,
+                                  cbSize, pcbSizeOut);
 }
 
 static BOOL WINAPI GetThemeTransitionDurationHook(
@@ -743,19 +885,20 @@ static BOOL ExGetMenuItemInfo(HMENU hMenu, unsigned int wID, BOOL fByPos, MENUIT
 
 static bool IsOemBitmap(HBITMAP hbmp)
 {
-    auto val = reinterpret_cast<DWORD>(hbmp);
-    return val && (val <= 3 || val >= 5 && val <= 11);
+    auto val = narrow_cast<DWORD>(reinterpret_cast<uintptr_t>(hbmp));
+    return val != 0 && (val <= 3 || val >= 5 && val <= 11);
 }
 
-static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd, UAHDRAWMENUITEM* pudmi)
+static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd,
+                                       UAHDRAWMENUITEM* pudmi)
 {
-    std::array<wchar_t, 260> textBuffer;
+    std::array<wchar_t, MAX_PATH> textBuffer;
 
     MENUITEMINFOW mii = {};
     mii.cbSize = sizeof(mii);
     mii.fMask = MIIM_FTYPE | MIIM_BITMAP | MIIM_STRING;
     mii.dwTypeData = textBuffer.data();
-    mii.cch = textBuffer.size();
+    mii.cch = narrow_cast<unsigned>(textBuffer.size());
 
     if (!ExGetMenuItemInfo(pudmi->um.hmenu, pudmi->umi.iPosition, TRUE, &mii))
         return;
@@ -873,8 +1016,11 @@ THEMEEXAPI UxHook()
     //ADD_HOOK(CloseThemeData);
     ADD_HOOK2(OpenThemeDataExInternal, (void*)((uintptr_t)uxtheme + 0x171B16F34 - 0x171B00000));
     ADD_HOOK2(CThemeMenuBar_DrawItem, (void*)((uintptr_t)uxtheme + 0x171B106D0 - 0x171B00000));
+    ADD_HOOK(GetThemeAnimationProperty);
+    ADD_HOOK(GetThemeAnimationTransform);
     ADD_HOOK(GetThemeBackgroundContentRect);
     ADD_HOOK(GetThemeBackgroundExtent);
+    ADD_HOOK(GetThemeBackgroundRegion);
     ADD_HOOK(GetThemeBitmap);
     ADD_HOOK(GetThemeBool);
     ADD_HOOK(GetThemeColor);
@@ -889,11 +1035,17 @@ THEMEEXAPI UxHook()
     ADD_HOOK(GetThemePosition);
     ADD_HOOK(GetThemePropertyOrigin);
     ADD_HOOK(GetThemeRect);
-    ADD_HOOK(GetThemeSysFont);
     ADD_HOOK(GetThemeStream);
     ADD_HOOK(GetThemeString);
+    ADD_HOOK(GetThemeSysBool);
+    ADD_HOOK(GetThemeSysColor);
+    ADD_HOOK(GetThemeSysColorBrush);
+    ADD_HOOK(GetThemeSysFont);
+    ADD_HOOK(GetThemeSysSize);
+    ADD_HOOK(GetThemeSysString);
     ADD_HOOK(GetThemeTextExtent);
     ADD_HOOK(GetThemeTextMetrics);
+    ADD_HOOK(GetThemeTimingFunction);
     ADD_HOOK(GetThemeTransitionDuration);
     ADD_HOOK(IsThemePartDefined);
     ADD_HOOK(IsThemeBackgroundPartiallyTransparent);

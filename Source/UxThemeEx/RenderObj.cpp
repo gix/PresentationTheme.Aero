@@ -1,5 +1,6 @@
 ﻿#include "RenderObj.h"
 
+#include "AnimationLoader.h"
 #include "Debug.h"
 #include "DpiInfo.h"
 #include "ScalingUtil.h"
@@ -11,30 +12,19 @@
 namespace uxtheme
 {
 
-static ENTRYHDR const* GetEntryHeader(void const* data)
-{
-    return (ENTRYHDR const*)((char const*)data - sizeof(ENTRYHDR));
-}
-
 static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
 {
     HRESULT  hr = 0;
-    HDC windowDC = nullptr;
-
-    if (!hdc) {
-        windowDC = GetWindowDC(nullptr);
-        if (!windowDC)
-            return MakeErrorLast();
-
-        hdc = windowDC;
-    }
+    OptionalDC windowDC{hdc};
+    if (!windowDC)
+        return MakeErrorLast();
 
     auto bitmapInfo = (BITMAPINFO const*)pvDibBits;
 
     void* pvBits;
     HBITMAP bitmap = CreateDIBSection(hdc, bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
 
-    char* srcBits = (char*)bitmapInfo + bitmapInfo->bmiHeader.biSize + 4 * bitmapInfo->bmiHeader.biClrUsed;
+    BYTE* srcBits = (BYTE*)bitmapInfo + bitmapInfo->bmiHeader.biSize + 4 * bitmapInfo->bmiHeader.biClrUsed;
     if (bitmap && SetDIBits(hdc, bitmap, 0, bitmapInfo->bmiHeader.biHeight,
                             srcBits, bitmapInfo, DIB_RGB_COLORS)) {
         *phBitmap = bitmap;
@@ -42,27 +32,21 @@ static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
         hr = MakeErrorLast();
     }
 
-    if (windowDC)
-        ReleaseDC(nullptr, windowDC);
-
     if (hr < 0 && bitmap)
         DeleteObject(bitmap);
     return hr;
 }
 
-CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
-                       int iClassNameOffset, __int64 iUniqueId, bool fEnableCache,
-                       int iTargetDpi, bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags)
+CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot,
+                       int iThemeOffset, int iClassNameOffset,
+                       int64_t iUniqueId, bool fEnableCache, int iTargetDpi,
+                       bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags)
 {
     _fCacheEnabled = fEnableCache;
     _dwOtdFlags = dwOtdFlags;
-    _fCloseThemeFile = 0;
-    _fPartCacheInitialized = 0;
-    _fDiagnosticModeEnabled = 0;
-    _pDiagnosticXML = nullptr;
+    _fCloseThemeFile = false;
+    _fPartCacheInitialized = false;
     if (pThemeFile) {
-        //v14 = g_pAppInfo ? CAppInfo::BumpRefCount(g_pAppInfo, pThemeFile) : -2147467259;
-        //if (v14 >= 0)
         _fCloseThemeFile = true;
     }
 
@@ -72,13 +56,12 @@ CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffse
     _pThemeFile = pThemeFile;
     _iCacheSlot = iCacheSlot;
     if (pThemeFile) {
-        _pbSharableData = (BYTE*)pThemeFile->_pbSharableData;
+        _pbSharableData = (BYTE*)pThemeFile->ThemeHeader();
         _pbSectionData = _pbSharableData + iThemeOffset;
-        _ptm = (THEMEMETRICS *)(_pbSharableData + 8 + pThemeFile->_pbSharableData->iSysMetricsOffset);
+        _ptm = (THEMEMETRICS *)(_pbSharableData + 8 + pThemeFile->ThemeHeader()->iSysMetricsOffset);
+        _pbNonSharableData = (BYTE*)pThemeFile->NonSharableDataHeader();
 
-        _pbNonSharableData = pThemeFile->_pbNonSharableData;
-
-        auto hdr = (NONSHARABLEDATAHDR*)pThemeFile->_pbNonSharableData;
+        auto hdr = pThemeFile->NonSharableDataHeader();
         _phBitmapsArray = (HBITMAP64 *)(_pbNonSharableData + hdr->iBitmapsOffset);
     } else {
         _pbSharableData = nullptr;
@@ -88,11 +71,7 @@ CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffse
         _phBitmapsArray = nullptr;
     }
 
-    _pszClassName = nullptr; // &pszAppName;
-    if (pThemeFile && pThemeFile->_pbSharableData && iClassNameOffset > 0) {
-        _pszClassName = (const wchar_t*)((char*)pThemeFile->_pbSharableData + iClassNameOffset);
-    }
-
+    _pszClassName = ThemeString(pThemeFile, iClassNameOffset);
     _pPngDecoder = nullptr;
     _pPngEncoder = nullptr;
     _pCacheObj = nullptr;
@@ -104,7 +83,7 @@ CRenderObj::~CRenderObj()
 
 HRESULT CRenderObj::Create(
     CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
-    int iAppNameOffset, int iClassNameOffset, __int64 iUniqueId,
+    int iAppNameOffset, int iClassNameOffset, int64_t iUniqueId,
     bool fEnableCache, CDrawBase* pBaseObj, CTextDraw* pTextObj, int iTargetDpi,
     bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags, CRenderObj** ppObj)
 {
@@ -123,16 +102,11 @@ HRESULT CRenderObj::Create(
     if (!obj)
         return E_OUTOFMEMORY;
 
-    //if (pBaseObj || pTextObj)
-    //    ENSURE_HR(obj->Init_TESTONLY(pBaseObj, pTextObj));
-    //else
-    //    ENSURE_HR(obj->Init((const wchar_t *)pBaseObj, 0i64, v16));
-
     *ppObj = obj.release();
     return S_OK;
 }
 
-void CRenderObj::GetEffectiveDpi(HDC hdc, int* px, int* py)
+void CRenderObj::GetEffectiveDpi(HDC hdc, int* px, int* py) const
 {
     if (hdc && !IsScreenDC(hdc)) {
         *px = GetDeviceCaps(hdc, LOGPIXELSX);
@@ -148,7 +122,7 @@ void CRenderObj::GetEffectiveDpi(HDC hdc, int* px, int* py)
 TMBITMAPHEADER* CRenderObj::GetBitmapHeader(int iDibOffset) const
 {
     if (_pbSharableData && iDibOffset)
-        return (TMBITMAPHEADER*)(_pbSharableData + iDibOffset);
+        return reinterpret_cast<TMBITMAPHEADER*>(_pbSharableData + iDibOffset);
     return nullptr;
 }
 
@@ -158,13 +132,13 @@ bool CRenderObj::GetFontTableIndex(int iPartId, int iStateId, int iPropId,
     if (!iPropId)
         assert("FRE: iPropId");
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx <= 0) {
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index <= 0) {
         *pFontIndex = 0;
         return false;
     }
 
-    *pFontIndex = *reinterpret_cast<unsigned short*>(&_pbSharableData[idx]);
+    *pFontIndex = *reinterpret_cast<unsigned short*>(&_pbSharableData[index]);
     return true;
 }
 
@@ -216,8 +190,8 @@ HRESULT CRenderCache::GetScaledFontHandle(
     HDC hdc, LOGFONTW const* plfUnscaled, HFONT* phFont)
 {
     if (!_plfFont ||
-        memcmp(_plfFont, plfUnscaled, sizeof(LOGFONTW)) ||
-        lstrcmpiW(_plfFont->lfFaceName, plfUnscaled->lfFaceName))
+        memcmp(_plfFont, plfUnscaled, sizeof(LOGFONTW)) != 0 ||
+        lstrcmpiW(_plfFont->lfFaceName, plfUnscaled->lfFaceName) != 0)
     {
         if (_hFont) {
             DeleteObject(_hFont);
@@ -279,11 +253,11 @@ HRESULT CRenderObj::ExternalGetEnumValue(
     if (!piVal)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    *piVal = *reinterpret_cast<int*>(&_pbSharableData[idx]);
+    *piVal = *reinterpret_cast<int*>(&_pbSharableData[index]);
     return S_OK;
 }
 
@@ -292,27 +266,27 @@ HRESULT CRenderObj::ExternalGetBool(int iPartId, int iStateId, int iPropId, int*
     if (!pfVal)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    *pfVal = _pbSharableData[idx];
+    *pfVal = _pbSharableData[index];
     return S_OK;
 }
 
 HRESULT CRenderObj::ExternalGetFont(
-    HDC hdc, int iPartId, int iStateId, int iPropId, int fWantHdcScaling,
+    HDC hdc, int iPartId, int iStateId, int iPropId, bool fWantHdcScaling,
     LOGFONTW* pFont) const
 {
     if (!pFont)
         return E_INVALIDARG;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    auto data = (USHORT*)&_pbSharableData[idx];
-    if (GetEntryHeader(data)->ePrimVal != TMT_FONT)
+    auto data = (USHORT*)&_pbSharableData[index];
+    if (GetEntryHeader(index)->ePrimVal != TMT_FONT)
         return E_INVALIDARG;
 
     LOGFONTW font = *_pThemeFile->GetFontByIndex(*data);
@@ -330,11 +304,11 @@ HRESULT CRenderObj::ExternalGetInt(
     if (!piVal)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    std::memcpy(piVal, &_pbSharableData[idx], sizeof(int));
+    std::memcpy(piVal, &_pbSharableData[index], sizeof(int));
     return S_OK;
 }
 
@@ -344,11 +318,11 @@ HRESULT CRenderObj::ExternalGetIntList(int iPartId, int iStateId, int iPropId,
     if (!pIntList)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    std::memcpy(pIntList, &_pbSharableData[idx], sizeof(INTLIST));
+    std::memcpy(pIntList, &_pbSharableData[index], sizeof(INTLIST));
     return S_OK;
 }
 
@@ -358,11 +332,11 @@ HRESULT CRenderObj::ExternalGetPosition(int iPartId, int iStateId, int iPropId,
     if (!pPoint)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    std::memcpy(pPoint, &_pbSharableData[idx], sizeof(POINT));
+    std::memcpy(pPoint, &_pbSharableData[index], sizeof(POINT));
     return S_OK;
 }
 
@@ -372,12 +346,18 @@ HRESULT CRenderObj::ExternalGetRect(int iPartId, int iStateId, int iPropId,
     if (!pRect)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    memcpy(pRect, &_pbSharableData[idx], sizeof(RECT));
+    memcpy(pRect, &_pbSharableData[index], sizeof(RECT));
     return S_OK;
+}
+
+bool CRenderObj::IsReady() const
+{
+    if (!_pThemeFile) return true;
+    return _pThemeFile->IsReady();
 }
 
 bool CRenderObj::_IsDWMAtlas() const
@@ -393,66 +373,50 @@ HRESULT CRenderObj::ExternalGetStream(int iPartId, int iStateId, int iPropId,
     if (!ppvStream)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    BYTE* v10 = &_pbSharableData[idx];
-    int v11 = *((int*)v10 - 1);
-    DWORD x2 = *((DWORD*)v10);
-    int x1 = *((int*)v10 + 1);
+    BYTE* pvStream = &_pbSharableData[index];
     if (iPropId != TMT_DISKSTREAM) {
-        *ppvStream = v10;
+        *ppvStream = pvStream;
         if (pcbStream)
-            *pcbStream = v11;
+            *pcbStream = GetEntryHeader(index)->dwDataLen;
         return S_OK;
     }
 
     if (!hInst)
         return E_INVALIDARG;
 
-    HGLOBAL hResData = LoadResource(hInst, (HRSRC)((BYTE*)hInst + x2));
+    assert(iPropId == TMT_STREAM);
+    DWORD resOffset = ((DWORD*)pvStream)[0];
+    DWORD cbStream = ((DWORD*)pvStream)[1];
+    HGLOBAL hResData = LoadResource(hInst, (HRSRC)((BYTE*)hInst + resOffset));
     if (!hResData)
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     if (!IsHighContrastMode() || !_IsDWMAtlas()) {
         *ppvStream = LockResource(hResData);
-        if (pcbStream) {
-            *pcbStream = x1;
-        }
+        if (pcbStream)
+            *pcbStream = cbStream;
         return S_OK;
     }
 
     return TRACE_HR(E_NOTIMPL); // FIXME
 }
 
-static HRESULT SafeStringCchCopyW(
-    wchar_t* pszDest, unsigned cchDest, wchar_t const* pszSrc)
-{
-    if (!pszDest)
-        return E_INVALIDARG;
-
-    if (cchDest) {
-        if (pszSrc)
-            return StringCchCopyW(pszDest, cchDest, pszSrc);
-        *pszDest = 0;
-    }
-
-    return S_OK;
-}
-
 HRESULT CRenderObj::ExternalGetString(
-    int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff)
+    int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff) const
 {
     if (!pszBuff)
         return E_POINTER;
 
     int index = GetValueIndex(iPartId, iStateId, iPropId);
     if (index < 0)
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     auto str = reinterpret_cast<wchar_t const*>(&_pbSharableData[index]);
-    auto len = reinterpret_cast<unsigned const*>(str)[-1] / sizeof(wchar_t);
+    auto len = GetEntryHeader(index)->dwDataLen / sizeof(wchar_t);
     if (len > cchBuff)
         len = cchBuff;
     ENSURE_HR(SafeStringCchCopyW(pszBuff, len, str));
@@ -460,7 +424,7 @@ HRESULT CRenderObj::ExternalGetString(
 }
 
 HRESULT CRenderObj::ExternalGetBitmap(
-    HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap)
+    HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap) const
 {
     if (!phBitmap)
         return E_INVALIDARG;
@@ -474,12 +438,12 @@ HRESULT CRenderObj::ExternalGetBitmap(
     if (!hBitmap) {
         int v11 = iDibOffset + sizeof(TMBITMAPHEADER);
         if (v11)
-            return _BitmapFromDib(hdc, (char*)hdr + hdr->dwSize, phBitmap);
+            return _BitmapFromDib(hdc, (BYTE*)hdr + hdr->dwSize, phBitmap);
         return E_FAIL;
     }
 
     if (dwFlags & GBF_COPY) {
-        *phBitmap = static_cast<HBITMAP>(CopyImage(hBitmap, IMAGE_BITMAP, 0, 0, 0));;
+        *phBitmap = static_cast<HBITMAP>(CopyImage(hBitmap, IMAGE_BITMAP, 0, 0, 0));
         if (!*phBitmap)
             return MakeErrorLast();
 
@@ -501,16 +465,16 @@ HRESULT CRenderObj::ExternalGetMargins(
     if (!pMargins)
         return E_POINTER;
 
-    int idx = GetValueIndex(iPartId, iStateId, iPropId);
-    if (idx < 0)
-        return 0x80070490;
+    int index = GetValueIndex(iPartId, iStateId, iPropId);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    memcpy(pMargins, &_pbSharableData[idx], sizeof(MARGINS));
+    memcpy(pMargins, &_pbSharableData[index], sizeof(MARGINS));
     return S_OK;
 }
 
 HRESULT CRenderObj::ExternalGetMetric(
-    HDC hdc, int iPartId, int iStateId, int iPropId, int *piVal)
+    HDC hdc, int iPartId, int iStateId, int iPropId, int *piVal) const
 {
     int value;
     ENSURE_HR(ExternalGetInt(iPartId, iStateId, iPropId, &value));
@@ -519,26 +483,45 @@ HRESULT CRenderObj::ExternalGetMetric(
 }
 
 HRESULT CRenderObj::GetAnimationProperty(
-    int iPartId, int iStateId, AnimationProperty** ppAnimationProperty)
+    int iPartId, int iStateId, AnimationProperty const** ppAnimationProperty) const
 {
     if (!ppAnimationProperty)
         return E_POINTER;
 
     *ppAnimationProperty = nullptr;
-    int index = GetValueIndex(iPartId, iStateId, TMT_20000);
+    int index = GetValueIndex(iPartId, iStateId, TMT_ANIMATION);
     if (index < 0)
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
-    auto data = (unsigned*)&_pbSharableData[index];
-    if (*data > *(data - 1))
-        *ppAnimationProperty = (AnimationProperty*)((char*)data + data[1]);
+    auto header = (CTransformSerializer::Header*)&_pbSharableData[index];
+    *ppAnimationProperty = header->Property(GetEntryHeader(index)->dwDataLen);
+
+    return S_OK;
+}
+
+HRESULT CRenderObj::GetAnimationTransform(
+    int iPartId, int iStateId, DWORD dwIndex, TA_TRANSFORM const** ppAnimationTransform) const
+{
+    if (!ppAnimationTransform)
+        return E_POINTER;
+
+    *ppAnimationTransform = nullptr;
+    int index = GetValueIndex(iPartId, iStateId, TMT_ANIMATION);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+
+    *ppAnimationTransform = CTransformSerializer::GetTransformByIndex(
+        &_pbSharableData[index], dwIndex,
+        GetEntryHeader(index)->dwDataLen);
+    if (!*ppAnimationTransform)
+        return E_INVALIDARG;
 
     return S_OK;
 }
 
 HRESULT CRenderObj::GetTransitionDuration(
     int iPartId, int iStateIdFrom, int iStateIdTo, int iPropId,
-    DWORD* pdwDuration)
+    DWORD* pdwDuration) const
 {
     if (!pdwDuration || iStateIdFrom <= 0 || iStateIdTo <= 0)
         return E_INVALIDARG;
@@ -558,6 +541,21 @@ HRESULT CRenderObj::GetTransitionDuration(
     return S_OK;
 }
 
+HRESULT CRenderObj::GetTimingFunction(int iTimingFunctionId,
+                                      TA_TIMINGFUNCTION const** ppTimingFunc) const
+{
+    if (!ppTimingFunc)
+        return E_POINTER;
+
+    *ppTimingFunc = nullptr;
+    int index = GetValueIndex(iTimingFunctionId, 0, TMT_TIMINGFUNCTION);
+    if (index < 0)
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+
+    *ppTimingFunc = (TA_TIMINGFUNCTION*)&_pbSharableData[index];
+    return S_OK;
+}
+
 BYTE const* CRenderObj::GetLastValidThemeByte() const
 {
     auto themeHdr = (THEMEHDR const*)_pbSharableData;
@@ -565,7 +563,7 @@ BYTE const* CRenderObj::GetLastValidThemeByte() const
 }
 
 HRESULT CRenderObj::GetPropertyOrigin(
-    int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin)
+    int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin) const
 {
     if (!iTarget)
         return E_FAIL;
@@ -580,7 +578,7 @@ HRESULT CRenderObj::GetPropertyOrigin(
     for (auto const* ptr = _pbSectionData; ptr <= lastValidByte;) {
         auto entry = (ENTRYHDR const*)ptr;
 
-        if (entry->usTypeNum == TMT_PARTJUMPTBL) {
+        if (entry->usTypeNum == TMT_PARTJUMPTABLE) {
             auto tableHdr = (PARTJUMPTABLEHDR const*)(entry + 1);
             auto table = (int const*)(tableHdr + 1);
 
@@ -592,7 +590,7 @@ HRESULT CRenderObj::GetPropertyOrigin(
 
             origin = index == table[0] ? PO_CLASS : PO_PART;
             ptr = &_pbSharableData[index];
-        } else if (entry->usTypeNum == TMT_STATEJUMPTBL) {
+        } else if (entry->usTypeNum == TMT_STATEJUMPTABLE) {
             auto tableHdr = (STATEJUMPTABLEHDR const*)(entry + 1);
             auto table = (int const*)(tableHdr + 1);
 
@@ -621,7 +619,7 @@ HRESULT CRenderObj::GetPropertyOrigin(
                 return S_OK;
             }
 
-            if (entry->ePrimVal == TMT_12) {
+            if (entry->ePrimVal == TMT_JUMPTOPARENT) {
                 int index = *(DWORD const*)(entry + 1);
                 if (index == -1) {
                     *pOrigin = PO_NOTFOUND;
@@ -654,7 +652,7 @@ int CRenderObj::GetValueIndex(int iPartId, int iStateId, int iTarget) const
         auto entry = (ENTRYHDR const*)ptr;
         ValidatePtr(entry);
 
-        if (entry->usTypeNum == TMT_PARTJUMPTBL) {
+        if (entry->usTypeNum == TMT_PARTJUMPTABLE) {
             auto tableHdr = (PARTJUMPTABLEHDR const*)(entry + 1);
             auto table = (int const*)(tableHdr + 1);
             ValidatePtr(tableHdr);
@@ -666,7 +664,7 @@ int CRenderObj::GetValueIndex(int iPartId, int iStateId, int iTarget) const
                 index = table[0];
 
             ptr = &_pbSharableData[index];
-        } else if (entry->usTypeNum == TMT_STATEJUMPTBL) {
+        } else if (entry->usTypeNum == TMT_STATEJUMPTABLE) {
             auto tableHdr = (STATEJUMPTABLEHDR const*)(entry + 1);
             auto table = (int const*)(tableHdr + 1);
             ValidatePtr(tableHdr);
@@ -680,9 +678,9 @@ int CRenderObj::GetValueIndex(int iPartId, int iStateId, int iTarget) const
             ptr = &_pbSharableData[index];
         } else {
             if (entry->usTypeNum == iTarget)
-                return (uintptr_t)(entry + 1) - (uintptr_t)_pbSharableData;
+                return narrow_cast<int>((uintptr_t)(entry + 1) - (uintptr_t)_pbSharableData);
 
-            if (entry->ePrimVal == TMT_12) {
+            if (entry->ePrimVal == TMT_JUMPTOPARENT) {
                 int index = *(DWORD const*)(entry + 1);
                 if (index == -1)
                     break;
@@ -696,7 +694,7 @@ int CRenderObj::GetValueIndex(int iPartId, int iStateId, int iTarget) const
     return -1;
 }
 
-bool CRenderObj::IsPartDefined(int iPartId, int iStateId)
+bool CRenderObj::IsPartDefined(int iPartId, int iStateId) const
 {
     PROPERTYORIGIN origin;
     HRESULT hr = GetPropertyOrigin(iPartId, iStateId, -1, &origin);
@@ -732,7 +730,7 @@ PARTOBJHDR* CRenderObj::GetNextPartObject<CDrawBase>(MIXEDPTRS* u)
     auto hdr = reinterpret_cast<ENTRYHDR*>(u->pb);
     ValidatePtr(hdr);
 
-    while (hdr->usTypeNum == TMT_IMAGEINFO) {
+    while (hdr->usTypeNum == TMT_RGNLIST) {
         hdr = hdr->Next();
         ValidatePtr(hdr);
     }
@@ -760,7 +758,7 @@ template<typename T>
 static int GetFirstObjIndex(BYTE* const pb);
 
 template<>
-static int GetFirstObjIndex<CDrawBase>(BYTE* const pb)
+int GetFirstObjIndex<CDrawBase>(BYTE* const pb)
 {
     auto jumpTable = (PARTJUMPTABLEHDR*)((ENTRYHDR*)pb + 1);
     ValidatePtr(jumpTable);
@@ -768,7 +766,7 @@ static int GetFirstObjIndex<CDrawBase>(BYTE* const pb)
 }
 
 template<>
-static int GetFirstObjIndex<CTextDraw>(BYTE* const pb)
+int GetFirstObjIndex<CTextDraw>(BYTE* const pb)
 {
     auto jumpTable = (PARTJUMPTABLEHDR*)((ENTRYHDR*)pb + 1);
     ValidatePtr(jumpTable);
@@ -823,7 +821,7 @@ T* CRenderObj::FindBaseClassPartObject(int iPartId, int iStateId)
         auto jumpTable = (PARTJUMPTABLEHDR*)(entry + 1);
 
         if (jumpTable->iBaseClassIndex == hdr->iGlobalsOffset)
-            return (T*)((char*)hdr + hdr->iGlobalsTextObjOffset + 0x10);
+            return (T*)((BYTE*)hdr + hdr->iGlobalsTextObjOffset + 0x10);
 
         ptr = _pbSharableData + jumpTable->iBaseClassIndex;
         if (auto obj = FindClassPartObject<T>(ptr, iPartId, iStateId))
@@ -855,11 +853,8 @@ HRESULT CRenderObj::GetPartObject(int iPartId, int iStateId, T** ppvObj)
 {
     *ppvObj = nullptr;
 
-    if (_pThemeFile) {
-        auto hdr = (NONSHARABLEDATAHDR*)_pThemeFile->_pbNonSharableData;
-        if (!(hdr && hdr->dwFlags & 1))
-            return E_FAIL;
-    }
+    if (!IsReady())
+        return E_FAIL;
 
     std::lock_guard<std::mutex> lock(_lock);
     if (!_fPartCacheInitialized) {
@@ -870,13 +865,13 @@ HRESULT CRenderObj::GetPartObject(int iPartId, int iStateId, T** ppvObj)
         }
     }
 
-    if (int cParts = _pParts.size()) {
+    if (int cParts = (int)_pParts.size()) {
         if (iPartId < 0)
             iPartId = 0;
 
         if (iPartId < cParts) {
             auto& state = _pParts[iPartId];
-            if (int cStates = state->GetObjects<T>().size()) {
+            if (int cStates = (int)state->GetObjects<T>().size()) {
                 if (iStateId < 0)
                     iStateId = 0;
                 if (iStateId < cStates)
@@ -896,7 +891,7 @@ HRESULT CRenderObj::GetPartObject(int iPartId, int iStateId, T** ppvObj)
 }
 
 HRESULT CRenderObj::PrepareRegionDataForScaling(
-    RGNDATA *pRgnData, RECT *const prcImage, MARGINS *pMargins)
+    RGNDATA* pRgnData, RECT const* prcImage, MARGINS* pMargins)
 {
     int const sw = prcImage->left;
     int const sh = prcImage->top;

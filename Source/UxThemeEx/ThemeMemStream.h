@@ -6,16 +6,15 @@
 namespace uxtheme
 {
 
-class CThemeMemStream : public IStream
+class ThemeMemStream : public IStream
 {
 public:
-    virtual ~CThemeMemStream() = default;
-
-    CThemeMemStream(uint64_t cbInitialSize, int fRead);
+    ThemeMemStream(uint64_t initialSize, bool read);
+    virtual ~ThemeMemStream() = default;
 
     STDMETHODIMP QueryInterface(REFIID riid, _COM_Outptr_ void** ppvObject) override;
-    ULONG AddRef() override;
-    ULONG Release() override;
+    STDMETHODIMP_(ULONG) AddRef() override;
+    STDMETHODIMP_(ULONG) Release() override;
 
     STDMETHODIMP Read(
         _Out_writes_bytes_to_(cb, *pcbRead)  void* pv,
@@ -54,18 +53,18 @@ public:
 
     STDMETHODIMP Clone(_COM_Outptr_opt_ IStream** ppstm) override;
 
-    char* GetBuffer(uint64_t* cbSize);
+    uint8_t* GetBuffer(uint64_t* cbSize);
     void Clear(BOOL fFree);
     HRESULT SetMaxSize(uint64_t cbSize);
 
 private:
-    int m_fRead = 0;
-    std::unique_ptr<char[]> m_lpb;
-    uint64_t m_uCurr = 0;
-    uint64_t m_uSize = 0;
-    uint64_t m_cbMax = 0;
-    uint64_t m_cbInitialSize = 0;
-    unsigned m_RefCnt = 0;
+    bool read_ = false;
+    std::unique_ptr<uint8_t[]> buffer_;
+    uint64_t position_ = 0;
+    uint64_t size_ = 0;
+    uint64_t maxSize_ = 0;
+    uint64_t initialSize_ = 0;
+    unsigned refCount_;
 };
 
 } // namespace uxtheme

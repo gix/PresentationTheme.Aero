@@ -157,7 +157,7 @@ HRESULT CRenderList::OpenRenderObject(
     int usedSlot;
     if (nextAvailSlot == -1) {
         _RenderEntries.push_back(entry);
-        usedSlot = _RenderEntries.size() - 1;
+        usedSlot = narrow_cast<int>(_RenderEntries.size() - 1);
     } else {
         _RenderEntries[nextAvailSlot] = entry;
         usedSlot = nextAvailSlot;

@@ -27,17 +27,6 @@ static void AdjustSizeMin(SIZE* psz, int ixMin, int iyMin)
         psz->cy = iyMin;
 }
 
-static void ScaleMargins(MARGINS* pMargins, unsigned targetDpi)
-{
-    if (!pMargins)
-        return;
-
-    pMargins->cxLeftWidth = MulDiv(pMargins->cxLeftWidth, targetDpi, 96);
-    pMargins->cxRightWidth = MulDiv(pMargins->cxRightWidth, targetDpi, 96);
-    pMargins->cyTopHeight = MulDiv(pMargins->cyTopHeight, targetDpi, 96);
-    pMargins->cyBottomHeight = MulDiv(pMargins->cyBottomHeight, targetDpi, 96);
-}
-
 static void _InPlaceUnionRect(RECT* prcDest, RECT const* prcSrc)
 {
     if (prcDest->left == -1 || prcDest->left > prcSrc->left)
@@ -243,7 +232,7 @@ DIBINFO* CImageFile::EnumImageFiles(int iIndex)
     --iIndex;
 
     if (iIndex >= 0 && iIndex < _iMultiImageCount)
-        return &static_cast<CMaxImageFile*>(this)->MultiDibs[iIndex];
+        return static_cast<CMaxImageFile*>(this)->MultiDibPtr(iIndex);
 
     if (iIndex == _iMultiImageCount && _ScaledImageInfo.iDibOffset)
         return &_ScaledImageInfo;
@@ -274,12 +263,11 @@ DIBINFO * CImageFile::FindBackgroundImageToScale()
     }
 
     if (_eGlyphType != GT_IMAGEGLYPH) {
-        auto const multiDibs = static_cast<CMaxImageFile*>(this)->MultiDibs;
         for (int i = 0; i < _iMultiImageCount; ++i) {
-            DIBINFO& multiDib = multiDibs[i];
-            if (multiDib.iDibOffset != 0 && multiDib.iMinDpi > minDpi) {
-                pdi = &multiDib;
-                minDpi = multiDib.iMinDpi;
+            DIBINFO* multiDib = static_cast<CMaxImageFile*>(this)->MultiDibPtr(i);
+            if (multiDib && multiDib->iDibOffset != 0 && multiDib->iMinDpi > minDpi) {
+                pdi = multiDib;
+                minDpi = multiDib->iMinDpi;
             }
         }
     }
@@ -404,17 +392,10 @@ HRESULT CImageFile::CreateScaledBackgroundImage(
 
 HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateId)
 {
-    DIBINFO* pImageInfo;
-    int v19;
-    int v20;
-    DIBINFO* v21;
-    int v22;
-    HRESULT v32;
-
-    v32 = 0;
+    static_assert(std::is_trivially_copyable_v<CImageFile>);
     memset(this, 0, sizeof(CImageFile));
+
     _eBgType = BT_IMAGEFILE;
-    pImageInfo = &_ImageInfo;
     _iSourcePartId = iPartId;
     _iSourceStateId = iStateId;
     _ImageInfo.iMinDpi = 96;
@@ -444,10 +425,10 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
     }
 
     if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_TRUESIZESCALINGTYPE, (int *)&_eTrueSizeScalingType) < 0)
+        iPartId, iStateId, TMT_TRUESIZESCALINGTYPE, (int*)&_eTrueSizeScalingType) < 0)
         _eTrueSizeScalingType = TSST_NONE;
     if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_SIZINGTYPE, (int *)&_ImageInfo.eSizingType) < 0)
+        iPartId, iStateId, TMT_SIZINGTYPE, (int*)&_ImageInfo.eSizingType) < 0)
         _ImageInfo.eSizingType = ST_STRETCH;
 
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BORDERONLY, &_ImageInfo.fBorderOnly) < 0)
@@ -462,9 +443,9 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
     pRender->ExternalGetBool(iPartId, iStateId, TMT_TRANSPARENT, &_ImageInfo.fPartiallyTransparent);
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_MIRRORIMAGE, &_fMirrorImage) < 0)
         _fMirrorImage = 1;
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_HALIGN, (int *)&_eHAlign) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_HALIGN, (int*)&_eHAlign) < 0)
         _eHAlign = HA_CENTER;
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_VALIGN, (int *)&_eVAlign) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_VALIGN, (int*)&_eVAlign) < 0)
         _eVAlign = VA_CENTER;
 
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BGFILL, &_fBgFill) >= 0
@@ -489,7 +470,7 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
 
     if (_eGlyphType == GT_FONTGLYPH) {
         if (!pRender->GetFontTableIndex(iPartId, iStateId, TMT_GLYPHFONT, &_iGlyphFontIndex))
-            return v32;
+            return S_OK;
         if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLYPHTEXTCOLOR, (int *)&_crGlyphTextColor) < 0)
             _crGlyphTextColor = 0;
         if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLYPHINDEX, &_iGlyphIndex) < 0)
@@ -499,11 +480,8 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
         _GlyphInfo.iDibOffset = pRender->GetValueIndex(iPartId, iStateId, 8);
         if (_GlyphInfo.iDibOffset == -1)
             _GlyphInfo.iDibOffset = 0;
-        if (_GlyphInfo.iDibOffset > 0) {
-            v32 = SetImageInfo(&_GlyphInfo, pRender, iPartId, iStateId);
-            if (v32 < 0)
-                return v32;
-        }
+        if (_GlyphInfo.iDibOffset > 0)
+            ENSURE_HR(SetImageInfo(&_GlyphInfo, pRender, iPartId, iStateId));
         pRender->ExternalGetBool(
             iPartId, iStateId, TMT_GLYPHTRANSPARENT, &_GlyphInfo.fPartiallyTransparent);
         _GlyphInfo.eSizingType = ST_TRUESIZE;
@@ -514,80 +492,47 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
         _fGlyphOnly = FALSE;
 
     if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_IMAGESELECTTYPE, (int *)&_eImageSelectType) < 0)
+        iPartId, iStateId, TMT_IMAGESELECTTYPE, (int*)&_eImageSelectType) < 0)
         _eImageSelectType = IST_NONE;
 
-    if (_eImageSelectType != 0) {
-        if (_eGlyphType == 1)
-            pImageInfo = &_GlyphInfo;
+    if (_eImageSelectType != IST_NONE) {
+        DIBINFO* pdi = &_ImageInfo;
+        if (_eGlyphType == GT_IMAGEGLYPH)
+            pdi = &_GlyphInfo;
 
-        v19 = 0;
-        do
-        {
-            switch (v19) {
-            case 0:
-                v20 = 3;
-                break;
-            case 1:
-                v20 = 4;
-                break;
-            case 2:
-                v20 = 5;
-                break;
-            case 3:
-                v20 = 6;
-                break;
-            case 4:
-                v20 = 7;
-                break;
-            case 5:
-                v20 = 22;
-                break;
-            default:
-                if (v19 != 6)
-                    assert("FRE: FALSE");
-                v20 = 23;
-                break;
-            }
-
-            v22 = pRender->GetValueIndex(iPartId, iStateId, v20);
-            if (v22 == -1)
+        for (int i = 0; i < 7; ++i) {
+            int index = pRender->GetValueIndex(iPartId, iStateId,
+                                               Map_Ordinal_To_DIBDATA(i));
+            if (index == -1)
                 break;
 
             ++_iMultiImageCount;
-            v21 = static_cast<CMaxImageFile*>(this)->MultiDibPtr(v19);
-            *v21 = *pImageInfo;
-            v21->iDibOffset = v22;
-            v32 = SetImageInfo(v21, pRender, iPartId, iStateId);
-            if (v32 < 0)
-                return v32;
+            DIBINFO* pdiCurrent = static_cast<CMaxImageFile*>(this)->MultiDibPtr(i);
+            *pdiCurrent = *pdi;
+            pdiCurrent->iDibOffset = index;
+
+            ENSURE_HR(SetImageInfo(pdiCurrent, pRender, iPartId, iStateId));
 
             if (pRender->ExternalGetInt(iPartId, iStateId,
-                                        Map_Ordinal_To_MINDPI(v19), &v21->iMinDpi) < 0) {
-                v21->iMinDpi = 96;
-            } else {
-                if (v21->iMinDpi < 1)
-                    v21->iMinDpi = 1;
-            }
+                                        Map_Ordinal_To_MINDPI(i), &pdiCurrent->iMinDpi) >= 0) {
+                if (pdiCurrent->iMinDpi < 1)
+                    pdiCurrent->iMinDpi = 1;
+            } else
+                pdiCurrent->iMinDpi = 96;
 
             if (pRender->ExternalGetPosition(iPartId, iStateId,
-                                             Map_Ordinal_To_MINSIZE(v19),
-                                             (POINT*)&v21->szMinSize) < 0) {
-                v21->szMinSize.cx = v21->iSingleWidth;
-                v21->szMinSize.cy = v21->iSingleHeight;
-            } else {
-                AdjustSizeMin(&v21->szMinSize, 1, 1);
-            }
-
-            ++v19;
-        } while (v19 < 7);
-
-        if (_iMultiImageCount > 0) {
-            auto p = static_cast<CMaxImageFile*>(this)->MultiDibPtr(0);
-            *pImageInfo = *p;
+                                             Map_Ordinal_To_MINSIZE(i),
+                                             (POINT*)&pdiCurrent->szMinSize) >= 0) {
+                AdjustSizeMin(&pdiCurrent->szMinSize, 1, 1);
+            } else
+                pdiCurrent->szMinSize = {pdiCurrent->iSingleWidth, pdiCurrent->iSingleHeight};
         }
+
+        if (_iMultiImageCount > 0)
+            *pdi = *static_cast<CMaxImageFile*>(this)->MultiDibPtr(0);
     }
-    return v32;
+
+    return S_OK;
 }
 
 static int const rgPropIds[] = {
@@ -639,6 +584,19 @@ HRESULT CImageFile::GetPartSize(
     return S_OK;
 }
 
+template<typename T>
+static void StretchUniform(T& width, T& height, int targetWidth, int targetHeight)
+{
+    double const w = static_cast<double>(targetWidth);
+    double const h = static_cast<double>(targetHeight);
+    double const scaleX = width / w;
+    double const scaleY = height / h;
+    if (scaleY < scaleX)
+        width = static_cast<T>(w * scaleY);
+    else if (scaleX < scaleY)
+        height = static_cast<T>(h * scaleX);
+}
+
 void CImageFile::GetDrawnImageSize(
     DIBINFO const* pdi, RECT const* pRect, TRUESTRETCHINFO const* ptsInfo,
     SIZE* pszDraw)
@@ -658,14 +616,8 @@ void CImageFile::GetDrawnImageSize(
         }
 
         if (_fUniformSizing) {
-            double w = static_cast<double>(pdi->iSingleWidth);
-            double h = static_cast<double>(pdi->iSingleHeight);
-            double scaleX = pszDraw->cx / w;
-            double scaleY = pszDraw->cy / h;
-            if (scaleY < scaleX)
-                pszDraw->cx = static_cast<int>(w * scaleY);
-            else if (scaleX < scaleY)
-                pszDraw->cy = static_cast<int>(h * scaleX);
+            StretchUniform(pszDraw->cx, pszDraw->cy,
+                           pdi->iSingleWidth, pdi->iSingleHeight);
         }
     } else {
         if (pRect) {
@@ -704,7 +656,7 @@ HRESULT CImageFile::SetImageInfo(
         width = bitmap.bmWidth;
         height = bitmap.bmHeight;
     } else {
-        auto bmphdr = (BITMAPHEADER*)((char*)tmhdr + tmhdr->dwSize);
+        auto bmphdr = (BITMAPHEADER*)((BYTE*)tmhdr + tmhdr->dwSize);
         if (!bmphdr)
             return E_FAIL;
         width = bmphdr->bmih.biWidth;
@@ -728,13 +680,7 @@ HRESULT CImageFile::ScaleMargins(
     MARGINS* pMargins, HDC hdcOrig, CRenderObj* pRender, DIBINFO const* pdi,
     SIZE const* pszDraw, float* pfx, float* pfy)
 {
-    bool cleanupDC = false;
-    if (!hdcOrig) {
-        hdcOrig = GetWindowDC(nullptr);
-        if (hdcOrig)
-            cleanupDC = true;
-    }
-
+    OptionalDC hdc{hdcOrig};
     bool forceRectSizing = pRender && pRender->_dwOtdFlags & OTD_FORCE_RECT_SIZING;
 
     float scaleX = 1.0f;
@@ -754,9 +700,9 @@ HRESULT CImageFile::ScaleMargins(
             }
 
             if (_fSourceGrow || forceRectSizing) {
-                if (hdcOrig && (!v18 && !v19)) {
+                if (hdc && (!v18 && !v19)) {
                     int dpiX = 0;
-                    pRender->GetEffectiveDpi(hdcOrig, &dpiX, nullptr);
+                    pRender->GetEffectiveDpi(hdc, &dpiX, nullptr);
                     if (dpiX >= 385 && dpiX >= 2 * pdi->iMinDpi) {
                         scaleX = (float)(dpiX / pdi->iMinDpi);
                         scaleY = (float)(dpiX / pdi->iMinDpi);
@@ -788,8 +734,6 @@ HRESULT CImageFile::ScaleMargins(
     if (pfy)
         *pfy = scaleY;
 
-    if (cleanupDC)
-        ReleaseDC(nullptr, hdcOrig);
     return S_OK;
 }
 
@@ -820,199 +764,188 @@ HRESULT CImageFile::GetBackgroundContentRect(
 }
 
 DIBINFO* CImageFile::SelectCorrectImageFile(
-    CRenderObj* pRender, HDC hdc, RECT const* prc, int fForGlyph, TRUESTRETCHINFO* ptsInfo)
+    CRenderObj* pRender, HDC hdc, RECT const* prc, bool fForGlyph, TRUESTRETCHINFO* ptsInfo)
 {
-    DIBINFO* dibInfo;
-    int v11;
-    DIBINFO* v12;
-    int v13;
-    int v14;
-    int v15;
-    int v17;
-    int v18;
-    int v23;
-    int v24;
-    int v25;
-    int v26;
-    int v28;
-    int v29;
-    int dpiX;
-    int dpiY;
-    int v33;
-    int v35;
-    char* v36;
-    DIBINFO* v37;
-    int v38;
-    int v41;
-    SIZE drawSize;
-    int dpiX_1;
-
-    if (fForGlyph)
-        dibInfo = &_GlyphInfo;
-    else
-        dibInfo = &_ImageInfo;
-    v11 = 0;
-    v12 = 0i64;
-    fForGlyph = 0;
-    v14 = 1;
-    v15 = 1;
-
-    v13 = 0;
+    bool releaseDC = false;
     if (!hdc) {
         hdc = GetWindowDC(nullptr);
-        v11 = 0;
         if (hdc)
-            v13 = 1;
+            releaseDC = true;
     }
 
-    if (prc) {
-        v14 = prc->right - prc->left;
-        v15 = prc->bottom - prc->top;
+    DIBINFO* const pdiDefault = fForGlyph ? &_GlyphInfo : &_ImageInfo;
+    int const width = prc ? prc->right - prc->left : 1;
+    int const height = prc ? prc->bottom - prc->top : 1;
+
+    bool forceSizing = false;
+    if (fForGlyph || _ImageInfo.eSizingType == ST_TRUESIZE) {
+        if (pRender && pRender->_dwOtdFlags & OTD_FORCE_RECT_SIZING)
+            forceSizing = true;
     }
 
-    if (!fForGlyph && _ImageInfo.eSizingType)
-        goto LABEL_89;
+    DIBINFO* pdi = nullptr;
+    if (fForGlyph || _eGlyphType != GT_IMAGEGLYPH) {
+        if (_eImageSelectType == IST_DPI) {
+            if (hdc) {
+                int dpiX, dpiY;
+                pRender->GetEffectiveDpi(hdc, &dpiX, &dpiY);
+                int dpi = std::min(dpiX, dpiY);
 
-    if (pRender && pRender->_dwOtdFlags & OTD_FORCE_RECT_SIZING) {
-        v11 = 1;
-        fForGlyph = 1;
-    }
-
-    if (!fForGlyph) {
-    LABEL_89:
-        if (_eGlyphType == 1)
-            goto LABEL_16;
-    }
-
-    v17 = 0;
-    v18 = 0;
-    if (_eImageSelectType == 2)
-        v17 = 1;
-    if ((v11 || _eImageSelectType == 1 || _fSourceGrow) && prc)
-        v18 = 1;
-    if (!v17) {
-        if (v18) {
-            if (_iMultiImageCount) {
-                v41 = _iMultiImageCount - 1;
-                if (_iMultiImageCount - 1 >= 0) {
-                    while (1)
-                    {
-                        v12 = 0i64;
-                        if (v41 >= 0 || v41 < _iMultiImageCount)
-                            v12 = &static_cast<CMaxImageFile*>(this)->MultiDibs[v41];
-                        if (v12->szMinSize.cx <= v14 && v12->szMinSize.cy <= v15)
-                            break;
-                        if (--v41 < 0)
-                            goto LABEL_16;
+                for (int i = _iMultiImageCount - 1; i >= 0; --i) {
+                    DIBINFO* p = static_cast<CMaxImageFile*>(this)->MultiDibPtr(i);
+                    if (p->iMinDpi <= dpi && !(pdi && p->iMinDpi <= pdi->iMinDpi))
+                        pdi = p;
+                }
+            }
+        } else if (_eImageSelectType == IST_SIZE || forceSizing || _fSourceGrow) {
+            if (prc) {
+                for (int i = _iMultiImageCount - 1; i >= 0; --i) {
+                    DIBINFO* p = static_cast<CMaxImageFile*>(this)->MultiDibPtr(i);
+                    if (p->szMinSize.cx <= width && p->szMinSize.cy <= height) {
+                        pdi = p;
+                        break;
                     }
-
-                    if (v12)
-                        goto LABEL_17;
-                    goto LABEL_16;
                 }
             }
         }
-        goto LABEL_16;
-    }
-    if (!hdc)
-        goto LABEL_16;
 
-    dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
-    if (GetScreenDpi() == dpiX || g_fForcedDpi) {
-        dpiY = pRender->GetAssociatedDpi();
-        v33 = dpiY;
+        if (!pdi)
+            pdi = pdiDefault;
     } else {
-        dpiX_1 = GetDeviceCaps(hdc, LOGPIXELSX);
-        dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
-        v33 = dpiX_1;
-        if (dpiX_1 >= dpiY)
-            v33 = dpiY;
+        pdi = &_ImageInfo;
     }
 
-    v35 = _iMultiImageCount - 1;
-    if (_iMultiImageCount - 1 >= 0) {
-        v36 = (char *)&static_cast<CMaxImageFile*>(this)->MultiDibs[v35];
-        do
-        {
-            v37 = 0i64;
-            if (v35 >= 0 || v35 < _iMultiImageCount)
-                v37 = (DIBINFO *)v36;
-            v38 = v37->iMinDpi;
-            if (v38 <= v33 && (!v12 || v12->iMinDpi < v38))
-                v12 = v37;
-            v36 -= 56;
-            --v35;
-        } while (v35 >= 0);
-        if (!v12)
-            v12 = dibInfo;
-    } else {
-    LABEL_16:
-        v12 = dibInfo;
-    }
-
-LABEL_17:
     if (ptsInfo) {
-        ptsInfo->fForceStretch = 0;
-        ptsInfo->fFullStretch = 0;
+        ptsInfo->fForceStretch = FALSE;
+        ptsInfo->fFullStretch = FALSE;
         ptsInfo->szDrawSize = SIZE();
-        if (v12->eSizingType == ST_TRUESIZE) {
-            if (_eTrueSizeScalingType != 0) {
-                if (prc && (fForGlyph || v12->iSingleWidth > v14 || v12->iSingleHeight > v15)) {
-                    ptsInfo->fFullStretch = 1;
-                    ptsInfo->szDrawSize.cx = v14;
-                    ptsInfo->szDrawSize.cy = v15;
-                    ptsInfo->fForceStretch = 1;
-                } else {
-                    if (_eTrueSizeScalingType == 2) {
-                        if (!hdc)
-                            goto LABEL_19;
-                        fForGlyph = 0;
-                        int ptsInfo_ = 0;
-                        pRender->GetEffectiveDpi(hdc, &fForGlyph, &ptsInfo_);
-                        v23 = MulDiv(v12->iSingleWidth, fForGlyph, v12->iMinDpi);
-                        v24 = v12->iMinDpi;
-                        v25 = ptsInfo_;
-                    } else {
-                        if (_eTrueSizeScalingType != 1 || !prc)
-                            goto LABEL_19;
-                        v23 = MulDiv(v12->iSingleWidth, v14, v12->szMinSize.cx);
-                        v24 = v12->szMinSize.cy;
-                        v25 = v15;
-                    }
 
-                    drawSize.cx = v23;
-                    drawSize.cy = MulDiv(v12->iSingleHeight, v25, v24);
-                    if (drawSize.cx) {
+        if (pdi->eSizingType == ST_TRUESIZE && _eTrueSizeScalingType != TSST_NONE) {
+            if (prc && (forceSizing || pdi->iSingleWidth > width || pdi->iSingleHeight > height)) {
+                ptsInfo->fFullStretch = 1;
+                ptsInfo->szDrawSize.cx = width;
+                ptsInfo->szDrawSize.cy = height;
+                ptsInfo->fForceStretch = 1;
+            } else if (_eTrueSizeScalingType == TSST_DPI) {
+                if (hdc) {
+                    int dpiX = 0;
+                    int dpiY = 0;
+                    pRender->GetEffectiveDpi(hdc, &dpiX, &dpiY);
+                    SIZE drawSize;
+                    drawSize.cx = MulDiv(pdi->iSingleWidth, dpiX, pdi->iMinDpi);
+                    drawSize.cy = MulDiv(pdi->iSingleHeight, dpiY, pdi->iMinDpi);
+                    if (drawSize.cx != 0) {
                         if (prc) {
-                            if (drawSize.cx >= v14)
-                                drawSize.cx = v14;
-                            if (drawSize.cy >= v15)
-                                drawSize.cy = v15;
+                            if (drawSize.cx >= width)
+                                drawSize.cx = width;
+                            if (drawSize.cy >= height)
+                                drawSize.cy = height;
                         }
 
-                        if (100 * (drawSize.cx - v12->iSingleWidth) / v12->iSingleWidth >= _iTrueSizeStretchMark &&
-                            100 * (drawSize.cy - v12->iSingleHeight) / v12->iSingleHeight >= _iTrueSizeStretchMark)
+                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >= _iTrueSizeStretchMark &&
+                            100 * (drawSize.cy - pdi->iSingleHeight) / pdi->iSingleHeight >= _iTrueSizeStretchMark)
                         {
                             ptsInfo->szDrawSize = drawSize;
-                            ptsInfo->fForceStretch = 1;
+                            ptsInfo->fForceStretch = TRUE;
+                        }
+                    }
+                }
+            } else if (_eTrueSizeScalingType == TSST_SIZE) {
+                if (prc) {
+                    SIZE drawSize;
+                    drawSize.cx = MulDiv(pdi->iSingleWidth, width, pdi->szMinSize.cx);
+                    drawSize.cy = MulDiv(pdi->iSingleHeight, height, pdi->szMinSize.cy);
+                    if (drawSize.cx != 0) {
+                        if (drawSize.cx >= width)
+                            drawSize.cx = width;
+                        if (drawSize.cy >= height)
+                            drawSize.cy = height;
+
+                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >= _iTrueSizeStretchMark &&
+                            100 * (drawSize.cy - pdi->iSingleHeight) / pdi->iSingleHeight >= _iTrueSizeStretchMark)
+                        {
+                            ptsInfo->szDrawSize = drawSize;
+                            ptsInfo->fForceStretch = TRUE;
                         }
                     }
                 }
             }
         }
     }
-LABEL_19:
-    if (!v12)
-        v12 = dibInfo;
-    if (v13)
+
+    if (!pdi)
+        pdi = pdiDefault;
+    if (releaseDC)
         ReleaseDC(nullptr, hdc);
-    return v12;
+    return pdi;
 }
 
-HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc, DTBGOPTS const* pOptions)
+HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc,
+                                  DTBGOPTS const* pOptions)
 {
-    // FIXME
-    return TRACE_HR(E_NOTIMPL);
+    RECT const* const clipRect = (pOptions && pOptions->dwFlags & DTBG_CLIPRECT) ?
+        &pOptions->rcClip : nullptr;
+
+    SaveClipRegion scrOrig;
+    HGDIOBJ oldFont = nullptr;
+    COLORREF oldColor = 0;
+    int oldMode = 0;
+
+    HFONT hFont = nullptr;
+    HRESULT hr = pRender->GetScaledFontHandle(hdc, _iGlyphFontIndex, &hFont);
+    if (hr < 0)
+        goto done;
+
+    oldFont = SelectObject(hdc, hFont);
+    if (!oldFont) {
+        hr = MakeErrorLast();
+        goto done;
+    }
+
+    oldColor = SetTextColor(hdc, _crGlyphTextColor);
+    oldMode = SetBkMode(hdc, TRANSPARENT);
+
+    {
+        UINT format = DT_SINGLELINE;
+        if (_eHAlign)
+            format = (_eHAlign != 1) + 33;
+
+        if (_eHAlign == HA_CENTER)
+            format |= DT_CENTER;
+        else if (_eHAlign == HA_RIGHT)
+            format |= DT_RIGHT;
+
+        if (_eVAlign == VA_CENTER)
+            format |= DT_VCENTER;
+        else if (VA_BOTTOM)
+            format |= DT_BOTTOM;
+
+        if (clipRect) {
+            hr = scrOrig.Save(hdc);
+            if (hr < 0)
+                goto done;
+            if (!IntersectClipRect(hdc, clipRect->left, clipRect->top, clipRect->right, clipRect->bottom)) {
+                hr = MakeErrorLast();
+                goto done;
+            }
+        }
+
+        wchar_t text[1] = {_iGlyphIndex};
+        if (!DrawTextExW(hdc, text, 1, prc, format, nullptr))
+            hr = MakeErrorLast();
+    }
+
+done:
+    if (clipRect)
+        scrOrig.Restore(hdc);
+    if (oldMode != TRANSPARENT)
+        SetBkMode(hdc, oldMode);
+    if (_crGlyphTextColor != oldColor)
+        SetTextColor(hdc, oldColor);
+    if (oldFont)
+        SelectObject(hdc, oldFont);
+    pRender->ReturnFontHandle(hFont);
+    return hr;
 }
 
 HRESULT CImageFile::DrawBackground(
@@ -1042,100 +975,60 @@ HRESULT CImageFile::DrawImageInfo(
     DIBINFO* pdi, CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect,
     DTBGOPTS const* pOptions, TRUESTRETCHINFO* ptsInfo)
 {
-    TMBITMAPHEADER* pThemeBitmapHeader;
-    unsigned v13;
-    int width;
-    int height;
-    int v21;
-    float xMarginFactor;
-    float yMarginFactor;
-    int fStock;
-    RECT rect;
-
-    pThemeBitmapHeader = nullptr;
-    fStock = 0;
-    v13 = 0;
-    if (pOptions)
-        v13 = pOptions->dwFlags;
+    TMBITMAPHEADER* pThemeBitmapHeader = nullptr;
+    bool fStock = false;
+    DWORD const flags = pOptions ? pOptions->dwFlags : 0;
 
     if (!pdi->uhbm.hBitmap) {
-        if (pRender->_pbSharableData) {
-            if (pdi->iDibOffset > 0) {
-                pThemeBitmapHeader = pRender->GetBitmapHeader(pdi->iDibOffset);
-                fStock = 0;
-                if (pRender->BitmapIndexToHandle(pThemeBitmapHeader->iBitmapIndex))
-                    fStock = 1;
-            }
+        if (pRender->_pbSharableData && pdi->iDibOffset > 0) {
+            pThemeBitmapHeader = pRender->GetBitmapHeader(pdi->iDibOffset);
+            if (pRender->BitmapIndexToHandle(pThemeBitmapHeader->iBitmapIndex))
+                fStock = true;
         }
 
-        if (pRender->_pThemeFile) {
-            auto v17 = (NONSHARABLEDATAHDR*)pRender->_pThemeFile->_pbNonSharableData;
-            if (!v17 || !(v17->dwFlags & 1))
-                return TRACE_HR(E_FAIL);
-        }
+        if (!pRender->IsReady())
+            return TRACE_HR(E_FAIL);
 
         if (!pThemeBitmapHeader)
             return TRACE_HR(E_FAIL);
     }
 
-    if (pdi->eSizingType) {
-        if (pRect) {
-            width = pRect->right - pRect->left;
-            height = pRect->bottom - pRect->top;
-        } else {
-            width = 0;
-            height = 0;
-        }
-    } else {
-        if (!ptsInfo->fForceStretch) {
-            width = pdi->iSingleWidth;
-            height = pdi->iSingleHeight;
-        } else if (!_fIntegralSizing || ptsInfo->fFullStretch) {
-            width = ptsInfo->szDrawSize.cx;
-            height = ptsInfo->szDrawSize.cy;
-        } else {
-            width = pdi->iSingleWidth * (int)((float)ptsInfo->szDrawSize.cx / (float)pdi->iSingleWidth);
-            height = pdi->iSingleHeight * (int)((float)ptsInfo->szDrawSize.cy / (float)pdi->iSingleHeight);
-        }
+    SIZE drawSize;
+    GetDrawnImageSize(pdi, pRect, ptsInfo, &drawSize);
 
-        if (_fUniformSizing) {
-            double v34 = static_cast<double>(pdi->iSingleWidth);
-            double v35 = static_cast<double>(pdi->iSingleHeight);
-            double v36 = width / v34;
-            double v37 = height / v35;
-            if (v37 > v36) {
-                height = (int)(v35 * v36);
-            } else if (v36 > v37) {
-                width = (int)(v34 * v37);
-            }
+    int v21 = 0;
+    RECT rect = *pRect;
+    if (rect.right - rect.left > drawSize.cx) {
+        v21 = 1;
+        switch (_eHAlign) {
+        case HA_LEFT:
+            rect.right = rect.left + drawSize.cx;
+            break;
+        case HA_CENTER:
+            rect.left += (rect.right - rect.left - drawSize.cx) / 2;
+            rect.right = rect.left + drawSize.cx;
+            break;
+        case HA_RIGHT:
+            rect.left = rect.right - drawSize.cx;
+            break;
         }
     }
 
-    v21 = 1;
-    rect = *pRect;
-    if (rect.right - rect.left > width) {
-        v21 = 0;
-        if (_eHAlign == 0) {
-            rect.right = rect.left + width;
-        } else if (_eHAlign == 1) {
-            rect.left += (rect.right - rect.left - width) / 2;
-            rect.right = rect.left + width;
-        } else {
-            rect.left = rect.right - width;
+    if (rect.bottom - rect.top > drawSize.cy) {
+        switch (_eVAlign) {
+        case VA_TOP:
+            rect.bottom = rect.top + drawSize.cy;
+            break;
+        case VA_CENTER:
+            rect.top += (rect.bottom - rect.top - drawSize.cy) / 2;
+            rect.bottom = rect.top + drawSize.cy;
+            break;
+        case VA_BOTTOM:
+            rect.top = rect.bottom - drawSize.cy;
+            break;
         }
-    }
-
-    if (rect.bottom - rect.top > height) {
-        if (_eVAlign == 0) {
-            rect.bottom = rect.top + height;
-        } else if (_eVAlign == 1) {
-            rect.top += (rect.bottom - rect.top - height) / 2;
-            rect.bottom = rect.top + height;
-        } else {
-            rect.top = rect.bottom - height;
-        }
-    } else if (!v21) {
-        if (!pdi->fBorderOnly && _fBgFill && !(v13 & 8)) {
+    } else if (v21) {
+        if (!pdi->fBorderOnly && _fBgFill && !(flags & 8)) {
             HBRUSH solidBrush = CreateSolidBrush(_crFill);
             if (!solidBrush)
                 return GetLastError();
@@ -1144,11 +1037,12 @@ HRESULT CImageFile::DrawImageInfo(
         }
     }
 
+    float xMarginFactor;
+    float yMarginFactor;
     if (pdi->eSizingType == 0) {
         xMarginFactor = 1.0f;
         yMarginFactor = 1.0f;
     } else {
-        SIZE const drawSize = {width, height};
         ENSURE_HR(ScaleMargins(&_SizingMargins, hdc, pRender, pdi, &drawSize,
                                &xMarginFactor, &yMarginFactor));
     }
@@ -1174,17 +1068,19 @@ static bool IsMirrored(HDC hdc)
     return layout != -1 && layout & LAYOUT_RTL;
 }
 
-struct CBitmapCache
+class CBitmapCache
 {
-    HBITMAP _hBitmap;
-    int _iWidth;
-    int _iHeight;
-    CRITICAL_SECTION _csBitmapCache;
-
+public:
     CBitmapCache();
     ~CBitmapCache();
     HBITMAP AcquireBitmap(HDC hdc, int iWidth, int iHeight);
     void ReturnBitmap();
+
+private:
+    HBITMAP _hBitmap;
+    int _iWidth;
+    int _iHeight;
+    CRITICAL_SECTION _csBitmapCache;
 };
 
 CBitmapCache::CBitmapCache()
@@ -1299,7 +1195,7 @@ HBITMAP CreateScaledTempBitmap(
 }
 
 static HBITMAP CreateUnscaledBitmap(
-    HDC hdc, HBITMAP hbmSrc, int cxSrcOffset, int cySrcOffset, int cxDest, int cyDest, int fTemporary)
+    HDC hdc, HBITMAP hbmSrc, int cxSrcOffset, int cySrcOffset, int cxDest, int cyDest, bool fTemporary)
 {
     HBITMAP v7;
     HDC v10;
@@ -1338,25 +1234,11 @@ static HBITMAP CreateUnscaledBitmap(
     return v7;
 }
 
-static HBITMAP g_hbmp;
-
-void DumpBitmap(HBITMAP hbmp)
-{
-    BITMAP bmp = {};
-    if (!GetObjectW(hbmp, sizeof(bmp), &bmp))
-        return;
-
-    CImage img;
-    img.Attach(hbmp);
-    HRESULT hr = img.Save(L"D:\\t1.png", Gdiplus::ImageFormatPNG);
-    img.Detach();
-}
-
 HRESULT CImageFile::DrawBackgroundDS(
-    DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader, int fStock,
+    DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader, bool fStock,
     CRenderObj* pRender, HDC hdc, int iStateId, RECT* pRect,
-    int fForceStretch, MARGINS* pmarDest, float xMarginFactor,
-    float yMarginFactor, DTBGOPTS const* pOptions)
+    bool fForceStretch, MARGINS* pmarDest, float xMarginFactor,
+    float yMarginFactor, DTBGOPTS const* pOptions) const
 {
     HBITMAP v19;
     HRESULT hr;
@@ -1434,13 +1316,6 @@ HRESULT CImageFile::DrawBackgroundDS(
         TRACE_HR(hr);
         goto exit_15;
     }
-
-    if (g_hbmp) {
-        DumpBitmap(g_hbmp);
-        DumpBitmap(v28);
-        v28 = g_hbmp;
-    }
-    //v28 = (HBITMAP)0x53854d2e;
 
     RECT srcRect;
     srcRect.left = offsetX;
@@ -1560,7 +1435,7 @@ static HRESULT ScaleRectsAndCreateRegion(
 
     int sizeToAlloc = prd->rdh.nRgnSize + 32;
     if (sizeToAlloc < 32)
-        return 0x80070216;
+        return HRESULT_FROM_WIN32(ERROR_ARITHMETIC_OVERFLOW);
 
     auto dstBuffer = make_unique_nothrow<char[]>(sizeToAlloc);
     if (!dstBuffer)
@@ -1659,7 +1534,7 @@ HRESULT CImageFile::GetBackgroundRegion(
 
     if (pdi->iRgnListOffset != 0 && pRender->_pbSharableData) {
         auto rgnListHdr = reinterpret_cast<REGIONLISTHDR*>(&pRender->_pbSharableData[pdi->iRgnListOffset]);
-        int* rgnList = (int*)((char*)rgnListHdr + 8);
+        int* rgnList = (int*)((BYTE*)rgnListHdr + 8);
 
         if (iStateId > rgnListHdr->cStates - 1)
             iStateId = 0;

@@ -4,15 +4,15 @@
 namespace uxtheme
 {
 
-CThemeMemStream::CThemeMemStream(uint64_t cbInitialSize, int fRead)
+ThemeMemStream::ThemeMemStream(uint64_t initialSize, bool read)
+    : read_(read)
+    , initialSize_(initialSize)
+    , refCount_(1)
 {
-    this->m_fRead = fRead;
-    this->m_cbInitialSize = cbInitialSize;
-    this->m_RefCnt = 1;
     Clear(0);
 }
 
-HRESULT CThemeMemStream::QueryInterface(REFIID riid, _COM_Outptr_ void** ppvObject)
+HRESULT ThemeMemStream::QueryInterface(REFIID riid, _COM_Outptr_ void** ppvObject)
 {
     if (!ppvObject)
         return E_POINTER;
@@ -33,54 +33,40 @@ HRESULT CThemeMemStream::QueryInterface(REFIID riid, _COM_Outptr_ void** ppvObje
     return S_OK;
 }
 
-ULONG CThemeMemStream::AddRef()
+ULONG ThemeMemStream::AddRef()
 {
-    return m_RefCnt += 1;
+    return refCount_ += 1;
 }
 
-ULONG CThemeMemStream::Release()
+ULONG ThemeMemStream::Release()
 {
-    return m_RefCnt -= 1;
+    return refCount_ -= 1;
 }
 
-HRESULT CThemeMemStream::Read(
+HRESULT ThemeMemStream::Read(
     _Out_writes_bytes_to_(cb, *pcbRead)  void* pv,
     _In_ ULONG cb,
     _Out_opt_ ULONG* pcbRead)
 {
-    if (m_uCurr >= m_uSize) {
+    if (position_ >= size_) {
         *pcbRead = 0;
         return E_FAIL;
     }
 
-    if (m_uCurr + cb > m_uSize)
-        cb = m_uSize - m_uCurr;
+    if (position_ + cb > size_)
+        cb = size_ - position_;
 
     if (cb) {
-        switch (cb) {
-        case 1:
-            *(BYTE *)pv = m_lpb[m_uCurr];
-            break;
-        case 2:
-            *(WORD *)pv = *(WORD *)&m_lpb[m_uCurr];
-            break;
-        case 4:
-            *(DWORD *)pv = *(DWORD *)&m_lpb[m_uCurr];
-            break;
-        default:
-            memcpy(pv, &m_lpb[m_uCurr], cb);
-            break;
-        }
-
-        this->m_uCurr += cb;
+        memcpy(pv, &buffer_[position_], cb);
+        this->position_ += cb;
     }
 
     *pcbRead = cb;
-    return cb == 0 ? E_FAIL : 0;
+    return cb == 0 ? E_FAIL : S_OK;
 }
 
-HRESULT CThemeMemStream::Write(
-    _In_reads_bytes_(cb)  void const* pv,
+HRESULT ThemeMemStream::Write(
+    _In_reads_bytes_(cb) void const* pv,
     _In_  ULONG cb,
     _Out_opt_ ULONG* pcbWritten)
 {
@@ -89,46 +75,32 @@ HRESULT CThemeMemStream::Write(
 
     size_t cbWritten = cb;
     if (cb) {
-        uint64_t newSize = m_cbInitialSize;
-        uint64_t v10 = m_uCurr + cb;
-        if (v10 > newSize)
-            newSize = v10;
+        uint64_t newSize = initialSize_;
+        if (position_ + cb > newSize)
+            newSize = position_ + cb;
 
-        if (newSize > m_cbMax) {
+        if (newSize > maxSize_) {
             size_t v11 = ((newSize / 8192) + 1) * 8192;
-            auto newBuf = make_unique_nothrow<char[]>(v11);
+            auto newBuf = make_unique_nothrow<uint8_t[]>(v11);
             if (!newBuf)
                 return E_OUTOFMEMORY;
-            if (m_lpb) {
-                memcpy(newBuf.get(), m_lpb.get(), m_cbMax);
-                m_lpb.reset();
+            if (buffer_) {
+                memcpy(newBuf.get(), buffer_.get(), maxSize_);
+                buffer_.reset();
             }
 
-            m_cbMax = v11;
-            m_lpb = std::move(newBuf);
+            maxSize_ = v11;
+            buffer_ = std::move(newBuf);
         }
 
-        if (!m_lpb && !m_uCurr || m_lpb.get() + m_uCurr < m_lpb.get() || (uint64_t)(m_lpb.get() + m_uCurr) < m_uCurr)
-            return 0x8007000D;
+        if (!buffer_ && !position_ || buffer_.get() + position_ < buffer_.get() || (uint64_t)(buffer_.get() + position_) < position_)
+            return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
 
-        switch ((DWORD)cbWritten) {
-        case 1:
-            *&m_lpb[m_uCurr] = *(BYTE *)pv;
-            break;
-        case 2:
-            *(WORD *)&m_lpb[m_uCurr] = *(WORD *)pv;
-            break;
-        case 4:
-            *(DWORD *)&m_lpb[m_uCurr] = *(DWORD *)pv;
-            break;
-        default:
-            memcpy(&m_lpb[m_uCurr], pv, cbWritten);
-            break;
-        }
+        memcpy(&buffer_[position_], pv, cbWritten);
 
-        m_uCurr += cbWritten;
-        if (m_uCurr > m_uSize)
-            m_uSize = m_uCurr;
+        position_ += cbWritten;
+        if (position_ > size_)
+            size_ = position_;
     }
 
     if (pcbWritten)
@@ -137,49 +109,49 @@ HRESULT CThemeMemStream::Write(
     return S_OK;
 }
 
-HRESULT CThemeMemStream::Seek(
+HRESULT ThemeMemStream::Seek(
     LARGE_INTEGER liMove,
     DWORD dwOrigin,
     _Out_opt_  ULARGE_INTEGER* pliNewPos)
 {
     if (dwOrigin == 0)
-        m_uCurr = liMove.LowPart;
+        position_ = liMove.LowPart;
     else if (dwOrigin == 1)
-        m_uCurr = m_uCurr + liMove.LowPart;
+        position_ = position_ + liMove.LowPart;
     else if (dwOrigin == 2)
-        m_uCurr = m_uSize - liMove.LowPart;
+        position_ = size_ - liMove.LowPart;
     else
-        m_uCurr = 0;
+        position_ = 0;
 
     if (pliNewPos)
-        pliNewPos->QuadPart = m_uCurr;
+        pliNewPos->QuadPart = position_;
     return S_OK;
 }
 
-HRESULT CThemeMemStream::SetSize(ULARGE_INTEGER uli)
+HRESULT ThemeMemStream::SetSize(ULARGE_INTEGER uli)
 {
-    m_uSize = m_cbInitialSize;
-    if (uli.QuadPart > m_uSize)
-        m_uSize = uli.QuadPart;
+    size_ = initialSize_;
+    if (uli.QuadPart > size_)
+        size_ = uli.QuadPart;
 
-    if (m_uCurr > m_uSize)
-        m_uCurr = m_uSize;
+    if (position_ > size_)
+        position_ = size_;
 
-    if (m_uSize > m_cbMax) {
-        auto newBuf = make_unique_nothrow<char[]>(m_uSize + 0x2000);
-        if (m_lpb) {
-            memcpy(newBuf.get(), m_lpb.get(), m_cbMax);
-            m_lpb.reset();
+    if (size_ > maxSize_) {
+        auto newBuf = make_unique_nothrow<uint8_t[]>(size_ + 0x2000);
+        if (buffer_) {
+            memcpy(newBuf.get(), buffer_.get(), maxSize_);
+            buffer_.reset();
         }
 
-        m_lpb = std::move(newBuf);
-        m_cbMax = m_uSize + 0x2000;
+        buffer_ = std::move(newBuf);
+        maxSize_ = size_ + 0x2000;
     }
 
     return S_OK;
 }
 
-HRESULT CThemeMemStream::CopyTo(
+HRESULT ThemeMemStream::CopyTo(
     _In_  IStream* pstm,
     ULARGE_INTEGER cb,
     _Out_opt_  ULARGE_INTEGER* pcbRead,
@@ -188,29 +160,29 @@ HRESULT CThemeMemStream::CopyTo(
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT CThemeMemStream::Commit(DWORD grfCommitFlags)
+HRESULT ThemeMemStream::Commit(DWORD grfCommitFlags)
 {
     return S_OK;
 }
 
-HRESULT CThemeMemStream::Revert()
+HRESULT ThemeMemStream::Revert()
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT CThemeMemStream::LockRegion(
+HRESULT ThemeMemStream::LockRegion(
     ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT CThemeMemStream::UnlockRegion(
+HRESULT ThemeMemStream::UnlockRegion(
     ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT CThemeMemStream::Stat(_Out_ STATSTG* pStg, DWORD dwStatFlag)
+HRESULT ThemeMemStream::Stat(_Out_ STATSTG* pStg, DWORD dwStatFlag)
 {
     SYSTEMTIME systemTime;
     GetSystemTime(&systemTime);
@@ -218,42 +190,41 @@ HRESULT CThemeMemStream::Stat(_Out_ STATSTG* pStg, DWORD dwStatFlag)
     *pStg = STATSTG();
     pStg->type = 2;
     pStg->pwcsName = nullptr; // (wchar_t *)&pszAppName;
-    pStg->cbSize.QuadPart = m_uSize;
+    pStg->cbSize.QuadPart = size_;
     SystemTimeToFileTime(&systemTime, &pStg->mtime);
     pStg->ctime = pStg->mtime;
     pStg->atime = pStg->mtime;
-    pStg->grfMode = m_fRead == 0;
+    pStg->grfMode = read_ == 0;
     return S_OK;
 }
 
-HRESULT CThemeMemStream::Clone(_COM_Outptr_opt_ IStream** ppstm)
+HRESULT ThemeMemStream::Clone(_COM_Outptr_opt_ IStream** ppstm)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-char* CThemeMemStream::GetBuffer(uint64_t* cbSize)
+uint8_t* ThemeMemStream::GetBuffer(uint64_t* cbSize)
 {
     if (cbSize)
-        *cbSize = m_uSize;
-    return m_lpb.get();
+        *cbSize = size_;
+    return buffer_.get();
 }
 
-void CThemeMemStream::Clear(BOOL fFree)
+void ThemeMemStream::Clear(BOOL fFree)
 {
-    if (fFree && !m_fRead) {
-        m_lpb.reset();
-    }
+    if (fFree && !read_)
+        buffer_.reset();
 
-    m_lpb = nullptr;
-    m_uCurr = 0;
-    m_uSize = 0;
-    m_cbMax = 0;
+    buffer_ = nullptr;
+    position_ = 0;
+    size_ = 0;
+    maxSize_ = 0;
 }
 
-HRESULT CThemeMemStream::SetMaxSize(uint64_t cbSize)
+HRESULT ThemeMemStream::SetMaxSize(uint64_t cbSize)
 {
-    if (cbSize < m_uSize) {
-        m_uCurr = 0;
+    if (cbSize < size_) {
+        position_ = 0;
         return S_OK;
     }
 

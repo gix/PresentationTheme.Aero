@@ -5,8 +5,9 @@
 namespace uxtheme
 {
 
-struct CUxThemeFile
+class CUxThemeFile
 {
+public:
     CUxThemeFile();
     ~CUxThemeFile();
 
@@ -29,7 +30,7 @@ struct CUxThemeFile
                         wchar_t* pszNonSharableSectionName,
                         unsigned cchNonSharableSectionName,
                         int iNonSharableSectionLength,
-                        int fReserve);
+                        bool fReserve);
     void CloseFile();
     HRESULT OpenFromHandle(HANDLE hSharableSection, HANDLE hNonSharableSection,
                            DWORD desiredAccess, bool cleanupOnFailure);
@@ -38,6 +39,25 @@ struct CUxThemeFile
     LOGFONTW const* GetFontByIndex(unsigned short index) const;
     static HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
 
+    THEMEHDR* ThemeHeader() { return _pbSharableData; }
+
+    NONSHARABLEDATAHDR* NonSharableDataHeader()
+    {
+        return (NONSHARABLEDATAHDR*)_pbNonSharableData;
+    }
+
+    NONSHARABLEDATAHDR const* NonSharableDataHeader() const
+    {
+        return (NONSHARABLEDATAHDR*)_pbNonSharableData;
+    }
+
+    bool IsReady() const
+    {
+        auto header = NonSharableDataHeader();
+        return header && header->dwFlags & 1;
+    }
+
+private:
     char _szHead[8];
     THEMEHDR* _pbSharableData;
     HANDLE _hSharableSection;

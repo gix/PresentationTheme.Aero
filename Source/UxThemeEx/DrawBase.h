@@ -4,8 +4,9 @@
 namespace uxtheme
 {
 
-struct CDrawBase
+class CDrawBase
 {
+public:
     BGTYPE _eBgType;
     int _iUnused;
 };

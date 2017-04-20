@@ -51,17 +51,8 @@ BOOL CTextDraw::KeyProperty(int iPropId)
 
 HRESULT CTextDraw::PackProperties(CRenderObj* pRender, int iPartId, int iStateId)
 {
+    static_assert(std::is_trivially_copyable_v<CTextDraw>);
     memset(this, 0, sizeof(CTextDraw));
-    if (AsciiStrCmpI(pRender->_pszClassName, L"Button") == 0
-        && (iPartId == 2)
-        && (iStateId == 1 || iStateId == 0)) {
-        int x = 1;
-    }
-    if (AsciiStrCmpI(pRender->_pszClassName, L"Button") == 0
-        && (iPartId == 0)
-        && (iStateId == 0)) {
-        int x = 1;
-    }
 
     _iSourcePartId = iPartId;
     _iSourceStateId = iStateId;
@@ -213,8 +204,6 @@ HRESULT CTextDraw::DrawTextW(
     HRESULT hr;
     HFONT v26;
     unsigned flags;
-    HDC__ *v34;
-    HTHEME themeTextGlow;
     HPEN pen46;
     HBRUSH brush;
     HPEN oldPen;
@@ -341,7 +330,7 @@ HRESULT CTextDraw::DrawTextW(
 
     if (!isComposited) {
         if (glowSize) {
-            themeTextGlow = UxOpenThemeData(hThemeFile, nullptr, L"TEXTGLOW");
+            HTHEME themeTextGlow = UxOpenThemeData(hThemeFile, nullptr, L"TEXTGLOW");
             if (themeTextGlow) {
                 rc = *pRect;
                 if (DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, dwTextFlagsa | 0x400, nullptr)) {

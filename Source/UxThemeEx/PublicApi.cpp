@@ -1,9 +1,12 @@
 #include "UxThemeEx.h"
 
+#include "AnimationLoader.h"
 #include "BorderFill.h"
+#include "GdiHandles.h"
 #include "Global.h"
 #include "RenderList.h"
 #include "RenderObj.h"
+#include "ScalingUtil.h"
 #include "TextDraw.h"
 #include "ThemeLoader.h"
 #include "Utils.h"
@@ -13,12 +16,33 @@
 #include <CommCtrl.h>
 #include <CommonControls.h>
 #include <strsafe.h>
-#include "ScalingUtil.h"
 
 using namespace uxtheme;
 
 namespace uxtheme
 {
+
+struct PropertyFieldTable
+{
+    DWORD dwProperty;
+    DWORD dwOffset;
+    DWORD cbSize;
+};
+
+#define PFT_ENTRY(prop, field) \
+  {prop, offsetof(AnimationProperty, field), sizeof(AnimationProperty::field)}
+PropertyFieldTable const s_rgPropertyFieldTbl[] = {
+    PFT_ENTRY(TAP_FLAGS,              eFlags),
+    PFT_ENTRY(TAP_TRANSFORMCOUNT,     dwTransformCount),
+    PFT_ENTRY(TAP_STAGGERDELAY,       dwStaggerDelay),
+    PFT_ENTRY(TAP_STAGGERDELAYCAP,    dwStaggerDelayCap),
+    PFT_ENTRY(TAP_STAGGERDELAYFACTOR, rStaggerDelayFactor),
+    PFT_ENTRY(TAP_ZORDER,             dwZIndex),
+    PFT_ENTRY(TAP_BACKGROUNDPARTID,   dwBackgroundPartId),
+    PFT_ENTRY(TAP_TUNINGLEVEL,        dwTuningLevel),
+    PFT_ENTRY(TAP_PERSPECTIVE,        rPerspective),
+};
+#undef ENTRY
 
 static HRESULT LoadThemeLibrary(wchar_t const* pszThemePath, HMODULE* phInst, int* pnVersion)
 {
@@ -34,18 +58,18 @@ static HRESULT LoadThemeLibrary(wchar_t const* pszThemePath, HMODULE* phInst, in
     HRESULT hr = GetPtrToResource(
         module, L"PACKTHEM_VERSION", MAKEINTRESOURCEW(1), &data, &len);
 
-    if (SUCCEEDED(hr) && len == 2) {
-        short version = *static_cast<short*>(data);
-        if (pnVersion)
-            *pnVersion = version;
+    if (FAILED(hr) || len != 2)
+        return HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
 
-        if (version == 4) {
-            *phInst = module.Detach();
-            return S_OK;
-        }
-    }
+    short version = *static_cast<short*>(data);
+    if (pnVersion)
+        *pnVersion = version;
 
-    return 0x8007000B;
+    if (version != 4)
+        return HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
+
+    *phInst = module.Detach();
+    return S_OK;
 }
 
 static void FillRectClr(HDC hdc, RECT const* prc, unsigned clr)
@@ -176,23 +200,14 @@ static HRESULT _DrawEdge(HDC hdc, RECT const* pDestRect, unsigned uEdge,
     return S_OK;
 }
 
-static wchar_t const g_pszAppName[] = {0};
-
-static wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset)
-{
-    if (pThemeFile && pThemeFile->_pbSharableData && iOffset > 0)
-        return (wchar_t const*)((char*)pThemeFile->_pbSharableData + iOffset);
-    return g_pszAppName;
-}
-
 static HRESULT MatchThemeClass(
     wchar_t const* pszClassId, CUxThemeFile* pThemeFile, int* piOffset,
     int* piClassNameOffset)
 {
-    auto liveClasses = (APPCLASSLIVE*)((char *)pThemeFile->_pbSharableData + pThemeFile->_pbSharableData->iSectionIndexOffset);
-    int numClasses = pThemeFile->_pbSharableData->iSectionIndexLength / sizeof(APPCLASSLIVE);
+    auto liveClasses = (APPCLASSLIVE*)((BYTE*)pThemeFile->ThemeHeader() + pThemeFile->ThemeHeader()->iSectionIndexOffset);
+    int numClasses = pThemeFile->ThemeHeader()->iSectionIndexLength / sizeof(APPCLASSLIVE);
     if (!numClasses)
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     for (int i = 0; i < numClasses; ++i) {
         auto const& liveClass = liveClasses[i];
@@ -211,15 +226,15 @@ static HRESULT MatchThemeClass(
         }
     }
 
-    return 0x80070490;
+    return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 }
 
 static HRESULT MatchThemeApp(
     wchar_t const* pszAppName, wchar_t const* pszClassId, CUxThemeFile* pThemeFile,
-    int* piOffset, int* piAppNameOffset, int* piClassNameOffset, int fAllowInheritance)
+    int* piOffset, int* piAppNameOffset, int* piClassNameOffset, bool fAllowInheritance)
 {
-    auto liveClasses = (APPCLASSLIVE*)((char *)pThemeFile->_pbSharableData + pThemeFile->_pbSharableData->iSectionIndexOffset);
-    int numClasses = pThemeFile->_pbSharableData->iSectionIndexLength / sizeof(APPCLASSLIVE);
+    auto liveClasses = (APPCLASSLIVE*)((BYTE*)pThemeFile->ThemeHeader() + pThemeFile->ThemeHeader()->iSectionIndexOffset);
+    int numClasses = pThemeFile->ThemeHeader()->iSectionIndexLength / sizeof(APPCLASSLIVE);
 
     for (int i = 0; i < numClasses; ++i) {
         auto const& liveClass = liveClasses[i];
@@ -242,7 +257,7 @@ static HRESULT MatchThemeApp(
     }
 
     if (!fAllowInheritance)
-        return 0x80070490;
+        return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     *piAppNameOffset = 0;
     return MatchThemeClass(pszClassId, pThemeFile, piOffset, piClassNameOffset);
@@ -261,7 +276,7 @@ static bool GetStringProp(HWND hwnd, ATOM prop, wchar_t* buffer, size_t bufferSi
         return false;
 
     auto atom = narrow_cast<ATOM>(reinterpret_cast<uintptr_t>(handle));
-    return handle && GetAtomNameW(atom, buffer, bufferSize);
+    return handle && GetAtomNameW(atom, buffer, static_cast<int>(bufferSize));
 }
 
 static HRESULT MatchThemeClassList(
@@ -368,26 +383,28 @@ HTHEME OpenThemeDataExInternal(
     return hTheme;
 }
 
-struct CThemeApiHelper
+class CThemeApiHelper
 {
+public:
     ~CThemeApiHelper() { CloseHandle(); }
 
-    HRESULT OpenHandle(HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** pRender);
+    HRESULT OpenHandle(HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** renderObj);
     void CloseHandle();
 
+private:
     wchar_t const* _pszFuncName = nullptr;
     int _iRenderSlotNum = -1;
     int _iEntryValue = -1;
 };
 
 HRESULT CThemeApiHelper::OpenHandle(
-    HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** pRender)
+    HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** renderObj)
 {
     auto themeFile = ThemeFileFromHandle(hThemeFile);
     if (!themeFile)
         return E_HANDLE;
 
-    ENSURE_HR(g_pRenderList.OpenThemeHandle(hTheme, pRender, &_iRenderSlotNum));
+    ENSURE_HR(g_pRenderList.OpenThemeHandle(hTheme, renderObj, &_iRenderSlotNum));
     return S_OK;
 }
 
@@ -408,8 +425,8 @@ struct LOADTHEMEFORTESTPARAMS
     unsigned __int16 wDesiredLangID;
     int iDesiredDpi;
     int rgConnectedDpis[7];
-    int fEmulateGlobal;
-    int fForceHighContrast;
+    bool fEmulateGlobal;
+    bool fForceHighContrast;
     CUxThemeFile *pLoadedUxThemeFile;
 };
 
@@ -423,14 +440,14 @@ THEMEEXAPI UxOpenThemeFile(
     wchar_t const* colorParam = L"NormalColor";
     wchar_t const* sizeParam = L"NormalSize";
 
-    LOADTHEMEFORTESTPARAMS tp = {};
-    tp.cbSize = sizeof(tp);
-    tp.pszThemeName = themeFileName;
-    tp.pszColorParam = colorParam;
-    tp.pszSizeParam = sizeParam;
-    auto LoaderLoadThemeForTesting = (HRESULT(__stdcall*)(LOADTHEMEFORTESTPARAMS*))GetProcAddress(
-        GetModuleHandleW(L"uxtheme"), (LPCSTR)127);
-    HRESULT hr = LoaderLoadThemeForTesting(&tp);
+    //LOADTHEMEFORTESTPARAMS tp = {};
+    //tp.cbSize = sizeof(tp);
+    //tp.pszThemeName = themeFileName;
+    //tp.pszColorParam = colorParam;
+    //tp.pszSizeParam = sizeParam;
+    //auto LoaderLoadThemeForTesting = (HRESULT(__stdcall*)(LOADTHEMEFORTESTPARAMS*))GetProcAddress(
+    //    GetModuleHandleW(L"uxtheme"), (LPCSTR)127);
+    //HRESULT hr = LoaderLoadThemeForTesting(&tp);
 
     CThemeLoader loader;
 
@@ -467,7 +484,7 @@ THEMEEXAPI UxCloseThemeFile(_In_ HTHEMEFILE hThemeFile)
         return E_HANDLE;
 
     auto& themeFile = *g_ThemeFileHandles[slot].ThemeFile;
-    auto nonSharableDataHdr = (NONSHARABLEDATAHDR*)themeFile._pbNonSharableData;
+    auto nonSharableDataHdr = themeFile.NonSharableDataHeader();
 
     g_pRenderList.FreeRenderObjects(nonSharableDataHdr->iLoadId);
     g_ThemeFileHandles[slot] = ThemeFileEntry();
@@ -510,7 +527,38 @@ THEMEEXAPI UxGetThemeAnimationProperty(
     _In_ DWORD cbSize,
     _Out_ DWORD* pcbSizeOut)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!pvProperty)
+        return E_POINTER;
+    if (!pcbSizeOut)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+
+    *pcbSizeOut = 0;
+    HRESULT hr = E_INVALIDARG;
+
+    for (auto const& prop : s_rgPropertyFieldTbl) {
+        if (prop.dwProperty != eProperty)
+            continue;
+
+        *pcbSizeOut = prop.cbSize;
+        if (prop.cbSize > cbSize)
+            return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
+
+        AnimationProperty const* animationProperty;
+        hr = renderObj->GetAnimationProperty(
+            iStoryboardId, iTargetId, &animationProperty);
+        if (FAILED(hr))
+            continue;
+
+        if (memcpy_s(pvProperty, cbSize, Advance(animationProperty, prop.dwOffset),
+                     prop.cbSize) != 0)
+            hr = E_FAIL;
+    }
+
+    return hr;
 }
 
 THEMEEXAPI UxGetThemeAnimationTransform(
@@ -523,7 +571,30 @@ THEMEEXAPI UxGetThemeAnimationTransform(
     _In_ DWORD cbSize,
     _Out_ DWORD* pcbSizeOut)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!pTransform)
+        return E_POINTER;
+    if (!pcbSizeOut)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+
+    *pcbSizeOut = 0;
+
+    TA_TRANSFORM const* transform;
+    ENSURE_HR(renderObj->GetAnimationTransform(iStoryboardId, iTargetId,
+                                               dwTransformIndex, &transform));
+
+    DWORD actualSize = CTransformSerializer::GetTransformActualSize(transform);
+    *pcbSizeOut = actualSize;
+    if (actualSize > cbSize)
+        return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
+
+    if (memcpy_s(pTransform, cbSize, transform, actualSize) != 0)
+        return E_FAIL;
+
+    return S_OK;
 }
 
 THEMEEXAPI UxGetThemeBackgroundContentRect(
@@ -589,7 +660,22 @@ THEMEEXAPI UxGetThemeBackgroundRegion(
     _In_ LPCRECT pRect,
     _Out_ HRGN* pRegion)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!pRect || !pRegion)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    CDrawBase* partObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+    ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
+
+    if (partObj->_eBgType == BT_BORDERFILL)
+        ENSURE_HR(static_cast<CBorderFill*>(partObj)->GetBackgroundRegion(
+            renderObj, pRect, pRegion));
+    else
+        ENSURE_HR(static_cast<CImageFile*>(partObj)->GetBackgroundRegion(
+            renderObj, hdc, iStateId, pRect, pRegion));
+    return S_OK;
 }
 
 THEMEEXAPI UxGetThemeBitmap(
@@ -623,7 +709,8 @@ THEMEEXAPI UxGetThemeBool(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetBool(iPartId, iStateId, iPropId, pfVal));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetBool(
+        iPartId, iStateId, iPropId, pfVal));
     return S_OK;
 }
 
@@ -641,7 +728,8 @@ THEMEEXAPI UxGetThemeColor(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetInt(iPartId, iStateId, iPropId, (int*)pColor));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetInt(
+        iPartId, iStateId, iPropId, reinterpret_cast<int*>(pColor)));
     return S_OK;
 }
 
@@ -669,7 +757,8 @@ THEMEEXAPI UxGetThemeEnumValue(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetEnumValue(iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetEnumValue(
+        iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -688,8 +777,8 @@ THEMEEXAPI UxGetThemeFilename(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetString(iPartId, iStateId, iPropId,
-                                           pszThemeFileName, cchMaxBuffChars));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetString(
+        iPartId, iStateId, iPropId, pszThemeFileName, cchMaxBuffChars));
     return S_OK;
 }
 
@@ -708,8 +797,8 @@ THEMEEXAPI UxGetThemeFont(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetFont(hdc, iPartId, iStateId, iPropId,
-                                         TRUE, pFont));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetFont(
+        hdc, iPartId, iStateId, iPropId, TRUE, pFont));
     return S_OK;
 }
 
@@ -727,7 +816,8 @@ THEMEEXAPI UxGetThemeInt(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetInt(iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetInt(
+        iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -745,7 +835,8 @@ THEMEEXAPI UxGetThemeIntList(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetIntList(iPartId, iStateId, iPropId, pIntList));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetIntList(
+        iPartId, iStateId, iPropId, pIntList));
     return S_OK;
 }
 
@@ -765,8 +856,8 @@ THEMEEXAPI UxGetThemeMargins(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetMargins(hdc, iPartId, iStateId, iPropId,
-                                            prc, pMargins));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetMargins(
+        hdc, iPartId, iStateId, iPropId, prc, pMargins));
     return S_OK;
 }
 
@@ -785,7 +876,8 @@ THEMEEXAPI UxGetThemeMetric(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetMetric(hdc, iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetMetric(
+        hdc, iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -830,7 +922,8 @@ THEMEEXAPI UxGetThemePosition(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetPosition(iPartId, iStateId, iPropId, pPoint));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetPosition(
+        iPartId, iStateId, iPropId, pPoint));
     return S_OK;
 }
 
@@ -848,7 +941,8 @@ THEMEEXAPI UxGetThemePropertyOrigin(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR(renderObj->GetPropertyOrigin(iPartId, iStateId, iPropId, pOrigin));
+    ENSURE_HR(renderObj->GetPropertyOrigin(iPartId, iStateId, iPropId,
+                                           pOrigin));
     return S_OK;
 }
 
@@ -866,7 +960,8 @@ THEMEEXAPI UxGetThemeRect(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetRect(iPartId, iStateId, iPropId, pRect));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetRect(
+        iPartId, iStateId, iPropId, pRect));
     return S_OK;
 }
 
@@ -886,8 +981,8 @@ THEMEEXAPI UxGetThemeStream(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetStream(iPartId, iStateId, iPropId,
-                                           ppvStream, pcbStream, hInst));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetStream(
+        iPartId, iStateId, iPropId, ppvStream, pcbStream, hInst));
     return S_OK;
 }
 
@@ -906,8 +1001,8 @@ THEMEEXAPI UxGetThemeString(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(0x80070490, renderObj->ExternalGetString(iPartId, iStateId, iPropId, pszBuff,
-                                           cchMaxBuffChars));
+    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetString(
+        iPartId, iStateId, iPropId, pszBuff, cchMaxBuffChars));
     return S_OK;
 }
 
@@ -916,7 +1011,22 @@ THEMEEXAPI_(BOOL) UxGetThemeSysBool(
     _In_opt_ HTHEME hTheme,
     _In_ int iBoolId)
 {
-    SetLastError((DWORD)E_NOTIMPL); //FIXME
+    CThemeApiHelper helper;
+    if (hTheme) {
+        CRenderObj* renderObj;
+        HRESULT hr = helper.OpenHandle(hThemeFile, hTheme, &renderObj);
+        if (FAILED(hr)) {
+            SetLastError(hr);
+            return 0;
+        }
+    }
+
+    SetLastError(0);
+
+    BOOL value = 0;
+    if (iBoolId == TMT_FLATMENUS && SystemParametersInfoW(SPI_GETFLATMENU, 0, &value, 0))
+        return value;
+
     return FALSE;
 }
 
@@ -925,8 +1035,18 @@ THEMEEXAPI_(COLORREF) UxGetThemeSysColor(
     _In_opt_ HTHEME hTheme,
     _In_ int iColorId)
 {
-    SetLastError((DWORD)E_NOTIMPL); //FIXME
-    return 0;
+    CThemeApiHelper helper;
+    if (hTheme) {
+        CRenderObj* renderObj;
+        HRESULT hr = helper.OpenHandle(hThemeFile, hTheme, &renderObj);
+        if (FAILED(hr)) {
+            SetLastError(hr);
+            return 0;
+        }
+    }
+
+    SetLastError(0);
+    return GetSysColor(iColorId);
 }
 
 THEMEEXAPI_(HBRUSH) UxGetThemeSysColorBrush(
@@ -934,8 +1054,18 @@ THEMEEXAPI_(HBRUSH) UxGetThemeSysColorBrush(
     _In_opt_ HTHEME hTheme,
     _In_ int iColorId)
 {
-    SetLastError((DWORD)E_NOTIMPL); //FIXME
-    return nullptr;
+    CThemeApiHelper helper;
+    if (hTheme) {
+        CRenderObj* renderObj;
+        HRESULT hr = helper.OpenHandle(hThemeFile, hTheme, &renderObj);
+        if (FAILED(hr)) {
+            SetLastError(hr);
+            return 0;
+        }
+    }
+
+    SetLastError(0);
+    return GetSysColorBrush(iColorId);
 }
 
 THEMEEXAPI UxGetThemeSysFont(
@@ -1004,7 +1134,20 @@ THEMEEXAPI UxGetThemeSysInt(
     _In_ int iIntId,
     _Out_ int* piValue)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!piValue)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+
+    switch (iIntId) {
+    case TMT_MINCOLORDEPTH:
+        *piValue = renderObj->_ptm->iInts[0];
+        return S_OK;
+    default:
+        return E_INVALIDARG;
+    }
 }
 
 THEMEEXAPI_(int) UxGetThemeSysSize(
@@ -1012,8 +1155,18 @@ THEMEEXAPI_(int) UxGetThemeSysSize(
     _In_opt_ HTHEME hTheme,
     _In_ int iSizeId)
 {
-    SetLastError((DWORD)E_NOTIMPL); //FIXME
-    return 0;
+    CThemeApiHelper helper;
+    if (hTheme) {
+        CRenderObj* renderObj;
+        HRESULT hr = helper.OpenHandle(hThemeFile, hTheme, &renderObj);
+        if (FAILED(hr)) {
+            SetLastError(hr);
+            return 0;
+        }
+    }
+
+    SetLastError(0);
+    return GetSystemMetrics(iSizeId);
 }
 
 THEMEEXAPI UxGetThemeSysString(
@@ -1023,7 +1176,22 @@ THEMEEXAPI UxGetThemeSysString(
     _Out_writes_(cchMaxStringChars) LPWSTR pszStringBuff,
     _In_ int cchMaxStringChars)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!pszStringBuff)
+        return E_POINTER;
+    if (cchMaxStringChars == 0)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+
+    if (iStringId < TMT_FIRSTSTRING || iStringId > TMT_LASTSTRING)
+        return E_INVALIDARG;
+
+    auto p = ThemeString(renderObj->_pThemeFile,
+                         renderObj->_ptm->iStringOffsets[iStringId - TMT_FIRSTSTRING]);
+    ENSURE_HR(SafeStringCchCopyW(pszStringBuff, cchMaxStringChars, p));
+    return S_OK;
 }
 
 THEMEEXAPI UxGetThemeTextExtent(
@@ -1082,7 +1250,26 @@ THEMEEXAPI UxGetThemeTimingFunction(
     _In_ DWORD cbSize,
     _Out_ DWORD* pcbSizeOut)
 {
-    return TRACE_HR(E_NOTIMPL); //FIXME
+    if (!pTimingFunction)
+        return E_POINTER;
+
+    CThemeApiHelper helper;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+
+    TA_TIMINGFUNCTION const* timingFunction;
+    ENSURE_HR(renderObj->GetTimingFunction(iTimingFunctionId, &timingFunction));
+
+    DWORD size = 0;
+    if (timingFunction->eTimingFunctionType == TTFT_CUBIC_BEZIER)
+        size = sizeof(TA_CUBIC_BEZIER);
+
+    *pcbSizeOut = cbSize;
+    if (size > cbSize)
+        return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
+
+    memcpy_s(pTimingFunction, cbSize, timingFunction, size);
+    return S_OK;
 }
 
 THEMEEXAPI UxGetThemeTransitionDuration(
@@ -1112,9 +1299,9 @@ THEMEEXAPI_(BOOL) UxIsThemePartDefined(
     _In_ int iStateId)
 {
     CThemeApiHelper helper;
-    CRenderObj* pRender;
-    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &pRender));
-    return pRender->IsPartDefined(iPartId, iStateId) ? TRUE : FALSE;
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
+    return renderObj->IsPartDefined(iPartId, iStateId) ? TRUE : FALSE;
 }
 
 THEMEEXAPI_(BOOL) UxIsThemeBackgroundPartiallyTransparent(
@@ -1192,11 +1379,11 @@ THEMEEXAPI UxDrawThemeEdge(
     _Out_opt_ LPRECT pContentRect)
 {
     CThemeApiHelper helper;
-    CRenderObj* pRender;
-    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &pRender));
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
 
     CTextDraw* partObj;
-    ENSURE_HR(pRender->GetPartObject(iPartId, iStateId, &partObj));
+    ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
 
     ENSURE_HR(_DrawEdge(
         hdc,
@@ -1341,11 +1528,11 @@ THEMEEXAPI UxDrawThemeBackground(
         return E_POINTER;
 
     CThemeApiHelper helper;
-    CRenderObj* pRender;
-    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &pRender));
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
 
     CDrawBase* partObj;
-    ENSURE_HR(pRender->GetPartObject(iPartId, iStateId, &partObj));
+    ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
 
     DTBGOPTS options = {};
     DTBGOPTS* pOptions = nullptr;
@@ -1357,10 +1544,10 @@ THEMEEXAPI UxDrawThemeBackground(
 
     if (partObj->_eBgType == BT_BORDERFILL)
         return static_cast<CBorderFill*>(partObj)->DrawBackground(
-            pRender, hdc, pRect, pOptions);
+            renderObj, hdc, pRect, pOptions);
 
     return static_cast<CImageFile*>(partObj)->DrawBackground(
-        pRender, hdc, iStateId, pRect, pOptions);
+        renderObj, hdc, iStateId, pRect, pOptions);
 }
 
 THEMEEXAPI UxDrawThemeBackgroundEx(
@@ -1373,8 +1560,8 @@ THEMEEXAPI UxDrawThemeBackgroundEx(
     _In_ DTBGOPTS const* pOptions)
 {
     CThemeApiHelper helper;
-    CRenderObj* pRender;
-    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &pRender));
+    CRenderObj* renderObj;
+    ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
 
     if (!hdc)
         return E_HANDLE;
@@ -1384,14 +1571,14 @@ THEMEEXAPI UxDrawThemeBackgroundEx(
         return E_FAIL;
 
     CDrawBase* partObj;
-    ENSURE_HR(pRender->GetPartObject(iPartId, iStateId, &partObj));
+    ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
 
     if (partObj->_eBgType == 1)
         return static_cast<CBorderFill*>(partObj)->DrawBackground(
-            pRender, hdc, pRect, pOptions);
+            renderObj, hdc, pRect, pOptions);
 
     return static_cast<CImageFile*>(partObj)->DrawBackground(
-        pRender, hdc, iStateId, pRect, pOptions);
+        renderObj, hdc, iStateId, pRect, pOptions);
 }
 
 THEMEEXAPI UxDrawThemeParentBackground(
@@ -1410,165 +1597,111 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
     _In_ DWORD dwFlags,
     _In_opt_ RECT const* prc)
 {
-    HWND hwndParent;
-    int v9;
-    HRGN v10;
-    HRGN v11;
-    int v12;
-    HWND v13;
-    char v14;
-    HRESULT v15;
-    DWORD v16;
-    UINT v18;
-    HGDIOBJ v19;
-    char v20;
-    HGDIOBJ v21;
-    HGDIOBJ v22;
-    UINT v23;
-    int v24;
-    int v25;
-    DWORD v26;
-    int v30;
-    char top;
-    int topa;
-    UINT flags;
-    int flagsa;
-    DWORD v35;
-    POINT point;
-    HGDIOBJ h;
-    HGDIOBJ v38;
-    RECT Rect;
-    RECT rect;
-    RECT v41;
-
     if (!IsWindow(hwnd) || !hdc)
         return E_HANDLE;
 
-    v30 = 0;
-    hwndParent = GetParent(hwnd);
+    HWND hwndParent = GetParent(hwnd);
     if ((uintptr_t)GetPropW(hwndParent, (LPCWSTR)UnkProp_A915) & 1)
-        return 1;
+        return S_FALSE;
 
-    v9 = 0;
-    v10 = CreateRectRgn(0, 0, 1, 1);
-    v11 = v10;
-    if (v10 && (v12 = GetClipRgn(hdc, v10), v12 != -1))
-    {
-        if (!v12)
-        {
-            DeleteObject(v11);
-            v11 = 0i64;
+    SaveClipRegion csrPrevClip;
+
+    HRESULT hr = csrPrevClip.Save(hdc);
+    if (SUCCEEDED(hr) || (dwFlags == 0 && !prc)) {
+        if (prc)
+            IntersectClipRect(hdc, prc->left, prc->top, prc->right, prc->bottom);
+
+        HWND v13;
+        RECT rects[2];
+        if (dwFlags & DTPB_WINDOWDC) {
+            GetWindowRect(hwnd, &rects[0]);
+            v13 = nullptr;
+        } else {
+            GetClientRect(hwnd, &rects[0]);
+            v13 = hwnd;
         }
-        v9 = 1;
-        v35 = 0;
-    } else
-    {
-        v16 = MakeErrorLast();
-        v35 = v16;
-        if ((v16 & 0x80000000) != 0)
-        {
-            if (dwFlags || prc)
-            {
-                v15 = v16;
-            LABEL_19:
-                if ((v16 & 0x80000000) == 0 && v9)
-                    SelectClipRgn(hdc, v11);
-                if (v11)
-                    DeleteObject(v11);
-                return v15;
-            }
-        LABEL_11:
-            if (dwFlags & 1)
-            {
-                GetWindowRect(hwnd, &Rect);
-                v13 = 0i64;
-            } else
-            {
-                GetClientRect(hwnd, &Rect);
-                v13 = hwnd;
-            }
-            MapWindowPoints(v13, hwndParent, (LPPOINT)&Rect, 2u);
-            SetPropW(hwndParent, (LPCWSTR)UnkProp_A915, (HANDLE)1);
-            flags = 0;
-            if (dwFlags & 4)
-                flags = SetBoundsRect(hdc, 0i64, 5u);
-            GetViewportOrgEx(hdc, &point);
-            SetViewportOrgEx(hdc, point.x - Rect.left, point.y - Rect.top, &point);
-            SendMessageW(hwndParent, WM_ERASEBKGND, (WPARAM)hdc, 0i64);
-            SendMessageW(hwndParent, WM_PRINTCLIENT, (WPARAM)hdc, 4i64);
-            top = 1;
-            if (dwFlags & 4) {
-                UINT v28 = GetBoundsRect(hdc, &rect, 0);
-                top = (v28 & (DCB_ACCUMULATE | DCB_RESET)) != DCB_RESET;
-                SetBoundsRect(hdc, 0i64, flags);
-            }
-            SetViewportOrgEx(hdc, point.x, point.y, 0i64);
-            v14 = (uintptr_t)GetPropW(hwndParent, (LPCWSTR)UnkProp_A915);
-            if (!(v14 & 2))
-                goto LABEL_17;
-            v15 = 1;
-            v30 = 1;
-            if ((v14 & 4) == 0 && (dwFlags & 4) != 0 && top)
-            {
-                v15 = 0;
-                goto LABEL_18;
-            }
-            if (!(dwFlags & 2))
-            {
-            LABEL_18:
-                RemovePropW(hwndParent, (LPCWSTR)UnkProp_A915);
-                v16 = v35;
-                goto LABEL_19;
-            }
-            v18 = SetBoundsRect(hdc, 0i64, 5u);
-            h = (HGDIOBJ)SendMessageW(hwndParent, WM_CTLCOLORSTATIC, (WPARAM)hdc, (LPARAM)hwnd);
-            v19 = h;
-            v20 = 1;
-            if ((GetBoundsRect(hdc, &rect, 0) & 3) == 1)
-                v20 = 0;
-            SetBoundsRect(hdc, 0i64, v18);
-            if (!v19)
-            {
-                v15 = 1;
-                if (v20)
-                    v15 = 0;
-                goto LABEL_18;
-            }
-            if (!prc)
-            {
-                if (!GetClipBox(hdc, &v41))
-                {
-                LABEL_17:
-                    v15 = v30;
-                    goto LABEL_18;
+
+        MapWindowPoints(v13, hwndParent, (LPPOINT)&rects, 2u);
+        SetPropW(hwndParent, (LPCWSTR)UnkProp_A915, (HANDLE)1);
+
+        UINT flags = 0;
+        if (dwFlags & DTPB_USEERASEBKGND)
+            flags = SetBoundsRect(hdc, nullptr, DCB_RESET | DCB_ENABLE);
+
+        POINT point;
+        GetViewportOrgEx(hdc, &point);
+        SetViewportOrgEx(hdc, point.x - rects[0].left, point.y - rects[0].top, &point);
+        SendMessageW(hwndParent, WM_ERASEBKGND, (WPARAM)hdc, 0);
+        SendMessageW(hwndParent, WM_PRINTCLIENT, (WPARAM)hdc, PRF_CLIENT);
+
+        unsigned bounds = DCB_RESET;
+        if (dwFlags & DTPB_USEERASEBKGND) {
+            bounds = (GetBoundsRect(hdc, &rects[1], 0) & (DCB_ACCUMULATE | DCB_RESET)) != DCB_RESET;
+            SetBoundsRect(hdc, nullptr, flags);
+        }
+
+        SetViewportOrgEx(hdc, point.x, point.y, nullptr);
+
+        char prop = (uintptr_t)GetPropW(hwndParent, (LPCWSTR)UnkProp_A915);
+        if (prop & 2) {
+            if (!(prop & 4) && dwFlags & DTPB_USEERASEBKGND && bounds != 0) {
+                hr = 0;
+            } else if (dwFlags & DTPB_USECTLCOLORSTATIC) {
+                UINT v18 = SetBoundsRect(hdc, nullptr, DCB_RESET | DCB_ENABLE);
+                HBRUSH hbrBack = (HBRUSH)SendMessageW(
+                    hwndParent, WM_CTLCOLORSTATIC, (WPARAM)hdc, (LPARAM)hwnd);
+
+                char v20 = 1;
+                if ((GetBoundsRect(hdc, &rects[1], 0) & (DCB_RESET | DCB_ACCUMULATE)) == DCB_RESET)
+                    v20 = 0;
+                SetBoundsRect(hdc, nullptr, v18);
+
+                if (hbrBack) {
+                    RECT rcClip;
+                    if (!prc) {
+                        if (!GetClipBox(hdc, &rcClip))
+                            hr = S_FALSE;
+                        else
+                            prc = &rcClip;
+                    }
+
+                    if (prc) {
+                        HGDIOBJ pen = GetStockObject(NULL_PEN);
+                        HGDIOBJ prevPen = SelectObject(hdc, pen);
+                        HGDIOBJ prevBrush = SelectObject(hdc, hbrBack);
+                        UINT prevState = SetBoundsRect(hdc, nullptr, DCB_RESET | DCB_ENABLE);
+
+                        LONG left = prc->left;
+                        LONG right = prc->right + 1;
+                        DWORD layout = GetLayout(hdc);
+                        if (layout != -1 && layout & LAYOUT_RTL) {
+                            --left;
+                            --right;
+                        }
+
+                        Rectangle(hdc, left, prc->top, right, prc->bottom + 1);
+                        if ((GetBoundsRect(hdc, &rects[1], 0) & (DCB_RESET | DCB_ACCUMULATE)) == DCB_RESET)
+                            hr = S_FALSE;
+                        else
+                            hr = S_OK;
+
+                        SetBoundsRect(hdc, nullptr, prevState);
+                        SelectObject(hdc, prevBrush);
+                        SelectObject(hdc, prevPen);
+                    }
+                } else {
+                    hr = v20 ? S_OK : S_FALSE;
                 }
-                prc = &v41;
+            } else {
+                hr = 1;
             }
-            v21 = GetStockObject(8);
-            v22 = SelectObject(hdc, v21);
-            v38 = SelectObject(hdc, h);
-            v23 = SetBoundsRect(hdc, 0i64, 5u);
-            v24 = prc->left;
-            v25 = prc->right + 1;
-            flagsa = prc->bottom + 1;
-            topa = prc->top;
-            v26 = GetLayout(hdc);
-            if (v26 != -1 && v26 & 1)
-            {
-                --v24;
-                --v25;
-            }
-            Rectangle(hdc, v24, topa, v25, flagsa);
-            v15 = (GetBoundsRect(hdc, &rect, 0) & 3) == 1;
-            SetBoundsRect(hdc, 0i64, (UINT)v23);
-            SelectObject(hdc, v38);
-            SelectObject(hdc, v22);
-            goto LABEL_18;
         }
+
+        RemovePropW(hwndParent, (LPCWSTR)UnkProp_A915);
     }
-    if (prc)
-        IntersectClipRect(hdc, prc->left, prc->top, prc->right, prc->bottom);
-    goto LABEL_11;
+
+    csrPrevClip.Restore(hdc);
+    return hr;
 }
 
 THEMEEXAPI UxDrawThemeText(

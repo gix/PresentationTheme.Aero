@@ -5,7 +5,7 @@
 
 namespace uxtheme
 {
-struct CUxThemeFile;
+class CUxThemeFile;
 
 void ClearDebugInfo();
 

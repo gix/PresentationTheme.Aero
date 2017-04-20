@@ -7,7 +7,7 @@
 
 namespace uxtheme
 {
-struct CRenderObj;
+class CRenderObj;
 
 struct LOADTHEMEMETRICS : THEMEMETRICS
 {
@@ -47,7 +47,7 @@ public:
     HRESULT EmitAndCopyBlock(MIXEDPTRS* u, void const* pSrc, unsigned dwLen);
     HRESULT PackDrawObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId);
     BOOL KeyTextPropertyFound(int iStateDataOffset);
-    HRESULT PackTextObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, int fGlobals);
+    HRESULT PackTextObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, bool fGlobals);
     HRESULT PackTextObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT PackMetrics();
     HRESULT CopyDummyNonSharableDataToLive();
@@ -72,8 +72,8 @@ public:
     HRESULT CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSLIVE* pacl);
     int GetPartOffset(CRenderObj* pRender, int iPartId);
     BOOL KeyDrawPropertyFound(int iStateDataOffset);
-    HRESULT PackDrawObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, int fGlobals);
-    HRESULT CopyPartGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, int iPartId, int* piPartJumpTable, int iPartZeroIndex, int iBaseClassIndex, int fGlobalsGroup);
+    HRESULT PackDrawObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, bool fGlobals);
+    HRESULT CopyPartGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, int iPartId, int* piPartJumpTable, int iPartZeroIndex, int iBaseClassIndex, bool fGlobalsGroup);
 
     HRESULT AddIndexInternal(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen);
     HRESULT GetFontTableIndex(LOGFONTW const* pFont, unsigned short* pIndex);

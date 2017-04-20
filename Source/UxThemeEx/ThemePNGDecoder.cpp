@@ -29,7 +29,7 @@ HRESULT CThemePNGDecoder::_Init()
     return S_OK;
 }
 
-HRESULT CThemePNGDecoder::ConvertToDIB(char const* lpBits, unsigned cbDIB, int* pf32bpp)
+HRESULT CThemePNGDecoder::ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, int* pf32bpp)
 {
     HRESULT hr;
     int v24;

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "Utils.h"
+#include <array>
 #include <string>
 #include <vector>
 #include <windows.h>
@@ -33,21 +35,21 @@ struct VSRECORD
 
 struct HCIMAGEPROPERTIES
 {
-    int lHCBorderColor;
-    int lHCBackgroundColor;
+    LONG lHCBorderColor;
+    LONG lHCBackgroundColor;
 };
 
 struct IMAGEPROPERTIES
 {
-    unsigned dwBorderColor;
-    unsigned dwBackgroundColor;
+    DWORD dwBorderColor;
+    DWORD dwBackgroundColor;
 };
 
 struct TMBITMAPHEADER
 {
-    unsigned dwSize;
+    DWORD dwSize;
     int iBitmapIndex;
-    int fPartiallyTransparent;
+    BOOL fPartiallyTransparent;
 };
 
 struct BITMAPHDR
@@ -67,8 +69,58 @@ struct IParserCallBack
     virtual int GetScreenPpi() = 0;
 };
 
-struct CVSUnpack
+class CVSUnpack
 {
+public:
+    static bool _DelayRecord(VSRECORD* pRec);
+
+    HRESULT Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
+                       BOOL fIsLiteVisualStyle);
+
+    HRESULT GetRootMap(void** ppvRMap, int* pcbRMap);
+    HRESULT GetVariantMap(void** ppvVMap, int* pcbVMap);
+    HRESULT GetClassData(wchar_t const* pszColorVariant,
+                         wchar_t const* pszSizeVariant, void** pvMap,
+                         int* pcbMap);
+
+    HRESULT LoadRootMap(IParserCallBack* pfnCB);
+    HRESULT LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB);
+    HRESULT LoadBaseClassDataMap(IParserCallBack* pfnCB);
+    HRESULT LoadAnimationDataMap(IParserCallBack* pfnCB);
+
+private:
+    HRESULT _FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart,
+                          int iState, int lSymbolVal, VSRECORD** ppRec);
+    HRESULT _GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart,
+                              int iState, int lSymbolVal, void* pvValue,
+                              int* pcbValue);
+    HRESULT _CreateImageFromProperties(IMAGEPROPERTIES const* pImageProperties,
+                                       int iImageCount,
+                                       MARGINS const* pSizingMargins,
+                                       MARGINS const* pTransparentMargins,
+                                       BYTE** ppbNewBitmap, int* pcbNewBitmap);
+    HRESULT _GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
+                                     HCIMAGEPROPERTIES* pHCImageProperties,
+                                     int iImageCount);
+    HRESULT _EnsureBufferSize(unsigned cbBytes);
+
+    HRESULT _ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData, bool* pfIsColor);
+    HRESULT _ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData, bool* pfIsMargins);
+    HRESULT _ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData);
+
+    HRESULT _AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst, VSRECORD* pRec);
+    HRESULT _AddScaledBackgroundDataRecord(IParserCallBack* pfnCB);
+
+    HRESULT _InitializePlateauPpiMapping(VSRECORD* pRec);
+    HRESULT _SaveRecord(VSRECORD* pRec);
+    HRESULT _FlushDelayedRecords(IParserCallBack* pfnCB);
+    HRESULT _SavePlateauRecord(VSRECORD* pRec);
+    HRESULT _FlushDelayedPlateauRecords(IParserCallBack* pfnCB);
+    HRESULT _FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal);
+
+    bool _IsTrueSizeImage(VSRECORD* pRec);
+    int _FindClass(wchar_t const* pszClass);
+
     HMODULE _hInst = nullptr;
     int _nVersion = 0;
     void* _pvRootMap = nullptr;
@@ -79,56 +131,23 @@ struct CVSUnpack
     int _cbClassData = 0;
     std::vector<std::wstring> _rgClassNames;
     HANDLE _hSymbols = nullptr;
-    BOOL _fGlobal = TRUE;
-    BYTE* _rgfPartiallyTransparent = nullptr;
-    int* _rgBitmapIndices = nullptr;
+    bool _fGlobal = true;
+    malloc_ptr<BYTE[]> _rgfPartiallyTransparent;
+    malloc_ptr<int[]> _rgBitmapIndices;
     unsigned _cBitmaps = 0;
     unsigned _cbBuffer = 0;
-    BYTE* _pBuffer = nullptr;
-    BOOL _fIsLiteVisualStyle = FALSE;
-    VSRECORD* _rgImageDpiRec[7] = {};
-    VSRECORD* _rgImageRec[7] = {};
-    VSRECORD* _rgComposedImageRec[7] = {};
-    VSRECORD* _rgImagePRec[7] = {};
-    VSRECORD* _rgGlyphImagePRec[7] = {};
-    VSRECORD* _rgContentMarginsPRec[7] = {};
-    VSRECORD* _rgSizingMarginsPRec[7] = {};
-    bool _rgPlateauRec[7] = {};
-    int _rgPlateauPpiMapping[7] = {0};
+    malloc_ptr<BYTE[]> _pBuffer;
+    bool _fIsLiteVisualStyle = false;
+    std::array<VSRECORD*, 7> _rgImageDpiRec = {};
+    std::array<VSRECORD*, 7> _rgImageRec = {};
+    std::array<VSRECORD*, 7> _rgComposedImageRec = {};
+    std::array<VSRECORD*, 7> _rgImagePRec = {};
+    std::array<VSRECORD*, 7> _rgGlyphImagePRec = {};
+    std::array<VSRECORD*, 7> _rgContentMarginsPRec = {};
+    std::array<VSRECORD*, 7> _rgSizingMarginsPRec = {};
+    std::array<bool, 7> _rgPlateauRec = {};
+    std::array<int, 7> _rgPlateauPpiMapping = {};
     CThemePNGDecoder* _pDecoder = nullptr;
-
-    static bool _DelayRecord(VSRECORD* pRec);
-
-    HRESULT Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
-                       BOOL fIsLiteVisualStyle);
-
-    HRESULT GetRootMap(void** ppvRMap, int* pcbRMap);
-    HRESULT GetVariantMap(void** ppvVMap, int* pcbVMap);
-    HRESULT GetClassData(wchar_t const* pszColorVariant, wchar_t const* pszSizeVariant, void** pvMap, int* pcbMap);
-
-    HRESULT LoadRootMap(IParserCallBack* pfnCB);
-    HRESULT LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB);
-    HRESULT LoadBaseClassDataMap(IParserCallBack* pfnCB);
-
-    HRESULT _FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart, int iState, int lSymbolVal, VSRECORD** ppRec);
-    HRESULT _GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart, int iState, int lSymbolVal, void* pvValue, int* pcbValue);
-    HRESULT _GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties, HCIMAGEPROPERTIES* pHCImageProperties, int iImageCount);
-    HRESULT _CreateImageFromProperties(IMAGEPROPERTIES* pImageProperties, int iImageCount, MARGINS* pSizingMargins, MARGINS* pTransparentMargins, char** ppbNewBitmap, int* pcbNewBitmap);
-    HRESULT _EnsureBufferSize(unsigned cbBytes);
-    HRESULT _ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsColor);
-    HRESULT _ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData, bool* pfIsMargins);
-    HRESULT _ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, char* pbData, int cbData);
-    HRESULT _AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst, VSRECORD* pRec);
-    HRESULT _InitializePlateauPpiMapping(VSRECORD* pRec);
-    HRESULT _FlushDelayedRecords(IParserCallBack* pfnCB);
-    HRESULT _FlushDelayedPlateauRecords(IParserCallBack* pfnCB);
-    HRESULT _AddScaledBackgroundDataRecord(IParserCallBack* pfnCB);
-    HRESULT _SavePlateauRecord(VSRECORD* pRec);
-    HRESULT _FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal);
-    HRESULT _SaveRecord(VSRECORD* pRec);
-    bool _IsTrueSizeImage(VSRECORD* pRec);
-    int _FindClass(wchar_t const* pszClass);
-    HRESULT LoadAnimationDataMap(IParserCallBack* pfnCB);
 };
 
 } // namespace uxtheme

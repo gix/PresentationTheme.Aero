@@ -1,18 +1,19 @@
 ﻿#pragma once
 #include "DrawBase.h"
 #include "Primitives.h"
+#include "VSUnpack.h"
 #include <windows.h>
 #include <uxtheme.h>
 #include <vssym32.h>
-#include "VSUnpack.h"
 
 namespace uxtheme
 {
 
-struct CRenderObj;
+class CRenderObj;
 
-struct CImageFile : CDrawBase
+class CImageFile : public CDrawBase
 {
+public:
     static BOOL KeyProperty(int iPropId);
 
     HRESULT SetImageInfo(DIBINFO* pdi, CRenderObj const* pRender, int iPartId, int iStateId);
@@ -22,7 +23,7 @@ struct CImageFile : CDrawBase
     HRESULT GetBackgroundContentRect(CRenderObj* pRender, HDC hdc,
                                      RECT const* pBoundingRect, RECT* pContentRect);
     DIBINFO* SelectCorrectImageFile(CRenderObj* pRender, HDC hdc, RECT const* prc,
-                                    int fForGlyph, TRUESTRETCHINFO* ptsInfo);
+                                    bool fForGlyph, TRUESTRETCHINFO* ptsInfo);
     HRESULT DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc, DTBGOPTS const* pOptions);
     HRESULT DrawBackground(CRenderObj* pRender, HDC hdc, int iStateId,
                            RECT const* pRect, DTBGOPTS const* pOptions);
@@ -30,10 +31,10 @@ struct CImageFile : CDrawBase
                           RECT const* pRect, DTBGOPTS const* pOptions,
                           TRUESTRETCHINFO* ptsInfo);
     HRESULT DrawBackgroundDS(DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader,
-                             int fStock, CRenderObj* pRender, HDC hdc,
-                             int iStateId, RECT* pRect, int fForceStretch,
+                             bool fStock, CRenderObj* pRender, HDC hdc,
+                             int iStateId, RECT* pRect, bool fForceStretch,
                              MARGINS* pmarDest, float xMarginFactor,
-                             float yMarginFactor, DTBGOPTS const* pOptions);
+                             float yMarginFactor, DTBGOPTS const* pOptions) const;
     HRESULT GetBackgroundRegion(CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect, HRGN* pRegion);
     HRESULT HitTestBackground(CRenderObj* pRender, HDC hdc, int iStateId,
                               DWORD dwHTFlags, RECT const* pRect, HRGN hrgn,
@@ -80,8 +81,9 @@ struct CImageFile : CDrawBase
     int _iSourceStateId;
 };
 
-struct CMaxImageFile : CImageFile
+class CMaxImageFile : public CImageFile
 {
+public:
     CMaxImageFile()
     {
         memset(MultiDibs, 0, sizeof(MultiDibs));
@@ -94,6 +96,7 @@ struct CMaxImageFile : CImageFile
         return nullptr;
     }
 
+private:
     DIBINFO MultiDibs[7];
 };
 
