@@ -85,7 +85,7 @@ struct VSCOLORPROPENTRY
     int lSymbolVal;
 };
 
-static VSCOLORPROPENTRY vscolorprops[13] = {
+static VSCOLORPROPENTRY const vscolorprops[13] = {
     {TMT_HCBORDERCOLOR, TMT_BORDERCOLOR},
     {TMT_HCFILLCOLOR, TMT_FILLCOLOR},
     {TMT_HCTEXTCOLOR, TMT_TEXTCOLOR},
@@ -97,7 +97,7 @@ static VSCOLORPROPENTRY vscolorprops[13] = {
     {TMT_HCHEADING1TEXTCOLOR, TMT_HEADING1TEXTCOLOR},
     {TMT_HCHEADING2TEXTCOLOR, TMT_HEADING2TEXTCOLOR},
     {TMT_HCBODYTEXTCOLOR, TMT_BODYTEXTCOLOR},
-    {TMT_5121, TMT_5106},
+    {TMT_HCGLYPHCOLOR, TMT_5106},
     {TMT_HCHOTTRACKING, TMT_HOTTRACKING},
 };
 
@@ -1568,11 +1568,13 @@ HRESULT CVSUnpack::LoadClassDataMap(
             if (_DelayRecord(pRec)) {
                 hr = _SaveRecord(pRec);
                 hasDelayedRecords = true;
-            } else if (pRec->lSymbolVal >= TMT_5131 && pRec->lSymbolVal <= TMT_5142) {
+            } else if (pRec->lSymbolVal >= TMT_FIRSTPLATEAURECORD &&
+                       pRec->lSymbolVal <= TMT_LASTPLATEAURECORD) {
                 hr = _SavePlateauRecord(pRec);
                 hasPlateauRecords = true;
-            } else if (pRec->iClass == globalsElementId
-                       && pRec->lSymbolVal >= TMT_5128 && pRec->lSymbolVal <= TMT_5130)
+            } else if (pRec->iClass == globalsElementId &&
+                       pRec->lSymbolVal >= TMT_FIRSTPPIPLATEAU &&
+                       pRec->lSymbolVal <= TMT_LASTPPIPLATEAU)
                 hr = _InitializePlateauPpiMapping(pRec);
             else
                 hr = _AddVSDataRecord(pfnCB, _hInst, pRec);
@@ -1943,13 +1945,12 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
     BYTE* v97 = 0;
 
     short lDibSymbolVal;
-    bool fSimplifiedImage;
+    bool fSimplifiedImage = false;
     bool fComposedImage = false;
 
     switch (pRec->lSymbolVal) {
     case TMT_IMAGEFILE:
         lDibSymbolVal = TMT_DIBDATA;
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
@@ -1962,19 +1963,17 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
     case TMT_IMAGEFILE6:
     case TMT_IMAGEFILE7:
         lDibSymbolVal = Map_IMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
 
     case TMT_GLYPHIMAGEFILE:
         lDibSymbolVal = TMT_GLYPHDIBDATA;
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
 
-    case TMT_5100:
+    case TMT_SIMPLIFIEDIMAGE:
     {
         if (IsHighContrastMode())
             return S_OK;
@@ -1986,10 +1985,10 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         break;
     }
 
-    case TMT_5101:
+    case TMT_HCSIMPLIFIEDIMAGE:
     {
         if (!IsHighContrastMode())
-            return 0;
+            return S_OK;
 
         lDibSymbolVal = TMT_DIBDATA;
         fSimplifiedImage = true;
@@ -2002,13 +2001,12 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         break;
     }
 
-    case TMT_5102:
+    case TMT_HCGLYPHBGCOLOR:
         return IsHighContrastMode() != 0;
 
     case TMT_COMPOSEDIMAGEFILE:
         lDibSymbolVal = TMT_DIBDATA;
         fComposedImage = true;
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
@@ -2016,7 +2014,6 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
     case TMT_COMPOSEDGLYPHIMAGEFILE:
         lDibSymbolVal = TMT_GLYPHDIBDATA;
         fComposedImage = true;
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
@@ -2030,7 +2027,6 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
     case TMT_COMPOSEDIMAGEFILE7:
         lDibSymbolVal = Map_COMPOSEDIMAGEFILE_To_DIBDATA(pRec->lSymbolVal);
         fComposedImage = true;
-        fSimplifiedImage = false;
         if (cbData < 16)
             return E_INVALIDARG;
         break;
@@ -2198,7 +2194,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
 
                     if (SUCCEEDED(_GetPropertyValue(
                         _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                        pRec->iState, TMT_5121, &hcGlyphColor, &valueSize))) {
+                        pRec->iState, TMT_HCGLYPHCOLOR, &hcGlyphColor, &valueSize))) {
                         hasGlyphColor = true;
                         glyphColor = static_cast<unsigned>(MapEnumToSysColor(hcGlyphColor));
                         iRes = hcGlyphColor;
@@ -2206,7 +2202,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
 
                     if (SUCCEEDED(_GetPropertyValue(
                         _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                        pRec->iState, TMT_5102, &hcGlyphBGColor, &valueSize))) {
+                        pRec->iState, TMT_HCGLYPHBGCOLOR, &hcGlyphBGColor, &valueSize))) {
                         hasGlyphBGColor = true;
                         glyphBGColor = static_cast<unsigned>(MapEnumToSysColor(hcGlyphBGColor));
                         pvBuf = glyphBGColor;
@@ -2378,75 +2374,77 @@ HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
 
 HRESULT CVSUnpack::_InitializePlateauPpiMapping(VSRECORD* pRec)
 {
-    int value;
-    int size = 4;
-    ENSURE_HR(LoadVSRecordData(_hInst, pRec, &value, &size));
-    _rgPlateauPpiMapping[pRec->lSymbolVal - 5128] = value;
+    int ppiValue;
+    int size = sizeof(ppiValue);
+    ENSURE_HR(LoadVSRecordData(_hInst, pRec, &ppiValue, &size));
+    _rgPlateauPpiMapping[pRec->lSymbolVal - TMT_PPIPLATEAU1] = ppiValue;
+    return S_OK;
+}
+
+HRESULT CVSUnpack::_ClearDpiRecords()
+{
+    fill_zero(_rgImageDpiRec);
+    fill_zero(_rgImageRec);
+    fill_zero(_rgComposedImageRec);
     return S_OK;
 }
 
 HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
 {
-    int const plateauCount = 7;
-    static_assert(sizeof(_rgImageDpiRec) == plateauCount * sizeof(_rgImageDpiRec[0]),
-                  "Size mismatch");
-    static_assert(sizeof(_rgImageRec) == plateauCount * sizeof(_rgImageRec[0]),
-                  "Size mismatch");
-    static_assert(sizeof(_rgComposedImageRec) == plateauCount * sizeof(_rgComposedImageRec[0]),
-                  "Size mismatch");
-
-    int minDpis[7] = {-1, -1, -1, -1, -1, -1, -1};
-    BYTE plateauFlags[7] = {};
+    int candidateDpis[DPI_PLATEAU_COUNT];
+    std::fill(candidateDpis, candidateDpis + DPI_PLATEAU_COUNT, -1);
+    uint8_t selectedDpiAssets[DPI_PLATEAU_COUNT] = {};
 
     HRESULT hr = S_OK;
-    bool hasMinDpiRecord = false;
+    bool hasDpiRecord = false;
 
-    for (int i = 0; i < plateauCount; ++i) {
-        VSRECORD* it = _rgImageDpiRec[i];
-        if (!it) {
-            plateauFlags[i] = 2;
+    for (int i = 0; i < DPI_PLATEAU_COUNT; ++i) {
+        VSRECORD* rec = _rgImageDpiRec[i];
+        if (!rec) {
+            selectedDpiAssets[i] = PL_1_8x;
             continue;
         }
 
         int minDpi = -1;
         int length = sizeof(minDpi);
-        hr = LoadVSRecordData(_hInst, it, &minDpi, &length);
+        hr = LoadVSRecordData(_hInst, rec, &minDpi, &length);
         if (hr < 0)
             break;
 
-        hasMinDpiRecord = true;
-        minDpis[i] = minDpi;
+        hasDpiRecord = true;
+        candidateDpis[i] = minDpi;
     }
 
-    if (hasMinDpiRecord) {
-        for (int idx = -1, v13 = -1; idx < plateauCount; ++idx) {
-            int dpi;
-            if (idx == v13) {
-                dpi = GetScreenDpi();
-                v13 = -1;
-            } else if (_bittest((long*)&g_DpiInfo._nDpiPlateausCurrentlyPresent, idx)) {
-                dpi = Map_Ordinal_To_DpiPlateau(idx);
-            } else
+    if (hasDpiRecord) {
+        for (int plateau = DPI_PLATEAU_UNSUPPORTED; plateau < DPI_PLATEAU_COUNT; ++plateau) {
+            int targetDpi;
+            if (plateau == DPI_PLATEAU_UNSUPPORTED)
+                targetDpi = GetScreenDpi();
+            else if (g_DpiInfo.IsPlateauCurrentlyPresent((PLATEAU_INDEX)plateau))
+                targetDpi = GetDpiPlateauByIndex(plateau);
+            else
                 continue;
 
-            int flagIdx = -1;
-            int v20 = 0x7FFFFFFF;
-            for (int i = 0; i < plateauCount; ++i) {
-                if (minDpis[i] != -1 && dpi >= minDpis[i] && dpi - minDpis[i] < v20) {
+            int flagIdx = DPI_PLATEAU_UNSUPPORTED;
+            int closestDst = INT_MAX;
+            for (int i = 0; i < DPI_PLATEAU_COUNT; ++i) {
+                auto dst = targetDpi - candidateDpis[i];
+                if (candidateDpis[i] != -1 && targetDpi >= candidateDpis[i] &&
+                    dst < closestDst) {
                     flagIdx = i;
-                    v20 = dpi - minDpis[i];
-                    if (dpi == minDpis[i])
+                    closestDst = dst;
+                    if (targetDpi == candidateDpis[i])
                         break;
                 }
             }
 
-            if (flagIdx != -1)
-                plateauFlags[flagIdx] = 1;
+            if (flagIdx != DPI_PLATEAU_UNSUPPORTED)
+                selectedDpiAssets[flagIdx] = PL_1_4x;
         }
     }
 
     for (int i = 0, idx = 0; i < _rgImageDpiRec.size(); ++i) {
-        if (plateauFlags[i] == 1) {
+        if (selectedDpiAssets[i] == PL_1_4x) {
             hr = _FixSymbolAndAddVSDataRecord(
                 pfnCB, _rgImageDpiRec[i], Map_Ordinal_To_MINDPI(idx));
             ++idx;
@@ -2454,7 +2452,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     }
 
     for (int i = 0, idx = 0; i < _rgImageRec.size(); ++i) {
-        if (_rgImageRec[i] && plateauFlags[i] != 0) {
+        if (_rgImageRec[i] && selectedDpiAssets[i] != PL_1_0x) {
             hr = _FixSymbolAndAddVSDataRecord(
                 pfnCB, _rgImageRec[i], Map_Ordinal_To_IMAGEFILE(idx));
             ++idx;
@@ -2462,7 +2460,7 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     }
 
     for (int i = 0, idx = 0; i < _rgComposedImageRec.size(); ++i) {
-        if (_rgComposedImageRec[i] && plateauFlags[i] != 0) {
+        if (_rgComposedImageRec[i] && selectedDpiAssets[i] != PL_1_0x) {
             hr = _FixSymbolAndAddVSDataRecord(
                 pfnCB, _rgComposedImageRec[i], Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
             ++idx;
@@ -2475,54 +2473,53 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     return hr;
 }
 
-HRESULT CVSUnpack::_FlushDelayedPlateauRecords(IParserCallBack* pfnCB)
+HRESULT CVSUnpack::_ClearPlateauRecords()
 {
-    int idx;
-    int v6;
-    int v8;
-    bool* v10;
-    int* v11;
-
-    HRESULT hr = S_OK;
-    idx = -1;
-    v6 = 0x7FFFFFFF;
-    v8 = pfnCB->GetScreenPpi();
-    v10 = _rgPlateauRec.data();
-    v11 = _rgPlateauPpiMapping.data();
-    for (int v9 = 0; v9 < 7; ++v9)
-    {
-        if (*v10 && v8 - *v11 >= 0 && v8 - *v11 < v6)
-        {
-            idx = v9;
-            v6 = v8 - *v11;
-        }
-        ++v11;
-        ++v10;
-    }
-
-    if (idx >= 0) {
-        auto imageRec = _rgImagePRec[idx];
-        if (imageRec)
-            hr = _FixSymbolAndAddVSDataRecord(pfnCB, imageRec, TMT_IMAGEFILE);
-
-        auto glyphImageRec = _rgGlyphImagePRec[idx];
-        if (glyphImageRec && hr >= 0)
-            hr = _FixSymbolAndAddVSDataRecord(pfnCB, glyphImageRec, TMT_GLYPHIMAGEFILE);
-
-        auto contentMarginsRec = _rgContentMarginsPRec[idx];
-        if (contentMarginsRec && hr >= 0)
-            hr = _FixSymbolAndAddVSDataRecord(pfnCB, contentMarginsRec, TMT_CONTENTMARGINS);
-
-        auto sizingMarginsRec = _rgSizingMarginsPRec[idx];
-        if (sizingMarginsRec && hr >= 0)
-            hr = _FixSymbolAndAddVSDataRecord(pfnCB, sizingMarginsRec, TMT_SIZINGMARGINS);
-    }
-
     fill_zero(_rgPlateauRec);
     fill_zero(_rgImagePRec);
     fill_zero(_rgGlyphImagePRec);
     fill_zero(_rgContentMarginsPRec);
     fill_zero(_rgSizingMarginsPRec);
+    return S_OK;
+}
+
+HRESULT CVSUnpack::_FlushDelayedPlateauRecords(IParserCallBack* pfnCB)
+{
+    int const currentPpi = pfnCB->GetScreenPpi();
+    int closestPlateauIdx = -1;
+    int ppiDist = INT_MAX;
+
+    for (int i = 0; i < DPI_PLATEAU_COUNT; ++i) {
+        int curDist = currentPpi - _rgPlateauPpiMapping[i];
+        if (_rgPlateauRec[i] && curDist >= 0 && curDist < ppiDist) {
+            closestPlateauIdx = i;
+            ppiDist = curDist;
+        }
+    }
+
+    HRESULT hr = S_OK;
+    if (closestPlateauIdx >= 0) {
+        if (_rgImagePRec[closestPlateauIdx])
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgImagePRec[closestPlateauIdx], TMT_IMAGEFILE);
+
+        if (hr >= 0 && _rgGlyphImagePRec[closestPlateauIdx])
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgGlyphImagePRec[closestPlateauIdx],
+                TMT_GLYPHIMAGEFILE);
+
+        if (hr >= 0 && _rgContentMarginsPRec[closestPlateauIdx])
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgContentMarginsPRec[closestPlateauIdx],
+                TMT_CONTENTMARGINS);
+
+        if (hr >= 0 && _rgSizingMarginsPRec[closestPlateauIdx])
+            hr = _FixSymbolAndAddVSDataRecord(
+                pfnCB, _rgSizingMarginsPRec[closestPlateauIdx],
+                TMT_SIZINGMARGINS);
+    }
+
+    _ClearPlateauRecords();
     return hr;
 }
 
@@ -2546,34 +2543,34 @@ HRESULT CVSUnpack::_SavePlateauRecord(VSRECORD* pRec)
     int idx;
 
     switch (symbol) {
-    case TMT_5131:
-    case TMT_5132:
-    case TMT_5133:
-        idx = symbol - TMT_5131;
+    case TMT_IMAGEPLATEAU1:
+    case TMT_IMAGEPLATEAU2:
+    case TMT_IMAGEPLATEAU3:
+        idx = symbol - TMT_IMAGEPLATEAU1;
         _rgImagePRec[idx] = pRec;
         _rgPlateauRec[idx] = true;
         break;
 
-    case TMT_5134:
-    case TMT_5135:
-    case TMT_5136:
-        idx = symbol - TMT_5134;
+    case TMT_GLYPHIMAGEPLATEAU1:
+    case TMT_GLYPHIMAGEPLATEAU2:
+    case TMT_GLYPHIMAGEPLATEAU3:
+        idx = symbol - TMT_GLYPHIMAGEPLATEAU1;
         _rgGlyphImagePRec[idx] = pRec;
         _rgPlateauRec[idx] = true;
         break;
 
-    case TMT_5137:
-    case TMT_5138:
-    case TMT_5139:
-        idx = symbol - TMT_5137;
+    case TMT_CONTENTMARGINSPLATEAU1:
+    case TMT_CONTENTMARGINSPLATEAU2:
+    case TMT_CONTENTMARGINSPLATEAU3:
+        idx = symbol - TMT_CONTENTMARGINSPLATEAU1;
         _rgContentMarginsPRec[idx] = pRec;
         _rgPlateauRec[idx] = true;
         break;
 
-    case TMT_5140:
-    case TMT_5141:
-    case TMT_5142:
-        idx = symbol - TMT_5140;
+    case TMT_SIZINGMARGINSPLATEAU1:
+    case TMT_SIZINGMARGINSPLATEAU2:
+    case TMT_SIZINGMARGINSPLATEAU3:
+        idx = symbol - TMT_SIZINGMARGINSPLATEAU1;
         _rgSizingMarginsPRec[idx] = pRec;
         _rgPlateauRec[idx] = true;
         break;
@@ -2588,7 +2585,7 @@ HRESULT CVSUnpack::_FixSymbolAndAddVSDataRecord(
     char buffer[sizeof(VSRECORD) + 260];
 
     if (pRec->lSymbolVal != lSymbolVal) {
-        if (pRec->uResID) {
+        if (pRec->uResID != 0) {
             memcpy(&buffer, pRec, sizeof(VSRECORD));
         } else {
             size_t size = sizeof(VSRECORD) + pRec->cbData;

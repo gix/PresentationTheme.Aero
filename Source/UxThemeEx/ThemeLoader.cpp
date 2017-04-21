@@ -880,7 +880,7 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
     _hdr->iSizeParamOffset = 0;
     _hdr->dwLangID = _wCurrentLangID;
     _hdr->iLoadDPI = GetScreenDpi();
-    _hdr->dwLoadDPIs = g_DpiInfo._nDpiPlateausCurrentlyPresent;
+    _hdr->dwLoadDPIs = g_DpiInfo.GetCurrentlyPresentDpiPlateaus();
     _hdr->iLoadPPI = GetScreenPpi();
     _hdr->iGlobalsOffset = 0;
     _hdr->iGlobalsTextObjOffset = 0;

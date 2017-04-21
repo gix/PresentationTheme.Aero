@@ -4,13 +4,46 @@
 namespace uxtheme
 {
 
-struct DpiInfo
+enum PLATEAU_INDEX
 {
+    DPI_PLATEAU_UNSUPPORTED = -1,
+    DPI_PLATEAU_96 = 0,
+    DPI_PLATEAU_120 = 1,
+    DPI_PLATEAU_144 = 2,
+    DPI_PLATEAU_192 = 3,
+    DPI_PLATEAU_240 = 4,
+    DPI_PLATEAU_288 = 5,
+    DPI_PLATEAU_384 = 6,
+    DPI_PLATEAU_COUNT = 7,
+};
+
+enum PLATEAU
+{
+    PL_1_0x = 0,
+    PL_1_4x = 1,
+    PL_1_8x = 2,
+};
+
+class DpiInfo
+{
+public:
+    unsigned GetCurrentlyPresentDpiPlateaus() const
+    {
+        return _nDpiPlateausCurrentlyPresent;
+    }
+
+    bool IsPlateauCurrentlyPresent(PLATEAU_INDEX index) const
+    {
+        return _nDpiPlateausCurrentlyPresent & (1 << index);
+    }
+
+    void Clear();
+    HRESULT Ensure(unsigned a2);
+
+private:
     unsigned _nDpiPlateausCurrentlyPresent = 0;
     unsigned _nNonStandardDpi = 0;
     int _fIsInitialized = 0;
-    void Clear();
-    HRESULT Ensure(unsigned a2);
 };
 
 extern bool g_fForcedDpi;

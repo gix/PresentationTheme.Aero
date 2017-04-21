@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "DpiInfo.h"
 #include "Utils.h"
 #include <array>
 #include <string>
@@ -112,8 +113,10 @@ private:
     HRESULT _AddScaledBackgroundDataRecord(IParserCallBack* pfnCB);
 
     HRESULT _InitializePlateauPpiMapping(VSRECORD* pRec);
+    HRESULT _ClearDpiRecords();
     HRESULT _SaveRecord(VSRECORD* pRec);
     HRESULT _FlushDelayedRecords(IParserCallBack* pfnCB);
+    HRESULT _ClearPlateauRecords();
     HRESULT _SavePlateauRecord(VSRECORD* pRec);
     HRESULT _FlushDelayedPlateauRecords(IParserCallBack* pfnCB);
     HRESULT _FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal);
@@ -138,15 +141,15 @@ private:
     unsigned _cbBuffer = 0;
     malloc_ptr<BYTE[]> _pBuffer;
     bool _fIsLiteVisualStyle = false;
-    std::array<VSRECORD*, 7> _rgImageDpiRec = {};
-    std::array<VSRECORD*, 7> _rgImageRec = {};
-    std::array<VSRECORD*, 7> _rgComposedImageRec = {};
-    std::array<VSRECORD*, 7> _rgImagePRec = {};
-    std::array<VSRECORD*, 7> _rgGlyphImagePRec = {};
-    std::array<VSRECORD*, 7> _rgContentMarginsPRec = {};
-    std::array<VSRECORD*, 7> _rgSizingMarginsPRec = {};
-    std::array<bool, 7> _rgPlateauRec = {};
-    std::array<int, 7> _rgPlateauPpiMapping = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgImageDpiRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgImageRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgComposedImageRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgImagePRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgGlyphImagePRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgContentMarginsPRec = {};
+    std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgSizingMarginsPRec = {};
+    std::array<bool, DPI_PLATEAU_COUNT> _rgPlateauRec = {};
+    std::array<int, DPI_PLATEAU_COUNT> _rgPlateauPpiMapping = {};
     CThemePNGDecoder* _pDecoder = nullptr;
 };
 
