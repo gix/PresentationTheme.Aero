@@ -44,11 +44,8 @@ static HRGN _PixelsToRgn(
     int cyImage, int cxSrc, int cySrc, DIBINFO* pdi)
 {
     __int64 v9;
-    HRGN hRgn;
-    RGNDATA *rgnData;
     int v15;
     unsigned v16;
-    void *v17;
     unsigned *v19;
     unsigned v20;
     __int64 v21;
@@ -64,94 +61,77 @@ static HRGN _PixelsToRgn(
     unsigned *v31;
 
     v9 = cxImage;
-    hRgn = 0i64;
-    rgnData = (RGNDATA *)malloc(0x2020);
-    if (rgnData)
-    {
-        v27 = 512;
-        v29 = (RECT *)rgnData->Buffer;
-        memset(rgnData, 0, 0x20ui64);
-        rgnData->rdh.dwSize = 32;
-        rgnData->rdh.iType = RDH_RECTANGLES;
-        SetRect(&rgnData->rdh.rcBound, -1, -1, -1, -1);
-        v15 = cySrc - cyImageOffset - cyImage;
-        if (v15 < 0)
-            v15 = 0;
-        v28 = v15 + cyImage - 1;
-        if (v15 <= v28)
-        {
-            v21 = v9;
-            v23 = cyImage - 1;
-            v30 = v9;
-            v22 = cxImageOffset + cxSrc * v15;
-            do
-            {
-                v24 = &pdwBits[v22];
-                v25 = &v24[v21 - 1];
-                v19 = v24;
-                if (v24 <= v25)
-                {
-                    do
-                    {
-                        if (pdi->fPartiallyTransparent)
-                        {
-                            if (v19 > v25)
-                                break;
-                            do
-                            {
-                                if (*((BYTE *)v19 + 3) >= pdi->iAlphaThreshold)
-                                    break;
-                                ++v19;
-                            } while (v19 <= v25);
-                        }
+    auto rgnData = make_unique_malloc<RGNDATA>(0x2020);
+    if (!rgnData)
+        return nullptr;
+
+    v27 = 512;
+    v29 = (RECT *)rgnData->Buffer;
+    memset(rgnData.get(), 0, 0x20ui64);
+    rgnData->rdh.dwSize = 32;
+    rgnData->rdh.iType = RDH_RECTANGLES;
+    SetRect(&rgnData->rdh.rcBound, -1, -1, -1, -1);
+    v15 = cySrc - cyImageOffset - cyImage;
+    if (v15 < 0)
+        v15 = 0;
+    v28 = v15 + cyImage - 1;
+    if (v15 <= v28) {
+        v21 = v9;
+        v23 = cyImage - 1;
+        v30 = v9;
+        v22 = cxImageOffset + cxSrc * v15;
+        do {
+            v24 = &pdwBits[v22];
+            v25 = &v24[v21 - 1];
+            v19 = v24;
+            if (v24 <= v25) {
+                do {
+                    if (pdi->fPartiallyTransparent) {
                         if (v19 > v25)
                             break;
-                        v26 = v19;
-                        ++v19;
-                        v31 = v26;
-                        if (pdi->fPartiallyTransparent)
-                        {
-                            while (v19 <= v25 && *((BYTE *)v19 + 3) >= pdi->iAlphaThreshold)
-                                ++v19;
-                        } else if (v19 <= v25)
-                        {
-                            v19 += ((uintptr_t)((char *)v25 - (char *)v19) >> 2) + 1;
-                        }
-                        v20 = v27;
-                        if (rgnData->rdh.nCount >= v27)
-                        {
-                            v27 += 512;
-                            v17 = realloc(rgnData, 16 * (v20 + 512 + 2i64));
-                            if (!v17)
-                                goto exit_23;
-                            v26 = v31;
-                            rgnData = (RGNDATA *)v17;
-                            v29 = (RECT *)((char *)v17 + 32);
-                        }
-                        SetRect(&v29[rgnData->rdh.nCount], v26 - v24, v23, v19 - v24, v23 + 1);
-                        _InPlaceUnionRect(&rgnData->rdh.rcBound, &v29[rgnData->rdh.nCount]);
-                        ++rgnData->rdh.nCount;
-                    } while (v19 <= v25);
-                    v21 = v30;
-                }
-                v22 += cxSrc;
-                ++v15;
-                --v23;
-            } while (v15 <= v28);
-        }
-        v16 = rgnData->rdh.nCount;
-        if (v16
-            && rgnData->rdh.rcBound.left >= 0
-            && rgnData->rdh.rcBound.top >= 0
-            && rgnData->rdh.rcBound.right >= 0
-            && rgnData->rdh.rcBound.bottom >= 0)
-        {
-            hRgn = ExtCreateRegion(0i64, 16 * (v16 + 2), rgnData);
-        }
-    exit_23:
-        free(rgnData);
+                        do {
+                            if (*((BYTE *)v19 + 3) >= pdi->iAlphaThreshold)
+                                break;
+                            ++v19;
+                        } while (v19 <= v25);
+                    }
+                    if (v19 > v25)
+                        break;
+                    v26 = v19;
+                    ++v19;
+                    v31 = v26;
+                    if (pdi->fPartiallyTransparent) {
+                        while (v19 <= v25 && *((BYTE *)v19 + 3) >= pdi->iAlphaThreshold)
+                            ++v19;
+                    } else if (v19 <= v25) {
+                        v19 += ((uintptr_t)((BYTE*)v25 - (BYTE*)v19) >> 2) + 1;
+                    }
+                    v20 = v27;
+                    if (rgnData->rdh.nCount >= v27) {
+                        v27 += 512;
+                        if (!realloc(rgnData, 16 * (v20 + 512 + 2i64)))
+                            return nullptr;
+                        v26 = v31;
+                        v29 = (RECT*)((BYTE*)rgnData.get() + 32);
+                    }
+                    SetRect(&v29[rgnData->rdh.nCount], v26 - v24, v23, v19 - v24, v23 + 1);
+                    _InPlaceUnionRect(&rgnData->rdh.rcBound, &v29[rgnData->rdh.nCount]);
+                    ++rgnData->rdh.nCount;
+                } while (v19 <= v25);
+                v21 = v30;
+            }
+            v22 += cxSrc;
+            ++v15;
+            --v23;
+        } while (v15 <= v28);
     }
-    return hRgn;
+    if (!rgnData->rdh.nCount || rgnData->rdh.rcBound.left < 0 ||
+        rgnData->rdh.rcBound.top < 0 || rgnData->rdh.rcBound.right < 0 ||
+        rgnData->rdh.rcBound.bottom < 0)
+        return nullptr;
+
+    return ExtCreateRegion(nullptr, 16 * (rgnData->rdh.nCount + 2),
+                           rgnData.get());
 }
 
 BOOL CImageFile::KeyProperty(int iPropId)
@@ -1645,72 +1625,46 @@ HRESULT CImageFile::BuildRgnData(
     unsigned* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi,
     CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen)
 {
-    int dataLen;
-    int imgWidth;
-    int imgHeight;
-    DWORD v20;
-    HRESULT hr;
-    SIZE size;
-    RECT rc;
-
-    RGNDATA* rgnData = nullptr;
-    int const singleWidth = pdi->iSingleWidth;
-    int const singleHeight = pdi->iSingleHeight;
-    MARGINS margins = _SizingMargins;
-
     int offsetX, offsetY;
     GetOffsets(iStateId, pdi, &offsetX, &offsetY);
 
+    MARGINS margins = _SizingMargins;
     if (GetScreenDpi() != 96) {
-        size = {};
+        SIZE size = {};
         ScaleMargins(&margins, nullptr, pRender, pdi, &size, nullptr, nullptr);
     }
 
-    imgWidth = singleWidth;
-    if (singleWidth <= 0)
-        imgWidth = cWidth;
-    imgHeight = singleHeight;
-    if (singleHeight <= 0)
-        imgHeight = cHeight;
-
     GdiRegionHandle hRgn{
-        _PixelsToRgn(prgdwPixels, offsetX, offsetY, imgWidth, imgHeight, cWidth, cHeight, pdi)};
+        _PixelsToRgn(prgdwPixels, offsetX, offsetY,
+                     pdi->iSingleWidth > 0 ? pdi->iSingleWidth : cWidth,
+                     pdi->iSingleHeight > 0 ? pdi->iSingleHeight : cHeight,
+                     cWidth, cHeight, pdi)};
     if (!hRgn) {
-        hr = 0;
         *ppRgnData = nullptr;
         *piDataLen = 0;
-        goto done;
+        return S_OK;
     }
 
-    v20 = GetRegionData(hRgn, 0, nullptr);
-    if (!v20) {
-        hr = MakeErrorLast();
-        goto done;
-    }
+    DWORD len = GetRegionData(hRgn, 0, nullptr);
+    if (!len)
+        return MakeErrorLast();
 
-    if (v20 < sizeof(RGNDATAHEADER))
-        assert("FRE: len >= sizeof(RGNDATAHEADER)");
+    if (len < sizeof(RGNDATAHEADER))
+        assert("len >= sizeof(RGNDATAHEADER)");
 
-    dataLen = v20 + 2 * (((size_t)v20 - sizeof(RGNDATAHEADER)) / 16);
-    rgnData = (RGNDATA*)std::malloc(dataLen);
+    size_t dataLen = len + 2 * ((len - sizeof(RGNDATAHEADER)) / 16);
+    auto rgnData = make_unique_malloc<RGNDATA>(dataLen);
 
-    if (!GetRegionData(hRgn, v20, rgnData)) {
-        hr = MakeErrorLast();
-        goto done;
-    }
+    if (!GetRegionData(hRgn, len, rgnData.get()))
+        return MakeErrorLast();
 
-    SetRect(&rc, 0, 0, singleWidth, singleHeight);
-    hr = pRender->PrepareRegionDataForScaling(rgnData, &rc, &margins);
-    if (hr < 0)
-        goto done;
+    RECT rc;
+    SetRect(&rc, 0, 0, pdi->iSingleWidth, pdi->iSingleHeight);
+    ENSURE_HR(pRender->PrepareRegionDataForScaling(rgnData.get(), &rc, &margins));
 
-    *ppRgnData = rgnData;
+    *ppRgnData = rgnData.release();
     *piDataLen = dataLen;
-
-done:
-    if (hr < 0 && rgnData)
-        free(rgnData);
-    return hr;
+    return S_OK;
 }
 
 } // namespace uxtheme
