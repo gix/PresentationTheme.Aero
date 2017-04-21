@@ -1135,11 +1135,6 @@ T SwapRGB(T value)
     return ((value & 0xFF) << 16) | (value & 0xFF00) | ((value >> 16) & 0xFF);
 }
 
-static BYTE* GetBitmapBits(BITMAPINFOHEADER* header)
-{
-    return reinterpret_cast<BYTE*>(header) + header->biSize + 4 * header->biClrUsed;
-}
-
 static uint8_t PremultiplyChannel(uint8_t channel, uint8_t alpha)
 {
     // premult = alpha/255 * color/255 * 255

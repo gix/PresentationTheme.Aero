@@ -294,6 +294,11 @@ HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
                          wchar_t const* pszResName, void** ppBytes,
                          unsigned* pdwBytes);
 
+inline BYTE* GetBitmapBits(BITMAPINFOHEADER* header)
+{
+    return reinterpret_cast<BYTE*>(header) + header->biSize + 4 * header->biClrUsed;
+}
+
 
 using THREADENUMPROC = BOOL(CALLBACK*)(DWORD ownerProcessId, DWORD threadId, LPARAM param);
 

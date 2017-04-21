@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <array>
+#include <intsafe.h>
 #include <shlwapi.h>
 #include <strsafe.h>
 #include <vssym32.h>
@@ -1243,118 +1244,101 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
 class CBitmapPixels
 {
 public:
+    HRESULT OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
+                       unsigned** pPixels, int* piWidth, int* piHeight,
+                       int* piBytesPerPixel, int* piBytesPerRow,
+                       int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
+    void CloseBitmap(HDC hdc, HBITMAP hBitmap);
+
+private:
+    malloc_ptr<BYTE[]> _buffer;
     BITMAPINFOHEADER* _hdrBitmap;
     int _iWidth;
     int _iHeight;
-    char* _buffer;
-    ~CBitmapPixels();
-    DWORD OpenBitmap(HDC hdc, HBITMAP bitmap, int fForceRGB32, unsigned** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
-    void CloseBitmap(HDC hdc, HBITMAP hBitmap);
 };
 
-CBitmapPixels::~CBitmapPixels()
+HRESULT CBitmapPixels::OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
+                                  unsigned** pPixels, int* piWidth,
+                                  int* piHeight, int* piBytesPerPixel,
+                                  int* piBytesPerRow,
+                                  int* piPreviousBytesPerPixel,
+                                  unsigned cbBytesBefore)
 {
-    if (_buffer)
-        free(_buffer);
-}
+    if (!pPixels)
+        return E_INVALIDARG;
 
-DWORD CBitmapPixels::OpenBitmap(
-    HDC hdc, HBITMAP bitmap, int fForceRGB32, unsigned** pPixels, int* piWidth, int* piHeight, int* piBytesPerPixel, int* piBytesPerRow, int* piPreviousBytesPerPixel, unsigned cbBytesBefore)
-{
-    DWORD hr;
-    HDC v14;
-    __int64 v15;
-    unsigned __int64 v16;
-    int v17;
-    unsigned __int64 v18;
-    BITMAPINFOHEADER* v19;
-    BITMAP pv;
+    OptionalDC screenDC{hdc};
+    if (!screenDC)
+        return MakeErrorLast();
 
-    if (pPixels)
-    {
-        v14 = GetWindowDC(0i64);
-        if (v14)
-        {
-            GetObjectW(bitmap, sizeof(BITMAP), &pv);
-            v15 = (unsigned)pv.bmHeight;
-            v16 = 4i64 * (unsigned)pv.bmWidth;
-            _iWidth = pv.bmWidth;
-            _iHeight = v15;
-            if (v16 <= 0xFFFFFFFF
-                && (unsigned)v16 <= 0x7FFFFFFC
-                && (v17 = (v16 + 3) & 0xFFFFFFFC, v18 = v15 * (unsigned)v17, v18 <= 0xFFFFFFFF)
-                && (int)v18 + 0x8C >= (unsigned)v18
-                && (v19 = (BITMAPINFOHEADER *)malloc((unsigned)(v18 + 0x8C)),
-                (_buffer = (char *)v19) != 0i64))
-            {
-                _hdrBitmap = v19;
-                memset(v19, 0, 0x28ui64);
-                _hdrBitmap->biSize = 40;
-                _hdrBitmap->biWidth = _iWidth;
-                _hdrBitmap->biHeight = _iHeight;
-                _hdrBitmap->biPlanes = 1;
-                _hdrBitmap->biBitCount = 32;
-                _hdrBitmap->biCompression = 0;
-                GetDIBits(
-                    v14,
-                    bitmap,
-                    0,
-                    _iHeight,
-                    (char *)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
-                    (LPBITMAPINFO)_hdrBitmap,
-                    0);
-                ReleaseDC(0i64, v14);
-                *pPixels = (unsigned *)((char *)&_hdrBitmap->biSize
-                                        + 4 * _hdrBitmap->biClrUsed
-                                        + _hdrBitmap->biSize);
-                if (piWidth)
-                    *piWidth = _iWidth;
-                if (piHeight)
-                    *piHeight = _iHeight;
-                if (piBytesPerPixel)
-                    *piBytesPerPixel = 4;
-                if (piBytesPerRow)
-                    *piBytesPerRow = v17;
-                hr = 0;
-            } else
-            {
-                hr = E_OUTOFMEMORY;
-            }
-        } else
-        {
-            hr = MakeErrorLast();
-        }
-    } else
-    {
-        hr = E_INVALIDARG;
-    }
-    return hr;
+    BITMAP bminfo;
+    GetObjectW(bitmap, sizeof(BITMAP), &bminfo);
+
+    _iWidth = bminfo.bmWidth;
+    _iHeight = bminfo.bmHeight;
+
+    unsigned bytesPerRow;
+    if (FAILED(UIntMult(4u, bminfo.bmWidth, &bytesPerRow)) || bytesPerRow > 0x7FFFFFFC)
+        return E_OUTOFMEMORY;
+
+    bytesPerRow = AlignPower2<4>(bytesPerRow);
+    unsigned cbPixels;
+    if (FAILED(UIntMult(AlignPower2<4>(bytesPerRow), bminfo.bmHeight, &cbPixels)) ||
+        FAILED(UIntAdd(cbPixels, sizeof(BITMAPINFOHEADER) + 100, &cbPixels)))
+        return E_OUTOFMEMORY;
+
+    _buffer = make_unique_malloc<BYTE[]>(cbPixels);
+    if (!_buffer)
+        return E_OUTOFMEMORY;
+
+    _hdrBitmap = reinterpret_cast<BITMAPINFOHEADER*>(_buffer.get());
+    fill_zero(*_hdrBitmap);
+    _hdrBitmap->biSize = sizeof(BITMAPINFOHEADER);
+    _hdrBitmap->biWidth = _iWidth;
+    _hdrBitmap->biHeight = _iHeight;
+    _hdrBitmap->biPlanes = 1;
+    _hdrBitmap->biBitCount = 32;
+    _hdrBitmap->biCompression = 0;
+
+    if (!GetDIBits(screenDC, bitmap, 0, _iHeight, GetBitmapBits(_hdrBitmap),
+                   reinterpret_cast<LPBITMAPINFO>(_hdrBitmap), DIB_RGB_COLORS))
+        return E_FAIL;
+
+    *pPixels = reinterpret_cast<unsigned*>(GetBitmapBits(_hdrBitmap));
+
+    if (piWidth)
+        *piWidth = _iWidth;
+    if (piHeight)
+        *piHeight = _iHeight;
+    if (piBytesPerPixel)
+        *piBytesPerPixel = 4;
+    if (piBytesPerRow)
+        *piBytesPerRow = bytesPerRow;
+
+    return S_OK;
 }
 
 void CBitmapPixels::CloseBitmap(HDC hdc, HBITMAP hBitmap)
 {
-    HDC v5;
+    if (!_hdrBitmap || !_buffer)
+        return;
 
-    if (_hdrBitmap && _buffer)
-    {
-        if (hBitmap)
-        {
-            v5 = GetWindowDC(0i64);
-            SetDIBits(
-                v5,
-                hBitmap,
-                0,
-                _iHeight,
-                (char *)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
-                (const BITMAPINFO *)_hdrBitmap,
-                0);
-            if (v5)
-                ReleaseDC(0i64, v5);
-        }
-        free(_buffer);
-        _hdrBitmap = 0i64;
-        _buffer = 0i64;
+    if (hBitmap) {
+        HDC screenDC = GetWindowDC(nullptr);
+        SetDIBits(
+            screenDC,
+            hBitmap,
+            0,
+            _iHeight,
+            (BYTE*)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
+            (const BITMAPINFO *)_hdrBitmap,
+            0);
+        if (screenDC)
+            ReleaseDC(nullptr, screenDC);
     }
+
+    _buffer.reset();
+    _hdrBitmap = nullptr;
 }
 
 HRESULT CThemeLoader::PackImageFileInfo(
