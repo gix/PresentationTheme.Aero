@@ -84,6 +84,17 @@ namespace StyleCore
             return ReadZString(accessor, ref position);
         }
 
+        public static T[] ReadArray<T>(
+            this UnmanagedMemoryAccessor accessor, long position, int availableLength)
+            where T : struct
+        {
+            var count = availableLength / Marshal.SizeOf<T>();
+            var values = new T[count];
+            if (accessor.ReadArray(position, values, 0, count) != count)
+                throw new EndOfStreamException();
+            return values;
+        }
+
         public static string ReadZString(this BinaryReader reader)
         {
             var buffer = new StringBuilder();

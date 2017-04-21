@@ -4,6 +4,9 @@ namespace ThemeBrowser
     using System.Collections.Generic;
     using System.Drawing;
     using System.IO;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Text;
     using System.Windows.Media.Imaging;
     using StyleCore;
     using StyleCore.Native;
@@ -46,6 +49,10 @@ namespace ThemeBrowser
                     return color.ToWpfColor();
                 case HIGHCONTRASTCOLOR hcc:
                     return new HighContrastColor(hcc);
+                case IMAGEPROPERTIES[] images:
+                    return new SimplifiedImageGroup(images);
+                case HCIMAGEPROPERTIES[] images:
+                    return new HighContrastSimplifiedImageGroup(images);
             }
 
             if (property.Value != null && property.Value.GetType().IsEnum)
@@ -96,6 +103,50 @@ namespace ThemeBrowser
         public override TMT PrimitiveType => property.PrimitiveType;
         public override PropertyOrigin Origin { get; }
         public override object Value => property.Value;
+    }
+
+    public class SimplifiedImage
+    {
+        public SimplifiedImage(IMAGEPROPERTIES imageProperties)
+        {
+            BorderColor = ThemeExt.ColorFromArgb(imageProperties.BorderColor).ToWpfColor();
+            BackgroundColor = ThemeExt.ColorFromArgb(imageProperties.BackgroundColor).ToWpfColor();
+        }
+
+        public System.Windows.Media.Color BorderColor { get; }
+        public System.Windows.Media.Color BackgroundColor { get; }
+    }
+
+    public class HighContrastSimplifiedImage
+    {
+        public HighContrastSimplifiedImage(HCIMAGEPROPERTIES imageProperties)
+        {
+            BorderColor = new HighContrastColor((HIGHCONTRASTCOLOR)imageProperties.BorderColor);
+            BackgroundColor = new HighContrastColor((HIGHCONTRASTCOLOR)imageProperties.BackgroundColor);
+        }
+
+        public HighContrastColor BorderColor { get; }
+        public HighContrastColor BackgroundColor { get; }
+    }
+
+    public class SimplifiedImageGroup
+    {
+        public SimplifiedImageGroup(IEnumerable<IMAGEPROPERTIES> images)
+        {
+            Images = images.Select(x => new SimplifiedImage(x)).ToList();
+        }
+
+        public IReadOnlyList<SimplifiedImage> Images { get; }
+    }
+
+    public class HighContrastSimplifiedImageGroup
+    {
+        public HighContrastSimplifiedImageGroup(IEnumerable<HCIMAGEPROPERTIES> images)
+        {
+            Images = images.Select(x => new HighContrastSimplifiedImage(x)).ToList();
+        }
+
+        public IReadOnlyList<HighContrastSimplifiedImage> Images { get; }
     }
 
     public class ThemeBitmapViewModel : ViewModel

@@ -597,6 +597,8 @@ namespace StyleCore
                 case TMT.FLOATLIST:
                     return ThemePropertyType.FloatList;
 
+                case TMT.SIMPLIFIEDIMAGETYPE:
+                    return ThemePropertyType.SimplifiedImage;
                 case TMT.HCCOLOR:
                     return ThemePropertyType.Int;
 

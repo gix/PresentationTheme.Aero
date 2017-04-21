@@ -414,14 +414,21 @@
                 ShowError(hr, "Failed to dump theme");
         }
 
-        private void ShowError(Exception exception, string message)
+        private void ShowError(Exception exception, string caption)
         {
-            MessageBox.Show(MainWindow, message, exception.Message);
+            ShowError(exception.Message, caption);
         }
 
-        private void ShowError(HResult hr, string message)
+        private void ShowError(HResult hr, string caption)
         {
-            MessageBox.Show(MainWindow, message, new Win32Exception((int)hr).Message);
+            ShowError(new Win32Exception((int)hr).Message, caption);
+        }
+
+        private void ShowError(string message, string caption)
+        {
+            MessageBox.Show(
+                MainWindow, message, caption, MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
 
         private ThemeFileViewModel LoadTheme(string styleFilePath)

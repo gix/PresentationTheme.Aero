@@ -4,18 +4,24 @@ namespace StyleCore
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Drawing;
     using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
     using Native;
 
-    internal unsafe interface IParserCallBack
+    [StructLayout(LayoutKind.Sequential)]
+    public struct IMAGEPROPERTIES
     {
-        int GetNextDataIndex();
-        HResult AddIndex(string pszAppName, string pszClassName, int iPartId, int iStateId, int iIndex, int iLen);
-        HResult AddData(short sTypeNum, byte ePrimVal, void* pData, uint dwLen);
+        public uint BorderColor;
+        public uint BackgroundColor;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HCIMAGEPROPERTIES
+    {
+        public int BorderColor;
+        public int BackgroundColor;
     }
 
     public class ThemeFileLoader
@@ -285,7 +291,10 @@ namespace StyleCore
                         value = (HIGHCONTRASTCOLOR)data.ReadInt32(offset);
                         return true;
                     case TPID.SIMPLIFIEDIMAGETYPE:
-                        value = payload;
+                        if (record.SymbolVal == (int)TMT.HCSIMPLIFIEDIMAGE)
+                            value = data.ReadArray<HCIMAGEPROPERTIES>(offset, record.ByteLength);
+                        else
+                            value = data.ReadArray<IMAGEPROPERTIES>(offset, record.ByteLength);
                         return true;
                     case TPID.INTLIST:
                         int length = data.ReadInt32(offset);
@@ -381,6 +390,7 @@ namespace StyleCore
                 case TMT.IMAGESELECTTYPE: return (IMAGESELECTTYPE)value;
                 case TMT.TRUESIZESCALINGTYPE: return (TRUESIZESCALINGTYPE)value;
                 case TMT.GLYPHFONTSIZINGTYPE: return (GLYPHFONTSIZINGTYPE)value;
+                case TMT.HCGLYPHBGCOLOR: return (HIGHCONTRASTCOLOR)value;
                 default: return value;
             }
         }
@@ -1163,6 +1173,7 @@ namespace StyleCore
         BitmapRef = 215,
         Float = 216,
         FloatList = 217,
+        SimplifiedImage = 240,
     }
 
     public class ThemeBitmap
@@ -1188,6 +1199,15 @@ namespace StyleCore
     public static class ThemeExt
     {
         public static Color ColorFromArgb(int value)
+        {
+            var a = (byte)((value >> 24) & 0xFF);
+            var r = (byte)((value >> 16) & 0xFF);
+            var g = (byte)((value >> 8) & 0xFF);
+            var b = (byte)((value >> 0) & 0xFF);
+            return Color.FromArgb(a, r, g, b);
+        }
+
+        public static Color ColorFromArgb(uint value)
         {
             var a = (byte)((value >> 24) & 0xFF);
             var r = (byte)((value >> 16) & 0xFF);

@@ -104,6 +104,66 @@
       </Grid>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type local:SimplifiedImageGroup}">
+      <ItemsControl ItemsSource="{Binding Images}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type local:SimplifiedImage}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <Border Grid.Column="0" BorderBrush="#FF999999" BorderThickness="1"
+                      Width="16" Height="16">
+                <Rectangle Stroke="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
+                           StrokeThickness="4"/>
+              </Border>
+              <TextBlock Grid.Column="1" Text="{Binding BorderColor}" Margin="3,0,0,0"/>
+
+              <Rectangle Grid.Column="2" Width="16" Height="16"
+                         Fill="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                         Stroke="#FF999999" StrokeThickness="1"/>
+              <TextBlock Grid.Column="3" Text="{Binding BackgroundColor}" Margin="3,0,0,0"/>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:HighContrastSimplifiedImageGroup}">
+      <ItemsControl ItemsSource="{Binding Images}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type local:HighContrastSimplifiedImage}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+              </Grid.ColumnDefinitions>
+              <Border Grid.Column="0" BorderBrush="#FF999999" BorderThickness="1"
+                      Width="16" Height="16">
+                <Rectangle Stroke="{Binding BorderColor.Color, Converter={StaticResource ColorToBrushConverter}}"
+                           StrokeThickness="4"/>
+              </Border>
+              <TextBlock Grid.Column="1" Text="{Binding BorderColor.Color}" Margin="3,0,0,0"/>
+              <TextBlock Grid.Column="2" Text="{Binding BorderColor.Index, StringFormat='({0})'}" Margin="3,0,0,0"/>
+
+              <Rectangle Grid.Column="3" Width="16" Height="16"
+                         Fill="{Binding BackgroundColor.Color, Converter={StaticResource ColorToBrushConverter}}"
+                         Stroke="#FF999999" StrokeThickness="1"/>
+              <TextBlock Grid.Column="4" Text="{Binding BackgroundColor.Color}" Margin="3,0,0,0"/>
+              <TextBlock Grid.Column="5" Text="{Binding BorderColor.Index, StringFormat='({0})'}" Margin="3,0,0,0"/>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type local:ThemeBitmapViewModel}">
       <Grid x:Name="templateRoot" Background="Transparent">
         <Grid.ContextMenu>

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataExtensions.cs" />
+    <Compile Include="HIGHCONTRASTCOLOR.cs" />
     <Compile Include="IntList.cs" />
     <Compile Include="Native\HResult.cs" />
     <Compile Include="Native\LoadLibraryExFlags.cs" />
