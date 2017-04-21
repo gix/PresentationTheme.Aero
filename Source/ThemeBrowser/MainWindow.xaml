@@ -199,7 +199,7 @@
         </StackPanel>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#CCCCCC"
                 Background="{StaticResource CheckeredBrush}" Margin="5"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left" VerticalAlignment="Top">
           <Image x:Name="image" Source="{Binding Bitmap}" HorizontalAlignment="Left"
                  Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor">
             <i:Interaction.Behaviors>
