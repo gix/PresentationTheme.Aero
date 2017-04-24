@@ -396,8 +396,8 @@
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type local:ProgressInfo}">
-      <Border Padding="10" Background="#CCEEEEEE" BorderThickness="1"
-              BorderBrush="#CCCCCCCC" HorizontalAlignment="Center"
+      <Border Padding="10" Background="#EEEEEEEE" BorderThickness="1"
+              BorderBrush="#EECCCCCC" HorizontalAlignment="Center"
               VerticalAlignment="Center"
               MinWidth="300">
         <StackPanel>
