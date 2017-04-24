@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ThemeBrowser"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:themeBrowser="clr-namespace:ThemeBrowser"
-        xmlns:styleCore="clr-namespace:StyleCore;assembly=StyleCore"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:MainWindowViewModel}}"
@@ -254,7 +252,7 @@
     <DataTemplate DataType="{x:Type local:ThemeClassViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesTemplate}"/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type themeBrowser:ThemePartViewModel}">
+    <DataTemplate DataType="{x:Type local:ThemePartViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesTemplate}"/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type local:ThemeStateViewModel}">
@@ -289,7 +287,7 @@
                                         ItemsSource="{Binding Children}">
               <TextBlock Text="{Binding Name, Mode=OneWay}"/>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type themeBrowser:ThemePartViewModel}"
+            <HierarchicalDataTemplate DataType="{x:Type local:ThemePartViewModel}"
                                         ItemsSource="{Binding States}">
               <TextBlock Text="{Binding DisplayName}"/>
               <HierarchicalDataTemplate.Triggers>
@@ -346,7 +344,7 @@
                                       ItemsSource="{Binding Parts}">
               <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Comparison, Converter={StaticResource ComparisonResultToBrushConverter}}"/>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type themeBrowser:ThemePartComparisonViewModel}"
+            <HierarchicalDataTemplate DataType="{x:Type local:ThemePartComparisonViewModel}"
                                       ItemsSource="{Binding States}">
               <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Comparison, Converter={StaticResource ComparisonResultToBrushConverter}}"/>
             </HierarchicalDataTemplate>
@@ -386,7 +384,7 @@
     <DataTemplate DataType="{x:Type local:ThemeClassComparisonViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesComparisonTemplate}"/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type themeBrowser:ThemePartComparisonViewModel}">
+    <DataTemplate DataType="{x:Type local:ThemePartComparisonViewModel}">
       <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PropertiesComparisonTemplate}"/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type local:ThemeStateComparisonViewModel}">

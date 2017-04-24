@@ -337,7 +337,7 @@
 
     public class ResizingAdorner : Adorner
     {
-        // Resizing adorner uses Thumbs for visual elements.  
+        // Resizing adorner uses Thumbs for visual elements.
         // The Thumbs have built-in mouse input handling.
         private readonly Thumb topLeft;
         private readonly Thumb topRight;
@@ -377,7 +377,7 @@
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
 
-            // Change the size by the amount the user drags the mouse, as long as it's larger 
+            // Change the size by the amount the user drags the mouse, as long as it's larger
             // than the width or height of an adorner, respectively.
             adornedElement.Width = Math.Max(adornedElement.Width + args.HorizontalChange, hitThumb.DesiredSize.Width);
             adornedElement.Height = Math.Max(args.VerticalChange + adornedElement.Height, hitThumb.DesiredSize.Height);
@@ -394,7 +394,7 @@
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
 
-            // Change the size by the amount the user drags the mouse, as long as it's larger 
+            // Change the size by the amount the user drags the mouse, as long as it's larger
             // than the width or height of an adorner, respectively.
             adornedElement.Width = Math.Max(adornedElement.Width + args.HorizontalChange, hitThumb.DesiredSize.Width);
             //adornedElement.Height = Math.Max(adornedElement.Height - args.VerticalChange, hitThumb.DesiredSize.Height);
@@ -416,7 +416,7 @@
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
 
-            // Change the size by the amount the user drags the mouse, as long as it's larger 
+            // Change the size by the amount the user drags the mouse, as long as it's larger
             // than the width or height of an adorner, respectively.
             //adornedElement.Width = Math.Max(adornedElement.Width - args.HorizontalChange, hitThumb.DesiredSize.Width);
             //adornedElement.Height = Math.Max(adornedElement.Height - args.VerticalChange, hitThumb.DesiredSize.Height);
@@ -444,7 +444,7 @@
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
 
-            // Change the size by the amount the user drags the mouse, as long as it's larger 
+            // Change the size by the amount the user drags the mouse, as long as it's larger
             // than the width or height of an adorner, respectively.
             //adornedElement.Width = Math.Max(adornedElement.Width - args.HorizontalChange, hitThumb.DesiredSize.Width);
             adornedElement.Height = Math.Max(args.VerticalChange + adornedElement.Height, hitThumb.DesiredSize.Height);
@@ -458,8 +458,8 @@
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            // desiredWidth and desiredHeight are the width and height of the element that's being adorned.  
-            // These will be used to place the ResizingAdorner at the corners of the adorned element.  
+            // desiredWidth and desiredHeight are the width and height of the element that's being adorned.
+            // These will be used to place the ResizingAdorner at the corners of the adorned element.
             var desiredWidth = AdornedElement.DesiredSize.Width;
             var desiredHeight = AdornedElement.DesiredSize.Height;
             // adornerWidth & adornerHeight are used for placement as well.
@@ -475,7 +475,7 @@
             return finalSize;
         }
 
-        // Helper method to instantiate the corner Thumbs, set the Cursor property, 
+        // Helper method to instantiate the corner Thumbs, set the Cursor property,
         // set some appearance properties, and add the elements to the visual tree.
         private void BuildAdornerCorner(
             ref Thumb resizeThumb, Cursor customizedCursor, ResizeDirection direction)

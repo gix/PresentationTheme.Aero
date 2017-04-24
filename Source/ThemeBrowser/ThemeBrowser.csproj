@@ -99,7 +99,6 @@
       <DependentUpon>PreviewImageDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProgressInfo.cs" />
-    <Compile Include="ProgressType.cs" />
     <Compile Include="ShowProgressAdornerBehavior.cs" />
     <Compile Include="ThemeClassViewModel.cs" />
     <Compile Include="ThemeData.cs" />

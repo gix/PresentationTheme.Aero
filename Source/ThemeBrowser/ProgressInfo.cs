@@ -6,10 +6,6 @@ namespace ThemeBrowser
         private ProgressType progressType;
         private int progress;
 
-        public ProgressInfo()
-        {
-        }
-
         public string TaskName
         {
             get => taskName;
@@ -27,5 +23,12 @@ namespace ThemeBrowser
             get => progress;
             set => SetProperty(ref progress, value);
         }
+    }
+
+    public enum ProgressType
+    {
+        None,
+        Indeterminate,
+        Determinate
     }
 }
