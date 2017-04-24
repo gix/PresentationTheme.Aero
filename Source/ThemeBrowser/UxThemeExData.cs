@@ -57,11 +57,11 @@ namespace ThemeBrowser
                 themeFile, theme, partId, stateId, propertyId, out stream,
                 out length, instance);
 
-            if (!Found(hr))
+            if (!Found(hr) || stream == IntPtr.Zero)
                 return null;
 
             var buffer = new byte[length];
-            if (length > 0 && stream != IntPtr.Zero)
+            if (length > 0)
                 Marshal.Copy(stream, buffer, 0, buffer.Length);
             return new UnmanagedMemoryStream(
                 (byte*)stream.ToPointer(), 0, length, FileAccess.Read);
