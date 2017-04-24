@@ -21,7 +21,10 @@
             return new ResourceDictionary { Source = ResourceUri };
         }
 
-        public static void Load()
+        /// <summary>
+        ///   Sets the current theme to Aero.
+        /// </summary>
+        public static void SetCurrentTheme()
         {
             ThemeHelper.SetPresentationFrameworkTheme(ResourceUri);
         }

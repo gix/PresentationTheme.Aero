@@ -7,7 +7,7 @@
     {
         public App()
         {
-            AeroWin10Theme.Load();
+            AeroWin10Theme.SetCurrentTheme();
         }
 
         protected override void OnStartup(StartupEventArgs e)
