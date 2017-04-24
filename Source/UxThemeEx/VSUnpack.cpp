@@ -122,22 +122,22 @@ static PROPERTYMAP property_map[34] = {
     {TPID_GLYPHIMAGE, TMT_GLYPHIMAGEFILE, TMT_FILENAME, 16},
     {TPID_ATLASIMAGE, TMT_ATLASIMAGE, TMT_DISKSTREAM, -1},
     {TPID_ATLASINPUTIMAGE, TMT_ATLASINPUTIMAGE, TMT_STRING, 16},
-    {TPID_ENUM, 0, TMT_ENUM, 4},
+    {TPID_ENUM, 0, TMT_ENUM, sizeof(int)},
     {TPID_STRING, 0, TMT_STRING, -1},
-    {TPID_INT, 0, TMT_INT, 4},
-    {TPID_BOOL, 0, TMT_BOOL, 4},
-    {TPID_COLOR, 0, TMT_COLOR, 4},
-    {TPID_MARGINS, 0, TMT_MARGINS, 16},
+    {TPID_INT, 0, TMT_INT, sizeof(int)},
+    {TPID_BOOL, 0, TMT_BOOL, sizeof(BOOL)},
+    {TPID_COLOR, 0, TMT_COLOR, sizeof(COLORREF)},
+    {TPID_MARGINS, 0, TMT_MARGINS, sizeof(MARGINS)},
     {TPID_FILENAME, 0, TMT_FILENAME, -1},
-    {TPID_SIZE, 0, TMT_SIZE, 4},
-    {TPID_POSITION, 0, TMT_POSITION, TMT_GLYPHDIBDATA},
-    {TPID_RECT, 0, TMT_RECT, 16},
-    {TPID_FONT, 0, TMT_FONT, 92},
+    {TPID_SIZE, 0, TMT_SIZE, sizeof(int)},
+    {TPID_POSITION, 0, TMT_POSITION, sizeof(POINT)},
+    {TPID_RECT, 0, TMT_RECT, sizeof(RECT)},
+    {TPID_FONT, 0, TMT_FONT, sizeof(LOGFONTW)},
     {TPID_INTLIST, 0, TMT_INTLIST, -1},
     {TPID_DISKSTREAM, 0, TMT_DISKSTREAM, -1},
     {TPID_STREAM, 0, TMT_STREAM, -1},
-    {TPID_ANIMATION, 20000, 241, -1},
-    {TPID_TIMINGFUNCTION, 20100, 242, -1},
+    {TPID_ANIMATION, TMT_ANIMATION, 241, -1},
+    {TPID_TIMINGFUNCTION, TMT_TIMINGFUNCTION, 242, -1},
     {TPID_SIMPLIFIEDIMAGETYPE, 0, 240, -1},
     {TPID_HIGHCONTRASTCOLORTYPE, 0, 241, 4},
     {TPID_BITMAPIMAGETYPE, 0, 242, 16},
@@ -1494,10 +1494,10 @@ HRESULT CVSUnpack::LoadClassDataMap(
     int currPartId = 0;
     int currStateId = 0;
 
-    wchar_t pszClass[230];
-    wchar_t pszApp[260];
-    pszClass[0] = 0;
-    pszApp[0] = 0;
+    wchar_t className[230];
+    wchar_t appName[260];
+    className[0] = 0;
+    appName[0] = 0;
 
     HRESULT hr = S_OK;
 
@@ -1516,15 +1516,15 @@ HRESULT CVSUnpack::LoadClassDataMap(
                     ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
                 if (startOfSection >= 0)
-                    ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass,
+                    ENSURE_HR(_TerminateSection(pfnCB, appName, className,
                                                 currPartId, currStateId, startOfSection));
 
-                pszApp[0] = 0;
-                pszClass[0] = 0;
+                appName[0] = 0;
+                className[0] = 0;
                 if (pRec->iClass <= -1 || pRec->iClass >= _rgClassNames.size())
                     return E_ABORT;
 
-                _ParseClassName(_rgClassNames[pRec->iClass].c_str(), pszApp, 260, pszClass, 230);
+                _ParseClassName(_rgClassNames[pRec->iClass].c_str(), appName, 260, className, 230);
 
                 hasDelayedRecords = false;
                 hasPlateauRecords = false;
@@ -1549,14 +1549,14 @@ HRESULT CVSUnpack::LoadClassDataMap(
 
                     bool v17;
                     if (isNewClass && (pRec->iPart != 0 || pRec->iState != 0)) {
-                        ENSURE_HR(_GenerateEmptySection(pfnCB, pszApp, pszClass, 0, 0));
+                        ENSURE_HR(_GenerateEmptySection(pfnCB, appName, className, 0, 0));
                         v17 = true;
                     } else {
                         v17 = currStateId == 0;
                     }
 
                     if (isNewPart && pRec->iState != 0 && v17)
-                        ENSURE_HR(_GenerateEmptySection(pfnCB, pszApp, pszClass, pRec->iPart, 0));
+                        ENSURE_HR(_GenerateEmptySection(pfnCB, appName, className, pRec->iPart, 0));
                 }
 
                 currClassId = pRec->iClass;
@@ -1595,7 +1595,7 @@ HRESULT CVSUnpack::LoadClassDataMap(
         ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
     if (startOfSection >= 0)
-        ENSURE_HR(_TerminateSection(pfnCB, pszApp, pszClass, currPartId, currStateId, startOfSection));
+        ENSURE_HR(_TerminateSection(pfnCB, appName, className, currPartId, currStateId, startOfSection));
 
     return hr;
 }

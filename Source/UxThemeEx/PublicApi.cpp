@@ -418,16 +418,16 @@ void CThemeApiHelper::CloseHandle()
 
 struct LOADTHEMEFORTESTPARAMS
 {
-    unsigned int cbSize;
-    const wchar_t *pszThemeName;
-    const wchar_t *pszColorParam;
-    const wchar_t *pszSizeParam;
-    unsigned __int16 wDesiredLangID;
+    unsigned cbSize;
+    wchar_t const* pszThemeName;
+    wchar_t const* pszColorParam;
+    wchar_t const* pszSizeParam;
+    WORD wDesiredLangID;
     int iDesiredDpi;
     int rgConnectedDpis[7];
-    bool fEmulateGlobal;
-    bool fForceHighContrast;
-    CUxThemeFile *pLoadedUxThemeFile;
+    BOOL fEmulateGlobal;
+    BOOL fForceHighContrast;
+    CUxThemeFile* pLoadedUxThemeFile;
 };
 
 THEMEEXAPI UxOpenThemeFile(

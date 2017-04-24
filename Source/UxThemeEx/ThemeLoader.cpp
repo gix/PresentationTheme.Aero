@@ -716,15 +716,15 @@ HRESULT CThemeLoader::CreateReuseSection(
         if (SUCCEEDED(hr)) {
             auto reuseIt = (DIBREUSEDATA*)((BYTE*)reuseDataHdr + reuseDataHdr->iDIBReuseRecordsOffset);
             for (auto const& dibData : _rgDIBDataArray) {
-                *reuseIt = dibData.dibReuseData;
+                auto const& reuseData = dibData.dibReuseData;
                 if (dibData.pDIBBits)
                     memcpy_s(
-                    (BYTE*)reuseDataHdr + reuseIt->iDIBBitsOffset,
-                        (int)(maxSize - reuseIt->iDIBBitsOffset),
+                        (BYTE*)reuseDataHdr + reuseData.iDIBBitsOffset,
+                        (size_t)(maxSize - reuseData.iDIBBitsOffset),
                         dibData.pDIBBits,
-                        4 * reuseIt->iWidth * reuseIt->iHeight);
+                        sizeof(COLORREF) * reuseData.iWidth * reuseData.iHeight);
 
-                ++reuseIt;
+                *reuseIt++ = reuseData;
             }
         }
     }
