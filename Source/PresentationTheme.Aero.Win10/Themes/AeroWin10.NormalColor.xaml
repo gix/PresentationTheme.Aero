@@ -58,14 +58,14 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type aero10:TextBoxChrome}">
-          <Border x:Name="border"
+          <Border x:Name="Border"
                   Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   SnapsToDevicePixels="True"
                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Background">
+              <VisualStateGroup x:Name="BackgroundStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="BackgroundNormal" To="BackgroundNormal" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="BackgroundNormal" To="BackgroundHot" GeneratedDuration="0:00:00.225"/>
@@ -98,7 +98,7 @@
                 <VisualState x:Name="BackgroundFocused"/>
                 <VisualState x:Name="BackgroundDisabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="bg"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="InnerBorder"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource TextBox.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -106,14 +106,14 @@
                 </VisualState>
                 <VisualState x:Name="BackgroundReadOnly">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="bg"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="InnerBorder"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource TextBox.Background.ReadOnly.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
               </VisualStateGroup>
-              <VisualStateGroup x:Name="Border">
+              <VisualStateGroup x:Name="BorderStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="BorderNormal" To="BorderNormal" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="BorderNormal" To="BorderHot" GeneratedDuration="0:00:00.225"/>
@@ -135,7 +135,7 @@
                 <VisualState x:Name="BorderNormal"/>
                 <VisualState x:Name="BorderHot">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource TextBox.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -143,7 +143,7 @@
                 </VisualState>
                 <VisualState x:Name="BorderFocused">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource TextBox.Border.Focused.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -151,7 +151,7 @@
                 </VisualState>
                 <VisualState x:Name="BorderDisabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource TextBox.Border.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -159,13 +159,13 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="bg" Margin="1" Background="{TemplateBinding Background}">
+            <Border x:Name="InnerBorder" Margin="1" Background="{TemplateBinding Background}">
               <ContentPresenter/>
             </Border>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="BorderThickness" Value="0">
-              <Setter TargetName="bg" Property="Margin" Value="0"/>
+              <Setter TargetName="InnerBorder" Property="Margin" Value="0"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -334,7 +334,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type aero10:ButtonChrome}">
-          <Border x:Name="border"
+          <Border x:Name="Border"
                   Background="{TemplateBinding Background}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   BorderBrush="{TemplateBinding BorderBrush}"
@@ -370,11 +370,11 @@
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="Hot">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -382,11 +382,11 @@
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -394,11 +394,11 @@
                 </VisualState>
                 <VisualState x:Name="Defaulted">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="defaultedBorder"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="DefaultedBorder"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -406,11 +406,11 @@
                 </VisualState>
                 <VisualState x:Name="Disabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -418,18 +418,17 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="defaultedBorder"
+            <Border x:Name="DefaultedBorder"
                     BorderThickness="1"
                     BorderBrush="Transparent"
                     SnapsToDevicePixels="True">
-              <ContentPresenter x:Name="contentPresenter"
+              <ContentPresenter x:Name="Content"
                                 RecognizesAccessKey="True"
                                 Margin="{TemplateBinding Padding}"
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Focusable="False">
-              </ContentPresenter>
+                                Focusable="False"/>
             </Border>
           </Border>
         </ControlTemplate>
@@ -451,8 +450,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ButtonBase}">
-          <aero10:ButtonChrome x:Name="chrome"
-                               Style="{StaticResource {x:Type aero10:ButtonChrome}}"
+          <aero10:ButtonChrome Style="{StaticResource {x:Type aero10:ButtonChrome}}"
                                Focusable="False"
                                Background="{TemplateBinding Background}"
                                BorderBrush="{TemplateBinding BorderBrush}"
@@ -489,8 +487,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type Button}">
-          <aero10:ButtonChrome x:Name="chrome"
-                               Style="{StaticResource {x:Type aero10:ButtonChrome}}"
+          <aero10:ButtonChrome Style="{StaticResource {x:Type aero10:ButtonChrome}}"
                                Focusable="False"
                                Background="{TemplateBinding Background}"
                                BorderBrush="{TemplateBinding BorderBrush}"
@@ -602,11 +599,11 @@
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -614,11 +611,11 @@
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -626,11 +623,11 @@
                 </VisualState>
                 <VisualState x:Name="Disabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -642,21 +639,21 @@
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border x:Name="border"
+            <Border x:Name="Border"
                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}">
               <Grid Width="11" Height="11">
-                <Path x:Name="optionMark" Stretch="None" Margin="0" Opacity="0"
-                      Data="F1 M 1.3875,4.6875 L 3.8875,7.1875 9.6375,1.4375 10.5125,2.3125 3.7625,9.0625 0.3875,5.6875 Z"
-                      Fill="{Binding BorderBrush, ElementName=border}"/>
-                <Path x:Name="indeterminateMark" Stretch="None" Margin="2" Opacity="0"
-                      Data="F1 M 0,0 L 7,0 7,7 0,7 Z"
-                      Fill="{Binding BorderBrush, ElementName=border}"/>
+                <Path x:Name="OptionMark" Stretch="None" Opacity="0"
+                      Data="F1 M 1.3875,4.6875 3.8875,7.1875 9.6375,1.4375 10.5125,2.3125 3.7625,9.0625 0.3875,5.6875 z"
+                      Fill="{Binding BorderBrush, ElementName=Border}"/>
+                <Path x:Name="IndeterminateMark" Stretch="None" Margin="2" Opacity="0"
+                      Data="F1 M 0,0 7,0 7,7 0,7 z"
+                      Fill="{Binding BorderBrush, ElementName=Border}"/>
               </Grid>
             </Border>
-            <ContentPresenter x:Name="contentPresenter"
+            <ContentPresenter x:Name="Content"
                               RecognizesAccessKey="True"
                               Grid.Column="1"
                               Margin="0"
@@ -668,18 +665,18 @@
           <ControlTemplate.Triggers>
             <Trigger Property="HasContent" Value="True">
               <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
-              <Setter TargetName="contentPresenter" Property="Margin" Value="3,2,2,3"/>
+              <Setter TargetName="Content" Property="Margin" Value="3,2,2,3"/>
             </Trigger>
             <Trigger Property="TextOptions.TextFormattingMode" Value="Display">
-              <Setter TargetName="border" Property="Margin" Value="0,-1,0,0"/>
+              <Setter TargetName="Border" Property="Margin" Value="0,-1,0,0"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter Property="Opacity" Value="1" TargetName="optionMark"/>
-              <Setter Property="Opacity" Value="0" TargetName="indeterminateMark"/>
+              <Setter Property="Opacity" Value="1" TargetName="OptionMark"/>
+              <Setter Property="Opacity" Value="0" TargetName="IndeterminateMark"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
-              <Setter Property="Opacity" Value="0" TargetName="optionMark"/>
-              <Setter Property="Opacity" Value="1" TargetName="indeterminateMark"/>
+              <Setter Property="Opacity" Value="0" TargetName="OptionMark"/>
+              <Setter Property="Opacity" Value="1" TargetName="IndeterminateMark"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -728,11 +725,11 @@
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -740,11 +737,11 @@
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -752,11 +749,11 @@
                 </VisualState>
                 <VisualState x:Name="Disabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Border.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -768,7 +765,7 @@
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border x:Name="border"
+            <Border x:Name="Border"
                     Width="13" Height="13"
                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -776,15 +773,12 @@
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     CornerRadius="100">
-              <Grid x:Name="markGrid" Margin="2">
-                <Ellipse x:Name="optionMark" MinWidth="7" MinHeight="7" Opacity="0"
-                         Fill="{Binding BorderBrush, ElementName=border}"/>
-              </Grid>
+              <Ellipse x:Name="OptionMark" Margin="2" MinWidth="7" MinHeight="7"
+                       Opacity="0" Fill="{Binding BorderBrush, ElementName=Border}"/>
             </Border>
-            <ContentPresenter x:Name="contentPresenter"
+            <ContentPresenter x:Name="Content"
                               RecognizesAccessKey="True"
                               Grid.Column="1"
-                              Margin="0"
                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -793,16 +787,16 @@
           <ControlTemplate.Triggers>
             <Trigger Property="HasContent" Value="True">
               <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
-              <Setter TargetName="contentPresenter" Property="Margin" Value="3,2,2,3"/>
+              <Setter TargetName="Content" Property="Margin" Value="3,2,2,3"/>
             </Trigger>
             <Trigger Property="TextOptions.TextFormattingMode" Value="Display">
-              <Setter TargetName="border" Property="Margin" Value="0,-1,0,0"/>
+              <Setter TargetName="Border" Property="Margin" Value="0,-1,0,0"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter Property="Opacity" Value="1" TargetName="optionMark"/>
+              <Setter TargetName="OptionMark" Property="Opacity" Value="1"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
-              <Setter Property="Opacity" Value="0.56" TargetName="optionMark"/>
+              <Setter TargetName="OptionMark" Property="Opacity" Value="0.56"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -840,6 +834,10 @@
   <SolidColorBrush x:Key="ComboBox.ListBox.Background.Hot" Color="#FFFFFFFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.ListBox.Border.Hot" Color="#FF0078D7" po:Freeze="True"/>
 
+  <Geometry x:Key="ComboBox.Glyph">
+    F1 M0.65,8.1 1.354,7.396 5.354,11.396 5,11.75 4.646,11.396 8.646,7.396 9.354,8.104 5,12.457 4.646,12.104 0.646,8.104 z
+  </Geometry>
+
   <Style x:Key="ComboBox.ReadOnly.FocusVisual">
     <Setter Property="Control.Template">
       <Setter.Value>
@@ -871,7 +869,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
-          <Border x:Name="border"
+          <Border x:Name="Border"
                   Background="{TemplateBinding Background}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   BorderBrush="{TemplateBinding BorderBrush}"
@@ -903,15 +901,15 @@
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -919,15 +917,15 @@
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -935,15 +933,15 @@
                 </VisualState>
                 <VisualState x:Name="Checked">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -951,15 +949,15 @@
                 </VisualState>
                 <VisualState x:Name="Disabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -973,23 +971,22 @@
                 <ColumnDefinition Width="0"
                                   MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
               </Grid.ColumnDefinitions>
-              <Border x:Name="defaultedBorder"
+              <Border x:Name="DefaultedBorder"
                       Grid.Column="1"
                       BorderThickness="1"
                       BorderBrush="Transparent"
                       SnapsToDevicePixels="True">
-                <Path x:Name="glyph"
+                <Path x:Name="Glyph"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Center"
                       Fill="{StaticResource ComboBox.Glyph.Normal}"
-                      Data="F1 M0.65,8.1 L1.354,7.396 5.354,11.396 5,11.75 4.646,11.396 8.646,7.396 9.354,8.104 5,12.457 4.646,12.104 0.646,8.104 z"
+                      Data="{StaticResource ComboBox.Glyph}"
                       Margin="0,0,1.5,0"
                       Width="10"
                       Height="19"
                       Stretch="None"/>
               </Border>
-              <ContentPresenter x:Name="contentPresenter"
-                                Grid.Column="0"
+              <ContentPresenter x:Name="Content"
                                 Content="{TemplateBinding Content}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}"
                                 ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
@@ -1040,7 +1037,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
-          <Border x:Name="border"
+          <Border x:Name="Border"
                   Background="{TemplateBinding Background}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   BorderBrush="{TemplateBinding BorderBrush}"
@@ -1072,15 +1069,15 @@
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -1088,15 +1085,15 @@
                 </VisualState>
                 <VisualState x:Name="Pressed">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -1104,15 +1101,15 @@
                 </VisualState>
                 <VisualState x:Name="Checked">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Border.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="border"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Button.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -1120,7 +1117,7 @@
                 </VisualState>
                 <VisualState x:Name="Disabled">
                   <Storyboard>
-                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="glyph"
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="Glyph"
                                                   Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ComboBox.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
@@ -1128,16 +1125,15 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="defaultedBorder"
+            <Border x:Name="DefaultedBorder"
                     BorderThickness="1"
                     BorderBrush="Transparent"
                     SnapsToDevicePixels="True">
-              <Path x:Name="glyph"
+              <Path x:Name="Glyph"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Fill="{StaticResource ComboBox.Glyph.Normal}"
-                    Data="F1 M0.65,8.1 L1.354,7.396 5.354,11.396 5,11.75 4.646,11.396 8.646,7.396 9.354,8.104 5,12.457 4.646,12.104 0.646,8.104 z"
-                    Margin="0"
+                    Data="{StaticResource ComboBox.Glyph}"
                     Width="10"
                     Height="19"
                     Stretch="None"/>
@@ -1149,32 +1145,32 @@
   </Style>
 
   <ControlTemplate x:Key="ComboBox.ReadOnly" TargetType="{x:Type ComboBox}">
-    <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+    <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
                 AllowsTransparency="True"
                 Margin="1"
                 Placement="Bottom"
                 IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                 PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-        <aero10:SystemDropShadowChrome x:Name="shadow"
+        <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                       MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
-          <Border x:Name="dropDownBorder"
+                                       MinWidth="{Binding ActualWidth, ElementName=TemplateRoot}">
+          <Border x:Name="DropDownBorder"
                   BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                   BorderThickness="1">
             <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="canvas"
+              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
+                <Canvas x:Name="Canvas"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Height="0"
                         Width="0">
-                  <Rectangle x:Name="opaqueRect"
-                             Fill="{Binding Background, ElementName=dropDownBorder}"
-                             Height="{Binding ActualHeight, ElementName=dropDownBorder}"
-                             Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
+                  <Rectangle x:Name="OpaqueRect"
+                             Fill="{Binding Background, ElementName=DropDownBorder}"
+                             Height="{Binding ActualHeight, ElementName=DropDownBorder}"
+                             Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
                 </Canvas>
                 <ItemsPresenter x:Name="ItemsPresenter"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
@@ -1184,7 +1180,7 @@
           </Border>
         </aero10:SystemDropShadowChrome>
       </Popup>
-      <ToggleButton x:Name="toggleButton"
+      <ToggleButton x:Name="ToggleButton"
                     Style="{StaticResource ComboBox.ReadOnly.Button}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     Background="{TemplateBinding Background}"
@@ -1204,11 +1200,11 @@
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
       <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
-        <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5"/>
-        <Setter TargetName="shadow" Property="Color" Value="#71000000"/>
+        <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
+        <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
       <Trigger Property="HasItems" Value="False">
-        <Setter TargetName="dropDownBorder" Property="Height" Value="95"/>
+        <Setter TargetName="DropDownBorder" Property="Height" Value="95"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
@@ -1218,38 +1214,38 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
       <Trigger SourceName="DropDownScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-        <Setter TargetName="opaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="opaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="ComboBox.Editable" TargetType="{x:Type ComboBox}">
-    <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+    <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
                 AllowsTransparency="True"
                 Placement="Bottom"
                 IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
                 PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-        <aero10:SystemDropShadowChrome x:Name="shadow"
+        <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                       MinWidth="{Binding ActualWidth, ElementName=templateRoot}">
-          <Border x:Name="dropDownBorder"
+                                       MinWidth="{Binding ActualWidth, ElementName=TemplateRoot}">
+          <Border x:Name="DropDownBorder"
                   BorderBrush="{StaticResource ComboBox.ListBox.Border.Hot}"
                   Background="{StaticResource ComboBox.ListBox.Background.Hot}"
                   BorderThickness="1">
             <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="canvas"
+              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
+                <Canvas x:Name="Canvas"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Width="0"
                         Height="0">
-                  <Rectangle x:Name="opaqueRect"
-                             Fill="{Binding Background, ElementName=dropDownBorder}"
-                             Height="{Binding ActualHeight, ElementName=dropDownBorder}"
-                             Width="{Binding ActualWidth, ElementName=dropDownBorder}"/>
+                  <Rectangle x:Name="OpaqueRect"
+                             Fill="{Binding Background, ElementName=DropDownBorder}"
+                             Height="{Binding ActualHeight, ElementName=DropDownBorder}"
+                             Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
                 </Canvas>
                 <ItemsPresenter x:Name="ItemsPresenter"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
@@ -1276,7 +1272,7 @@
                               RenderReadOnly="{TemplateBinding IsReadOnly}"
                               RenderFocused="{Binding IsKeyboardFocused, ElementName=PART_EditableTextBox}"
                               RenderHot="{TemplateBinding IsMouseOver}"/>
-        <Border Grid.Column="0" Margin="{TemplateBinding BorderThickness}">
+        <Border Margin="{TemplateBinding BorderThickness}">
           <TextBox x:Name="PART_EditableTextBox"
                    Style="{StaticResource ComboBox.Editable.TextBox}"
                    IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
@@ -1284,7 +1280,7 @@
                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
         </Border>
-        <ToggleButton x:Name="toggleButton"
+        <ToggleButton x:Name="ToggleButton"
                       Grid.Column="1"
                       IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                       Style="{StaticResource ComboBox.Editable.DropDownButton}"
@@ -1300,11 +1296,11 @@
         <Setter Property="Foreground" Value="Black"/>
       </Trigger>
       <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
-        <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5"/>
-        <Setter TargetName="shadow" Property="Color" Value="#71000000"/>
+        <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
+        <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
       <Trigger Property="HasItems" Value="False">
-        <Setter TargetName="dropDownBorder" Property="Height" Value="95"/>
+        <Setter TargetName="DropDownBorder" Property="Height" Value="95"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
@@ -1314,8 +1310,8 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
       <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="False">
-        <Setter TargetName="opaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="opaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -1352,7 +1348,7 @@
       <Setter.Value>
         <ControlTemplate>
           <Rectangle SnapsToDevicePixels="True"
-                     Stroke="#CC6600"
+                     Stroke="#FFCC6600"
                      StrokeThickness="1"
                      StrokeDashArray="1 1"
                      StrokeDashOffset="1.5"/>
@@ -1488,7 +1484,7 @@
       <Setter.Value>
         <ControlTemplate>
           <Rectangle SnapsToDevicePixels="True"
-                     Stroke="#CC6600"
+                     Stroke="#FFCC6600"
                      StrokeThickness="1"
                      StrokeDashArray="1 1"
                      StrokeDashOffset="1.5"/>
@@ -1616,7 +1612,7 @@
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-              <Canvas Name="PART_FloatingHeaderCanvas">
+              <Canvas x:Name="PART_FloatingHeaderCanvas">
                 <Rectangle Width="{TemplateBinding ActualWidth}"
                            Height="{TemplateBinding ActualHeight}"
                            Fill="#FF000000"
@@ -1736,7 +1732,6 @@
             </DockPanel>
             <ScrollBar x:Name="PART_HorizontalScrollBar"
                        Grid.Row="1"
-                       Grid.Column="0"
                        Cursor="Arrow"
                        Margin="0"
                        Minimum="0.0"
@@ -1746,7 +1741,6 @@
                        ViewportSize="{TemplateBinding ViewportWidth}"
                        Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
             <ScrollBar x:Name="PART_VerticalScrollBar"
-                       Grid.Row="0"
                        Grid.Column="1"
                        Cursor="Arrow"
                        Margin="0"
@@ -1959,51 +1953,44 @@
 
   <!-- Menu ================================================================ -->
 
-  <SolidColorBrush x:Key="Menu.BarBackground.Active.Background" Color="#FFFFFFFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.BarBackground.Active.Border" Color="#FFF2F2F2" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarBackground.Background" Color="#FFFFFFFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarBackground.Border" Color="#FFF2F2F2" po:Freeze="True"/>
 
+  <SolidColorBrush x:Key="Menu.BarItem.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Hot.Background" Color="#1A0089FF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Hot.Border" Color="#33008BFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Pressed.Background" Color="#33008BFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Pressed.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarItem.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
 
   <SolidColorBrush x:Key="Menu.Popup.Background" Color="#FFF2F2F2" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.Popup.Border" Color="#FFCCCCCC" po:Freeze="True"/>
 
+  <SolidColorBrush x:Key="Menu.PopupItem.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Selected.Background" Color="#3D269FD9" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Selected.Border" Color="#FF26A0DA" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Hot.Background" Color="#66008BFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Hot.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupItem.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.DisabledHot.Background" Color="#0D000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.DisabledHot.Border" Color="#0D000000" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="Menu.Static.Foreground" Color="#FF000000" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.Static.Separator" Color="#FFD7D7D7" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.Static.Gutter" Color="#FFF0F0F0" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.Disabled.Background" Color="#3DD9D9D9" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.Disabled.Border" Color="#FFDADADA" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupSeparator" Color="#FFD7D7D7" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupGutter.Background" Color="#FFF0F0F0" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupGutter.Border" Color="#FFF0F0F0" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Border" Color="#0D000000" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Background" Color="#0D000000" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Border" Color="#66008BFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Background" Color="#66008BFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupCheck.Glyph" Color="#FF333333" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Background" Color="#0D000000" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Border" Color="#0D000000" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheck.Normal.Foreground" Color="#FF333333" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheck.Disabled.Foreground" Color="#FFA3A3A3" po:Freeze="True"/>
 
   <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
-  <Geometry x:Key="DownArrow">
-    M 0,0 L 3.5,4 L 7,0 Z
-  </Geometry>
-  <Geometry x:Key="UpArrow">
-    M 0,4 L 3.5,0 L 7,4 Z
-  </Geometry>
-  <Geometry x:Key="RightArrow">
-    M 0,-0.5 L 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 Z
-  </Geometry>
-
-  <Geometry x:Key="Checkmark">
-    F1 M 4.1875,6.6875 L 6.6875,9.1875 12.4375,3.4375 13.3125,4.3125 6.5625,11.0625 3.1875,7.6875 Z
-  </Geometry>
+  <Geometry x:Key="Menu.DownArrowGlyph">M 0,0 3.5,4 7,0 z</Geometry>
+  <Geometry x:Key="Menu.UpArrowGlyph">M 0,4 3.5,0 7,4 z</Geometry>
+  <Geometry x:Key="Menu.RightArrowGlyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
+  <Geometry x:Key="Menu.CheckmarkGlyph">F1 M 4.1875,6.6875 6.6875,9.1875 12.4375,3.4375 13.3125,4.3125 6.5625,11.0625 3.1875,7.6875 z</Geometry>
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type FrameworkElement}, SubmenuContent}"
                    TargetType="{x:Type ContentControl}">
@@ -2022,7 +2009,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type RepeatButton}">
-          <Border x:Name="templateRoot"
+          <Border x:Name="TemplateRoot"
                   SnapsToDevicePixels="True"
                   Background="Transparent"
                   BorderBrush="Transparent"
@@ -2052,14 +2039,12 @@
               <RowDefinition Height="*"/>
               <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Column="0" Grid.Row="1">
+            <Border Grid.Row="1">
               <ScrollContentPresenter
                 Margin="{TemplateBinding Padding}"
                 CanContentScroll="{TemplateBinding CanContentScroll}"/>
             </Border>
-            <RepeatButton Grid.Column="0"
-                          Grid.Row="0"
-                          Style="{StaticResource MenuScrollButton}"
+            <RepeatButton Style="{StaticResource MenuScrollButton}"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                           Focusable="False">
@@ -2074,11 +2059,10 @@
                   <Binding Path="ViewportHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                 </MultiBinding>
               </RepeatButton.Visibility>
-              <Path Data="{StaticResource UpArrow}"
-                    Fill="{StaticResource Menu.Static.Foreground}"/>
+              <Path Data="{StaticResource Menu.UpArrowGlyph}"
+                    Fill="{StaticResource Menu.PopupItem.Normal.Foreground}"/>
             </RepeatButton>
-            <RepeatButton Grid.Column="0"
-                          Grid.Row="2"
+            <RepeatButton Grid.Row="2"
                           Style="{StaticResource MenuScrollButton}"
                           Command="{x:Static ScrollBar.LineDownCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2094,8 +2078,8 @@
                   <Binding Path="ViewportHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                 </MultiBinding>
               </RepeatButton.Visibility>
-              <Path Data="{StaticResource DownArrow}"
-                    Fill="{StaticResource Menu.Static.Foreground}"/>
+              <Path Data="{StaticResource Menu.DownArrowGlyph}"
+                    Fill="{StaticResource Menu.PopupItem.Normal.Foreground}"/>
             </RepeatButton>
           </Grid>
         </ControlTemplate>
@@ -2104,8 +2088,8 @@
   </Style>
 
   <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
-    <Setter Property="Background" Value="{StaticResource Menu.Static.Separator}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource Menu.Static.Separator}"/>
+    <Setter Property="Background" Value="{StaticResource Menu.PopupSeparator}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Menu.PopupSeparator}"/>
     <Setter Property="MinHeight" Value="7"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Template">
@@ -2121,8 +2105,8 @@
   </Style>
 
   <Style x:Key="{x:Type Separator}" TargetType="{x:Type Separator}">
-    <Setter Property="Background" Value="{StaticResource Menu.Static.Separator}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource Menu.Static.Separator}"/>
+    <Setter Property="Background" Value="{StaticResource Menu.PopupSeparator}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Menu.PopupSeparator}"/>
     <Setter Property="MinHeight" Value="3"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Template">
@@ -2139,7 +2123,7 @@
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, TopLevelItemTemplateKey}"
                    TargetType="{x:Type MenuItem}">
-    <Border x:Name="templateRoot"
+    <Border x:Name="TemplateRoot"
             SnapsToDevicePixels="True"
             BorderThickness="{TemplateBinding BorderThickness}"
             Background="{TemplateBinding Background}"
@@ -2157,15 +2141,15 @@
                           Width="16"
                           Height="16"
                           Margin="2"/>
-        <Path x:Name="GlyphPanel"
-              Data="{StaticResource Checkmark}"
+        <Path x:Name="GlyphBorder"
+              Data="{StaticResource Menu.CheckmarkGlyph}"
               FlowDirection="LeftToRight"
               Margin="2,-2"
               Width="16"
               Height="16"
               Visibility="Collapsed"
               VerticalAlignment="Center"
-              Fill="{StaticResource Menu.Static.Foreground}"/>
+              Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         <ContentPresenter Grid.Column="1"
                           ContentSource="Header"
                           RecognizesAccessKey="True"
@@ -2178,7 +2162,7 @@
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsChecked" Value="True">
-        <Setter TargetName="GlyphPanel" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <MultiDataTrigger>
@@ -2189,42 +2173,42 @@
                      Value="False"/>
         </MultiDataTrigger.Conditions>
         <MultiDataTrigger.Setters>
-          <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                  Value="{StaticResource Menu.Disabled.Foreground}"/>
-          <Setter TargetName="GlyphPanel" Property="Fill"
-                  Value="{StaticResource Menu.Disabled.Foreground}"/>
+          <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                  Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
+          <Setter TargetName="GlyphBorder" Property="Fill"
+                  Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
         </MultiDataTrigger.Setters>
       </MultiDataTrigger>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Hot.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Hot.Border}"/>
       </Trigger>
       <Trigger Property="IsSubmenuOpen" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Pressed.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Pressed.Border}"/>
       </Trigger>
       <Trigger Property="IsPressed" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Pressed.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Pressed.Border}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
-        <Setter TargetName="GlyphPanel" Property="Fill"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
+        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
+        <Setter TargetName="GlyphBorder" Property="Fill"
+                Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, TopLevelHeaderTemplateKey}"
                    TargetType="{x:Type MenuItem}">
-    <Border x:Name="templateRoot"
+    <Border x:Name="TemplateRoot"
             SnapsToDevicePixels="True"
             BorderThickness="{TemplateBinding BorderThickness}"
             Background="{TemplateBinding Background}"
@@ -2242,8 +2226,8 @@
                           Width="16"
                           Height="16"
                           Margin="2"/>
-        <Path x:Name="GlyphPanel"
-              Data="{StaticResource Checkmark}"
+        <Path x:Name="GlyphBorder"
+              Data="{StaticResource Menu.CheckmarkGlyph}"
               FlowDirection="LeftToRight"
               Margin="2"
               Width="16"
@@ -2262,7 +2246,7 @@
                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
                Placement="Bottom"
-               PlacementTarget="{Binding ElementName=templateRoot}">
+               PlacementTarget="{Binding ElementName=TemplateRoot}">
           <aero10:SystemDropShadowChrome x:Name="Shdw" Color="Transparent">
             <Border x:Name="SubMenuBorder"
                     Background="{StaticResource Menu.Popup.Background}"
@@ -2279,9 +2263,12 @@
                       Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
                       Fill="{Binding Background, ElementName=SubMenuBorder}"/>
                   </Canvas>
-                  <Rectangle HorizontalAlignment="Left"
-                             Width="28"
-                             Fill="{StaticResource Menu.Static.Gutter}"/>
+                  <Border x:Name="PopupGutter"
+                          HorizontalAlignment="Left"
+                          Width="28"
+                          Background="{StaticResource Menu.PopupGutter.Background}"
+                          BorderBrush="{StaticResource Menu.PopupGutter.Border}"
+                          BorderThickness="0,0,1,0"/>
                   <ItemsPresenter x:Name="ItemsPresenter"
                                   KeyboardNavigation.DirectionalNavigation="Cycle"
                                   KeyboardNavigation.TabNavigation="Cycle"
@@ -2302,7 +2289,7 @@
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsChecked" Value="True">
-        <Setter TargetName="GlyphPanel" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <MultiDataTrigger>
@@ -2313,35 +2300,35 @@
                      Value="False"/>
         </MultiDataTrigger.Conditions>
         <MultiDataTrigger.Setters>
-          <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                  Value="{StaticResource Menu.Disabled.Foreground}"/>
-          <Setter TargetName="GlyphPanel" Property="Fill"
-                  Value="{StaticResource Menu.Disabled.Foreground}"/>
+          <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                  Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
+          <Setter TargetName="GlyphBorder" Property="Fill"
+                  Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
         </MultiDataTrigger.Setters>
       </MultiDataTrigger>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Hot.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Hot.Border}"/>
       </Trigger>
       <Trigger Property="IsSubmenuOpen" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Pressed.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Pressed.Border}"/>
       </Trigger>
       <Trigger Property="IsPressed" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.BarItem.Pressed.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.BarItem.Pressed.Border}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
-        <Setter TargetName="GlyphPanel" Property="Fill"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
+        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
+        <Setter TargetName="GlyphBorder" Property="Fill"
+                Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
       </Trigger>
       <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
@@ -2358,7 +2345,7 @@
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, SubmenuItemTemplateKey}"
                    TargetType="{x:Type MenuItem}">
-    <Border x:Name="templateRoot"
+    <Border x:Name="TemplateRoot"
             SnapsToDevicePixels="True"
             Height="22"
             BorderThickness="{TemplateBinding BorderThickness}"
@@ -2381,28 +2368,28 @@
                           Width="16"
                           Height="16"
                           Margin="2"/>
-        <Border x:Name="GlyphPanel"
+        <Border x:Name="GlyphBorder"
                 Visibility="Hidden"
                 Height="22"
                 Width="22"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Background="{StaticResource Menu.PopupCheckBackground.Normal.Border}"
-                BorderBrush="{StaticResource Menu.PopupCheckBackground.Normal.Background}"
+                Background="{StaticResource Menu.PopupCheckBackground.Normal.Background}"
+                BorderBrush="{StaticResource Menu.PopupCheckBackground.Normal.Border}"
                 BorderThickness="1"
                 ClipToBounds="False"
                 Margin="-1">
           <Path x:Name="Glyph"
-                Data="{StaticResource Checkmark}"
+                Data="{StaticResource Menu.CheckmarkGlyph}"
                 FlowDirection="LeftToRight"
                 Height="16"
                 Width="16"
                 Margin="2"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Fill="{StaticResource Menu.PopupCheck.Glyph}"/>
+                Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         </Border>
-        <Border x:Name="menuHeaderContainer"
+        <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
                 Margin="0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
@@ -2413,7 +2400,7 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="menuGestureContainer" Grid.Column="4" Margin="0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
@@ -2423,20 +2410,20 @@
     <ControlTemplate.Triggers>
       <DataTrigger Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
                    Value="{x:Type system:String}">
-        <Setter TargetName="menuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
-        <Setter TargetName="menuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
       </DataTrigger>
       <Trigger Property="Icon" Value="{x:Null}">
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsChecked" Value="True">
-        <Setter TargetName="GlyphPanel" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsHighlighted" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.Hot.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.Hot.Border}"/>
       </Trigger>
       <MultiTrigger>
@@ -2445,25 +2432,28 @@
           <Condition Property="IsHighlighted" Value="True"/>
         </MultiTrigger.Conditions>
         <MultiTrigger.Setters>
-          <Setter TargetName="templateRoot" Property="Background"
+          <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Background}"/>
-          <Setter TargetName="templateRoot" Property="BorderBrush"
+          <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Border}"/>
         </MultiTrigger.Setters>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
-        <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Menu.Disabled.Foreground}"/>
-        <Setter TargetName="GlyphPanel" Property="Background" Value="{StaticResource Menu.PopupCheckBackground.Disabled.Background}"/>
-        <Setter TargetName="GlyphPanel" Property="BorderBrush" Value="{StaticResource Menu.PopupCheckBackground.Disabled.Border}"/>
+        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
+        <Setter TargetName="Glyph" Property="Fill"
+                Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
+        <Setter TargetName="GlyphBorder" Property="Background"
+                Value="{StaticResource Menu.PopupCheckBackground.Disabled.Background}"/>
+        <Setter TargetName="GlyphBorder" Property="BorderBrush"
+                Value="{StaticResource Menu.PopupCheckBackground.Disabled.Border}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, SubmenuHeaderTemplateKey}"
                    TargetType="{x:Type MenuItem}">
-    <Border x:Name="templateRoot"
+    <Border x:Name="TemplateRoot"
             SnapsToDevicePixels="True"
             Height="22"
             BorderThickness="{TemplateBinding BorderThickness}"
@@ -2486,7 +2476,7 @@
                           Width="16"
                           Height="16"
                           Margin="2"/>
-        <Border x:Name="GlyphPanel"
+        <Border x:Name="GlyphBorder"
                 BorderThickness="1"
                 Height="22"
                 Width="22"
@@ -2496,13 +2486,13 @@
                 BorderBrush="{StaticResource Menu.PopupItem.Hot.Border}"
                 Background="{StaticResource Menu.PopupItem.Hot.Background}">
           <Path x:Name="Glyph"
-                Data="{StaticResource Checkmark}"
+                Data="{StaticResource Menu.CheckmarkGlyph}"
                 FlowDirection="LeftToRight"
                 Height="16"
                 Width="16"
-                Fill="{StaticResource Menu.PopupCheck.Glyph}"/>
+                Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         </Border>
-        <Border x:Name="menuHeaderContainer"
+        <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
                 Margin="0,-1,0,0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
@@ -2513,18 +2503,18 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="menuGestureContainer" Grid.Column="4" Margin="0,-1,0,0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0,-1,0,0">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
         </Border>
         <Path x:Name="RightArrow"
               Grid.Column="5"
-              Data="{StaticResource RightArrow}"
+              Data="{StaticResource Menu.RightArrowGlyph}"
               Margin="5,0,0,1"
               VerticalAlignment="Center"
               HorizontalAlignment="Left"
-              Fill="{StaticResource Menu.Static.Foreground}"
+              Fill="{StaticResource Menu.PopupItem.Normal.Foreground}"
               UseLayoutRounding="False"/>
         <Popup x:Name="PART_Popup"
                AllowsTransparency="True"
@@ -2550,9 +2540,12 @@
                       Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
                       Fill="{Binding Background, ElementName=SubMenuBorder}"/>
                   </Canvas>
-                  <Rectangle HorizontalAlignment="Left"
-                             Width="28"
-                             Fill="{StaticResource Menu.Static.Gutter}"/>
+                  <Border x:Name="PopupGutter"
+                          HorizontalAlignment="Left"
+                          Width="28"
+                          Background="{StaticResource Menu.PopupGutter.Background}"
+                          BorderBrush="{StaticResource Menu.PopupGutter.Border}"
+                          BorderThickness="0,0,1,0"/>
                   <ItemsPresenter x:Name="ItemsPresenter"
                                   KeyboardNavigation.DirectionalNavigation="Cycle"
                                   KeyboardNavigation.TabNavigation="Cycle"
@@ -2568,8 +2561,8 @@
     <ControlTemplate.Triggers>
       <DataTrigger Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
                    Value="{x:Type system:String}">
-        <Setter TargetName="menuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
-        <Setter TargetName="menuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
       </DataTrigger>
       <Trigger Property="IsSuspendingPopupAnimation" Value="True">
         <Setter TargetName="PART_Popup" Property="PopupAnimation" Value="None"/>
@@ -2578,31 +2571,31 @@
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsChecked" Value="True">
-        <Setter TargetName="GlyphPanel" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
       <Trigger Property="IsHighlighted" Value="True">
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.Hot.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.Hot.Border}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="templateRoot" Property="TextElement.Foreground"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
+        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
         <Setter TargetName="Glyph" Property="Fill"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
+                Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
         <Setter TargetName="RightArrow" Property="Fill"
-                Value="{StaticResource Menu.Disabled.Foreground}"/>
+                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsHighlighted" Value="True"/>
           <Condition Property="IsEnabled" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="templateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Background}"/>
-        <Setter TargetName="templateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Border}"/>
       </MultiTrigger>
       <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
@@ -2634,7 +2627,7 @@
       <Trigger Property="Role" Value="TopLevelHeader">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource Menu.Static.Foreground}"/>
+        <Setter Property="Foreground" Value="{StaticResource Menu.BarItem.Normal.Foreground}"/>
         <Setter Property="Template"
                 Value="{DynamicResource {ComponentResourceKey {x:Type MenuItem}, TopLevelHeaderTemplateKey}}"/>
         <Setter Property="Padding" Value="6,1"/>
@@ -2642,7 +2635,7 @@
       <Trigger Property="Role" Value="TopLevelItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource Menu.Static.Foreground}"/>
+        <Setter Property="Foreground" Value="{StaticResource Menu.BarItem.Normal.Foreground}"/>
         <Setter Property="Template"
                 Value="{DynamicResource {ComponentResourceKey {x:Type MenuItem}, TopLevelItemTemplateKey}}"/>
         <Setter Property="Padding" Value="6,1"/>
@@ -2655,8 +2648,8 @@
   </Style>
 
   <Style TargetType="{x:Type Menu}">
-    <Setter Property="Background" Value="{StaticResource Menu.BarBackground.Active.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource Menu.BarBackground.Active.Border}"/>
+    <Setter Property="Background" Value="{StaticResource Menu.BarBackground.Background}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Menu.BarBackground.Border}"/>
     <Setter Property="BorderThickness" Value="0,0,0,1"/>
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
@@ -2718,10 +2711,13 @@
                       Width="{Binding ActualWidth, ElementName=ContextMenuBorder}"
                       Fill="{Binding Background, ElementName=ContextMenuBorder}"/>
                   </Canvas>
-                  <Rectangle HorizontalAlignment="Left"
-                             Width="28"
-                             Margin="2,2,0,2"
-                             Fill="{StaticResource Menu.Static.Gutter}"/>
+                  <Border x:Name="PopupGutter"
+                          HorizontalAlignment="Left"
+                          Width="28"
+                          Margin="2,2,0,2"
+                          Background="{StaticResource Menu.PopupGutter.Background}"
+                          BorderBrush="{StaticResource Menu.PopupGutter.Border}"
+                          BorderThickness="0,0,1,0"/>
                   <ItemsPresenter x:Name="ItemsPresenter"
                                   Margin="{TemplateBinding Padding}"
                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
@@ -2754,20 +2750,20 @@
 
   <!-- ScrollBar =========================================================== -->
 
-  <SolidColorBrush x:Key="ScrollBar.Background.Normal" Color="#F0F0F0" po:Freeze="True"/>
-  <SolidColorBrush x:Key="ScrollBar.Border.Light" Color="#FFFFFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="ScrollBar.Border.Dark" Color="#F0F0F0" po:Freeze="True"/>
+  <SolidColorBrush x:Key="ScrollBar.Background" Color="#FFF0F0F0" po:Freeze="True"/>
+  <SolidColorBrush x:Key="ScrollBar.Border.Light" Color="#FFFFFFFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="ScrollBar.Border.Dark" Color="#FFF0F0F0" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="ScrollBar.Thumb.Normal" Color="#CDCDCD" po:Freeze="True"/>
-  <Color x:Key="ScrollBar.Thumb.Hot.Color">#A6A6A6</Color>
-  <Color x:Key="ScrollBar.Thumb.Pressed.Color">#606060</Color>
-  <Color x:Key="ScrollBar.Thumb.Disabled.Color">#F0F0F0</Color>
+  <SolidColorBrush x:Key="ScrollBar.Thumb.Normal" Color="#FFCDCDCD" po:Freeze="True"/>
+  <Color x:Key="ScrollBar.Thumb.Hot.Color">#FFA6A6A6</Color>
+  <Color x:Key="ScrollBar.Thumb.Pressed.Color">#FF606060</Color>
+  <Color x:Key="ScrollBar.Thumb.Disabled.Color">#FFF0F0F0</Color>
   <Color x:Key="ScrollBar.Thumb.Hover.Color">#FFC0C0C0</Color>
 
-  <SolidColorBrush x:Key="ScrollBar.Glyph.Normal" Color="#606060" po:Freeze="True"/>
-  <Color x:Key="ScrollBar.Glyph.Hot.Color">#000000</Color>
-  <Color x:Key="ScrollBar.Glyph.Pressed.Color">#FFFFFF</Color>
-  <Color x:Key="ScrollBar.Glyph.Disabled.Color">#BFBFBF</Color>
+  <SolidColorBrush x:Key="ScrollBar.Glyph.Normal" Color="#FF606060" po:Freeze="True"/>
+  <Color x:Key="ScrollBar.Glyph.Hot.Color">#FF000000</Color>
+  <Color x:Key="ScrollBar.Glyph.Pressed.Color">#FFFFFFFF</Color>
+  <Color x:Key="ScrollBar.Glyph.Disabled.Color">#FFBFBFBF</Color>
   <Color x:Key="ScrollBar.Glyph.Hover.Color">#FF606060</Color>
 
   <SolidColorBrush x:Key="ScrollBar.ArrowButton.Normal" Color="#FFF0F0F0" po:Freeze="True"/>
@@ -2898,7 +2894,7 @@
             </VisualStateManager.VisualStateGroups>
             <!-- Up glyph is moved 1px down. -->
             <Path x:Name="Glyph"
-                  Data="M0,3.5 L0,6.5 L3.5,3 L7,6.5 L7,3.5 L3.5,0 z"
+                  Data="M0,3.5 0,6.5 3.5,3 7,6.5 7,3.5 3.5,0 z"
                   Stretch="Uniform"
                   Margin="3,4,3,2"
                   Fill="{StaticResource ScrollBar.Glyph.Normal}"
@@ -3021,7 +3017,7 @@
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Path x:Name="Glyph"
-                  Data="M0,3 L0,0 L3.5,3.5 L7,0 L7,3 3.5,6.5 z"
+                  Data="M0,3 0,0 3.5,3.5 7,0 7,3 3.5,6.5 z"
                   Stretch="Uniform"
                   Margin="3,3,3,3"
                   Fill="{StaticResource ScrollBar.Glyph.Normal}"
@@ -3144,7 +3140,7 @@
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Path x:Name="Glyph"
-                  Data="M0,3.5 L3.5,0 L6.5,0 L3,3.5 L6.5,7 L3.5,7 z"
+                  Data="M0,3.5 3.5,0 6.5,0 3,3.5 6.5,7 3.5,7 z"
                   Stretch="Uniform"
                   Margin="3,3,3,3"
                   Fill="{StaticResource ScrollBar.Glyph.Normal}"
@@ -3266,7 +3262,7 @@
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Path x:Name="Glyph"
-                  Data="M3,7 L0,7 L3.5,3.5 L0,0 L3,0 L6.5,3.5 z"
+                  Data="M3,7 0,7 3.5,3.5 0,0 3,0 6.5,3.5 z"
                   Stretch="Uniform"
                   Margin="3,3,3,3"
                   Fill="{StaticResource ScrollBar.Glyph.Normal}"
@@ -3468,7 +3464,7 @@
   <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
     <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="Background" Value="{StaticResource ScrollBar.Background.Normal}"/>
+    <Setter Property="Background" Value="{StaticResource ScrollBar.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ScrollBar.Border.Dark}"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1,0"/>
@@ -3488,11 +3484,10 @@
             </Grid.RowDefinitions>
             <aero10:ScrollBarChrome Grid.Row="1"
                                     SnapsToDevicePixels="True"
-                                    Background="{StaticResource ScrollBar.Background.Normal}"
+                                    Background="{StaticResource ScrollBar.Background}"
                                     LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                     DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"/>
             <RepeatButton x:Name="PART_LineUpButton"
-                          Grid.Row="0"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           Style="{StaticResource ScrollBarButtonUp}"/>
             <Track x:Name="PART_Track"
@@ -3541,11 +3536,10 @@
                 <aero10:ScrollBarChrome Grid.Column="1"
                                         Orientation="Horizontal"
                                         SnapsToDevicePixels="True"
-                                        Background="{StaticResource ScrollBar.Background.Normal}"
+                                        Background="{StaticResource ScrollBar.Background}"
                                         LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                         DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"/>
                 <RepeatButton x:Name="PART_LineLeftButton"
-                              Grid.Column="0"
                               Command="{x:Static ScrollBar.LineLeftCommand}"
                               Style="{StaticResource ScrollBarButtonLeft}"/>
                 <Track x:Name="PART_Track" Grid.Column="1">
@@ -3593,36 +3587,12 @@
   <DrawingImage x:Key="TreeViewGlyphMinus">
     <DrawingImage.Drawing>
       <DrawingGroup>
-        <GeometryDrawing Brush="#FFBABBBC">
-          <GeometryDrawing.Geometry>
-            <PathGeometry>M0,0 L1,0 1,1 0,1 z  M8,0 L9,0 9,1 8,1 z  M8,8 L9,8 9,9 8,9 z  M0,8 L1,8 1,9 0,9 z</PathGeometry>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FF919191">
-          <GeometryDrawing.Geometry>
-            <PathGeometry>M1,0 L8,0 8,1 1,1 z  M9,1 L9,8 8,8 8,1 z  M8,9 L1,9 1,8 8,8 z  M0,8 L0,1 1,1 1,8 z</PathGeometry>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFFAFBFB">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,1,7,3"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFEDEDEC">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,4,7,2"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFE3E3E3">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,6,7,2"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FF4B63A7">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="2,4,5,1"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
+        <GeometryDrawing Brush="#FFBABBBC" Geometry="M0,0 1,0 1,1 0,1 z  M8,0 9,0 9,1 8,1 z  M8,8 9,8 9,9 8,9 z  M0,8 1,8 1,9 0,9 z"/>
+        <GeometryDrawing Brush="#FF919191" Geometry="M1,0 8,0 8,1 1,1 z  M9,1 9,8 8,8 8,1 z  M8,9 1,9 1,8 8,8 z  M0,8 0,1 1,1 1,8 z"/>
+        <GeometryDrawing Brush="#FFFAFBFB" Geometry="M1,1 8,1 8,4 1,4 z"/>
+        <GeometryDrawing Brush="#FFEDEDEC" Geometry="M1,4 8,4 8,6 1,4 z"/>
+        <GeometryDrawing Brush="#FFE3E3E3" Geometry="M1,6 8,6 8,8 1,8 z"/>
+        <GeometryDrawing Brush="#FF4B63A7" Geometry="M2,4 7,4 7,5 2,5 z"/>
       </DrawingGroup>
     </DrawingImage.Drawing>
   </DrawingImage>
@@ -3630,41 +3600,13 @@
   <DrawingImage x:Key="TreeViewGlyphPlus">
     <DrawingImage.Drawing>
       <DrawingGroup>
-        <GeometryDrawing Brush="#FFBABBBC">
-          <GeometryDrawing.Geometry>
-            <PathGeometry>M0,0 L1,0 1,1 0,1 z  M8,0 L9,0 9,1 8,1 z  M8,8 L9,8 9,9 8,9 z  M0,8 L1,8 1,9 0,9 z</PathGeometry>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FF919191">
-          <GeometryDrawing.Geometry>
-            <PathGeometry>M1,0 L8,0 8,1 1,1 z  M9,1 L9,8 8,8 8,1 z  M8,9 L1,9 1,8 8,8 z  M0,8 L0,1 1,1 1,8 z</PathGeometry>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFFAFBFB">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,1,7,4"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFEDEDEC">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,5,7,1"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FFE3E3E3">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="1,6,7,2"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FF294272">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="4,2,1,5"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
-        <GeometryDrawing Brush="#FF4B63A7">
-          <GeometryDrawing.Geometry>
-            <RectangleGeometry Rect="2,4,5,1"/>
-          </GeometryDrawing.Geometry>
-        </GeometryDrawing>
+        <GeometryDrawing Brush="#FFBABBBC" Geometry="M0,0 1,0 1,1 0,1 z  M8,0 9,0 9,1 8,1 z  M8,8 9,8 9,9 8,9 z  M0,8 1,8 1,9 0,9 z"/>
+        <GeometryDrawing Brush="#FF919191" Geometry="M1,0 8,0 8,1 1,1 z  M9,1 9,8 8,8 8,1 z  M8,9 1,9 1,8 8,8 z  M0,8 0,1 1,1 1,8 z"/>
+        <GeometryDrawing Brush="#FFFAFBFB" Geometry="M1,1 8,1 8,5 1,5 z"/>
+        <GeometryDrawing Brush="#FFEDEDEC" Geometry="M1,5 7,5 7,6 1,6 z"/>
+        <GeometryDrawing Brush="#FFE3E3E3" Geometry="M1,6 7,6 7,8 1,6 z"/>
+        <GeometryDrawing Brush="#FF294272" Geometry="M4,2 5,2 5,7 4,7 z"/>
+        <GeometryDrawing Brush="#FF4B63A7" Geometry="M2,4 7,2 7,5 2,5 z"/>
       </DrawingGroup>
     </DrawingImage.Drawing>
   </DrawingImage>
@@ -3706,7 +3648,6 @@
                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                     ClickMode="Press"/>
       <Border x:Name="Bd"
-              Grid.Row="0"
               Grid.Column="1"
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
@@ -3721,7 +3662,6 @@
       <ItemsPresenter x:Name="ItemsHost"
                       Margin="19,0,0,0"
                       Grid.Row="1"
-                      Grid.Column="0"
                       Grid.ColumnSpan="2"/>
     </Grid>
     <ControlTemplate.Triggers>
@@ -3761,8 +3701,6 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
       <Border x:Name="Bd"
-              Grid.Row="0"
-              Grid.Column="0"
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
@@ -3772,7 +3710,7 @@
             <ColumnDefinition Width="1e300">
               <ColumnDefinition.MaxWidth>
                 <Binding RelativeSource="{RelativeSource TemplatedParent}"
-                         Converter="{x:Static aero10:TreeViewItemLevelConverter.Instance}">
+                         Converter="{x:Static aero:TreeViewItemLevelConverter.Instance}">
                   <Binding.ConverterParameter>
                     <system:Int32>19</system:Int32>
                   </Binding.ConverterParameter>
@@ -3782,12 +3720,12 @@
             <ColumnDefinition Width="Auto" MinWidth="19"/>
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
-          <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
+          <ToggleButton x:Name="Expander" Grid.Column="1"
                         Style="{StaticResource TreeViewExpanderStyle}"
                         Margin="3,0,0,0"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
+          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
                             ContentSource="Header"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -3827,11 +3765,11 @@
   </ControlTemplate>
 
   <Geometry x:Key="ExplorerTreeViewGlyphPlus">
-    F1M4.88,5.12L6.119,3.881 10.119,7.881 10.737,8.5 6.119,13.119 4.881,11.881 8.881,7.881 9.5,8.5 8.881,9.119 4.881,5.119z
+    F1 M4.88,5.12 6.119,3.881 10.119,7.881 10.737,8.5 6.119,13.119 4.881,11.881 8.881,7.881 9.5,8.5 8.881,9.119 4.881,5.119 z
   </Geometry>
 
   <Geometry x:Key="ExplorerTreeViewGlyphMinus">
-    F1M2.88,6.12L4.119,4.881 8.119,8.881 7.5,9.5 6.881,8.881 10.881,4.881 12.119,6.119 7.5,10.737 6.881,10.119 2.881,6.119z
+    F1 M2.88,6.12 4.119,4.881 8.119,8.881 7.5,9.5 6.881,8.881 10.881,4.881 12.119,6.119 7.5,10.737 6.881,10.119 2.881,6.119 z
   </Geometry>
 
   <Style x:Key="ExplorerTreeViewExpanderStyle" TargetType="{x:Type ToggleButton}">
@@ -3882,7 +3820,6 @@
                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                     ClickMode="Press"/>
       <Border x:Name="Bd"
-              Grid.Row="0"
               Grid.Column="1"
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
@@ -3897,7 +3834,6 @@
       <ItemsPresenter x:Name="ItemsHost"
                       Margin="19,0,0,0"
                       Grid.Row="1"
-                      Grid.Column="0"
                       Grid.ColumnSpan="2"/>
     </Grid>
     <ControlTemplate.Triggers>
@@ -3955,8 +3891,6 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
       <Border x:Name="Bd"
-              Grid.Row="0"
-              Grid.Column="0"
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
@@ -3976,12 +3910,12 @@
             <ColumnDefinition Width="Auto" MinWidth="19"/>
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
-          <ToggleButton x:Name="Expander" Grid.Row="0" Grid.Column="1"
+          <ToggleButton x:Name="Expander" Grid.Column="1"
                         Style="{StaticResource ExplorerTreeViewExpanderStyle}"
                         Margin="3,0,0,0"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Row="0" Grid.Column="2"
+          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
                             ContentSource="Header"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -4037,7 +3971,7 @@
   </ControlTemplate>
 
   <ControlTemplate x:Key="ExplorerTreeView.Template" TargetType="{x:Type TreeView}">
-    <Border x:Name="border"
+    <Border x:Name="Border"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             SnapsToDevicePixels="True">
@@ -4046,7 +3980,7 @@
           <RowDefinition Height="Auto"/>
           <RowDefinition/>
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="scrollViewer" Grid.Row="1"
+        <ScrollViewer x:Name="ScrollViewer" Grid.Row="1"
                       Background="{TemplateBinding Background}"
                       Focusable="False"
                       CanContentScroll="False"
@@ -4060,11 +3994,11 @@
     </Border>
     <ControlTemplate.Triggers>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="border" Property="Background"
+        <Setter TargetName="Border" Property="Background"
                 Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
       </Trigger>
       <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter TargetName="scrollViewer" Property="CanContentScroll"
+        <Setter TargetName="ScrollViewer" Property="CanContentScroll"
                 Value="True"/>
       </Trigger>
     </ControlTemplate.Triggers>
@@ -4085,12 +4019,12 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TreeView}">
-          <Border x:Name="border"
+          <Border x:Name="Border"
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Padding="{TemplateBinding Padding}"
                   SnapsToDevicePixels="True">
-            <ScrollViewer x:Name="scrollViewer"
+            <ScrollViewer x:Name="ScrollViewer"
                           Background="{TemplateBinding Background}"
                           CanContentScroll="False"
                           HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
@@ -4101,11 +4035,11 @@
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="border" Property="Background"
+              <Setter TargetName="Border" Property="Background"
                       Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
             </Trigger>
             <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-              <Setter TargetName="scrollViewer" Property="CanContentScroll"
+              <Setter TargetName="ScrollViewer" Property="CanContentScroll"
                       Value="True"/>
             </Trigger>
           </ControlTemplate.Triggers>
@@ -4240,10 +4174,10 @@
   <SolidColorBrush x:Key="TabItem.Border.Selected" Color="#FFD9D9D9" po:Freeze="True"/>
 
   <SolidColorBrush x:Key="TabItem.Background.Disabled" Color="#FFECECEC" po:Freeze="True"/>
-  <SolidColorBrush x:Key="TabItem.Border.Disabled" Color="#D9D9D9" po:Freeze="True"/>
+  <SolidColorBrush x:Key="TabItem.Border.Disabled" Color="#FFD9D9D9" po:Freeze="True"/>
 
   <Style TargetType="{x:Type TabControl}">
-    <Setter Property="Padding" Value="6,4,4,5"/>
+    <Setter Property="Padding" Value="6,4,6,6"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
@@ -4253,7 +4187,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TabControl}">
-          <Grid x:Name="templateRoot"
+          <Grid x:Name="TemplateRoot"
                         ClipToBounds="True"
                         SnapsToDevicePixels="True"
                         KeyboardNavigation.TabNavigation="Local">
@@ -4266,17 +4200,14 @@
               <RowDefinition x:Name="RowDefinition1" Height="*"/>
             </Grid.RowDefinitions>
             <aero10:TabPanelEx
-                      x:Name="headerPanel"
-                      Grid.Row="0"
-                      Grid.Column="0"
+                      x:Name="HeaderPanel"
                       SelectedTab="{TemplateBinding SelectedItem}"
                       Background="Transparent"
                       IsItemsHost="True"
                       Margin="2,2,2,0"
                       KeyboardNavigation.TabIndex="1"
                       Panel.ZIndex="1"/>
-            <Border x:Name="contentPanel"
-                    Grid.Column="0"
+            <Border x:Name="ContentPanel"
                     Grid.Row="1"
                     KeyboardNavigation.DirectionalNavigation="Contained"
                     KeyboardNavigation.TabNavigation="Local"
@@ -4292,36 +4223,36 @@
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="TabStripPlacement" Value="Bottom">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="1"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="1"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="Auto"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="2,0,2,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="2,0,2,2"/>
             </Trigger>
             <Trigger Property="TabStripPlacement" Value="Left">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Grid.Column" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Column" Value="1"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Column" Value="1"/>
               <Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto"/>
               <Setter TargetName="ColumnDefinition1" Property="Width" Value="*"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="2,2,0,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="2,2,0,2"/>
             </Trigger>
             <Trigger Property="TabStripPlacement" Value="Right">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Grid.Column" Value="1"/>
-              <Setter TargetName="contentPanel" Property="Grid.Column" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="1"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Column" Value="0"/>
               <Setter TargetName="ColumnDefinition0" Property="Width" Value="*"/>
               <Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="0,2,2,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="0,2,2,2"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="templateRoot" Property="TextElement.Foreground"
+              <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
                       Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
             </Trigger>
           </ControlTemplate.Triggers>
@@ -4357,20 +4288,20 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TabItem}">
-          <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+          <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
             <Border x:Name="Border"
                     BorderThickness="1,1,1,0"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     Padding="{TemplateBinding Padding}">
               <Border>
-                <ContentPresenter x:Name="contentPresenter"
-                                ContentSource="Header"
-                                HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                Focusable="False"
-                                RecognizesAccessKey="True"/>
+                <ContentPresenter x:Name="Content"
+                                  ContentSource="Header"
+                                  HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                  VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                  Focusable="False"
+                                  RecognizesAccessKey="True"/>
               </Border>
             </Border>
           </Grid>
@@ -4380,7 +4311,7 @@
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="contentPresenter" Property="Opacity" Value="0.56"/>
+              <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
             </Trigger>
@@ -4408,12 +4339,12 @@
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type TabItem}">
-              <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+              <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
                 <Border x:Name="Border"
                     BorderThickness="1,1,1,0"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}">
-                  <ContentPresenter x:Name="contentPresenter"
+                  <ContentPresenter x:Name="Content"
                                 ContentSource="Header"
                                 HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                 VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
@@ -4465,7 +4396,7 @@
                     <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
                     <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
                   </MultiDataTrigger.Conditions>
-                  <Setter TargetName="contentPresenter" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,1"/>
@@ -4475,7 +4406,7 @@
                     <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
                     <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
                   </MultiDataTrigger.Conditions>
-                  <Setter TargetName="contentPresenter" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderThickness" Value="1,0,1,1"/>
@@ -4485,7 +4416,7 @@
                     <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
                     <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
                   </MultiDataTrigger.Conditions>
-                  <Setter TargetName="contentPresenter" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,1"/>
@@ -4495,7 +4426,7 @@
                     <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
                     <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
                   </MultiDataTrigger.Conditions>
-                  <Setter TargetName="contentPresenter" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
@@ -4628,7 +4559,7 @@
                   <ColumnDefinition Width="*"/>
                   <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image Stretch="Fill" Grid.Column="0">
+                <Image Stretch="Fill">
                   <Image.Source>
                     <CroppedBitmap Source="/PresentationTheme.Aero.Win10;component/Resources/Progress.PulseOverlay.png"
                                    SourceRect="0,0,21,18"/>
@@ -4720,8 +4651,8 @@
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center"
           UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M0,0 L10,0 10,21 0,21 z"
+      <Path x:Name="Grip"
+            Data="M0,0 10,0 10,21 0,21 z"
             Margin="0,0,1,1"
             SnapsToDevicePixels="True"
             VerticalAlignment="Center"
@@ -4731,13 +4662,13 @@
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -4746,8 +4677,8 @@
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center"
           UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M0,19 L11,19 11,5 5.5,-0.5 0,5 z"
+      <Path x:Name="Grip"
+            Data="M0,19 11,19 11,5 5.5,-0.5 0,5 z"
             SnapsToDevicePixels="True"
             VerticalAlignment="Center"
             UseLayoutRounding="True"
@@ -4756,21 +4687,21 @@
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="SliderThumbHorizontalBottom" TargetType="{x:Type Thumb}">
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M0,0 L11,0 11,14 5.5,19.5 0,14 z"
+      <Path x:Name="Grip"
+            Data="M0,0 11,0 11,14 5.5,19.5 0,14 z"
             SnapsToDevicePixels="True"
             VerticalAlignment="Center"
             UseLayoutRounding="True"
@@ -4779,19 +4710,19 @@
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="SliderHorizontal" TargetType="{x:Type Slider}">
-    <Border x:Name="border"
+    <Border x:Name="Border"
             SnapsToDevicePixels="True"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
@@ -4804,7 +4735,6 @@
           <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <aero10:TickBarEx x:Name="TopTick"
-                          Grid.Row="0"
                           Height="4"
                           Placement="Top"
                           Visibility="Collapsed"
@@ -4893,35 +4823,12 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="SliderThumbVerticalDefault" TargetType="{x:Type Thumb}">
-    <Grid
-         HorizontalAlignment="Center"
-         VerticalAlignment="Center"
-         UseLayoutRounding="True">
-      <Path x:Name="grip"
-             Data="M0.5,0.5 L18.5,0.5 18.5,11.5 0.5,11.5 z"
-             Stretch="Fill"
-             Fill="{StaticResource Slider.Thumb.Background.Normal}"/>
-    </Grid>
-    <ControlTemplate.Triggers>
-      <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
-      </Trigger>
-      <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
-      </Trigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
-      </Trigger>
-    </ControlTemplate.Triggers>
-  </ControlTemplate>
-
   <ControlTemplate x:Key="SliderThumbVertical" TargetType="{x:Type Thumb}">
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center"
           UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M0,0 L0,10 21,10 21,0 z"
+      <Path x:Name="Grip"
+            Data="M0,0 0,10 21,10 21,0 z"
             Margin="0,0,1,1"
             SnapsToDevicePixels="True"
             VerticalAlignment="Center"
@@ -4931,13 +4838,13 @@
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -4946,20 +4853,20 @@
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center"
           UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M19,0 L19,11 5,11 -0.5,5.5 5,0 z"
+      <Path x:Name="Grip"
+            Data="M19,0 19,11 5,11 -0.5,5.5 5,0 z"
             Stretch="Fill"
             Fill="{StaticResource Slider.Thumb.Background.Normal}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -4968,26 +4875,26 @@
     <Grid HorizontalAlignment="Center"
           VerticalAlignment="Center"
           UseLayoutRounding="True">
-      <Path x:Name="grip"
-            Data="M0,0 L0,11 14,11 19.5,5.5 14,0 z"
+      <Path x:Name="Grip"
+            Data="M0,0 0,11 14,11 19.5,5.5 14,0 z"
             Stretch="Fill"
             Fill="{StaticResource Slider.Thumb.Background.Normal}"/>
     </Grid>
     <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Hot}"/>
       </Trigger>
       <Trigger Property="IsDragging" Value="True">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Pressed}"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
+        <Setter TargetName="Grip" Property="Fill" Value="{StaticResource Slider.Thumb.Background.Disabled}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
   <ControlTemplate x:Key="SliderVertical" TargetType="{x:Type Slider}">
-    <Border x:Name="border"
+    <Border x:Name="Border"
             SnapsToDevicePixels="True"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
@@ -5000,7 +4907,6 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <aero10:TickBarEx x:Name="TopTick"
-                          Grid.Column="0"
                           Width="4"
                           Placement="Left"
                           Visibility="Collapsed"

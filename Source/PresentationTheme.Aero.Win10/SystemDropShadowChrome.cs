@@ -16,11 +16,12 @@ namespace PresentationTheme.Aero.Win10
         private const int BottomLeft = 6;
         private const int Bottom = 7;
         private const int BottomRight = 8;
-        private const double ShadowDepth = 5.0;
+        private const double ShadowDepth = 5;
 
         private static readonly object ResourceAccess = new object();
-        private static Brush[] CommonBrushes;
-        private static CornerRadius CommonCornerRadius;
+        private static Brush[] commonBrushes;
+        private static CornerRadius commonCornerRadius;
+
         private Brush[] brushes;
 
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
@@ -178,26 +179,26 @@ namespace PresentationTheme.Aero.Win10
 
         private static GradientStopCollection CreateStops(Color c, double cornerRadius)
         {
-            double num = 1.0 / (cornerRadius + 5.0);
+            double gradientScale = 1.0 / (cornerRadius + ShadowDepth);
             var stops = new GradientStopCollection {
-                new GradientStop(c, (0.5 + cornerRadius) * num)
+                new GradientStop(c, (0.5 + cornerRadius) * gradientScale)
             };
 
             Color color = c;
             color.A = (byte)(0.74336 * c.A);
-            stops.Add(new GradientStop(color, (1.5 + cornerRadius) * num));
+            stops.Add(new GradientStop(color, (1.5 + cornerRadius) * gradientScale));
 
             color.A = (byte)(0.38053 * c.A);
-            stops.Add(new GradientStop(color, (2.5 + cornerRadius) * num));
+            stops.Add(new GradientStop(color, (2.5 + cornerRadius) * gradientScale));
 
             color.A = (byte)(0.12389 * c.A);
-            stops.Add(new GradientStop(color, (3.5 + cornerRadius) * num));
+            stops.Add(new GradientStop(color, (3.5 + cornerRadius) * gradientScale));
 
             color.A = (byte)(0.02654 * c.A);
-            stops.Add(new GradientStop(color, (4.5 + cornerRadius) * num));
+            stops.Add(new GradientStop(color, (4.5 + cornerRadius) * gradientScale));
 
             color.A = 0;
-            stops.Add(new GradientStop(color, (5.0 + cornerRadius) * num));
+            stops.Add(new GradientStop(color, (5.0 + cornerRadius) * gradientScale));
 
             stops.Freeze();
             return stops;
@@ -205,19 +206,19 @@ namespace PresentationTheme.Aero.Win10
 
         private Brush[] GetBrushes(Color c, CornerRadius cornerRadius)
         {
-            if (CommonBrushes == null) {
+            if (commonBrushes == null) {
                 lock (ResourceAccess) {
-                    if (CommonBrushes == null) {
-                        CommonBrushes = CreateBrushes(c, cornerRadius);
-                        CommonCornerRadius = cornerRadius;
+                    if (commonBrushes == null) {
+                        commonBrushes = CreateBrushes(c, cornerRadius);
+                        commonCornerRadius = cornerRadius;
                     }
                 }
             }
 
-            if (c == ((SolidColorBrush)CommonBrushes[Center]).Color &&
-                cornerRadius == CommonCornerRadius) {
+            if (c == ((SolidColorBrush)commonBrushes[Center]).Color &&
+                cornerRadius == commonCornerRadius) {
                 brushes = null;
-                return CommonBrushes;
+                return commonBrushes;
             }
 
             return brushes ?? (brushes = CreateBrushes(c, cornerRadius));
@@ -225,132 +226,132 @@ namespace PresentationTheme.Aero.Win10
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var bounds = new Rect(
-                new Point(5.0, 5.0),
+            var shadowBounds = new Rect(
+                new Point(ShadowDepth, ShadowDepth),
                 new Size(RenderSize.Width, RenderSize.Height));
 
-            Color c = Color;
-            if (bounds.Width <= 0 || bounds.Height <= 0 || c.A <= 0)
+            Color color = Color;
+            if (shadowBounds.Width <= 0 || shadowBounds.Height <= 0 || color.A <= 0)
                 return;
 
-            double width = (bounds.Right - bounds.Left) - 10.0;
-            double height = (bounds.Bottom - bounds.Top) - 10.0;
-            double minRadius = Math.Min(width * 0.5, height * 0.5);
+            double centerWidth = (shadowBounds.Right - shadowBounds.Left) - 2 * ShadowDepth;
+            double centerHeight = (shadowBounds.Bottom - shadowBounds.Top) - 2 * ShadowDepth;
+            double maxRadius = Math.Min(centerWidth * 0.5, centerHeight * 0.5);
 
             CornerRadius cornerRadius = CornerRadius;
-            cornerRadius.TopLeft = Math.Min(cornerRadius.TopLeft, minRadius);
-            cornerRadius.TopRight = Math.Min(cornerRadius.TopRight, minRadius);
-            cornerRadius.BottomLeft = Math.Min(cornerRadius.BottomLeft, minRadius);
-            cornerRadius.BottomRight = Math.Min(cornerRadius.BottomRight, minRadius);
+            cornerRadius.TopLeft = Math.Min(cornerRadius.TopLeft, maxRadius);
+            cornerRadius.TopRight = Math.Min(cornerRadius.TopRight, maxRadius);
+            cornerRadius.BottomLeft = Math.Min(cornerRadius.BottomLeft, maxRadius);
+            cornerRadius.BottomRight = Math.Min(cornerRadius.BottomRight, maxRadius);
 
-            Brush[] brushes = GetBrushes(c, cornerRadius);
-            double top = bounds.Top + 5.0;
-            double left = bounds.Left + 5.0;
-            double right = bounds.Right - 5.0;
-            double bottom = bounds.Bottom - 5.0;
+            Brush[] brushes = GetBrushes(color, cornerRadius);
+            double centerTop = shadowBounds.Top + ShadowDepth;
+            double centerLeft = shadowBounds.Left + ShadowDepth;
+            double centerRight = shadowBounds.Right - ShadowDepth;
+            double centerBottom = shadowBounds.Bottom - ShadowDepth;
 
-            double[] guidelinesX = {
-                left,
-                left + cornerRadius.TopLeft,
-                right - cornerRadius.TopRight,
-                left + cornerRadius.BottomLeft,
-                right - cornerRadius.BottomRight,
-                right
+            double[] guidelineSetX = {
+                centerLeft,
+                centerLeft + cornerRadius.TopLeft,
+                centerRight - cornerRadius.TopRight,
+                centerLeft + cornerRadius.BottomLeft,
+                centerRight - cornerRadius.BottomRight,
+                centerRight
             };
-            double[] guidelinesY = {
-                top,
-                top + cornerRadius.TopLeft,
-                top + cornerRadius.TopRight,
-                bottom - cornerRadius.BottomLeft,
-                bottom - cornerRadius.BottomRight,
-                bottom
+            double[] guidelineSetY = {
+                centerTop,
+                centerTop + cornerRadius.TopLeft,
+                centerTop + cornerRadius.TopRight,
+                centerBottom - cornerRadius.BottomLeft,
+                centerBottom - cornerRadius.BottomRight,
+                centerBottom
             };
 
-            drawingContext.PushGuidelineSet(new GuidelineSet(guidelinesX, guidelinesY));
-            cornerRadius.TopLeft += 5.0;
-            cornerRadius.TopRight += 5.0;
-            cornerRadius.BottomLeft += 5.0;
-            cornerRadius.BottomRight += 5.0;
+            drawingContext.PushGuidelineSet(new GuidelineSet(guidelineSetX, guidelineSetY));
+            cornerRadius.TopLeft += ShadowDepth;
+            cornerRadius.TopRight += ShadowDepth;
+            cornerRadius.BottomLeft += ShadowDepth;
+            cornerRadius.BottomRight += ShadowDepth;
 
             var topLeft = new Rect(
-                bounds.Left, bounds.Top, cornerRadius.TopLeft, cornerRadius.TopLeft);
+                shadowBounds.Left, shadowBounds.Top, cornerRadius.TopLeft, cornerRadius.TopLeft);
             drawingContext.DrawRectangle(brushes[TopLeft], null, topLeft);
 
-            double num8 = guidelinesX[TopRight] - guidelinesX[Top];
-            if (num8 > 0.0) {
-                var topBounds = new Rect(guidelinesX[Top], bounds.Top, num8, 5.0);
-                drawingContext.DrawRectangle(brushes[Top], null, topBounds);
+            double topWidth = guidelineSetX[TopRight] - guidelineSetX[Top];
+            if (topWidth > 0.0) {
+                var top = new Rect(guidelineSetX[Top], shadowBounds.Top, topWidth, ShadowDepth);
+                drawingContext.DrawRectangle(brushes[Top], null, top);
             }
 
-            var topRightBounds = new Rect(
-                guidelinesX[TopRight], bounds.Top, cornerRadius.TopRight, cornerRadius.TopRight);
-            drawingContext.DrawRectangle(brushes[TopRight], null, topRightBounds);
+            var topRight = new Rect(
+                guidelineSetX[TopRight], shadowBounds.Top, cornerRadius.TopRight, cornerRadius.TopRight);
+            drawingContext.DrawRectangle(brushes[TopRight], null, topRight);
 
-            double num9 = guidelinesY[Left] - guidelinesY[Top];
-            if (num9 > 0.0) {
-                var leftBounds = new Rect(bounds.Left, guidelinesY[Top], 5.0, num9);
+            double leftHeight = guidelineSetY[Left] - guidelineSetY[Top];
+            if (leftHeight > 0.0) {
+                var leftBounds = new Rect(shadowBounds.Left, guidelineSetY[Top], ShadowDepth, leftHeight);
                 drawingContext.DrawRectangle(brushes[Left], null, leftBounds);
             }
 
-            double num10 = guidelinesY[Center] - guidelinesY[TopRight];
-            if (num10 > 0.0) {
-                var rightBounds = new Rect(guidelinesX[Right], guidelinesY[TopRight], 5.0, num10);
-                drawingContext.DrawRectangle(brushes[Right], null, rightBounds);
+            double rightHeight = guidelineSetY[Center] - guidelineSetY[TopRight];
+            if (rightHeight > 0.0) {
+                var right = new Rect(guidelineSetX[Right], guidelineSetY[TopRight], ShadowDepth, rightHeight);
+                drawingContext.DrawRectangle(brushes[Right], null, right);
             }
 
             var bottomLeft = new Rect(
-                bounds.Left, guidelinesY[Left],
+                shadowBounds.Left, guidelineSetY[Left],
                 cornerRadius.BottomLeft, cornerRadius.BottomLeft);
             drawingContext.DrawRectangle(brushes[BottomLeft], null, bottomLeft);
 
-            double num11 = guidelinesX[Center] - guidelinesX[Left];
-            if (num11 > 0.0) {
-                var bottomBounds = new Rect(guidelinesX[Left], guidelinesY[Right], num11, 5.0);
-                drawingContext.DrawRectangle(brushes[Bottom], null, bottomBounds);
+            double bottomWidth = guidelineSetX[Center] - guidelineSetX[Left];
+            if (bottomWidth > 0.0) {
+                var bottom = new Rect(guidelineSetX[Left], guidelineSetY[Right], bottomWidth, 5.0);
+                drawingContext.DrawRectangle(brushes[Bottom], null, bottom);
             }
 
             var bottomRight = new Rect(
-                guidelinesX[Center],
-                guidelinesY[Center],
+                guidelineSetX[Center],
+                guidelineSetY[Center],
                 cornerRadius.BottomRight,
                 cornerRadius.BottomRight);
             drawingContext.DrawRectangle(brushes[BottomRight], null, bottomRight);
 
-            if (cornerRadius.TopLeft == 5.0 &&
+            if (cornerRadius.TopLeft == ShadowDepth &&
                 cornerRadius.TopLeft == cornerRadius.TopRight &&
                 cornerRadius.TopLeft == cornerRadius.BottomLeft &&
                 cornerRadius.TopLeft == cornerRadius.BottomRight) {
-                var center = new Rect(guidelinesX[0], guidelinesY[TopLeft], width, height);
+                var center = new Rect(guidelineSetX[0], guidelineSetY[TopLeft], centerWidth, centerHeight);
                 drawingContext.DrawRectangle(brushes[Center], null, center);
             } else {
-                PathFigure figure = new PathFigure();
-                if (cornerRadius.TopLeft > 5.0) {
-                    figure.StartPoint = new Point(guidelinesX[Top], guidelinesY[TopLeft]);
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Top], guidelinesY[Top]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[TopLeft], guidelinesY[Top]), true));
+                var figure = new PathFigure();
+                if (cornerRadius.TopLeft > ShadowDepth) {
+                    figure.StartPoint = new Point(guidelineSetX[Top], guidelineSetY[TopLeft]);
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Top], guidelineSetY[Top]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[TopLeft], guidelineSetY[Top]), true));
                 } else
-                    figure.StartPoint = new Point(guidelinesX[TopLeft], guidelinesY[TopLeft]);
+                    figure.StartPoint = new Point(guidelineSetX[TopLeft], guidelineSetY[TopLeft]);
 
-                if (cornerRadius.BottomLeft > 5.0) {
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[TopLeft], guidelinesY[Left]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Left], guidelinesY[Left]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Left], guidelinesY[Right]), true));
+                if (cornerRadius.BottomLeft > ShadowDepth) {
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[TopLeft], guidelineSetY[Left]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Left], guidelineSetY[Left]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Left], guidelineSetY[Right]), true));
                 } else
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[TopLeft], guidelinesY[Right]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[TopLeft], guidelineSetY[Right]), true));
 
-                if (cornerRadius.BottomRight > 5.0) {
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Center], guidelinesY[Right]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Center], guidelinesY[Center]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Right], guidelinesY[Center]), true));
+                if (cornerRadius.BottomRight > ShadowDepth) {
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Center], guidelineSetY[Right]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Center], guidelineSetY[Center]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Right], guidelineSetY[Center]), true));
                 } else
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Right], guidelinesY[Right]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Right], guidelineSetY[Right]), true));
 
-                if (cornerRadius.TopRight > 5.0) {
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Right], guidelinesY[TopRight]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[TopRight], guidelinesY[TopRight]), true));
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[TopRight], guidelinesY[TopLeft]), true));
+                if (cornerRadius.TopRight > ShadowDepth) {
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Right], guidelineSetY[TopRight]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[TopRight], guidelineSetY[TopRight]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[TopRight], guidelineSetY[TopLeft]), true));
                 } else
-                    figure.Segments.Add(new LineSegment(new Point(guidelinesX[Right], guidelinesY[TopLeft]), true));
+                    figure.Segments.Add(new LineSegment(new Point(guidelineSetX[Right], guidelineSetY[TopLeft]), true));
 
                 figure.IsClosed = true;
                 figure.Freeze();
