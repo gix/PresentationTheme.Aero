@@ -84,7 +84,7 @@
         </Grid.ColumnDefinitions>
         <Rectangle Width="16" Height="16" Fill="{Binding Converter={StaticResource ColorToBrushConverter}}"
                    Stroke="#FF999999" StrokeThickness="1"/>
-        <TextBlock Grid.Column="1" Text="{Binding}" Margin="3,0,0,0"/>
+        <local:SelectableTextBlock Grid.Column="1" Text="{Binding Mode=OneWay}" Margin="3,0,0,0"/>
       </Grid>
     </DataTemplate>
 
@@ -97,8 +97,8 @@
         </Grid.ColumnDefinitions>
         <Rectangle Width="16" Height="16" Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
                    Stroke="#FF999999" StrokeThickness="1"/>
-        <TextBlock Grid.Column="1" Text="{Binding Color}" Margin="3,0,0,0"/>
-        <TextBlock Grid.Column="2" Text="{Binding Index, StringFormat='({0})'}" Margin="3,0,0,0"/>
+        <local:SelectableTextBlock Grid.Column="1" Text="{Binding Color, Mode=OneWay}" Margin="3,0,0,0"/>
+        <local:SelectableTextBlock Grid.Column="2" Text="{Binding Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
       </Grid>
     </DataTemplate>
 
@@ -118,12 +118,12 @@
                 <Rectangle Stroke="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
                            StrokeThickness="4"/>
               </Border>
-              <TextBlock Grid.Column="1" Text="{Binding BorderColor}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="1" Text="{Binding BorderColor, Mode=OneWay}" Margin="3,0,0,0"/>
 
               <Rectangle Grid.Column="2" Width="16" Height="16"
                          Fill="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
                          Stroke="#FF999999" StrokeThickness="1"/>
-              <TextBlock Grid.Column="3" Text="{Binding BackgroundColor}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="3" Text="{Binding BackgroundColor, Mode=OneWay}" Margin="3,0,0,0"/>
             </Grid>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -148,14 +148,14 @@
                 <Rectangle Stroke="{Binding BorderColor.Color, Converter={StaticResource ColorToBrushConverter}}"
                            StrokeThickness="4"/>
               </Border>
-              <TextBlock Grid.Column="1" Text="{Binding BorderColor.Color}" Margin="3,0,0,0"/>
-              <TextBlock Grid.Column="2" Text="{Binding BorderColor.Index, StringFormat='({0})'}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="1" Text="{Binding BorderColor.Color, Mode=OneWay}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="2" Text="{Binding BorderColor.Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
 
               <Rectangle Grid.Column="3" Width="16" Height="16"
                          Fill="{Binding BackgroundColor.Color, Converter={StaticResource ColorToBrushConverter}}"
                          Stroke="#FF999999" StrokeThickness="1"/>
-              <TextBlock Grid.Column="4" Text="{Binding BackgroundColor.Color}" Margin="3,0,0,0"/>
-              <TextBlock Grid.Column="5" Text="{Binding BorderColor.Index, StringFormat='({0})'}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="4" Text="{Binding BackgroundColor.Color, Mode=OneWay}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="5" Text="{Binding BorderColor.Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
             </Grid>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -230,7 +230,10 @@
           </CollectionViewSource>
         </Grid.Resources>
         <DataGrid ItemsSource="{Binding Source={StaticResource PropertiesView}}" IsReadOnly="True"
-                  AutoGenerateColumns="False" GridLinesVisibility="None">
+                  AutoGenerateColumns="False" GridLinesVisibility="None"
+                  FocusVisualStyle="{x:Null}"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow">
           <DataGrid.GroupStyle>
             <StaticResource ResourceKey="OriginGroupStyle"/>
           </DataGrid.GroupStyle>
@@ -238,7 +241,8 @@
             <DataGridTextColumn Header="Id" Binding="{Binding DisplayName}"/>
             <DataGridTextColumn Header="Type" Binding="{Binding DisplayPrimitiveType}"/>
             <DataGridTextColumn Header="Origin" Binding="{Binding Origin}"/>
-            <DataGridTemplateColumn Header="Value" Width="*">
+            <DataGridTemplateColumn Header="Value" Width="*"
+                                    ClipboardContentBinding="{Binding StringValue}">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
                   <ContentPresenter Content="{Binding Value}"/>
@@ -448,7 +452,7 @@
               <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
               <DataGridTextColumn Header="Type" Binding="{Binding Type}"/>
               <DataGridTextColumn Header="Origin" Binding="{Binding Origin}"/>
-              <DataGridTemplateColumn Header="Value">
+              <DataGridTemplateColumn Header="Value" ClipboardContentBinding="{Binding Value}">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <ContentControl Content="{Binding Value}"/>

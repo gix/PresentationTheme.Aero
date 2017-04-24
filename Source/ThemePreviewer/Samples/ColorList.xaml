@@ -20,14 +20,16 @@
             VirtualizingPanel.VirtualizationMode="Recycling"
             UseLayoutRounding="true">
     <DataGrid.Columns>
-      <DataGridTemplateColumn Header="Name" Width="250" SortMemberPath="Name">
+      <DataGridTemplateColumn Header="Name" Width="250" SortMemberPath="Label"
+                              ClipboardContentBinding="{Binding Name}">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding Name}"/>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
-      <DataGridTemplateColumn Header="Color" Width="100" SortMemberPath="StringValue">
+      <DataGridTemplateColumn Header="Color" Width="100" SortMemberPath="StringValue"
+                              ClipboardContentBinding="{Binding StringValue}">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBox BorderThickness="0" Background="Transparent" IsReadOnly="True"
@@ -36,7 +38,8 @@
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
-      <DataGridTemplateColumn Header="Sample" Width="*">
+      <DataGridTemplateColumn Header="Sample" Width="*"
+                              ClipboardContentBinding="{Binding Brush}">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <Rectangle Fill="{Binding Brush}" VerticalAlignment="Stretch"/>

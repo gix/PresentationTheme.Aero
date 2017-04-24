@@ -99,6 +99,7 @@
       <DependentUpon>PreviewImageDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProgressInfo.cs" />
+    <Compile Include="SelectableTextBlock.cs" />
     <Compile Include="ShowProgressAdornerBehavior.cs" />
     <Compile Include="ThemeClassViewModel.cs" />
     <Compile Include="ThemeData.cs" />
@@ -130,6 +131,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PreviewImageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
