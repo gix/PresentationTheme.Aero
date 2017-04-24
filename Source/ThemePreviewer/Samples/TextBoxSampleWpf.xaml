@@ -6,19 +6,20 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
   <StackPanel>
-    <TextBox Margin="3" Text="Foo"/>
-    <TextBox Margin="3" Text="Foo" IsReadOnly="True"/>
-    <TextBox Margin="3" Text="Foo" IsEnabled="False"/>
-    <PasswordBox Margin="3" Password="Foo"/>
-    <PasswordBox Margin="3" Password="Foo" IsEnabled="False"/>
-    <TextBox Margin="3" Background="#FFC0C0" Text="Foo" x:Name="xxx"/>
-    <TextBox Margin="3" Background="#FFC0C0" Text="Foo" IsReadOnly="True"/>
-    <TextBox Margin="3" Background="#FFC0C0" Text="Foo" IsEnabled="False"/>
-    <TextBox Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo"/>
-    <TextBox Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo" IsReadOnly="True"/>
-    <TextBox Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo" IsEnabled="False"/>
-    <TextBox Margin="3" BorderThickness="5" Text="Foo"/>
-    <TextBox Margin="3" BorderThickness="5" Text="Foo" IsReadOnly="True"/>
-    <TextBox Margin="3" BorderThickness="5" Text="Foo" IsEnabled="False"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Text="Foo"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Text="Foo" IsReadOnly="True"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Text="Foo" IsEnabled="False"/>
+    <PasswordBox Width="150" HorizontalAlignment="Left" Margin="3" Password="Foo"/>
+    <PasswordBox Width="150" HorizontalAlignment="Left" Margin="3" Password="Foo" IsEnabled="False"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#FFC0C0" Text="Foo" x:Name="xxx"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#FFC0C0" Text="Foo" IsReadOnly="True"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#FFC0C0" Text="Foo" IsEnabled="False"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo" IsReadOnly="True"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Background="#C0FFC0" BorderThickness="0" Text="Foo" IsEnabled="False"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" BorderThickness="5" Text="Foo"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" BorderThickness="5" Text="Foo" IsReadOnly="True"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" BorderThickness="5" Text="Foo" IsEnabled="False"/>
+    <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Padding="5,10" Text="Padded"/>
   </StackPanel>
 </UserControl>

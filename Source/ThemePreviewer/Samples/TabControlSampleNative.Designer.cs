@@ -38,14 +38,15 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(632, 480);
+            this.tabControl1.Size = new System.Drawing.Size(250, 480);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -54,7 +55,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(624, 452);
+            this.tabPage1.Size = new System.Drawing.Size(242, 452);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Computer Name";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -67,7 +68,7 @@
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(618, 446);
+            this.panel1.Size = new System.Drawing.Size(236, 446);
             this.panel1.TabIndex = 0;
             // 
             // tabPage2
@@ -97,7 +98,7 @@
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TabControlSampleNative";
-            this.Size = new System.Drawing.Size(632, 480);
+            this.Size = new System.Drawing.Size(500, 480);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);

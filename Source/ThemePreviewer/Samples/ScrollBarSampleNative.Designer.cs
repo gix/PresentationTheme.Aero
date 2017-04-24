@@ -127,16 +127,16 @@
             // sizeBox2
             // 
             this.sizeBox2.Enabled = false;
-            this.sizeBox2.Location = new System.Drawing.Point(0, 31);
+            this.sizeBox2.Location = new System.Drawing.Point(3, 31);
             this.sizeBox2.Name = "sizeBox2";
-            this.sizeBox2.Size = new System.Drawing.Size(20, 17);
+            this.sizeBox2.Size = new System.Drawing.Size(17, 17);
             this.sizeBox2.TabIndex = 1;
             // 
             // sizeBox1
             // 
-            this.sizeBox1.Location = new System.Drawing.Point(0, 0);
+            this.sizeBox1.Location = new System.Drawing.Point(3, 0);
             this.sizeBox1.Name = "sizeBox1";
-            this.sizeBox1.Size = new System.Drawing.Size(20, 17);
+            this.sizeBox1.Size = new System.Drawing.Size(17, 17);
             this.sizeBox1.TabIndex = 0;
             // 
             // ScrollBarSampleNative

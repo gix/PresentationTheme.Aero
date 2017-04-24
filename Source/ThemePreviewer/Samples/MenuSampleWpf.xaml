@@ -51,9 +51,9 @@
         <MenuItem Header="_Disabled" IsEnabled="False"/>
       </ContextMenu>
     </DockPanel.ContextMenu>
-    <Menu x:Name="menu1" DockPanel.Dock="Top">
+    <Menu DockPanel.Dock="Top" x:Name="menu">
       <MenuItem Header="_Normal"/>
-      <MenuItem Header="_Header" x:Name="item1">
+      <MenuItem Header="_Header">
         <MenuItem Header="_Normal" InputGestureText="Ctrl+N">
           <MenuItem.Icon>
             <Image Source="{StaticResource icon1}" SnapsToDevicePixels="True"/>
@@ -85,5 +85,14 @@
       <MenuItem Header="_Checked" IsChecked="True" IsCheckable="True"/>
       <MenuItem Header="_Disabled" IsEnabled="False"/>
     </Menu>
+    <Menu DockPanel.Dock="Top" IsEnabled="False">
+      <MenuItem Header="_Normal"/>
+      <MenuItem Header="_Header">
+        <MenuItem/>
+      </MenuItem>
+      <MenuItem Header="_Checked" IsChecked="True" IsCheckable="True"/>
+      <MenuItem Header="_Disabled" IsEnabled="False"/>
+    </Menu>
+    <Border/>
   </DockPanel>
 </UserControl>

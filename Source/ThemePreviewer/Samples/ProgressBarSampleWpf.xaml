@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ThemePreviewer.Samples"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
   <Grid>
@@ -20,7 +19,7 @@
       <Border Margin="3"/>
       <StackPanel Orientation="Horizontal">
         <ProgressBar Margin="3" HorizontalAlignment="Left" Width="250" Height="16" Value="0" Maximum="100" x:Name="bar"/>
-        <Button Margin="3" Width="16" Height="16" MinWidth="16" MinHeight="16" x:Name="valueButton"/>
+        <Button Margin="2" Width="18" Height="18" MinWidth="18" MinHeight="18" x:Name="valueButton"/>
       </StackPanel>
       <Border Margin="3"/>
       <ProgressBar Margin="3" HorizontalAlignment="Left" Width="250" Height="16" Value="80" Foreground="#FFDA2626"/>

@@ -44,7 +44,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(3, 3);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(116, 23);
+            this.textBox1.Size = new System.Drawing.Size(150, 23);
             this.textBox1.TabIndex = 0;
             this.textBox1.Text = "Foo";
             // 
@@ -53,7 +53,7 @@
             this.textBox2.Location = new System.Drawing.Point(3, 32);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(116, 23);
+            this.textBox2.Size = new System.Drawing.Size(150, 23);
             this.textBox2.TabIndex = 1;
             this.textBox2.Text = "Foo";
             // 
@@ -62,7 +62,7 @@
             this.textBox3.Enabled = false;
             this.textBox3.Location = new System.Drawing.Point(3, 61);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(116, 23);
+            this.textBox3.Size = new System.Drawing.Size(150, 23);
             this.textBox3.TabIndex = 2;
             this.textBox3.Text = "Foo";
             // 
@@ -70,7 +70,7 @@
             // 
             this.textBox4.Location = new System.Drawing.Point(3, 90);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(116, 23);
+            this.textBox4.Size = new System.Drawing.Size(150, 23);
             this.textBox4.TabIndex = 3;
             this.textBox4.Text = "Foo";
             this.textBox4.UseSystemPasswordChar = true;
@@ -80,7 +80,7 @@
             this.textBox6.Enabled = false;
             this.textBox6.Location = new System.Drawing.Point(3, 119);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(116, 23);
+            this.textBox6.Size = new System.Drawing.Size(150, 23);
             this.textBox6.TabIndex = 5;
             this.textBox6.Text = "Foo";
             this.textBox6.UseSystemPasswordChar = true;
@@ -91,7 +91,7 @@
             this.textBox5.Enabled = false;
             this.textBox5.Location = new System.Drawing.Point(3, 206);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(116, 23);
+            this.textBox5.Size = new System.Drawing.Size(150, 23);
             this.textBox5.TabIndex = 8;
             this.textBox5.Text = "Foo";
             // 
@@ -101,7 +101,7 @@
             this.textBox7.Location = new System.Drawing.Point(3, 177);
             this.textBox7.Name = "textBox7";
             this.textBox7.ReadOnly = true;
-            this.textBox7.Size = new System.Drawing.Size(116, 23);
+            this.textBox7.Size = new System.Drawing.Size(150, 23);
             this.textBox7.TabIndex = 7;
             this.textBox7.Text = "Foo";
             // 
@@ -110,7 +110,7 @@
             this.textBox8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.textBox8.Location = new System.Drawing.Point(3, 148);
             this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(116, 23);
+            this.textBox8.Size = new System.Drawing.Size(150, 23);
             this.textBox8.TabIndex = 6;
             this.textBox8.Text = "Foo";
             // 
@@ -121,7 +121,7 @@
             this.textBox9.Enabled = false;
             this.textBox9.Location = new System.Drawing.Point(3, 293);
             this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(116, 16);
+            this.textBox9.Size = new System.Drawing.Size(150, 16);
             this.textBox9.TabIndex = 11;
             this.textBox9.Text = "Foo";
             // 
@@ -132,7 +132,7 @@
             this.textBox10.Location = new System.Drawing.Point(3, 264);
             this.textBox10.Name = "textBox10";
             this.textBox10.ReadOnly = true;
-            this.textBox10.Size = new System.Drawing.Size(116, 16);
+            this.textBox10.Size = new System.Drawing.Size(150, 16);
             this.textBox10.TabIndex = 10;
             this.textBox10.Text = "Foo";
             // 
@@ -142,11 +142,11 @@
             this.textBox11.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox11.Location = new System.Drawing.Point(3, 235);
             this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(116, 16);
+            this.textBox11.Size = new System.Drawing.Size(150, 16);
             this.textBox11.TabIndex = 9;
             this.textBox11.Text = "Foo";
             // 
-            // SysTextBoxSample
+            // TextBoxSampleNative
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -162,7 +162,7 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "SysTextBoxSample";
+            this.Name = "TextBoxSampleNative";
             this.Size = new System.Drawing.Size(359, 429);
             this.ResumeLayout(false);
             this.PerformLayout();

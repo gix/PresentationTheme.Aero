@@ -3,79 +3,68 @@
     using System;
     using System.Drawing;
     using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
-    using StyleCore;
-    using StyleCore.Native;
 
-    public partial class MenuSampleNative : Form
+    public partial class MenuSampleNative : UserControl
     {
-        private static int instanceCount;
+        private MainMenu menu;
 
         public MenuSampleNative()
         {
-            instanceCount++;
             InitializeComponent();
-            TopLevel = false;
-            ContextMenu = contextMenu1;
+            menu = BuildMenu();
+            ContextMenu = BuildContextMenu();
 
-            if (instanceCount == 1) {
-                var b = new Button();
-                b.Text = "Open form";
-                b.Click += (sender, args) => {
-                    var f = new MenuSampleNative();
-                    f.TopLevel = true;
-                    f.FormBorderStyle = FormBorderStyle.Sizable;
-                    f.Show();
+            var openButton = new Button();
+            openButton.UseVisualStyleBackColor = true;
+            openButton.Text = "Open form";
+            openButton.Click += (sender, args) => {
+                var form = new Form {
+                    TopLevel = true,
+                    BackColor = SystemColors.Window,
+                    FormBorderStyle = FormBorderStyle.Sizable
                 };
-                Controls.Add(b);
-            }
+                form.Menu = menu;
+                form.Show();
+            };
 
-            //SetOwnerDraw(Menu.MenuItems);
+            Controls.Add(openButton);
         }
 
-        private void SetOwnerDraw(Menu.MenuItemCollection menuItems)
+        private MainMenu BuildMenu()
         {
-            foreach (MenuItem item in menuItems) {
-                item.OwnerDraw = true;
-                item.MeasureItem += OnMeasureItem;
-                item.DrawItem += OnDrawItem;
-                //SetOwnerDraw(item.MenuItems);
-            }
+            var menu = new MainMenu();
+            foreach (var node in ItemGenerator.GetMenu().Children)
+                menu.MenuItems.Add(BuildMenu(node));
+            return menu;
         }
 
-        private void OnMeasureItem(object sender, MeasureItemEventArgs args)
+        private ContextMenu BuildContextMenu()
         {
-            var item = Menu.MenuItems[args.Index];
-            var renderer = GetMenuBarItemRenderer(0);
-
-            using (Font font = renderer.GetFont(args.Graphics, FontProperty.GlyphFont)) {
-                SizeF size = args.Graphics.MeasureString(item.Text, font);
-                args.ItemWidth = (int)size.Width;
-                args.ItemHeight = (int)size.Height;
-            }
+            var menu = new ContextMenu();
+            foreach (var node in ItemGenerator.GetMenu().Children)
+                menu.MenuItems.Add(BuildMenu(node));
+            return menu;
         }
 
-        private void OnDrawItem(object sender, DrawItemEventArgs args)
+        private MenuItem BuildMenu(ItemGenerator.MenuNode node)
         {
-            var item = Menu.MenuItems[args.Index];
-            var renderer = GetMenuBarItemRenderer(args.State);
-            renderer.DrawBackground(args.Graphics, args.Bounds, args.Bounds);
-            renderer.DrawText(args.Graphics, args.Bounds, item.Text);
+            var item = new MenuItem {
+                Text = node.IsSeparator ? "-" : node.Text,
+                Enabled = node.IsEnabled,
+                Checked = node.IsChecked,
+                RadioCheck = node.IsRadio,
+                Shortcut = GetNativeShortcut(node.InputGestureText)
+            };
+            foreach (var childNode in node.Children)
+                item.MenuItems.Add(BuildMenu(childNode));
+            return item;
         }
 
-        private VisualStyleRenderer GetMenuBarItemRenderer(DrawItemState stateFlags)
+        private static Shortcut GetNativeShortcut(string shortcut)
         {
-            int state = 1;
-            if ((stateFlags & (DrawItemState.HotLight | DrawItemState.Disabled)) == (DrawItemState.HotLight | DrawItemState.Disabled))
-                state = (int)BARITEMSTATES.MBI_DISABLEDHOT;
-            else if ((stateFlags & DrawItemState.Disabled) != 0)
-                state = (int)BARITEMSTATES.MBI_DISABLED;
-            else if ((stateFlags & DrawItemState.HotLight) != 0)
-                state = (int)BARITEMSTATES.MBI_HOT;
-            else if ((stateFlags & DrawItemState.Checked) != 0)
-                state = (int)BARITEMSTATES.MBI_PUSHED;
-
-            return new VisualStyleRenderer("MENU", (int)MENUPARTS.MENU_BARITEM, state);
+            if (shortcut == null)
+                return Shortcut.None;
+            return (Shortcut)Enum.Parse(typeof(Shortcut), shortcut.Replace("+", ""));
         }
     }
 }

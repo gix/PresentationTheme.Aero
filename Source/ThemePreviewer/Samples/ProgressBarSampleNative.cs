@@ -1,9 +1,7 @@
 ﻿namespace ThemePreviewer.Samples
 {
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
 
     public partial class ProgressBarSampleNative : UserControl, IOptionControl
     {
