@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero.Win10
+﻿namespace PresentationTheme.Aero
 {
     using System;
     using System.ComponentModel;
@@ -159,6 +159,33 @@
                 if (margin != null)
                     element.Margin = margin.Value;
             }
+        }
+
+        internal static TAncestor FindAncestor<TAncestor>(this DependencyObject obj)
+            where TAncestor : DependencyObject
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            for (obj = obj.GetVisualOrLogicalParent(); obj != null;
+                 obj = obj.GetVisualOrLogicalParent()) {
+                var ancestor = obj as TAncestor;
+                if (ancestor != null)
+                    return ancestor;
+            }
+
+            return null;
+        }
+
+        internal static DependencyObject GetVisualOrLogicalParent(
+            this DependencyObject sourceElement)
+        {
+            if (sourceElement == null)
+                return null;
+            if (sourceElement is Visual)
+                return VisualTreeHelper.GetParent(sourceElement) ??
+                       LogicalTreeHelper.GetParent(sourceElement);
+            return LogicalTreeHelper.GetParent(sourceElement);
         }
     }
 }

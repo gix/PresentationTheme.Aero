@@ -45,7 +45,6 @@
     <Compile Include="ButtonChrome.cs" />
     <Compile Include="DataGridHeaderBorder.cs" />
     <Compile Include="DoubleUtil.cs" />
-    <Compile Include="DynamicVisualStateManager.cs" />
     <Compile Include="EqualsConverter.cs" />
     <Compile Include="ExplorerStyles.cs" />
     <Compile Include="FrameworkExtensions.cs" />
@@ -58,10 +57,8 @@
     <Compile Include="SystemDropShadowChrome.cs" />
     <Compile Include="TabPanelEx.cs" />
     <Compile Include="TextBoxChrome.cs" />
-    <Compile Include="TextBoxService.cs" />
     <Compile Include="ThemeHelper.cs" />
     <Compile Include="TickBarEx.cs" />
-    <Compile Include="TreeViewService.cs" />
     <Compile Include="TypeOfConverter.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +72,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Progress.PulseOverlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
+      <Project>{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}</Project>
+      <Name>PresentationTheme.Aero</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\SharedPropertiesDotNet.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

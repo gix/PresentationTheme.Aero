@@ -3,22 +3,31 @@
     using System;
     using System.Reflection;
     using System.Text;
-    using System.Windows;
 
+    /// <summary>AeroLite Windows 10 Theme</summary>
     public static class AeroWin10Theme
     {
+        /// <summary>
+        ///   Gets the Pack <see cref="Uri"/> for the theme resources.
+        /// </summary>
         public static Uri ResourceUri =>
             MakePackUri(typeof(AeroWin10Theme).Assembly, "Themes/AeroWin10.NormalColor.xaml");
 
+        /// <summary>
+        ///   Gets or sets a value determining whether animations are forcibly
+        ///   enabled or disabled.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true"/> to forcibly enable animations.
+        ///   <see langword="false"/> to disable animations.
+        ///   Use <see langword="null"/> to automatically determine whether
+        ///   animations should be used.
+        /// </value>
+        /// <seealso cref="SystemVisualStateManager.UseAnimationsOverride"/>
         public static bool? UseAnimationsOverride
         {
-            get => DynamicVisualStateManager.Instance.UseAnimationsOverride;
-            set => DynamicVisualStateManager.Instance.UseAnimationsOverride = value;
-        }
-
-        public static ResourceDictionary CreateResourceDictionary()
-        {
-            return new ResourceDictionary { Source = ResourceUri };
+            get => SystemVisualStateManager.Instance.UseAnimationsOverride;
+            set => SystemVisualStateManager.Instance.UseAnimationsOverride = value;
         }
 
         /// <summary>

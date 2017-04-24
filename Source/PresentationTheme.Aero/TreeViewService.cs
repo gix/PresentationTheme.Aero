@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero.Win10
+﻿namespace PresentationTheme.Aero
 {
     using System;
     using System.Globalization;
@@ -90,8 +90,8 @@
                     FrameworkPropertyMetadataOptions.Inherits));
 
         /// <summary>
-        ///   Gets a flag indicating whether the treeview uses the Explorer
-        ///   style.
+        ///   Gets a flag indicating whether the <see cref="TreeView"/> uses the
+        ///   Explorer style.
         /// </summary>
         public static bool GetUseExplorerStyle(TreeView d)
         {
@@ -99,8 +99,8 @@
         }
 
         /// <summary>
-        ///   Sets a flag indicating whether the treeview uses the Explorer
-        ///   style.
+        ///   Sets a flag indicating whether the <see cref="TreeView"/> uses the
+        ///   Explorer style.
         /// </summary>
         public static void SetUseExplorerStyle(TreeView d, bool value)
         {
@@ -135,7 +135,8 @@
             return level;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(
+            object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
         }

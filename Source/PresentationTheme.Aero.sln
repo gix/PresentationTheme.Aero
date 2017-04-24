@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeBrowser", "ThemeBrowse
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{21C94CC2-624A-4F52-8CD0-E94FCDFD5582}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero", "PresentationTheme.Aero\PresentationTheme.Aero.csproj", "{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{ED93DFE6-C48D-41ED-991A-90505F8DDA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED93DFE6-C48D-41ED-991A-90505F8DDA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED93DFE6-C48D-41ED-991A-90505F8DDA19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,5 +70,6 @@ Global
 		{8BB1D809-EA59-490F-9867-80E031CE691C} = {21C94CC2-624A-4F52-8CD0-E94FCDFD5582}
 		{D82A4175-763E-4591-8AA3-4BED74B57E32} = {21C94CC2-624A-4F52-8CD0-E94FCDFD5582}
 		{A6E7C65F-98F7-4297-89EA-CAD879719FD6} = {21C94CC2-624A-4F52-8CD0-E94FCDFD5582}
+		{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6} = {21C94CC2-624A-4F52-8CD0-E94FCDFD5582}
 	EndGlobalSection
 EndGlobal

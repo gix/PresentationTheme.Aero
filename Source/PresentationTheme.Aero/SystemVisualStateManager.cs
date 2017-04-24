@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero.Win10
+﻿namespace PresentationTheme.Aero
 {
     using System;
     using System.Windows;
@@ -6,12 +6,13 @@
 
     /// <summary>
     ///   Provides an extended <see cref="VisualStateManager"/> that honors system-wide
-    ///   animation settings and hardware capabilities. Animations are used if:
+    ///   animation settings and hardware capabilities. Animations are used by
+    ///   default if:
     ///   <list type="bullet">
     ///     <item>
     ///       <description>
     ///         <see cref="SystemParameters.ClientAreaAnimation"/> is
-    ///         <see langword="true"/>,
+    ///         <see langword="true"/>, and
     ///       </description>
     ///     </item>
     ///     <item>
@@ -19,21 +20,20 @@
     ///         <see cref="RenderCapability.Tier"/> is <c>1</c> or higher, and
     ///       </description>
     ///     </item>
-    ///     <item>
-    ///       <description>
-    ///         <see cref="RenderCapability.Tier"/> is <c>1</c> or higher
-    ///       </description>
-    ///     </item>
     ///   </list>
+    ///   Animations can be forcibly enabled or disabled regardless of system
+    ///   settings by setting <see cref="UseAnimationsOverride"/>.
     /// </summary>
-    public sealed class DynamicVisualStateManager : VisualStateManager
+    public sealed class SystemVisualStateManager : VisualStateManager
     {
-        private static readonly Lazy<DynamicVisualStateManager> LazyInstance =
-            new Lazy<DynamicVisualStateManager>(() => new DynamicVisualStateManager());
+        private static readonly Lazy<SystemVisualStateManager> LazyInstance =
+            new Lazy<SystemVisualStateManager>(() => new SystemVisualStateManager());
 
-        public static DynamicVisualStateManager Instance => LazyInstance.Value;
+        public static SystemVisualStateManager Instance => LazyInstance.Value;
 
-        private DynamicVisualStateManager()
+        private bool? useAnimationsOverride;
+
+        private SystemVisualStateManager()
         {
             SystemParameters.StaticPropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(SystemParameters.ClientAreaAnimation))
@@ -43,7 +43,20 @@
             RenderCapability.TierChanged += (s, e) => RaiseAnimatesChanged();
         }
 
-        private bool? useAnimationsOverride;
+        /// <summary>
+        ///   Gets a value indicating whether the animations are used for state
+        ///   transitions.
+        /// </summary>
+        /// <seealso cref="UseAnimationsOverride"/>
+        public bool Animates =>
+            UseAnimationsOverride.GetValueOrDefault(
+                SystemParameters.ClientAreaAnimation &&
+                RenderCapability.Tier > 0);
+
+        /// <summary>
+        ///   Occurs when the value of the <see cref="Animates"/> property changed.
+        /// </summary>
+        public event EventHandler AnimatesChanged;
 
         /// <summary>
         ///   Gets or sets a value determining whether animations are forcibly
@@ -51,9 +64,8 @@
         /// </summary>
         /// <value>
         ///   <see langword="true"/> to forcibly enable animations.
-        ///   <see langword="false"/> to disable animations.
-        ///   Use <see langword="null"/> to automatically determine whether
-        ///   animations should be used.
+        ///   <see langword="false"/> to disable animations. Use <see langword="null"/>
+        ///   to automatically determine whether animations should be used.
         /// </value>
         public bool? UseAnimationsOverride
         {
@@ -61,8 +73,10 @@
             set
             {
                 if (useAnimationsOverride != value) {
+                    bool oldAnimates = Animates;
                     useAnimationsOverride = value;
-                    RaiseAnimatesChanged();
+                    if (Animates != oldAnimates)
+                        RaiseAnimatesChanged();
                 }
             }
         }
@@ -78,13 +92,6 @@
                     control, stateGroupsRoot, stateName, group, state,
                     useTransitions && Animates);
         }
-
-        public bool Animates =>
-            AeroWin10Theme.UseAnimationsOverride.GetValueOrDefault(
-                SystemParameters.ClientAreaAnimation &&
-                RenderCapability.Tier > 0);
-
-        public event EventHandler AnimatesChanged;
 
         private void RaiseAnimatesChanged()
         {

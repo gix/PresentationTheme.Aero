@@ -27,7 +27,7 @@
         public ProgressBarChrome()
         {
             IsVisibleChanged += (s, e) => UpdateHighlightAnimation();
-            DynamicVisualStateManager.Instance.AnimatesChanged +=
+            SystemVisualStateManager.Instance.AnimatesChanged +=
                 (s, e) => UpdateHighlightAnimation();
         }
 
@@ -187,7 +187,7 @@
             indicator.Width = targetWidth;
 
             bool isReverse = targetWidth < indicator.Width;
-            if (!isReverse && animate && DynamicVisualStateManager.Instance.Animates) {
+            if (!isReverse && animate && SystemVisualStateManager.Instance.Animates) {
                 var animation = new DoubleAnimation(
                     indicator.ActualWidth, targetWidth,
                     TimeSpan.FromMilliseconds(AnimationDuration));
@@ -242,7 +242,7 @@
             }
 
             var storyboard = new Storyboard();
-            if (DynamicVisualStateManager.Instance.Animates) {
+            if (SystemVisualStateManager.Instance.Animates) {
                 var animation = new ThicknessAnimationUsingKeyFrames {
                     BeginTime = startTime,
                     Duration = duration,

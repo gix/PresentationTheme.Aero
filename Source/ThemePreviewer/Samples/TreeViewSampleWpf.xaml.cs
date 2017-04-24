@@ -4,7 +4,7 @@ namespace ThemePreviewer.Samples
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Windows.Controls;
-    using PresentationTheme.Aero.Win10;
+    using PresentationTheme.Aero;
 
     public partial class TreeViewSampleWpf : IOptionControl
     {
