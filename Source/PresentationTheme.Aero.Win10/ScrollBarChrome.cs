@@ -3,6 +3,7 @@
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Media;
 
     public class ScrollBarChrome : Decorator
@@ -46,6 +47,69 @@
                     FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnClearPenCache));
+
+        public static readonly DependencyProperty RenderHoverProperty =
+            DependencyProperty.Register(
+                nameof(RenderHover),
+                typeof(bool),
+                typeof(ScrollBarChrome),
+                new FrameworkPropertyMetadata(
+                    false,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnRenderHoverChanged));
+
+        public bool RenderHover
+        {
+            get => (bool)GetValue(RenderHoverProperty);
+            set => SetValue(RenderHoverProperty, value);
+        }
+
+        public static readonly DependencyProperty ParentElementProperty =
+            DependencyProperty.Register(
+                nameof(ParentElement),
+                typeof(Control),
+                typeof(ScrollBarChrome),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    OnRenderHoverChanged));
+
+        public Control ParentElement
+        {
+            get => (Control)GetValue(ParentElementProperty);
+            set => SetValue(ParentElementProperty, value);
+        }
+
+        private static void OnRenderHoverChanged(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var source = (ScrollBarChrome)d;
+            source.UpdateVisualState();
+        }
+
+        public void UpdateVisualState(bool useTransitions = true)
+        {
+            ChangeVisualState(useTransitions);
+        }
+
+        private void ChangeVisualState(bool useTransitions)
+        {
+            if (ParentElement == null)
+                return;
+
+            var thumb = ParentElement as Thumb;
+            var button = ParentElement as ButtonBase;
+            if (!ParentElement.IsEnabled)
+                VisualStateManager.GoToState(ParentElement, "Disabled", useTransitions);
+            else if (ParentElement.IsMouseOver)
+                VisualStateManager.GoToState(ParentElement, "MouseOver", useTransitions);
+            else if (thumb?.IsDragging ?? button?.IsPressed ?? false)
+                VisualStateManager.GoToState(ParentElement, "Pressed", useTransitions);
+            else if (RenderHover)
+                VisualStateManager.GoToState(ParentElement, "Hover", useTransitions);
+            else
+                VisualStateManager.GoToState(ParentElement, "Normal", useTransitions);
+        }
 
         public Orientation Orientation
         {

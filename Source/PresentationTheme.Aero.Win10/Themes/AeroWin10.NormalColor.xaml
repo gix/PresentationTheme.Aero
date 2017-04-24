@@ -2762,16 +2762,19 @@
   <Color x:Key="ScrollBar.Thumb.Hot.Color">#A6A6A6</Color>
   <Color x:Key="ScrollBar.Thumb.Pressed.Color">#606060</Color>
   <Color x:Key="ScrollBar.Thumb.Disabled.Color">#F0F0F0</Color>
+  <Color x:Key="ScrollBar.Thumb.Hover.Color">#FFC0C0C0</Color>
 
   <SolidColorBrush x:Key="ScrollBar.Glyph.Normal" Color="#606060" po:Freeze="True"/>
   <Color x:Key="ScrollBar.Glyph.Hot.Color">#000000</Color>
   <Color x:Key="ScrollBar.Glyph.Pressed.Color">#FFFFFF</Color>
   <Color x:Key="ScrollBar.Glyph.Disabled.Color">#BFBFBF</Color>
+  <Color x:Key="ScrollBar.Glyph.Hover.Color">#FF606060</Color>
 
   <SolidColorBrush x:Key="ScrollBar.ArrowButton.Normal" Color="#FFF0F0F0" po:Freeze="True"/>
   <Color x:Key="ScrollBar.ArrowButton.Hot.Color">#FFDADADA</Color>
   <Color x:Key="ScrollBar.ArrowButton.Pressed.Color">#FF606060</Color>
   <Color x:Key="ScrollBar.ArrowButton.Disabled.Color">#FFF0F0F0</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Hover.Color">#FFF0F0F0</Color>
 
   <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -2804,6 +2807,8 @@
                                   Background="{StaticResource ScrollBar.ArrowButton.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -2811,18 +2816,26 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <!-- aero.msstyles defines a duration for this transition but
                        it is not actually used when releasing the mouse button -->
                   <!--<VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>-->
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -2864,6 +2877,20 @@
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Glyph"
+                      Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2904,6 +2931,8 @@
                                   Background="{StaticResource ScrollBar.ArrowButton.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -2911,18 +2940,26 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <!-- aero.msstyles defines a duration for this transition but
                        it is not actually used when releasing the mouse button -->
                   <!--<VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>-->
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -2964,6 +3001,20 @@
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Glyph"
+                      Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3003,6 +3054,8 @@
                                   Background="{StaticResource ScrollBar.ArrowButton.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -3010,18 +3063,26 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <!-- aero.msstyles defines a duration for this transition but
                        it is not actually used when releasing the mouse button -->
                   <!--<VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>-->
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -3063,6 +3124,20 @@
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Glyph"
+                      Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3101,6 +3176,8 @@
                                   Background="{StaticResource ScrollBar.ArrowButton.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -3108,18 +3185,26 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <!-- aero.msstyles defines a duration for this transition but
                        it is not actually used when releasing the mouse button -->
                   <!--<VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>-->
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -3164,6 +3249,20 @@
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Glyph"
+                      Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Path x:Name="Glyph"
@@ -3198,6 +3297,8 @@
                                   SnapsToDevicePixels="True"
                                   Width="{TemplateBinding Width}"
                                   Height="{TemplateBinding Height}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -3205,15 +3306,23 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -3240,6 +3349,20 @@
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}"/>
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3265,6 +3388,8 @@
                                   SnapsToDevicePixels="True"
                                   Width="{TemplateBinding Width}"
                                   Height="{TemplateBinding Height}"
+                                  ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                  RenderHover="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ScrollBar}}}"
                                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
@@ -3272,15 +3397,23 @@
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="Normal" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Normal" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="MouseOver" To="Normal" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="MouseOver" To="Pressed" GeneratedDuration="0:00:00.15"/>
                   <VisualTransition From="MouseOver" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="MouseOver" To="Hover" GeneratedDuration="0:00:01.275"/>
                   <VisualTransition From="Pressed" To="Normal" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Pressed" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Pressed" To="Disabled" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Pressed" To="Hover" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Disabled" To="Normal" GeneratedDuration="0:00:00.375"/>
                   <VisualTransition From="Disabled" To="MouseOver" GeneratedDuration="0:00:00"/>
                   <VisualTransition From="Disabled" To="Pressed" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Disabled" To="Hover" GeneratedDuration="0:00:00"/>
+                  <VisualTransition From="Hover" To="Normal" GeneratedDuration="0:00:01.275"/>
+                  <VisualTransition From="Hover" To="MouseOver" GeneratedDuration="0:00:00.225"/>
+                  <VisualTransition From="Hover" To="Pressed" GeneratedDuration="0:00:00.15"/>
+                  <VisualTransition From="Hover" To="Disabled" GeneratedDuration="0:00:00"/>
                 </VisualStateGroup.Transitions>
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
@@ -3307,6 +3440,20 @@
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}"/>
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Hover">
+                  <Storyboard>
+                    <ColorAnimationUsingKeyFrames
+                      Storyboard.TargetName="Border"
+                      Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
