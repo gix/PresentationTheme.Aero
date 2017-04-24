@@ -67,7 +67,7 @@ namespace ThemeBrowser
 
         private void OnKeyDown(object sender, KeyEventArgs args)
         {
-            if (args.Key != Key.LeftCtrl && args.Key != Key.RightCtrl)
+            if (args.Key != Key.LeftShift && args.Key != Key.LeftShift)
                 return;
 
             AssociatedObject.Cursor = Cursors.Cross;
@@ -82,7 +82,7 @@ namespace ThemeBrowser
 
         private void OnMouseMove(object sender, MouseEventArgs args)
         {
-            if (Keyboard.Modifiers != ModifierKeys.Control)
+            if (Keyboard.Modifiers != ModifierKeys.Shift)
                 return;
 
             Point point = args.GetPosition(AssociatedObject);
