@@ -1,10 +1,11 @@
-﻿namespace ThemePreviewer.Samples
+﻿namespace ThemePreviewer.Controls
 {
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls.Primitives;
+    using System.Windows.Forms;
     using System.Windows.Media;
     using System.Windows.Threading;
 
@@ -36,15 +37,14 @@
         public static readonly DependencyProperty NativeSampleProperty =
             DependencyProperty.Register(
                 nameof(NativeSample),
-                typeof(System.Windows.Forms.Control),
+                typeof(Control),
                 typeof(ControlComparison),
                 new PropertyMetadata(null, OnNativeSampleChanged));
 
-        public ControlComparison(string name)
+        public ControlComparison()
         {
             InitializeComponent();
-            DataContext = this;
-            Label = name;
+            IsEnabledChanged += OnIsEnabledChanged;
         }
 
         /// <summary>
@@ -52,8 +52,8 @@
         /// </summary>
         public string Label
         {
-            get { return (string)GetValue(LabelProperty); }
-            set { SetValue(LabelProperty, value); }
+            get => (string)GetValue(LabelProperty);
+            set => SetValue(LabelProperty, value);
         }
 
         public ObservableCollection<Option> Options { get; } =
@@ -64,27 +64,17 @@
         /// </summary>
         public FrameworkElement WpfSample
         {
-            get { return (FrameworkElement)GetValue(WpfSampleProperty); }
-            set { SetValue(WpfSampleProperty, value); }
+            get => (FrameworkElement)GetValue(WpfSampleProperty);
+            set => SetValue(WpfSampleProperty, value);
         }
 
         /// <summary>
         ///   Gets or sets the native sample of the <see cref="ControlComparison"/>.
         /// </summary>
-        public System.Windows.Forms.Control NativeSample
+        public Control NativeSample
         {
-            get { return (System.Windows.Forms.Control)GetValue(NativeSampleProperty); }
-            set { SetValue(NativeSampleProperty, value); }
-        }
-
-        public static ControlComparison Create<TNative, TWpf>(string name)
-            where TWpf : FrameworkElement, new()
-            where TNative : System.Windows.Forms.Control, new()
-        {
-            return new ControlComparison(name) {
-                NativeSample = new TNative(),
-                WpfSample = new TWpf()
-            };
+            get => (Control)GetValue(NativeSampleProperty);
+            set => SetValue(NativeSampleProperty, value);
         }
 
         private static void OnWpfSampleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -98,13 +88,13 @@
         private static void OnNativeSampleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var sample = (ControlComparison)d;
-            var oldValue = (System.Windows.Forms.Control)e.OldValue;
-            var newValue = (System.Windows.Forms.Control)e.NewValue;
+            var oldValue = (Control)e.OldValue;
+            var newValue = (Control)e.NewValue;
             sample.OnNativeSampleChanged(oldValue, newValue);
         }
 
         private void OnNativeSampleChanged(
-            System.Windows.Forms.Control oldValue, System.Windows.Forms.Control newValue)
+            Control oldValue, Control newValue)
         {
             WinFormsHost.Child = newValue;
             UpdateOptions(oldValue, newValue);
@@ -153,7 +143,6 @@
         private void OnShowDiffClicked(object sender, RoutedEventArgs args)
         {
             ShowDifference();
-
         }
 
         private void OnAutoDiffChecked(object sender, RoutedEventArgs args)
@@ -197,8 +186,19 @@
 
         public ImageSource Difference
         {
-            get { return (ImageSource)GetValue(DifferenceProperty); }
-            set { SetValue(DifferenceProperty, value); }
+            get => (ImageSource)GetValue(DifferenceProperty);
+            set => SetValue(DifferenceProperty, value);
+        }
+
+        private void OnIsEnabledChanged(
+            object sender, DependencyPropertyChangedEventArgs args)
+        {
+            // Temporarily remove the native control to avoid airspace issues
+            // for the loading overlay.
+            if ((bool)args.NewValue)
+                WinFormsHost.Child = NativeSample;
+            else
+                WinFormsHost.Child = null;
         }
     }
 }

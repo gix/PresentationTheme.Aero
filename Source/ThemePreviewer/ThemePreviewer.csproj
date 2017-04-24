@@ -73,6 +73,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BuiltinThemes.cs" />
+    <Compile Include="CacheTabsBehavior.cs" />
     <Compile Include="Controls\ProgressBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -80,10 +81,14 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ExpressionExtensions.cs" />
+    <Compile Include="FrameworkElementAdorner.cs" />
     <Compile Include="ItemGenerator.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="ProcessExtensions.cs" />
     <Compile Include="ProcessUtils.cs" />
     <Compile Include="ImagingUtils.cs" />
+    <Compile Include="ProgressInfo.cs" />
+    <Compile Include="ControlComparisonViewModel.cs" />
     <Compile Include="Samples\ListBoxSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -165,7 +170,7 @@
       <DependentUpon>ButtonSampleNative.cs</DependentUpon>
     </Compile>
     <Compile Include="Samples\MenuSampleNative.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Samples\MenuSampleNative.Designer.cs">
       <DependentUpon>MenuSampleNative.cs</DependentUpon>
@@ -173,7 +178,7 @@
     <Compile Include="IOptionControl.cs" />
     <Compile Include="ItemsCollection.cs" />
     <Compile Include="OptionList.cs" />
-    <Compile Include="Samples\ControlComparison.xaml.cs">
+    <Compile Include="Controls\ControlComparison.xaml.cs">
       <DependentUpon>ControlComparison.xaml</DependentUpon>
     </Compile>
     <Compile Include="Samples\DataGridSampleNative.cs">
@@ -230,6 +235,8 @@
     <Compile Include="Samples\TreeViewSampleNative.Designer.cs">
       <DependentUpon>TreeViewSampleNative.cs</DependentUpon>
     </Compile>
+    <Compile Include="Samples\TypeFactoryConverter.cs" />
+    <Compile Include="ShowProgressAdornerBehavior.cs" />
     <Compile Include="Theme.cs" />
     <Compile Include="ThemeUtils.cs" />
     <Compile Include="UxThemeOverride.cs" />
@@ -311,7 +318,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Samples\ControlComparison.xaml">
+    <Page Include="Controls\ControlComparison.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

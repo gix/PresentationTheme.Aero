@@ -10,6 +10,7 @@
     using System.Windows;
     using System.Windows.Interop;
     using System.Windows.Media;
+    using Controls;
     using StyleCore.Native;
 
     /// <summary>Interaction logic for Colors.xaml</summary>
@@ -51,7 +52,7 @@
         }
 
         /// <summary>
-        ///   Gets or sets the Label of the <see cref="ControlComparison"/>.
+        ///   Gets or sets the Label of the <see cref="Controls.ControlComparison"/>.
         /// </summary>
         public string Label
         {

@@ -15,7 +15,6 @@
     using System.Windows.Media;
     using System.Xml;
     using PresentationTheme.Aero.Win10;
-    using StyleCore.Native;
 
     public partial class App
     {
@@ -23,6 +22,7 @@
             new HashSet<FrameworkElement>();
 
         private MainWindow window;
+        private MainWindowViewModel viewModel;
         private UxThemeOverride uxThemeOverride;
 
         public new static App Current => (App)Application.Current;
@@ -38,57 +38,58 @@
             if (opts.ThemeResourceUri == null)
                 opts.ThemeResourceUri = AeroWin10Theme.ResourceUri;
 
-            ThemeHelper.SetPresentationFrameworkTheme(opts.ThemeResourceUri);
+            if (!ThemeHelper.SetPresentationFrameworkTheme(opts.ThemeResourceUri))
+                MessageBox.Show($"Failed to load {opts.ThemeResourceUri}.");
 
             window = new MainWindow();
-            window.CurrentTheme = window.Themes.FirstOrDefault(x => x.ResourceUri == opts.ThemeResourceUri);
-            window.ThemeChanged += OnThemeChanged;
+            MainWindow = window;
+
+            viewModel = new MainWindowViewModel();
+            window.DataContext = viewModel;
+
+            viewModel.CurrentTheme = viewModel.Themes.FirstOrDefault(x => x.ResourceUri == opts.ThemeResourceUri);
+            viewModel.ThemeChanged += OnThemeChanged;
 
             if (opts.WindowBounds != null) {
                 var bounds = opts.WindowBounds.Value;
-                window.Left = bounds.X;
-                window.Top = bounds.Y;
+                window.Left = bounds.Left;
+                window.Top = bounds.Top;
                 window.Width = bounds.Width;
                 window.Height = bounds.Height;
+                window.WindowStartupLocation = WindowStartupLocation.Manual;
+            } else {
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
 
-            if (opts.TabIndex != null && opts.TabIndex >= 0 && opts.TabIndex < window.Pages.Count)
-                window.CurrentPage = window.Pages[opts.TabIndex.Value];
+            if (opts.TabIndex != null && opts.TabIndex >= 0 && opts.TabIndex < viewModel.Pages.Count)
+                viewModel.CurrentPage = viewModel.Pages[opts.TabIndex.Value];
 
-            MainWindow = window;
             window.Show();
 
             uxThemeOverride = new UxThemeOverride();
-
-            OverrideNativeTheme(
-                @"C:\Users\nrieck\dev\PresentationTheme.Aero\Data\10.0.15063.0\aero.msstyles")
-                .Forget();
+            if (opts.NativeTheme != null)
+                viewModel.OverrideNativeTheme(opts.NativeTheme.FullName).Forget();
         }
 
         public async Task<bool> OverrideNativeTheme(string path)
         {
-            MainWindow.IsEnabled = false;
-            try {
-                if (path != null) {
-                    var theme = await Task.Run(() => UxThemeOverride.LoadTheme(path));
-                    uxThemeOverride.SetTheme(theme);
-                } else {
-                    uxThemeOverride.SetTheme(SafeThemeFileHandle.Zero);
-                }
+            return await viewModel.RunExclusive(async progress => {
+                progress.TaskName = "Overriding native theme…";
+                await uxThemeOverride.SetThemeAsync(path);
+            }, "Failed to override native theme");
+        }
 
-                ThemeUtils.SendThemeChangedProcessLocal();
-                return true;
-            } catch (Exception ex) {
-                MessageBox.Show(ex.Message);
-                return false;
-            } finally {
-                MainWindow.IsEnabled = true;
-            }
+        public async Task<bool> RemoveNativeThemeOverride()
+        {
+            return await viewModel.RunExclusive(async progress => {
+                progress.TaskName = "Restoring native theme…";
+                await uxThemeOverride.SetThemeAsync(null);
+            }, "Failed to restore native theme");
         }
 
         private void OnThemeChanged(object sender, EventArgs args)
         {
-            ReloadTheme(window.CurrentTheme);
+            ReloadTheme(viewModel.CurrentTheme);
         }
 
         public void RestartWithDifferentTheme(Theme theme)
@@ -116,6 +117,7 @@
             public Uri ThemeResourceUri { get; set; }
             public Rect? WindowBounds { get; set; }
             public int? TabIndex { get; set; }
+            public FileInfo NativeTheme { get; set; }
         }
 
         private Options ParseArgs(string[] args)
@@ -127,6 +129,10 @@
                     Uri uri;
                     if (Uri.TryCreate(value, UriKind.Absolute, out uri))
                         opts.ThemeResourceUri = uri;
+                } else if (TryGetArg(arg, "-nativetheme:", out value)) {
+                    var nativeTheme = new FileInfo(value);
+                    if (nativeTheme.Exists)
+                        opts.NativeTheme = nativeTheme;
                 } else if (TryGetArg(arg, "-pos:", out value)) {
                     Rect bounds;
                     if (TryParseRect(value, out bounds))
@@ -166,15 +172,15 @@
 
         public void Restart(params string[] args)
         {
-            var bounds = new Rect(
-                Math.Round(window.Left), Math.Round(window.Top),
-                Math.Round(window.Width), Math.Round(window.Height));
-            var tabIndex = window.Pages.IndexOf(window.CurrentPage);
+            var bounds = new Rect(window.Left, window.Top, window.Width, window.Height).Round();
+            var tabIndex = viewModel.Pages.IndexOf(viewModel.CurrentPage);
 
             var allArgs = new List<string>();
             allArgs.Add($"-pos:{new RectConverter().ConvertToInvariantString(bounds)}");
             if (tabIndex != -1)
                 allArgs.Add($"-tab:{tabIndex}");
+            if (uxThemeOverride.CurrentOverride != null)
+                allArgs.Add($"-nativetheme:{uxThemeOverride.CurrentOverride}");
             allArgs.AddRange(args);
 
             var exePath = Assembly.GetExecutingAssembly().Location;
@@ -195,10 +201,17 @@
         }
     }
 
-    public static class TaskExtensions
+    public static class Extensions
     {
         public static void Forget(this Task task)
         {
+        }
+
+        public static Rect Round(this Rect rect)
+        {
+            return new Rect(
+                Math.Round(rect.X), Math.Round(rect.Y),
+                Math.Round(rect.Width), Math.Round(rect.Height));
         }
     }
 

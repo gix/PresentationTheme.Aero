@@ -1,5 +1,5 @@
 ﻿<UserControl
-  x:Class="ThemePreviewer.Samples.ControlComparison"
+  x:Class="ThemePreviewer.Controls.ControlComparison"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,7 +7,8 @@
   xmlns:local="clr-namespace:ThemePreviewer"
   mc:Ignorable="d"
   d:DesignHeight="300"
-  d:DesignWidth="300">
+  d:DesignWidth="300"
+  x:Name="root">
   <UserControl.Resources>
     <DataTemplate DataType="{x:Type local:BoolOption}">
       <CheckBox IsChecked="{Binding Enabled}">
@@ -92,10 +93,10 @@
       <TextBlock Text="Options"/>
     </Border>
     <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource Header}">
-      <TextBlock Text="Native"/>
+      <TextBlock Text="{Binding DataContext.NativeThemeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
     </Border>
     <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource Header}">
-      <TextBlock Text="WPF"/>
+      <TextBlock Text="{Binding DataContext.WpfThemeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
     </Border>
     <Border Grid.Row="0" Grid.Column="6" Style="{StaticResource Header}">
       <StackPanel Orientation="Horizontal">
@@ -109,7 +110,7 @@
 
     <Grid Grid.Row="1" Grid.Column="0" >
       <ScrollViewer>
-        <ItemsControl ItemsSource="{Binding Options}">
+        <ItemsControl ItemsSource="{Binding Options, ElementName=root}">
           <ItemsControl.ItemContainerStyle>
             <Style TargetType="FrameworkElement">
               <Setter Property="Margin" Value="1"/>
@@ -120,9 +121,9 @@
     </Grid>
 
     <WindowsFormsHost Grid.Row="1" Grid.Column="2" x:Name="WinFormsHost"/>
-    <ContentPresenter Grid.Row="1" Grid.Column="4" Content="{Binding WpfSample}"/>
+    <ContentPresenter Grid.Row="1" Grid.Column="4" Content="{Binding WpfSample, ElementName=root}"/>
     <Border Grid.Row="1" Grid.Column="6">
-      <Image Source="{Binding Difference}" Stretch="None" HorizontalAlignment="Left"/>
+      <Image Source="{Binding Difference, ElementName=root}" Stretch="None" HorizontalAlignment="Left"/>
     </Border>
   </Grid>
 </UserControl>
