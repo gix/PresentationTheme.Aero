@@ -8,8 +8,8 @@ namespace ThemePreviewer
 
     public static class ImagingUtils
     {
-        [DllImport("gdi32.dll")]
-        static extern int DeleteObject(IntPtr ptr);
+        [DllImport("gdi32")]
+        private static extern int DeleteObject(IntPtr ptr);
 
         public static BitmapSource ConvertBitmap(System.Drawing.Bitmap source)
         {
