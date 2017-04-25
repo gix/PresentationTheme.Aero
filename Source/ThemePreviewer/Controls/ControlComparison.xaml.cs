@@ -5,9 +5,12 @@
     using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
     using System.Windows.Forms;
     using System.Windows.Media;
     using System.Windows.Threading;
+    using Binding = System.Windows.Data.Binding;
+    using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
     public partial class ControlComparison
     {
@@ -44,6 +47,7 @@
         public ControlComparison()
         {
             InitializeComponent();
+            LockSizeFlag.IsChecked = true;
             IsEnabledChanged += OnIsEnabledChanged;
         }
 
@@ -199,6 +203,24 @@
                 WinFormsHost.Child = NativeSample;
             else
                 WinFormsHost.Child = null;
+        }
+
+        private void OnLockSizeChecked(object sender, RoutedEventArgs e)
+        {
+            UpdateSizeLock();
+        }
+
+        private void UpdateSizeLock()
+        {
+            if (LockSizeFlag.IsChecked == true) {
+                var binding = new Binding("ActualWidth");
+                binding.Source = WinFormsHost;
+                BindingOperations.SetBinding(WpfHost, WidthProperty, binding);
+                WpfHost.HorizontalAlignment = HorizontalAlignment.Left;
+            } else {
+                BindingOperations.ClearBinding(WpfHost, WidthProperty);
+                WpfHost.HorizontalAlignment = HorizontalAlignment.Stretch;
+            }
         }
     }
 }

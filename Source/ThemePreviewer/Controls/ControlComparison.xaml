@@ -96,7 +96,15 @@
       <TextBlock Text="{Binding DataContext.NativeThemeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
     </Border>
     <Border Grid.Row="0" Grid.Column="4" Style="{StaticResource Header}">
-      <TextBlock Text="{Binding DataContext.WpfThemeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding DataContext.WpfThemeName, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+        <CheckBox Grid.Column="1" x:Name="LockSizeFlag" Checked="OnLockSizeChecked"
+                  Unchecked="OnLockSizeChecked">Lock</CheckBox>
+      </Grid>
     </Border>
     <Border Grid.Row="0" Grid.Column="6" Style="{StaticResource Header}">
       <StackPanel Orientation="Horizontal">
@@ -121,7 +129,8 @@
     </Grid>
 
     <WindowsFormsHost Grid.Row="1" Grid.Column="2" x:Name="WinFormsHost"/>
-    <ContentPresenter Grid.Row="1" Grid.Column="4" Content="{Binding WpfSample, ElementName=root}"/>
+    <ContentPresenter Grid.Row="1" Grid.Column="4" x:Name="WpfHost"
+                      Content="{Binding WpfSample, ElementName=root}"/>
     <Border Grid.Row="1" Grid.Column="6">
       <Image Source="{Binding Difference, ElementName=root}" Stretch="None" HorizontalAlignment="Left"/>
     </Border>
