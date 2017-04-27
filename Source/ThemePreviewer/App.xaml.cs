@@ -14,7 +14,8 @@
     using System.Windows.Markup;
     using System.Windows.Media;
     using System.Xml;
-    using PresentationTheme.Aero.Win10;
+    using PresentationTheme.AeroLite.Win10;
+    using ThemeHelper = PresentationTheme.Aero.Win10.ThemeHelper;
 
     public partial class App
     {
@@ -36,7 +37,7 @@
 
             var opts = ParseArgs(e.Args);
             if (opts.ThemeResourceUri == null)
-                opts.ThemeResourceUri = AeroWin10Theme.ResourceUri;
+                opts.ThemeResourceUri = AeroLiteWin10Theme.ResourceUri;
 
             if (!ThemeHelper.SetPresentationFrameworkTheme(opts.ThemeResourceUri))
                 MessageBox.Show($"Failed to load {opts.ThemeResourceUri}.");

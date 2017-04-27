@@ -12,6 +12,7 @@
     using PresentationTheme.Aero.Win10;
     using PresentationTheme.Aero.Win7;
     using PresentationTheme.Aero.Win8;
+    using PresentationTheme.AeroLite.Win10;
     using Samples;
     using StyleCore.Native;
 
@@ -36,6 +37,7 @@
             Themes.Add(new Theme("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
             Themes.Add(new Theme("Aero (Windows 8)", AeroWin8Theme.ResourceUri));
             Themes.Add(new Theme("Aero (Windows 10)", AeroWin10Theme.ResourceUri));
+            Themes.Add(new Theme("Aero Lite (Windows 10)", AeroLiteWin10Theme.ResourceUri));
             Themes.Add(new Theme("Built-in Classic", BuiltinThemes.ClassicUri));
             Themes.Add(new Theme("Built-in Aero", BuiltinThemes.AeroUri));
             Themes.Add(new Theme("Built-in Aero 2", BuiltinThemes.Aero2Uri));

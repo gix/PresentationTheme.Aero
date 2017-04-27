@@ -364,6 +364,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj">
+      <Project>{8c248e14-62ed-4061-b0fb-89a8696c7103}</Project>
+      <Name>PresentationTheme.AeroLite.Win10</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
       <Project>{aef7f7b0-a3f0-482a-a0e0-4d8782cabaa6}</Project>
       <Name>PresentationTheme.Aero</Name>
