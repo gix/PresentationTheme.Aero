@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UxThemeEx", "UxThemeEx\UxThemeEx.vcxproj", "{15931DA8-731F-4159-97A7-DDC9D1617883}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeBrowser", "ThemeBrowser\ThemeBrowser.csproj", "{ED93DFE6-C48D-41ED-991A-90505F8DDA19}"
+	ProjectSection(ProjectDependencies) = postProject
+		{15931DA8-731F-4159-97A7-DDC9D1617883} = {15931DA8-731F-4159-97A7-DDC9D1617883}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{21C94CC2-624A-4F52-8CD0-E94FCDFD5582}"
 EndProject
