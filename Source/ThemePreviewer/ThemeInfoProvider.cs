@@ -10,19 +10,26 @@ namespace ThemePreviewer
     using PresentationTheme.Aero.Win7;
     using PresentationTheme.Aero.Win8;
     using PresentationTheme.AeroLite.Win10;
+    using PresentationTheme.HighContrast.Win10;
+    using StyleCore.Native;
 
     public class ThemeInfoProvider
     {
+        private readonly Lazy<UxColorScheme> highContrast1;
         private readonly List<ThemeInfoPair> themes = new List<ThemeInfoPair>();
         private readonly List<WpfThemeInfo> wpfThemes = new List<WpfThemeInfo>();
         private readonly List<NativeThemeInfo> nativeThemes = new List<NativeThemeInfo>();
 
         public ThemeInfoProvider()
         {
+            highContrast1 = new Lazy<UxColorScheme>(CreateHighContrast1Scheme);
+
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8)", AeroWin8Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 10)", AeroWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 10)", AeroLiteWin10Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 10)", HighContrastWin10Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast #1 (Windows 10)", HighContrastWin10Theme.ResourceUri, highContrast1.Value));
             wpfThemes.Add(new WpfThemeInfo("Built-in Classic", BuiltinThemes.ClassicUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero", BuiltinThemes.AeroUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero 2", BuiltinThemes.Aero2Uri));
@@ -61,8 +68,63 @@ namespace ThemePreviewer
                     var versionInfo = FileVersionInfo.GetVersionInfo(styleFile.FullName);
 
                     yield return new NativeThemeInfo("Aero Lite", versionInfo, styleFile);
+
+                    yield return new NativeThemeInfo(
+                        "High Contrast", versionInfo, styleFile,
+                        new UxThemeLoadParams {
+                            IsHighContrast = true
+                        });
+
+                    yield return new NativeThemeInfo(
+                        "High Contrast #1", versionInfo, styleFile,
+                        new UxThemeLoadParams {
+                            IsHighContrast = true,
+                            CustomColors = highContrast1.Value
+                        });
                 }
             }
+        }
+
+        private UxColorScheme CreateHighContrast1Scheme()
+        {
+            var scheme = new UxColorScheme();
+            scheme.ActiveTitle = RGB(0x00, 0x00, 0xFF);
+            scheme.Background = RGB(0x00, 0x00, 0x00);
+            scheme.ButtonFace = RGB(0x00, 0x00, 0x00);
+            scheme.ButtonText = RGB(0xFF, 0xFF, 0xFF);
+            scheme.GrayText = RGB(0x00, 0xFF, 0x00);
+            scheme.Hilight = RGB(0x00, 0x80, 0x00);
+            scheme.HilightText = RGB(0xFF, 0xFF, 0xFF);
+            scheme.HotTrackingColor = RGB(0x80, 0x80, 0xFF);
+            scheme.InactiveTitle = RGB(0x00, 0xFF, 0xFF);
+            scheme.InactiveTitleText = RGB(0x00, 0x00, 0x00);
+            scheme.TitleText = RGB(0xFF, 0xFF, 0xFF);
+            scheme.Window = RGB(0x00, 0x00, 0x00);
+            scheme.WindowText = RGB(0xFF, 0xFF, 0x00);
+            scheme.Scrollbar = RGB(0x00, 0x00, 0x00);
+            scheme.Menu = RGB(0x00, 0x00, 0x00);
+            scheme.WindowFrame = RGB(0xFF, 0xFF, 0xFF);
+            scheme.MenuText = RGB(0xFF, 0xFF, 0xFF);
+            scheme.ActiveBorder = RGB(0x00, 0x00, 0xFF);
+            scheme.InactiveBorder = RGB(0x00, 0xFF, 0xFF);
+            scheme.AppWorkspace = RGB(0x00, 0x00, 0x00);
+            scheme.ButtonShadow = RGB(0x80, 0x80, 0x80);
+            scheme.ButtonHilight = RGB(0xC0, 0xC0, 0xC0);
+            scheme.ButtonDkShadow = RGB(0xFF, 0xFF, 0xFF);
+            scheme.ButtonLight = RGB(0xFF, 0xFF, 0xFF);
+            scheme.InfoText = RGB(0xFF, 0xFF, 0x00);
+            scheme.InfoWindow = RGB(0x00, 0x00, 0x00);
+            scheme.ButtonAlternateFace = RGB(0xC0, 0xC0, 0xC0);
+            scheme.GradientActiveTitle = RGB(0x00, 0x00, 0xFF);
+            scheme.GradientInactiveTitle = RGB(0x00, 0xFF, 0xFF);
+            scheme.MenuHilight = RGB(0x00, 0x80, 0x00);
+            scheme.MenuBar = RGB(0x00, 0x00, 0x00);
+            return scheme;
+        }
+
+        private static uint RGB(int r, int g, int b)
+        {
+            return (byte)r | ((uint)(byte)g << 8) | ((uint)(byte)b << 16);
         }
 
         private static string GetExecutableDir()

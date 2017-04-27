@@ -375,6 +375,10 @@
       <Project>{aef7f7b0-a3f0-482a-a0e0-4d8782cabaa6}</Project>
       <Name>PresentationTheme.Aero</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj">
+      <Project>{55EF96DC-F991-42D9-B4D5-AE299AA380DC}</Project>
+      <Name>PresentationTheme.HighContrast.Win10</Name>
+    </ProjectReference>
     <ProjectReference Include="..\StyleCore\StyleCore.csproj">
       <Project>{839bcdaf-c880-4f9e-b3b6-388c2ae77156}</Project>
       <Name>StyleCore</Name>
