@@ -75,8 +75,8 @@ class CVSUnpack
 public:
     static bool _DelayRecord(VSRECORD* pRec);
 
-    HRESULT Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
-                       BOOL fIsLiteVisualStyle);
+    HRESULT Initialize(HMODULE hInstSrc, int nVersion, bool fGlobal,
+                       bool fIsLiteVisualStyle, bool fHighContrast);
 
     HRESULT GetRootMap(void** ppvRMap, int* pcbRMap);
     HRESULT GetVariantMap(void** ppvVMap, int* pcbVMap);
@@ -124,6 +124,8 @@ private:
     bool _IsTrueSizeImage(VSRECORD* pRec);
     int _FindClass(wchar_t const* pszClass);
 
+    bool IsHighContrastMode() const { return _fIsHighContrast; }
+
     HMODULE _hInst = nullptr;
     int _nVersion = 0;
     void* _pvRootMap = nullptr;
@@ -141,6 +143,7 @@ private:
     unsigned _cbBuffer = 0;
     malloc_ptr<BYTE[]> _pBuffer;
     bool _fIsLiteVisualStyle = false;
+    bool _fIsHighContrast = false;
     std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgImageDpiRec = {};
     std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgImageRec = {};
     std::array<VSRECORD*, DPI_PLATEAU_COUNT> _rgComposedImageRec = {};

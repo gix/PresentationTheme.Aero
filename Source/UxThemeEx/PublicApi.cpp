@@ -431,7 +431,7 @@ struct LOADTHEMEFORTESTPARAMS
 };
 
 THEMEEXAPI UxOpenThemeFile(
-    _In_ wchar_t const* themeFileName,
+    _In_ wchar_t const* themeFileName, bool highContrast,
     _Out_ HTHEMEFILE* phThemeFile)
 {
     HMODULE module;
@@ -453,7 +453,9 @@ THEMEEXAPI UxOpenThemeFile(
 
     FileMappingHandle reuseSection;
     ENSURE_HR(loader.LoadTheme(module, themeFileName, colorParam, sizeParam,
-                               reuseSection.CloseAndGetAddressOf(), TRUE));
+                               reuseSection.CloseAndGetAddressOf(), true,
+                               highContrast));
+    SetHighContrastMode(highContrast);
 
     std::unique_ptr<CUxThemeFile> themeFile(new CUxThemeFile(std::move(loader._LoadingThemeFile)));
 

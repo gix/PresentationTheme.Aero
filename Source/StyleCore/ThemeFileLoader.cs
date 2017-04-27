@@ -29,12 +29,16 @@ namespace StyleCore
         private readonly string filePath;
         private readonly SafeModuleHandle neutralModule;
         private readonly SafeModuleHandle muiModule;
+        private readonly bool isHighContrast;
 
-        public ThemeFileLoader(string filePath, SafeModuleHandle neutralModule, SafeModuleHandle muiModule)
+        public ThemeFileLoader(
+            string filePath, SafeModuleHandle neutralModule,
+            SafeModuleHandle muiModule, bool isHighContrast)
         {
             this.filePath = filePath;
             this.neutralModule = neutralModule;
             this.muiModule = muiModule;
+            this.isHighContrast = isHighContrast;
         }
 
         private static string GetMUIPath(string filePath)
@@ -45,20 +49,20 @@ namespace StyleCore
             return Path.Combine(directory, $"{fileName}.mui");
         }
 
-        public static ThemeFile LoadTheme(string styleFilePath)
+        public static ThemeFile LoadTheme(string styleFilePath, bool isHighContrast)
         {
             var muiFilePath = GetMUIPath(styleFilePath);
-            return LoadTheme(styleFilePath, muiFilePath);
+            return LoadTheme(styleFilePath, isHighContrast, muiFilePath);
         }
 
-        public static ThemeFile LoadTheme(string styleFilePath, string muiFilePath)
+        public static ThemeFile LoadTheme(string styleFilePath, bool isHighContrast, string muiFilePath)
         {
             SafeModuleHandle muiHandle = SafeModuleHandle.Zero;
             if (File.Exists(muiFilePath))
                 muiHandle = SafeModuleHandle.LoadImageResource(muiFilePath);
 
             var styleHandle = SafeModuleHandle.LoadImageResource(styleFilePath);
-            return new ThemeFileLoader(styleFilePath, styleHandle, muiHandle).LoadTheme();
+            return new ThemeFileLoader(styleFilePath, styleHandle, muiHandle, isHighContrast).LoadTheme();
         }
 
         public ThemeFile LoadTheme()
@@ -72,7 +76,7 @@ namespace StyleCore
 
             themeFile.VariantMap = vmap;
             themeFile.ClassNames = classNames;
-            UxThemeExNativeMethods.UxOpenThemeFile(filePath, out var themeFileHandle).ThrowIfFailed();
+            UxThemeExNativeMethods.UxOpenThemeFile(filePath, isHighContrast, out var themeFileHandle).ThrowIfFailed();
             themeFile.NativeThemeFile = themeFileHandle;
 
             ReadProperties(themeFile, "RMAP", "RMAP");

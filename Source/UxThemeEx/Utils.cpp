@@ -96,9 +96,16 @@ void MemoryDC::CloseDC()
     }
 }
 
+static bool highContrastEnabled = false;
+
 bool IsHighContrastMode()
 {
-    return false;
+    return highContrastEnabled;
+}
+
+void SetHighContrastMode(bool enabled)
+{
+    highContrastEnabled = enabled;
 }
 
 static wchar_t const g_pszAppName[] = {0};

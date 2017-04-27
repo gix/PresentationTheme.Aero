@@ -33,8 +33,8 @@
 
         public MainWindowViewModel()
         {
-            OpenCommand = new DelegateCommand(Open);
-            CompareCommand = new DelegateCommand(Compare);
+            OpenCommand = new AsyncDelegateCommand<bool>(Open);
+            CompareCommand = new AsyncDelegateCommand<bool>(Compare);
             DumpLoadedThemeCommand = new AsyncDelegateCommand(
                 DumpLoadedTheme, () => ThemeFile is ThemeFileViewModel);
             DumpSystemThemeCommand = new AsyncDelegateCommand(DumpSystemTheme);
@@ -303,25 +303,26 @@
             return Task.CompletedTask;
         }
 
-        public Task TryLoadTheme(string styleFilePath)
+        public Task TryLoadTheme(string styleFilePath, bool isHighContrast)
         {
             return RunExclusive(async progress => {
                 progress.TaskName = "Loading theme";
-                var newThemeFile = await Task.Run(() => LoadTheme(styleFilePath));
+                var newThemeFile = await Task.Run(() => LoadTheme(styleFilePath, isHighContrast));
                 ThemeFile?.Dispose();
                 ThemeFile = newThemeFile;
-                Title = $"Theme Browser - {styleFilePath}";
+                string suffix = isHighContrast ? " (High Contrast)" : "";
+                Title = $"Theme Browser - {styleFilePath}{suffix}";
             }, "Failed to open theme");
         }
 
-        public Task TryLoadAndCompareThemes(string styleFilePath1, string styleFilePath2)
+        public Task TryLoadAndCompareThemes(string styleFilePath1, string styleFilePath2, bool isHighContrast)
         {
             return RunExclusive(async progress => {
                 progress.TaskName = "Loading first theme";
-                var theme1 = await Task.Run(() => LoadTheme(styleFilePath1));
+                var theme1 = await Task.Run(() => LoadTheme(styleFilePath1, isHighContrast));
 
                 progress.TaskName = "Loading second theme";
-                var theme2 = await Task.Run(() => LoadTheme(styleFilePath2));
+                var theme2 = await Task.Run(() => LoadTheme(styleFilePath2, isHighContrast));
 
                 progress.TaskName = "Comparing themes";
                 ThemeFile?.Dispose();
@@ -345,18 +346,18 @@
             }
         }
 
-        private void Open()
+        private Task Open(bool isHighContrast)
         {
             var dialog = new OpenFileDialog();
             dialog.Multiselect = false;
             dialog.Filter = "MSStyles (*.msstyles)|*.msstyles|All Files (*.*)|*.*";
             if (dialog.ShowDialog() != true)
-                return;
+                return Task.CompletedTask;
 
-            TryLoadTheme(dialog.FileName);
+            return TryLoadTheme(dialog.FileName, isHighContrast);
         }
 
-        private void Compare()
+        private Task Compare(bool isHighContrast)
         {
             var dialog = new OpenFileDialog();
             dialog.Multiselect = false;
@@ -364,17 +365,17 @@
 
             dialog.Title = "Select First Theme";
             if (dialog.ShowDialog() != true)
-                return;
+                return Task.CompletedTask;
 
             var firstTheme = dialog.FileName;
 
             dialog.Title = "Select Second Theme";
             if (dialog.ShowDialog() != true)
-                return;
+                return Task.CompletedTask;
 
             var secondTheme = dialog.FileName;
 
-            TryLoadAndCompareThemes(firstTheme, secondTheme);
+            return TryLoadAndCompareThemes(firstTheme, secondTheme, isHighContrast);
         }
 
         private async Task DumpLoadedTheme()
@@ -431,10 +432,10 @@
                 MessageBoxImage.Error);
         }
 
-        private ThemeFileViewModel LoadTheme(string styleFilePath)
+        private ThemeFileViewModel LoadTheme(string styleFilePath, bool isHighContrast)
         {
             return new ThemeFileViewModel(
-                ThemeFileLoader.LoadTheme(styleFilePath));
+                ThemeFileLoader.LoadTheme(styleFilePath, isHighContrast));
         }
 
         private void Exit()

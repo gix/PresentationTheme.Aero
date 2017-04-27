@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ThemeBrowser"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:MainWindowViewModel}}"
         x:Name="root"
@@ -408,6 +409,8 @@
         </StackPanel>
       </Border>
     </DataTemplate>
+    <s:Boolean x:Key="True">true</s:Boolean>
+    <s:Boolean x:Key="False">False</s:Boolean>
   </Window.Resources>
   <i:Interaction.Behaviors>
     <local:ShowProgressAdornerBehavior Progress="{Binding TaskProgress}"/>
@@ -415,8 +418,11 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
-        <MenuItem Header="_Open…" Command="{Binding OpenCommand}"/>
-        <MenuItem Header="_Compare…" Command="{Binding CompareCommand}"/>
+        <MenuItem Header="_Open…" Command="{Binding OpenCommand}" CommandParameter="{StaticResource False}"/>
+        <MenuItem Header="_Open High Contrast…" Command="{Binding OpenCommand}" CommandParameter="{StaticResource True}"/>
+        <MenuItem Header="_Compare…" Command="{Binding CompareCommand}" CommandParameter="{StaticResource False}"/>
+        <MenuItem Header="_Compare High Contrast…" Command="{Binding CompareCommand}" CommandParameter="{StaticResource True}">
+        </MenuItem>
         <MenuItem Header="_Dump loaded theme…" Command="{Binding DumpLoadedThemeCommand}"/>
         <MenuItem Header="_Dump system theme…" Command="{Binding DumpSystemThemeCommand}"/>
         <Separator/>

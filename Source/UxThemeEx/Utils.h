@@ -252,6 +252,7 @@ private:
 };
 
 bool IsHighContrastMode();
+void SetHighContrastMode(bool enabled);
 
 class CUxThemeFile;
 wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset);

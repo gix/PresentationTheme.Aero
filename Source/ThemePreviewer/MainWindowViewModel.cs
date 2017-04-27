@@ -113,7 +113,14 @@
             {
                 themeMenu.Items.Add(new MenuItem {
                     Header = "Override native theme…",
-                    Command = new DelegateCommand(OverrideNativeTheme)
+                    Command = new DelegateCommand<bool>(OverrideNativeTheme),
+                    CommandParameter = false
+                });
+
+                themeMenu.Items.Add(new MenuItem {
+                    Header = "Override native theme (High Contrast)…",
+                    Command = new DelegateCommand<bool>(OverrideNativeTheme),
+                    CommandParameter = true
                 });
 
                 themeMenu.Items.Add(new MenuItem {
@@ -138,7 +145,7 @@
             MenuItems.Add(themeMenu);
         }
 
-        private async void OverrideNativeTheme()
+        private async void OverrideNativeTheme(bool highContrast = false)
         {
             var dialog = new OpenFileDialog();
             dialog.Multiselect = false;
@@ -148,12 +155,12 @@
             if (dialog.ShowDialog(App.Current.MainWindow) != true)
                 return;
 
-            await OverrideNativeTheme(dialog.FileName);
+            await OverrideNativeTheme(dialog.FileName, highContrast);
         }
 
-        public async Task OverrideNativeTheme(string themePath)
+        public async Task OverrideNativeTheme(string themePath, bool highContrast)
         {
-            if (await App.Current.OverrideNativeTheme(themePath))
+            if (await App.Current.OverrideNativeTheme(themePath, highContrast))
                 NativeThemeName = $"Native: {Path.GetFileName(themePath)}";
         }
 

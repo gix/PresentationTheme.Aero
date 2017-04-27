@@ -1335,13 +1335,14 @@ static T* AllocateZero(size_t n)
     return (T*)calloc(n, sizeof(BYTE));
 }
 
-HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, BOOL fGlobal,
-                              BOOL fIsLiteVisualStyle)
+HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, bool fGlobal,
+                              bool fIsLiteVisualStyle, bool fHighContrast)
 {
     _hInst = hInstSrc;
     _nVersion = nVersion;
     _fGlobal = fGlobal;
     _fIsLiteVisualStyle = fIsLiteVisualStyle;
+    _fIsHighContrast = fHighContrast;
 
     unsigned size;
 
@@ -1442,7 +1443,7 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
     if (hr < 0)
         return hr;
 
-    int v5 = 0;
+    bool variantFound = false;
     int pcbPos = 0;
     do {
         if (hr < 0)
@@ -1455,16 +1456,16 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
             continue;
 
         if (!AsciiStrCmpI(size, pszSizeVariant) && !AsciiStrCmpI(color, pszColorVariant)) {
-            v5 = 1;
+            variantFound = true;
             hr = GetPtrToResource(_hInst, L"VARIANT", name, pvMap, (unsigned*)pcbMap);
         }
 
         delete[] name;
         delete[] color;
         delete[] size;
-    } while (!v5);
+    } while (!variantFound);
 
-    if (!v5)
+    if (!variantFound)
         return E_INVALIDARG;
 
     return hr;

@@ -9,6 +9,7 @@ namespace StyleCore.Native
         [DllImport("UxThemeEx")]
         public static extern HResult UxOpenThemeFile(
             [MarshalAs(UnmanagedType.LPWStr)] string themeFileName,
+            bool highContrast,
             out SafeThemeFileHandle hThemeFile);
 
         [DllImport("UxThemeEx")]

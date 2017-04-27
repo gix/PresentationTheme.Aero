@@ -45,6 +45,7 @@ struct TA_TRANSFORM_3D
 
 THEMEEXAPI UxOpenThemeFile(
     _In_ wchar_t const* themeFileName,
+    _In_ bool highContrast,
     _Out_ HTHEMEFILE* phThemeFile);
 
 THEMEEXAPI UxCloseThemeFile(_In_ HTHEMEFILE hThemeFile);

@@ -69,14 +69,14 @@
 
             uxThemeOverride = new UxThemeOverride();
             if (opts.NativeTheme != null)
-                viewModel.OverrideNativeTheme(opts.NativeTheme.FullName).Forget();
+                viewModel.OverrideNativeTheme(opts.NativeTheme.FullName, true).Forget();
         }
 
-        public async Task<bool> OverrideNativeTheme(string path)
+        public async Task<bool> OverrideNativeTheme(string path, bool highContrast)
         {
             return await viewModel.RunExclusive(async progress => {
                 progress.TaskName = "Overriding native theme…";
-                await uxThemeOverride.SetThemeAsync(path);
+                await uxThemeOverride.SetThemeAsync(path, highContrast);
             }, "Failed to override native theme");
         }
 
@@ -84,7 +84,7 @@
         {
             return await viewModel.RunExclusive(async progress => {
                 progress.TaskName = "Restoring native theme…";
-                await uxThemeOverride.SetThemeAsync(null);
+                await uxThemeOverride.SetThemeAsync(null, false);
             }, "Failed to restore native theme");
         }
 

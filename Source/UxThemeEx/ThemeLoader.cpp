@@ -30,7 +30,7 @@ struct VISUALSTYLELOAD
     IParserCallBack* pfnCB;
 };
 
-static HRESULT VSLoad(VISUALSTYLELOAD* pvsl, BOOL fIsLiteVisualStyle, BOOL fHighContrast)
+static HRESULT VSLoad(VISUALSTYLELOAD* pvsl, bool fIsLiteVisualStyle, bool fHighContrast)
 {
     if (!pvsl
         || pvsl->cbStruct != sizeof(VISUALSTYLELOAD)
@@ -47,7 +47,7 @@ static HRESULT VSLoad(VISUALSTYLELOAD* pvsl, BOOL fIsLiteVisualStyle, BOOL fHigh
         return E_OUTOFMEMORY;
 
     ENSURE_HR(unpack->Initialize(pvsl->hInstVS, 0, pvsl->ulFlags & 1,
-                                 fIsLiteVisualStyle));
+                                 fIsLiteVisualStyle, fHighContrast));
     ENSURE_HR(unpack->LoadRootMap(pvsl->pfnCB));
     ENSURE_HR(unpack->LoadClassDataMap(pvsl->pszColorVariant,
                                        pvsl->pszSizeVariant, pvsl->pfnCB));
@@ -136,7 +136,7 @@ CThemeLoader::CThemeLoader()
     , _pbLocalData(nullptr)
     , _iLocalLen(0)
     , _iEntryHdrLevel(-1)
-    , _fGlobalTheme(0)
+    , _fGlobalTheme(false)
     , _hdr(nullptr)
 {
     SYSTEM_INFO systemInfo;
@@ -386,7 +386,8 @@ void CThemeLoader::FreeLocalTheme()
 HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
                                 wchar_t const* pszColorParam,
                                 wchar_t const*pszSizeParam,
-                                HANDLE* phReuseSection, BOOL fGlobalTheme)
+                                HANDLE* phReuseSection, bool fGlobalTheme,
+                                bool fHighContrast)
 {
     if (phReuseSection)
         *phReuseSection = nullptr;
@@ -412,11 +413,9 @@ HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
     if (!_pbLocalData)
         return HRESULT_FROM_WIN32(ERROR_OUTOFMEMORY);
 
-    BOOL isLiteStyle = FALSE;
+    bool isLiteStyle = false;
     if (pszThemeName)
-        isLiteStyle = StrRStrIW(pszThemeName, nullptr, L"aerolite.msstyles") ? TRUE : FALSE;
-
-    BOOL isHighContrast = FALSE;
+        isLiteStyle = StrRStrIW(pszThemeName, nullptr, L"aerolite.msstyles") != nullptr;
 
     VISUALSTYLELOAD vsl = {};
     vsl.cbStruct = sizeof(vsl);
@@ -425,7 +424,7 @@ HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
     vsl.pszColorVariant = pszColorParam;
     vsl.pszSizeVariant = pszSizeParam;
     vsl.pfnCB = this;
-    ENSURE_HR(VSLoad(&vsl, isLiteStyle, isHighContrast));
+    ENSURE_HR(VSLoad(&vsl, isLiteStyle, fHighContrast));
 
     ENSURE_HR(PackAndLoadTheme(
         hFile,

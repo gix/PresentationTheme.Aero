@@ -9,17 +9,17 @@ namespace ThemePreviewer
 
         public string CurrentOverride { get; private set; }
 
-        public static SafeThemeFileHandle LoadTheme(string path)
+        public static SafeThemeFileHandle LoadTheme(string path, bool highContrast)
         {
             SafeThemeFileHandle themeFile;
-            UxThemeExNativeMethods.UxOpenThemeFile(path, out themeFile).ThrowIfFailed();
+            UxThemeExNativeMethods.UxOpenThemeFile(path, highContrast, out themeFile).ThrowIfFailed();
             return themeFile;
         }
 
-        public async Task SetThemeAsync(string path)
+        public async Task SetThemeAsync(string path, bool highContrast)
         {
             if (path != null)
-                SetTheme(await Task.Run(() => LoadTheme(path)));
+                SetTheme(await Task.Run(() => LoadTheme(path, highContrast)));
             else
                 SetTheme(SafeThemeFileHandle.Zero);
             CurrentOverride = path;

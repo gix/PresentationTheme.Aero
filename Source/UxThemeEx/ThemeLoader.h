@@ -39,7 +39,7 @@ public:
     HRESULT LoadTheme(HINSTANCE hInst, wchar_t const* pszThemeName,
                       wchar_t const* pszColorParam,
                       wchar_t const*pszSizeParam, HANDLE* phReuseSection,
-                      BOOL fGlobalTheme);
+                      bool fGlobalTheme, bool fHighContrast);
     HRESULT EmitString(MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc, int* piOffSet);
     HRESULT EmitObject(MIXEDPTRS* u, short propnum, unsigned char privnum, void* pHdr, unsigned dwHdrLen, void* pObj, unsigned dwObjLen, CRenderObj*);
     HRESULT MakeStockObject(CRenderObj* pRender, DIBINFO* pdi);
@@ -90,7 +90,7 @@ public:
     int _iEntryHdrLevel;
     CUxThemeFile _LoadingThemeFile;
     LOADTHEMEMETRICS _LoadThemeMetrics;
-    int _fGlobalTheme;
+    bool _fGlobalTheme;
     int _iCurrentScreenPpi;
     unsigned short _wCurrentLangID;
     THEMEHDR* _hdr;
