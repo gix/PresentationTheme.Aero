@@ -6,6 +6,7 @@
 #include "Handle.h"
 #include "ImageFile.h"
 #include "RenderObj.h"
+#include "ThemeUtils.h"
 #include "Utils.h"
 #include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
@@ -246,6 +247,16 @@ static int Format(char* buffer, size_t bufferSize, FILETIME const& value)
         ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
 }
 
+static int FormatHex(char* buffer, size_t bufferSize, unsigned value)
+{
+    return sprintf_s(buffer, bufferSize, "0x%08X", value);
+}
+
+static int FormatHex(char* buffer, size_t bufferSize, unsigned long value)
+{
+    return sprintf_s(buffer, bufferSize, "0x%08lX", value);
+}
+
 class LogFile
 {
 public:
@@ -263,6 +274,22 @@ public:
 
     void Indent(int n = 1) { indentLevel += n; }
     void Outdent(int n = 1) { indentLevel -= n; }
+
+    void StartLine()
+    {
+        WriteIndent();
+    }
+
+    template<typename... T>
+    void LogNoIndent(char const* format, T const&... args)
+    {
+        int len = sprintf_s(buffer, countof(buffer), format, args...);
+        if (len <= 0)
+            return;
+
+        DWORD written;
+        WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+    }
 
     template<typename... T>
     void Log(char const* format, T const&... args)
@@ -288,6 +315,25 @@ public:
             WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
 
         len = Format(buffer, countof(buffer), value);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        buffer[0] = '\n';
+        WriteFile(hFile, buffer, 1, &written, nullptr);
+    }
+
+    template<typename T>
+    void LogPairHex(char const* key, T const& value)
+    {
+        WriteIndent();
+
+        DWORD written;
+
+        int len = sprintf_s(buffer, countof(buffer), "%s: ", key);
+        if (len > 0)
+            WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+        len = FormatHex(buffer, countof(buffer), value);
         if (len > 0)
             WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
 
@@ -335,7 +381,7 @@ public:
         LogPair("iRgnListOffset", value.iRgnListOffset);
         LogPair("eSizingType", value.eSizingType);
         LogPair("fBorderOnly", value.fBorderOnly);
-        LogPair("fPartiallyTransparent", value.fPartiallyTransparent);
+        LogPair("fPartiallyTransparent", value.fPartiallyTransparent != 0);
         LogPair("iAlphaThreshold", value.iAlphaThreshold);
         LogPair("iMinDpi", value.iMinDpi);
         LogPair("szMinSize", value.szMinSize);
@@ -370,6 +416,27 @@ public:
         }
     }
 
+    template<typename T, size_t N>
+    void LogPairHex(char const* key, T const (&value)[N])
+    {
+        DWORD written;
+
+        for (size_t i = 0; i < N; ++i) {
+            WriteIndent();
+
+            int len = sprintf_s(buffer, countof(buffer), "%s[%zu]: ", key, i);
+            if (len > 0)
+                WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+            len = FormatHex(buffer, countof(buffer), value[i]);
+            if (len > 0)
+                WriteFile(hFile, buffer, static_cast<DWORD>(len), &written, nullptr);
+
+            buffer[0] = '\n';
+            WriteFile(hFile, buffer, 1, &written, nullptr);
+        }
+    }
+
 private:
     void WriteIndent()
     {
@@ -390,7 +457,50 @@ private:
     int indentLevel = 0;
 };
 
-static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
+static void DumpFont(LogFile& log, LOGFONTW const& font)
+{
+    log.LogPair("lfHeight", font.lfHeight);
+    log.LogPair("lfWidth", font.lfWidth);
+    log.LogPair("lfEscapement", font.lfEscapement);
+    log.LogPair("lfOrientation", font.lfOrientation);
+    log.LogPair("lfWeight", font.lfWeight);
+    log.LogPair("lfItalic", font.lfItalic);
+    log.LogPair("lfUnderline", font.lfUnderline);
+    log.LogPair("lfStrikeOut", font.lfStrikeOut);
+    log.LogPair("lfCharSet", font.lfCharSet);
+    log.LogPair("lfOutPrecision", font.lfOutPrecision);
+    log.LogPair("lfClipPrecision", font.lfClipPrecision);
+    log.LogPair("lfQuality", font.lfQuality);
+    log.LogPair("lfPitchAndFamily", font.lfPitchAndFamily);
+    log.LogPair("lfFaceName", font.lfFaceName);
+}
+
+static void DumpThemeMetrics(LogFile& log, THEMEMETRICS const& tm)
+{
+    for (size_t i = 0; i < countof(tm.lfFonts); ++i) {
+        log.Log("Font %d\n", i);
+        log.Indent();
+        DumpFont(log, tm.lfFonts[i]);
+        log.Outdent();
+    }
+
+    for (size_t i = 0; i < countof(tm.crColors); ++i)
+        log.Log("Color %d: 0x%08X\n", i, tm.crColors[i]);
+
+    for (size_t i = 0; i < countof(tm.iSizes); ++i)
+        log.Log("Size %d: 0x%08X\n", i, tm.iSizes[i]);
+
+    for (size_t i = 0; i < countof(tm.fBools); ++i)
+        log.Log("Bool %d: %d\n", i, tm.fBools[i]);
+
+    for (size_t i = 0; i < countof(tm.iStringOffsets); ++i)
+        log.Log("StringOffset %d: %d\n", i, tm.iStringOffsets[i]);
+
+    for (size_t i = 0; i < countof(tm.iInts); ++i)
+        log.Log("Int %d: %d\n", i, tm.iInts[i]);
+}
+
+static void DumpDrawObj(LogFile& log, CDrawBase const* drawObj)
 {
     if (drawObj->_eBgType == BT_IMAGEFILE) {
         auto imageFile = (CImageFile*)drawObj;
@@ -407,7 +517,7 @@ static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
         log.LogPair("_eHAlign", imageFile->_eHAlign);
         log.LogPair("_eVAlign", imageFile->_eVAlign);
         log.LogPair("_fBgFill", imageFile->_fBgFill);
-        log.LogPair("_crFill", imageFile->_crFill);
+        log.LogPairHex("_crFill", imageFile->_crFill);
         log.LogPair("_iTrueSizeStretchMark", imageFile->_iTrueSizeStretchMark);
         log.LogPair("_fUniformSizing", imageFile->_fUniformSizing);
         log.LogPair("_fIntegralSizing", imageFile->_fIntegralSizing);
@@ -417,7 +527,7 @@ static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
         log.LogPair("_fSourceShrink", imageFile->_fSourceShrink);
         log.LogPair("_fGlyphOnly", imageFile->_fGlyphOnly);
         log.LogPair("_eGlyphType", imageFile->_eGlyphType);
-        log.LogPair("_crGlyphTextColor", imageFile->_crGlyphTextColor);
+        log.LogPairHex("_crGlyphTextColor", imageFile->_crGlyphTextColor);
         log.LogPair("_iGlyphFontIndex", imageFile->_iGlyphFontIndex);
         log.LogPair("_iGlyphIndex", imageFile->_iGlyphIndex);
         log.LogPair("_GlyphInfo", imageFile->_GlyphInfo);
@@ -429,16 +539,16 @@ static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
         log.LogPair("_iUnused", borderFill->_iUnused);
         log.LogPair("_fNoDraw", borderFill->_fNoDraw);
         log.LogPair("_eBorderType", borderFill->_eBorderType);
-        log.LogPair("_crBorder", borderFill->_crBorder);
+        log.LogPairHex("_crBorder", borderFill->_crBorder);
         log.LogPair("_iBorderSize", borderFill->_iBorderSize);
         log.LogPair("_iRoundCornerWidth", borderFill->_iRoundCornerWidth);
         log.LogPair("_iRoundCornerHeight", borderFill->_iRoundCornerHeight);
         log.LogPair("_eFillType", borderFill->_eFillType);
-        log.LogPair("_crFill", borderFill->_crFill);
+        log.LogPairHex("_crFill", borderFill->_crFill);
         log.LogPair("_iDibOffset", borderFill->_iDibOffset);
         log.LogPair("_ContentMargins", borderFill->_ContentMargins);
         log.LogPair("_iGradientPartCount", borderFill->_iGradientPartCount);
-        log.LogPair("_crGradientColors", borderFill->_crGradientColors);
+        log.LogPairHex("_crGradientColors", borderFill->_crGradientColors);
         log.LogPair("_iGradientRatios", borderFill->_iGradientRatios);
         log.LogPair("_iSourcePartId", borderFill->_iSourcePartId);
         log.LogPair("_iSourceStateId", borderFill->_iSourceStateId);
@@ -448,7 +558,31 @@ static void DumpDrawObj(LogFile& log, THEMEHDR const* hdr, CDrawBase* drawObj)
     }
 }
 
-static void DumpAnimationTransform(TA_TRANSFORM const* transform, LogFile& log)
+static void DumpDrawObj(LogFile& log, CTextDraw const* drawObj)
+{
+    log.LogPair("_fComposited", drawObj->_fComposited);
+    log.LogPairHex("_crText", drawObj->_crText);
+    log.LogPairHex("_crEdgeLight", drawObj->_crEdgeLight);
+    log.LogPairHex("_crEdgeHighlight", drawObj->_crEdgeHighlight);
+    log.LogPairHex("_crEdgeShadow", drawObj->_crEdgeShadow);
+    log.LogPairHex("_crEdgeDkShadow", drawObj->_crEdgeDkShadow);
+    log.LogPairHex("_crEdgeFill", drawObj->_crEdgeFill);
+    log.LogPair("_ptShadowOffset", drawObj->_ptShadowOffset);
+    log.LogPairHex("_crShadow", drawObj->_crShadow);
+    log.LogPair("_eShadowType", drawObj->_eShadowType);
+    log.LogPair("_iBorderSize", drawObj->_iBorderSize);
+    log.LogPairHex("_crBorder", drawObj->_crBorder);
+    log.LogPairHex("_crGlow", drawObj->_crGlow);
+    log.LogPair("_fApplyOverlay", drawObj->_fApplyOverlay);
+    log.LogPair("_iGlowSize", drawObj->_iGlowSize);
+    log.LogPair("_iGlowIntensity", drawObj->_iGlowIntensity);
+    log.LogPair("_iFontIndex", drawObj->_iFontIndex);
+    log.LogPair("_fItalicFont", drawObj->_fItalicFont);
+    log.LogPair("_iSourcePartId", drawObj->_iSourcePartId);
+    log.LogPair("_iSourceStateId", drawObj->_iSourceStateId);
+}
+
+static void DumpAnimationTransform(LogFile& log, TA_TRANSFORM const* transform)
 {
     switch (static_cast<int>(transform->eTransformType)) {
     case TATT_TRANSLATE_2D:
@@ -533,13 +667,135 @@ static void DumpAnimationTransform(TA_TRANSFORM const* transform, LogFile& log)
     }
 }
 
-static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
+static void DumpBytes4(LogFile& log, void const* bytes, size_t size)
 {
-    log.Indent();
-    log.Log("Entry(%05u, %05u, len:%05u)\n", entry->usTypeNum, entry->ePrimVal, entry->dwDataLen);
+    size_t const itemsPerRow = 4;
+
+    auto ptr = static_cast<unsigned const*>(bytes);
+    auto end = ptr + (size / sizeof(unsigned));
+
+    while (ptr < end) {
+        log.StartLine();
+        for (size_t i = 0; i < itemsPerRow && ptr < end; ++i) {
+            if (i != 0)
+                log.LogNoIndent(" ");
+            log.LogNoIndent("%08X", *ptr++);
+        }
+
+        log.LogNoIndent("\n");
+    }
+
+    auto bytePtr = reinterpret_cast<uint8_t const*>(ptr);
+    auto byteEnd = reinterpret_cast<uint8_t const*>(bytes) + size;
+    log.StartLine();
+    for (size_t i = 0; bytePtr < byteEnd; ++i) {
+        if (i != 0)
+            log.LogNoIndent(" ");
+        log.LogNoIndent("%02X", *bytePtr++);
+    }
+    log.LogNoIndent("\n");
+}
+
+static void DumpBitmapHeader(LogFile& log, BITMAPINFOHEADER const& hdr)
+{
+    log.LogPair("biSize", hdr.biSize);
+    log.LogPair("biWidth", hdr.biWidth);
+    log.LogPair("biHeight", hdr.biHeight);
+    log.LogPair("biPlanes", hdr.biPlanes);
+    log.LogPair("biBitCount", hdr.biBitCount);
+    log.LogPair("biCompression", hdr.biCompression);
+    log.LogPair("biSizeImage", hdr.biSizeImage);
+    log.LogPair("biXPelsPerMeter", hdr.biXPelsPerMeter);
+    log.LogPair("biYPelsPerMeter", hdr.biYPelsPerMeter);
+    log.LogPair("biClrUsed", hdr.biClrUsed);
+    log.LogPair("biClrImportant", hdr.biClrImportant);
+}
+
+static HRESULT DumpBitmap(LogFile& log, TMBITMAPHEADER const& tmhdr, HBITMAP hbmp)
+{
+    log.Log("hbitmap: %s\n", hbmp ? "<handle>" : "0");
+    if (!hbmp)
+        return S_OK;
+
+    if (hbmp) {
+        unsigned* pixels;
+        int width;
+        int height;
+        int bytesPerPixel;
+        int bytesPerRow;
+
+        BitmapPixels helper;
+        ENSURE_HR(helper.OpenBitmap(nullptr, hbmp, false, &pixels, &width,
+                                    &height, &bytesPerPixel, &bytesPerRow,
+                                    nullptr, 0));
+
+        log.Log("BITMAPINFOHEADER\n");
+        log.Indent();
+        DumpBitmapHeader(log, *helper.BitmapHeader());
+        log.Outdent();
+
+        log.Log("Pixels\n");
+        log.Indent();
+        for (int h = 0; h < height; ++h) {
+            log.StartLine();
+            for (int w = 0, we = bytesPerRow / 4; w < we; ++w) {
+                if (w != 0)
+                    log.LogNoIndent(" ");
+                log.LogNoIndent("%08X", *pixels++);
+            }
+            log.LogNoIndent("\n");
+        }
+        log.Outdent();
+    } else {
+        auto bmphdr = (BITMAPHEADER*)((BYTE*)&tmhdr + tmhdr.dwSize);
+        if (!bmphdr)
+            return E_FAIL;
+
+        log.Log("BITMAPINFOHEADER\n");
+        log.Indent();
+        DumpBitmapHeader(log, bmphdr->bmih);
+        log.Outdent();
+    }
+
+    return S_OK;
+}
+
+static void DumpBitmapHandle(LogFile& log, TMBITMAPHEADER const& tmhdr,
+                             NONSHARABLEDATAHDR const* nsdHdr)
+{
+    auto bmpHandles = (HBITMAP64 const*)(Advance(nsdHdr, nsdHdr->iBitmapsOffset));
+
+    log.Log("dwSize: %d\n", tmhdr.dwSize);
+    log.Log("iBitmapIndex: %d\n", tmhdr.iBitmapIndex);
+    log.Log("fPartiallyTransparent: %d\n", tmhdr.fPartiallyTransparent != 0);
+    if (tmhdr.iBitmapIndex != -1 && tmhdr.iBitmapIndex < nsdHdr->cBitmaps) {
+        HBITMAP hbmp = bmpHandles[tmhdr.iBitmapIndex].hBitmap;
+        HRESULT hr = DumpBitmap(log, tmhdr, hbmp);
+        if (FAILED(hr))
+            log.Log("Failed to dump bitmap: hr=%08X\n", hr);
+    }
+}
+
+static void DumpEntry(LogFile& log, ENTRYHDR* entry, CUxThemeFile const& themeFile)
+{
+    auto const hdr = themeFile.ThemeHeader();
+    auto const nsdHdr = themeFile.NonSharableDataHeader();
 
     log.Indent();
-    if (entry->usTypeNum == TMT_PARTJUMPTABLE) {
+    log.Log("Entry(%05u, %05u, index:%05d, len:%05u)\n", entry->usTypeNum, entry->ePrimVal,
+            (int)((uintptr_t)entry - (uintptr_t)hdr), entry->dwDataLen);
+
+    log.Indent();
+    if (entry->usTypeNum == TMT_THEMEMETRICS) {
+        DumpThemeMetrics(log, *(THEMEMETRICS*)(entry + 1));
+    } else if (entry->usTypeNum >= TMT_DIBDATA && entry->usTypeNum <= TMT_DIBDATA5) {
+        if (entry->ePrimVal == TMT_HBITMAP || entry->ePrimVal == TMT_BITMAPREF) {
+            auto& tmhdr = *reinterpret_cast<TMBITMAPHEADER*>(entry + 1);
+            DumpBitmapHandle(log, tmhdr, nsdHdr);
+        } else {
+            log.Log("<unhandled DIBDATA type>\n");
+        }
+    } else if (entry->usTypeNum == TMT_PARTJUMPTABLE) {
         auto jumpTableHdr = (PARTJUMPTABLEHDR*)(entry + 1);
         auto jumpTable = (int*)(jumpTableHdr + 1);
         log.Log("iBaseClassIndex: %d\n", jumpTableHdr->iBaseClassIndex);
@@ -557,18 +813,25 @@ static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
     } else if (entry->usTypeNum == TMT_JUMPTOPARENT) {
         auto data = (int64_t*)(entry + 1);
         log.LogPair("index", *data);
+    } else if (entry->usTypeNum == TMT_DRAWOBJ) {
+        auto objHdr = (PARTOBJHDR*)(entry + 1);
+        log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
+        DumpDrawObj(log, (CDrawBase*)(objHdr + 1));
+    } else if (entry->usTypeNum == TMT_TEXTOBJ) {
+        auto objHdr = (PARTOBJHDR*)(entry + 1);
+        log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
+        DumpDrawObj(log, (CTextDraw*)(objHdr + 1));
     } else if (entry->usTypeNum == TMT_RGNLIST) {
         auto data = (BYTE*)(entry + 1);
         auto imageCount = *(BYTE*)data;
-        log.Log("ImageCount: %d\n", imageCount);
-
         auto regionOffsets = (int*)(data + 8);
 
-        for (unsigned i = 0; i < imageCount; ++i)
+        log.Log("ImageCount: %d\n", imageCount);
+        for (unsigned i = 0; i < imageCount; ++i) {
             log.Log("[Region %d]: %d\n", i, regionOffsets[i]);
-
-        for (unsigned i = 0; i < imageCount; ++i)
-            DumpEntry(log, hdr, (ENTRYHDR*)((BYTE*)hdr + regionOffsets[i]));
+            if (regionOffsets[i] != 0)
+                DumpEntry(log, (ENTRYHDR*)((BYTE*)hdr + regionOffsets[i]), themeFile);
+        }
     } else if (entry->usTypeNum == TMT_RGNDATA) {
         auto data = (RGNDATA*)(entry + 1);
         log.Log("rdh.nCount:   %lu\n", data->rdh.nCount);
@@ -581,10 +844,8 @@ static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
             log.Log("[%lu]: (%d,%d,%d,%d)\n", i, rects[i].left,
                     rects[i].top, rects[i].right, rects[i].bottom);
         }
-    } else if (entry->usTypeNum == TMT_DRAWOBJ) {
-        auto objHdr = (PARTOBJHDR*)(entry + 1);
-        log.Log("[p:%d, s:%d]\n", objHdr->iPartId, objHdr->iStateId);
-        DumpDrawObj(log, hdr, (CDrawBase*)(objHdr + 1));
+    } else if (entry->usTypeNum == TMT_ENDOFCLASS) {
+        // Empty
     } else if (entry->usTypeNum == TMT_ANIMATION) {
         auto header = (CTransformSerializer::Header*)(entry + 1);
         log.LogPair("cbSize", header->_cbSize);
@@ -609,23 +870,103 @@ static void DumpEntry(LogFile& log, THEMEHDR const* hdr, ENTRYHDR* entry)
         for (int i = 0; transform < end; ++i) {
             log.Log("[Transform %d]\n", i);
             log.Indent();
-            DumpAnimationTransform(transform, log);
+            DumpAnimationTransform(log, transform);
             log.Outdent();
             transform = Advance(transform, CTransformSerializer::GetTransformSize(transform));
         }
     } else if (entry->usTypeNum == TMT_TIMINGFUNCTION) {
         auto timingFunction = (TA_TIMINGFUNCTION const*)(entry + 1);
         log.LogPair("eTimingFunctionType", timingFunction->eTimingFunctionType);
+    } else if (entry->ePrimVal == TMT_ENUM) {
+        auto& value = *reinterpret_cast<int const*>(entry + 1);
+        log.Log("ENUM: %d\n", value);
+    } else if (entry->ePrimVal == TMT_INT) {
+        auto& value = *reinterpret_cast<int const*>(entry + 1);
+        log.Log("INT: %d\n", value);
+    } else if (entry->ePrimVal == TMT_STRING) {
+        auto& value = *reinterpret_cast<wchar_t const*>(entry + 1);
+        log.Log("STRING: %ls\n", value);
+    } else if (entry->ePrimVal == TMT_BOOL) {
+        auto& value = *reinterpret_cast<BOOL const*>(entry + 1);
+        log.Log("BOOL: %d\n", value);
+    } else if (entry->ePrimVal == TMT_COLOR) {
+        auto& color = *reinterpret_cast<COLORREF const*>(entry + 1);
+        log.Log("COLOR: 0x%08X\n", color);
+    } else if (entry->ePrimVal == TMT_MARGINS) {
+        auto& margins = *reinterpret_cast<MARGINS const*>(entry + 1);
+        log.Log("MARGINS\n");
+        log.LogPair("cxLeftWidth", margins.cxLeftWidth);
+        log.LogPair("cxRightWidth", margins.cxRightWidth);
+        log.LogPair("cyTopHeight", margins.cyTopHeight);
+        log.LogPair("cyBottomHeight", margins.cyBottomHeight);
+    } else if (entry->ePrimVal == TMT_FILENAME) {
+    } else if (entry->ePrimVal == TMT_SIZE) {
+        auto& value = *reinterpret_cast<int const*>(entry + 1);
+        log.Log("SIZE: %d\n", value);
+    } else if (entry->ePrimVal == TMT_POSITION) {
+        auto& size = *reinterpret_cast<POINT const*>(entry + 1);
+        log.Log("POSITION\n");
+        log.LogPair("x", size.x);
+        log.LogPair("y", size.y);
+    } else if (entry->ePrimVal == TMT_RECT) {
+        auto& rect = *reinterpret_cast<RECT const*>(entry + 1);
+        log.Log("RECT\n");
+        log.LogPair("left", rect.left);
+        log.LogPair("top", rect.top);
+        log.LogPair("right", rect.right);
+        log.LogPair("bottom", rect.bottom);
+    } else if (entry->ePrimVal == TMT_FONT) {
+        auto index = *reinterpret_cast<unsigned short const*>(entry + 1);
+        log.Log("FONT: %u\n", index);
+        DumpFont(log, *themeFile.GetFontByIndex(index));
+    } else if (entry->ePrimVal == TMT_INTLIST) {
+        auto& intList = *reinterpret_cast<INTLIST const*>(entry + 1);
+        log.Log("INTLIST\n");
+        log.LogPair("iValueCount", intList.iValueCount);
+        for (int i = 0; i < intList.iValueCount; ++i)
+            log.Log("[%d] %d\n", i, intList.iValues[i]);
+    } else if (entry->ePrimVal == TMT_HBITMAP || entry->ePrimVal == TMT_BITMAPREF) {
+        auto& tmhdr = *reinterpret_cast<TMBITMAPHEADER*>(entry + 1);
+        DumpBitmapHandle(log, tmhdr, nsdHdr);
+    } else if (entry->ePrimVal == TMT_DISKSTREAM) {
+        DWORD* data = (DWORD*)(entry + 1);
+        DWORD offset = data[0];
+        DWORD size = data[1];
+        log.Log("DISKSTREAM\n");
+        log.LogPair("offset", offset);
+        log.LogPair("size", size);
+    } else if (entry->ePrimVal == TMT_STREAM) {
+        log.Log("<unhandled entry type>\n");
+    } else if (entry->ePrimVal == TMT_FLOAT) {
+        float value;
+        std::memcpy(&value, entry + 1, sizeof(float));
+        log.Log("FLOAT: %g\n", value);
+    } else if (entry->ePrimVal == TMT_FLOATLIST) {
+        auto& floatList = *reinterpret_cast<INTLIST const*>(entry + 1);
+        log.Log("FLOATLIST\n");
+        log.LogPair("iValueCount", floatList.iValueCount);
+        for (int i = 0; i < floatList.iValueCount; ++i) {
+            float value;
+            std::memcpy(&value, &floatList.iValues[i], sizeof(float));
+            log.Log("[%d] %g\n", i, value);
+        }
+    } else if (entry->ePrimVal == TMT_HCCOLORTYPE) {
+        auto& value = *reinterpret_cast<HIGHCONTRASTCOLOR const*>(entry + 1);
+        log.Log("HIGHCONTRASTCOLOR: %d\n", value);
+    } else {
+        log.Log("<unhandled entry type>\n");
     }
 
     log.Outdent(2);
 }
 
-static void DumpHeader(THEMEHDR const* hdr, LogFile& log)
+static void DumpHeader(LogFile& log, CUxThemeFile const& themeFile)
 {
+    THEMEHDR const* hdr = themeFile.ThemeHeader();
+    NONSHARABLEDATAHDR const* nsdHdr = themeFile.NonSharableDataHeader();
+
     log.Log("THEMEHDR\n");
     log.Log("========================================\n");
-
     log.LogPair("szSignature", hdr->szSignature);
     log.LogPair("dwVersion", hdr->dwVersion);
     log.LogPair("ftModifTimeStamp", hdr->ftModifTimeStamp);
@@ -648,10 +989,20 @@ static void DumpHeader(THEMEHDR const* hdr, LogFile& log)
     log.LogPair("iFontsOffset", hdr->iFontsOffset);
     log.LogPair("cFonts", hdr->cFonts);
     log.Log("\n");
+
+    log.Log("NONSHARABLEDATAHDR\n");
+    log.Log("========================================\n");
+    log.LogPair("dwFlags", nsdHdr->dwFlags);
+    log.LogPair("iLoadId", nsdHdr->iLoadId);
+    log.LogPair("cBitmaps", nsdHdr->cBitmaps);
+    log.LogPair("iBitmapsOffset", nsdHdr->iBitmapsOffset);
+    log.Log("\n");
 }
 
-static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
+static void DumpSectionIndex(LogFile& log, CUxThemeFile const& themeFile)
 {
+    THEMEHDR const* hdr = themeFile.ThemeHeader();
+
     log.Log("SectionIndex\n");
     log.Log("========================================\n");
 
@@ -670,39 +1021,25 @@ static void DumpSectionIndex(THEMEHDR const* hdr, LogFile& log)
         auto be = (ENTRYHDR*)Advance(hdr, p->iIndex);
         auto ee = Advance(be, p->iLen);
 
-        for (auto pe = be; pe < ee; pe = pe->Next()) {
-            DumpEntry(log, hdr, pe);
-        }
+        for (auto pe = be; pe < ee; pe = pe->Next())
+            DumpEntry(log, pe, themeFile);
     }
 
     log.Log("\n");
 }
 
-static void DumpFonts(THEMEHDR const* hdr, LogFile& log)
+static void DumpFonts(LogFile& log, CUxThemeFile const& themeFile)
 {
+    THEMEHDR const* hdr = themeFile.ThemeHeader();
     log.Log("Fonts\n");
     log.Log("========================================\n");
 
     auto fonts = (LOGFONTW const*)Advance(hdr, hdr->iFontsOffset);
 
     for (int i = 0; i < hdr->cFonts; ++i) {
-        auto const& font = fonts[i];
         log.Log("Font %d\n", i);
         log.Indent();
-        log.LogPair("lfHeight", font.lfHeight);
-        log.LogPair("lfWidth", font.lfWidth);
-        log.LogPair("lfEscapement", font.lfEscapement);
-        log.LogPair("lfOrientation", font.lfOrientation);
-        log.LogPair("lfWeight", font.lfWeight);
-        log.LogPair("lfItalic", font.lfItalic);
-        log.LogPair("lfUnderline", font.lfUnderline);
-        log.LogPair("lfStrikeOut", font.lfStrikeOut);
-        log.LogPair("lfCharSet", font.lfCharSet);
-        log.LogPair("lfOutPrecision", font.lfOutPrecision);
-        log.LogPair("lfClipPrecision", font.lfClipPrecision);
-        log.LogPair("lfQuality", font.lfQuality);
-        log.LogPair("lfPitchAndFamily", font.lfPitchAndFamily);
-        log.LogPair("lfFaceName", font.lfFaceName);
+        DumpFont(log, fonts[i]);
         log.Outdent();
     }
 
@@ -726,24 +1063,20 @@ static HRESULT WriteFileAllBytes(wchar_t const* path, void const* ptr, unsigned 
     return S_OK;
 }
 
-static HRESULT DumpThemeFile(CUxThemeFile* themeFile, wchar_t const* path,
+static HRESULT DumpThemeFile(CUxThemeFile const& themeFile, wchar_t const* path,
                              bool packed, bool fullInfo)
 {
-    THEMEHDR const* themeHdr = themeFile->ThemeHeader();
-
+    THEMEHDR const& themeHdr = *themeFile.ThemeHeader();
     if (packed)
-        return WriteFileAllBytes(path, themeHdr, themeHdr->dwTotalLength);
+        return WriteFileAllBytes(path, &themeHdr, themeHdr.dwTotalLength);
 
     LogFile log{path};
     if (!log.Open())
         return E_FAIL;
 
-    std::vector<std::wstring> str1;
-    GetStrings(themeHdr, str1);
-
-    DumpHeader(themeHdr, log);
-    DumpSectionIndex(themeHdr, log);
-    DumpFonts(themeHdr, log);
+    DumpHeader(log, themeFile);
+    DumpSectionIndex(log, themeFile);
+    DumpFonts(log, themeFile);
     return S_OK;
 }
 
@@ -753,7 +1086,7 @@ HRESULT DumpLoadedThemeToTextFile(HTHEMEFILE hThemeFile, wchar_t const* path,
     auto themeFile = ThemeFileFromHandle(hThemeFile);
     if (!themeFile)
         return E_HANDLE;
-    return DumpThemeFile(themeFile, path, packed, fullInfo);
+    return DumpThemeFile(*themeFile, path, packed, fullInfo);
 }
 
 HRESULT DumpSystemThemeToTextFile(wchar_t const* path, bool packed, bool fullInfo)
@@ -770,7 +1103,7 @@ HRESULT DumpSystemThemeToTextFile(wchar_t const* path, bool packed, bool fullInf
     sharableSection.Detach();
     nonSharableSection.Detach();
 
-    return DumpThemeFile(&themeFile, path, packed, fullInfo);
+    return DumpThemeFile(themeFile, path, packed, fullInfo);
 }
 
 } // namespace uxtheme
