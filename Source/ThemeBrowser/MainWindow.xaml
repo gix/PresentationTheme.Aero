@@ -93,13 +93,12 @@
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
           <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Rectangle Width="16" Height="16" Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
+        <Rectangle Width="16" Height="16"
+                   Fill="{Binding Color, Converter={StaticResource ColorToBrushConverter}}"
                    Stroke="#FF999999" StrokeThickness="1"/>
-        <local:SelectableTextBlock Grid.Column="1" Text="{Binding Color, Mode=OneWay}" Margin="3,0,0,0"/>
-        <local:SelectableTextBlock Grid.Column="2" Text="{Binding Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
+        <local:SelectableTextBlock Grid.Column="1" Text="{Binding Mode=OneWay}" Margin="3,0,0,0"/>
       </Grid>
     </DataTemplate>
 
@@ -111,20 +110,14 @@
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
               </Grid.ColumnDefinitions>
-              <Border Grid.Column="0" BorderBrush="#FF999999" BorderThickness="1"
+              <Border BorderBrush="#FF999999" BorderThickness="1"
                       Width="16" Height="16">
-                <Rectangle Stroke="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
-                           StrokeThickness="4"/>
+                <Border Background="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
+                        BorderBrush="{Binding BorderColor, Converter={StaticResource ColorToBrushConverter}}"
+                        BorderThickness="3"/>
               </Border>
-              <local:SelectableTextBlock Grid.Column="1" Text="{Binding BorderColor, Mode=OneWay}" Margin="3,0,0,0"/>
-
-              <Rectangle Grid.Column="2" Width="16" Height="16"
-                         Fill="{Binding BackgroundColor, Converter={StaticResource ColorToBrushConverter}}"
-                         Stroke="#FF999999" StrokeThickness="1"/>
-              <local:SelectableTextBlock Grid.Column="3" Text="{Binding BackgroundColor, Mode=OneWay}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="1" Text="{Binding Mode=OneWay}" Margin="3,0,0,0"/>
             </Grid>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -138,25 +131,15 @@
             <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
               </Grid.ColumnDefinitions>
               <Border Grid.Column="0" BorderBrush="#FF999999" BorderThickness="1"
                       Width="16" Height="16">
-                <Rectangle Stroke="{Binding BorderColor.Color, Converter={StaticResource ColorToBrushConverter}}"
-                           StrokeThickness="4"/>
+                <Border Background="{Binding BackgroundColor.Color, Converter={StaticResource ColorToBrushConverter}}"
+                        BorderBrush="{Binding BorderColor.Color, Converter={StaticResource ColorToBrushConverter}}"
+                        BorderThickness="3"/>
               </Border>
-              <local:SelectableTextBlock Grid.Column="1" Text="{Binding BorderColor.Color, Mode=OneWay}" Margin="3,0,0,0"/>
-              <local:SelectableTextBlock Grid.Column="2" Text="{Binding BorderColor.Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
-
-              <Rectangle Grid.Column="3" Width="16" Height="16"
-                         Fill="{Binding BackgroundColor.Color, Converter={StaticResource ColorToBrushConverter}}"
-                         Stroke="#FF999999" StrokeThickness="1"/>
-              <local:SelectableTextBlock Grid.Column="4" Text="{Binding BackgroundColor.Color, Mode=OneWay}" Margin="3,0,0,0"/>
-              <local:SelectableTextBlock Grid.Column="5" Text="{Binding BorderColor.Index, Mode=OneWay, StringFormat='({0})'}" Margin="3,0,0,0"/>
+              <local:SelectableTextBlock Grid.Column="1" Text="{Binding Mode=OneWay}" Margin="3,0,0,0"/>
             </Grid>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
@@ -217,6 +200,83 @@
       </Grid>
     </DataTemplate>
 
+    <Style x:Key="PropertiesGridRowStyle" TargetType="{x:Type DataGridRow}">
+      <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+      <Setter Property="SnapsToDevicePixels" Value="true"/>
+      <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+      <Setter Property="ValidationErrorTemplate">
+        <Setter.Value>
+          <ControlTemplate>
+            <TextBlock Margin="2,0,0,0" VerticalAlignment="Center" Foreground="Red" Text="!"/>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type DataGridRow}">
+            <Border x:Name="DGR_Border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="True">
+              <SelectiveScrollingGrid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <DataGridCellsPresenter Grid.Column="1"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                <DataGridRowHeader SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"  Grid.RowSpan="2"
+                                   Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Row}}"/>
+              </SelectiveScrollingGrid>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsNewItem" Value="True">
+          <Setter Property="Margin" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=NewItemMargin}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="PropertiesGridCellStyle" TargetType="{x:Type DataGridCell}">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="1"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type DataGridCell}">
+            <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="True"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsSelected" Value="True">
+          <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"/>
+          <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        </Trigger>
+        <Trigger Property="IsEnabled" Value="False">
+          <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
     <DataTemplate x:Key="PropertiesTemplate" DataType="{x:Type local:ThemePropertyContainer}">
       <Grid>
         <Grid.Resources>
@@ -234,7 +294,9 @@
                   AutoGenerateColumns="False" GridLinesVisibility="None"
                   FocusVisualStyle="{x:Null}"
                   SelectionMode="Single"
-                  SelectionUnit="FullRow">
+                  SelectionUnit="FullRow"
+                  RowStyle="{StaticResource PropertiesGridRowStyle}"
+                  CellStyle="{StaticResource PropertiesGridCellStyle}">
           <DataGrid.GroupStyle>
             <StaticResource ResourceKey="OriginGroupStyle"/>
           </DataGrid.GroupStyle>

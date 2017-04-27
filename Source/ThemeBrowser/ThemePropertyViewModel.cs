@@ -118,6 +118,8 @@ namespace ThemeBrowser
 
         public System.Windows.Media.Color BorderColor { get; }
         public System.Windows.Media.Color BackgroundColor { get; }
+
+        public override string ToString() => $"{BorderColor}, {BackgroundColor}";
     }
 
     public class HighContrastSimplifiedImage
@@ -130,6 +132,8 @@ namespace ThemeBrowser
 
         public HighContrastColor BorderColor { get; }
         public HighContrastColor BackgroundColor { get; }
+
+        public override string ToString() => $"{BorderColor}, {BackgroundColor}";
     }
 
     public class SimplifiedImageGroup

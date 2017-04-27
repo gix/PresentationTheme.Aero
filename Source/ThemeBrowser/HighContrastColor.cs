@@ -32,5 +32,7 @@ namespace ThemeBrowser
                 default: return 0;
             }
         }
+
+        public override string ToString() => $"{Index} ({Color})";
     }
 }
