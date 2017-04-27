@@ -53,7 +53,6 @@
     <Compile Include="SystemDropShadowChrome.cs" />
     <Compile Include="TabPanelEx.cs" />
     <Compile Include="TextBoxChrome.cs" />
-    <Compile Include="ThemeHelper.cs" />
     <Compile Include="TickBarEx.cs" />
     <Compile Include="TypeOfConverter.cs" />
   </ItemGroup>

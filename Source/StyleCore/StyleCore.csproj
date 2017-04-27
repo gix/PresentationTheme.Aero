@@ -63,6 +63,7 @@
     <Compile Include="Native\SafeModuleHandleExtensions.cs" />
     <Compile Include="Native\SafeThemeFileHandle.cs" />
     <Compile Include="Native\UxThemeExNativeMethods.cs" />
+    <Compile Include="Native\UxColorScheme.cs" />
     <Compile Include="Primitives.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Native\RECT.cs" />

@@ -10,7 +10,7 @@
     using System.Windows;
     using System.Windows.Interop;
     using System.Windows.Media;
-    using Controls;
+    using Microsoft.Win32;
     using StyleCore.Native;
 
     /// <summary>Interaction logic for Colors.xaml</summary>
@@ -33,6 +33,12 @@
 
             Label = "Colors";
 
+            SystemEvents.UserPreferenceChanged += (s, e) => Refresh();
+            Refresh();
+        }
+
+        private void Refresh()
+        {
             var colors = new List<ColorSpec>();
             foreach (var property in typeof(SystemColors).GetProperties(BindingFlags.Public | BindingFlags.Static)) {
                 if (property.PropertyType != typeof(Color))
@@ -48,19 +54,20 @@
             }
 
             colors.Sort((l, r) => string.Compare(l.Name, r.Name, StringComparison.Ordinal));
-            Colors = new ObservableCollection<ColorSpec>(colors);
+
+            Colors.Clear();
+            foreach (var color in colors)
+                Colors.Add(color);
         }
 
-        /// <summary>
-        ///   Gets or sets the Label of the <see cref="Controls.ControlComparison"/>.
-        /// </summary>
         public string Label
         {
-            get { return (string)GetValue(LabelProperty); }
-            set { SetValue(LabelProperty, value); }
+            get => (string)GetValue(LabelProperty);
+            set => SetValue(LabelProperty, value);
         }
 
-        public ObservableCollection<ColorSpec> Colors { get; }
+        public ObservableCollection<ColorSpec> Colors { get; } =
+            new ObservableCollection<ColorSpec>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 

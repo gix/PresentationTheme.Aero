@@ -1,4 +1,4 @@
-namespace PresentationTheme.Aero.Win10
+namespace PresentationTheme.Aero
 {
     using System;
     using System.Collections.Generic;
@@ -37,6 +37,7 @@ namespace PresentationTheme.Aero.Win10
         private readonly ConstructorInfo ResourceDictionaries_Ctor;
         private readonly MethodInfo ResourceDictionaries_LoadDictionary;
         private readonly MethodInfo ResourceDictionaries_LoadThemedDictionary;
+        private readonly MethodInfo ResourceDictionaries_ClearThemedDictionary;
 
         private readonly PropertyInfo ResourceDictionary_IsThemeDictionary;
 
@@ -94,6 +95,8 @@ namespace PresentationTheme.Aero.Win10
             ResourceDictionaries_LoadThemedDictionary = ResourceDictionaries_Type?.GetMethod(
                 "LoadThemedDictionary", nonPublicInstance, null,
                 new[] { typeof(bool) }, null);
+            ResourceDictionaries_ClearThemedDictionary = ResourceDictionaries_Type?.GetMethod(
+                "ClearThemedDictionary", nonPublicInstance, null, Type.EmptyTypes, null);
 
             ResourceDictionary_IsThemeDictionary = typeof(ResourceDictionary).GetProperty(
                 "IsThemeDictionary", nonPublicInstance);
@@ -113,6 +116,7 @@ namespace PresentationTheme.Aero.Win10
                 ResourceDictionaries_Ctor != null &&
                 ResourceDictionaries_LoadDictionary != null &&
                 ResourceDictionaries_LoadThemedDictionary != null &&
+                ResourceDictionaries_ClearThemedDictionary != null &&
                 ResourceDictionary_IsThemeDictionary != null;
 
             if (valid)
@@ -150,6 +154,12 @@ namespace PresentationTheme.Aero.Win10
             return instance.SetThemeInternal(instance.PresentationFramework, themeUri);
         }
 
+        public static bool ClearPresentationFrameworkTheme()
+        {
+            var instance = Instance.Value;
+            return instance.ClearThemeInternal(instance.PresentationFramework);
+        }
+
         public static bool SetTheme(Assembly assembly, Uri themeUri)
         {
             if (assembly == null)
@@ -160,6 +170,14 @@ namespace PresentationTheme.Aero.Win10
             return Instance.Value.SetThemeInternal(assembly, themeUri);
         }
 
+        public static bool ClearTheme(Assembly assembly)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
+            return Instance.Value.ClearThemeInternal(assembly);
+        }
+
         private bool SetThemeInternal(Assembly assembly, Uri themeUri)
         {
             if (!valid)
@@ -167,6 +185,21 @@ namespace PresentationTheme.Aero.Win10
 
             themeResources.Add(assembly, themeUri);
             return SetThemeResources(assembly, themeUri);
+        }
+
+        private bool ClearThemeInternal(Assembly assembly)
+        {
+            if (!valid)
+                return false;
+
+            themeResources.Remove(assembly);
+            lock (SystemResources_ThemeDictionaryLock.GetValue(null)) {
+                var resourceDictionaries = SystemResources_EnsureDictionarySlot.Invoke(
+                    null, new object[] { assembly });
+                ResourceDictionaries_ClearThemedDictionary.Invoke(resourceDictionaries, null);
+            }
+
+            return true;
         }
 
         private bool SetThemeResources(Assembly assembly, Uri themeUri)

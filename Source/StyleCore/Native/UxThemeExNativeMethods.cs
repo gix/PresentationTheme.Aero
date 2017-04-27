@@ -13,6 +13,12 @@ namespace StyleCore.Native
             out SafeThemeFileHandle hThemeFile);
 
         [DllImport("UxThemeEx")]
+        public static extern HResult UxOpenThemeFileEx(
+            [MarshalAs(UnmanagedType.LPWStr)] string themeFileName,
+            bool highContrast, UxColorScheme colorScheme,
+            out SafeThemeFileHandle hThemeFile);
+
+        [DllImport("UxThemeEx")]
         public static extern HResult UxCloseThemeFile(IntPtr hThemeFile);
 
         [DllImport("UxThemeEx", SetLastError = true)]

@@ -70,7 +70,7 @@
       </Style.Triggers>
     </Style>
   </UserControl.Resources>
-  <Grid>
+  <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition/>

@@ -7,11 +7,34 @@
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Interactivity;
+    using Microsoft.Win32;
 
     public class CacheTabsBehavior : Behavior<TabControl>
     {
         private Panel itemsPanel;
         private ContentPresenter currContentHost;
+
+        public CacheTabsBehavior()
+        {
+            SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+        }
+
+        private void OnUserPreferenceChanged(
+            object sender, UserPreferenceChangedEventArgs args)
+        {
+            if (args.Category == UserPreferenceCategory.VisualStyle ||
+                args.Category == UserPreferenceCategory.Color)
+                InvalidateCache();
+        }
+
+        private void InvalidateCache()
+        {
+            if (itemsPanel == null)
+                return;
+
+            itemsPanel.Children.Clear();
+            UpdateSelectedContent();
+        }
 
         private ContentPresenter ContentHost
         {

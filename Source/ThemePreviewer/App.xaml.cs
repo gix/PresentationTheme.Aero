@@ -1,32 +1,19 @@
 ﻿namespace ThemePreviewer
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.IO.Packaging;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
-    using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Markup;
-    using System.Windows.Media;
-    using System.Xml;
-    using PresentationTheme.AeroLite.Win10;
-    using ThemeHelper = PresentationTheme.Aero.Win10.ThemeHelper;
+    using PresentationTheme.Aero;
 
     public partial class App
     {
-        private readonly HashSet<FrameworkElement> trackedElements =
-            new HashSet<FrameworkElement>();
-
         private MainWindow window;
         private MainWindowViewModel viewModel;
-        private UxThemeOverride uxThemeOverride;
-
-        public new static App Current => (App)Application.Current;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -36,20 +23,24 @@
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
             var opts = ParseArgs(e.Args);
-            if (opts.ThemeResourceUri == null)
-                opts.ThemeResourceUri = AeroLiteWin10Theme.ResourceUri;
+            var themeInfoProvider = new ThemeInfoProvider();
 
-            if (!ThemeHelper.SetPresentationFrameworkTheme(opts.ThemeResourceUri))
-                MessageBox.Show($"Failed to load {opts.ThemeResourceUri}.");
+            WpfThemeInfo wpfTheme;
+            NativeThemeInfo nativeTheme;
+            SelectThemes(opts, themeInfoProvider, out wpfTheme, out nativeTheme);
+
+            if (wpfTheme != null) {
+                var uri = wpfTheme.ResourceUri;
+                if (!ThemeHelper.SetPresentationFrameworkTheme(uri))
+                    MessageBox.Show($"Failed to load {uri}.");
+            }
 
             window = new MainWindow();
             MainWindow = window;
 
-            viewModel = new MainWindowViewModel();
+            viewModel = new MainWindowViewModel(themeInfoProvider);
+            viewModel.CurrentWpfTheme = wpfTheme;
             window.DataContext = viewModel;
-
-            viewModel.CurrentTheme = viewModel.Themes.FirstOrDefault(x => x.ResourceUri == opts.ThemeResourceUri);
-            viewModel.ThemeChanged += OnThemeChanged;
 
             if (opts.WindowBounds != null) {
                 var bounds = opts.WindowBounds.Value;
@@ -67,88 +58,122 @@
 
             window.Show();
 
-            uxThemeOverride = new UxThemeOverride();
-            if (opts.NativeTheme != null)
-                viewModel.OverrideNativeTheme(opts.NativeTheme.FullName, true).Forget();
+            if (nativeTheme != null)
+                viewModel.OverrideNativeTheme(nativeTheme).Forget();
         }
 
-        public async Task<bool> OverrideNativeTheme(string path, bool highContrast)
+        private void SelectThemes(
+            Options opts, ThemeInfoProvider themeInfoProvider,
+            out WpfThemeInfo wpfTheme, out NativeThemeInfo nativeTheme)
         {
-            return await viewModel.RunExclusive(async progress => {
-                progress.TaskName = "Overriding native theme…";
-                await uxThemeOverride.SetThemeAsync(path, highContrast);
-            }, "Failed to override native theme");
+            wpfTheme = null;
+            nativeTheme = null;
+
+            if (opts.Theme != null) {
+                string name = ExpandShortThemeName(opts.Theme);
+                var theme = themeInfoProvider.Themes.FirstOrDefault(x => x.Name == name);
+                if (theme != null) {
+                    wpfTheme = theme.WpfTheme;
+                    nativeTheme = theme.NativeTheme;
+                }
+            }
+
+            if (opts.WpfTheme != null) {
+                string name = ExpandShortThemeName(opts.WpfTheme);
+                wpfTheme = themeInfoProvider.WpfThemes.FirstOrDefault(x => x.Name == name);
+            }
+            if (wpfTheme == null && opts.WpfThemeResourceUri != null) {
+                wpfTheme = themeInfoProvider.WpfThemes.FirstOrDefault(
+                    x => x.ResourceUri == opts.WpfThemeResourceUri);
+
+                if (wpfTheme == null) {
+                    wpfTheme = new WpfThemeInfo(opts.WpfThemeResourceUri.ToString(), opts.WpfThemeResourceUri);
+                }
+            }
+
+            if (opts.NativeTheme != null) {
+                string name = ExpandShortThemeName(opts.NativeTheme);
+                nativeTheme = themeInfoProvider.NativeThemes.FirstOrDefault(x => x.Name == name);
+            }
+            if (nativeTheme == null && opts.NativeThemeFile != null) {
+                nativeTheme = themeInfoProvider.NativeThemes.FirstOrDefault(x => string.Equals(x.Path.FullName,
+                    opts.NativeThemeFile.FullName, StringComparison.OrdinalIgnoreCase));
+
+                if (nativeTheme == null) {
+                    nativeTheme = NativeThemeInfo.FromPath(
+                        opts.NativeThemeFile.FullName,
+                        new UxThemeLoadParams { IsHighContrast = opts.IsHighContrast });
+                }
+            }
         }
 
-        public async Task<bool> RemoveNativeThemeOverride()
+        private static string ExpandShortThemeName(string abbreviation)
         {
-            return await viewModel.RunExclusive(async progress => {
-                progress.TaskName = "Restoring native theme…";
-                await uxThemeOverride.SetThemeAsync(null, false);
-            }, "Failed to restore native theme");
+            switch (abbreviation) {
+                case "aero6": return "Aero (Windows Vista)";
+                case "aero7": return "Aero (Windows 7)";
+                case "aero8": return "Aero (Windows 8)";
+                case "aero10": return "Aero (Windows 10)";
+                case "aerolite6": return "Aero (Windows Vista)";
+                case "aerolite7": return "Aero Lite (Windows 7)";
+                case "aerolite8": return "Aero Lite (Windows 8)";
+                case "aerolite10": return "Aero Lite (Windows 10)";
+                case "hc": return "High Contrast (Windows 10)";
+                case "hc1": return "High Contrast #1 (Windows 10)";
+                default: return null;
+            }
         }
 
-        private void OnThemeChanged(object sender, EventArgs args)
+        public void RestartWithDifferentTheme(WpfThemeInfo wpfThemeInfo)
         {
-            ReloadTheme(viewModel.CurrentTheme);
-        }
-
-        public void RestartWithDifferentTheme(Theme theme)
-        {
-            if (theme.ResourceUri != null)
-                Restart($"-theme:{theme.ResourceUri}");
+            if (wpfThemeInfo.ResourceUri != null)
+                Restart($"-theme:{wpfThemeInfo.ResourceUri}");
             else
                 Restart();
         }
 
-        private void ReloadTheme(Theme theme)
-        {
-            var resources = theme.CreateResources();
-            var refresher = new StyleReloader(Application.Current, resources, trackedElements);
-            refresher.Run();
-        }
-
-        public static object LoadComponentFromAssembly(Uri uri)
-        {
-            return LoadComponent(PackUriHelper.GetPartUri(uri));
-        }
-
         private class Options
         {
-            public Uri ThemeResourceUri { get; set; }
             public Rect? WindowBounds { get; set; }
             public int? TabIndex { get; set; }
-            public FileInfo NativeTheme { get; set; }
+
+            public string Theme { get; set; }
+            public string WpfTheme { get; set; }
+            public string NativeTheme { get; set; }
+            public Uri WpfThemeResourceUri { get; set; }
+            public FileInfo NativeThemeFile { get; set; }
+            public bool IsHighContrast { get; set; }
         }
 
         private Options ParseArgs(string[] args)
         {
             var opts = new Options();
             foreach (var arg in args) {
-                string value;
-                if (TryGetArg(arg, "-theme:", out value)) {
-                    Uri uri;
-                    if (Uri.TryCreate(value, UriKind.Absolute, out uri))
-                        opts.ThemeResourceUri = uri;
-                } else if (TryGetArg(arg, "-nativetheme:", out value)) {
+                if (TryGetArg(arg, "-theme:", out string theme)) {
+                    opts.Theme = theme;
+                } else if (TryGetArg(arg, "-wpftheme:", UriKind.Absolute, out Uri uri)) {
+                    opts.WpfThemeResourceUri = uri;
+                } else if (TryGetArg(arg, "-wpftheme:", out string wpfTheme)) {
+                    opts.WpfTheme = wpfTheme;
+                } else if (TryGetArg(arg, "-nativetheme:", out string value)) {
                     var nativeTheme = new FileInfo(value);
                     if (nativeTheme.Exists)
-                        opts.NativeTheme = nativeTheme;
-                } else if (TryGetArg(arg, "-pos:", out value)) {
-                    Rect bounds;
-                    if (TryParseRect(value, out bounds))
-                        opts.WindowBounds = bounds;
-                } else if (TryGetArg(arg, "-tab:", out value)) {
-                    int tab;
-                    if (int.TryParse(value, out tab))
-                        opts.TabIndex = tab;
+                        opts.NativeThemeFile = nativeTheme;
+                    else
+                        opts.NativeTheme = value;
+                } else if (TryGetArg(arg, "-pos:", out Rect bounds)) {
+                    opts.WindowBounds = bounds;
+                } else if (TryGetArg(arg, "-tab:", out int tab)) {
+                    opts.TabIndex = tab;
+                } else if (arg == "-hc") {
+                    opts.IsHighContrast = true;
                 }
             }
 
             return opts;
         }
 
-        private bool TryParseRect(string value, out Rect rect)
+        private static bool TryParseRect(string value, out Rect rect)
         {
             var converter = new RectConverter();
             try {
@@ -160,9 +185,9 @@
             }
         }
 
-        private bool TryGetArg(string arg, string prefix, out string value)
+        private static bool TryGetArg(string arg, string prefix, out string value)
         {
-            if (arg.StartsWith(prefix)) {
+            if (arg.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
                 value = arg.Substring(prefix.Length);
                 return true;
             }
@@ -171,17 +196,38 @@
             return false;
         }
 
+        private static bool TryGetArg(string arg, string prefix, out Rect value)
+        {
+            value = new Rect();
+            return
+                TryGetArg(arg, prefix, out string stringValue) &&
+                TryParseRect(stringValue, out value);
+        }
+
+        private static bool TryGetArg(string arg, string prefix, out int value)
+        {
+            value = 0;
+            return
+                TryGetArg(arg, prefix, out string stringValue) &&
+                int.TryParse(stringValue, out value);
+        }
+
+        private static bool TryGetArg(string arg, string prefix, UriKind uriKind, out Uri value)
+        {
+            value = null;
+            return
+                TryGetArg(arg, prefix, out string stringValue) &&
+                Uri.TryCreate(stringValue, uriKind, out value);
+        }
+
         public void Restart(params string[] args)
         {
             var bounds = new Rect(window.Left, window.Top, window.Width, window.Height).Round();
-            var tabIndex = viewModel.Pages.IndexOf(viewModel.CurrentPage);
 
             var allArgs = new List<string>();
             allArgs.Add($"-pos:{new RectConverter().ConvertToInvariantString(bounds)}");
-            if (tabIndex != -1)
-                allArgs.Add($"-tab:{tabIndex}");
-            if (uxThemeOverride.CurrentOverride != null)
-                allArgs.Add($"-nativetheme:{uxThemeOverride.CurrentOverride}");
+
+            viewModel.AppendCommandLineArgs(allArgs);
             allArgs.AddRange(args);
 
             var exePath = Assembly.GetExecutingAssembly().Location;
@@ -189,253 +235,6 @@
             if (process.WaitForMainWindow(2000))
                 Thread.Sleep(100);
             Shutdown();
-        }
-
-        public void TrackElement(FrameworkElement element)
-        {
-            trackedElements.Add(element);
-        }
-
-        public void UntrackElement(FrameworkElement element)
-        {
-            trackedElements.Remove(element);
-        }
-    }
-
-    public static class Extensions
-    {
-        public static void Forget(this Task task)
-        {
-        }
-
-        public static Rect Round(this Rect rect)
-        {
-            return new Rect(
-                Math.Round(rect.X), Math.Round(rect.Y),
-                Math.Round(rect.Width), Math.Round(rect.Height));
-        }
-    }
-
-    public class StyleReloader
-    {
-        private readonly Application app;
-        private readonly ResourceDictionary newResources;
-        private readonly IEnumerable<FrameworkElement> trackedElements;
-
-        private readonly Dictionary<Style, object> basedOnStyleToKeyMap =
-            new Dictionary<Style, object>();
-
-        private readonly HashSet<FrameworkElement> visited =
-            new HashSet<FrameworkElement>();
-
-        public StyleReloader(
-            Application app, ResourceDictionary newResources,
-            IEnumerable<FrameworkElement> trackedElements)
-        {
-            this.app = app;
-            this.newResources = newResources;
-            this.trackedElements = trackedElements;
-        }
-
-        public void Run()
-        {
-            CollectStyleKeys();
-            visited.Clear();
-
-            app.Resources.MergedDictionaries.Clear();
-            if (newResources != null)
-                app.Resources.MergedDictionaries.Add(newResources);
-
-            RecreateStyles();
-            visited.Clear();
-        }
-
-        private IEnumerable<DictionaryEntry> EnumerateStyles()
-        {
-            //foreach (var entry in EnumerateThemeStyles())
-            //    yield return entry;
-
-            foreach (var entry in EnumerateStyles(app.Resources))
-                yield return entry;
-
-            foreach (Window window in app.Windows)
-                foreach (var entry in EnumerateStyles(window))
-                    yield return entry;
-
-            foreach (var element in trackedElements) {
-                foreach (var entry in EnumerateStyles(element.Resources))
-                    yield return entry;
-            }
-        }
-
-        private IEnumerable<DictionaryEntry> EnumerateThemeStyles()
-        {
-            var presentationFramework = Assembly.GetAssembly(typeof(SystemFonts));
-            var systemResources = presentationFramework.GetType("System.Windows.SystemResources");
-            var dictionariesField = systemResources.GetField(
-                "_dictionaries", BindingFlags.Static | BindingFlags.NonPublic);
-            var resourceDictionaries = systemResources.GetNestedType("ResourceDictionaries", BindingFlags.NonPublic);
-            var themedDictionaryField = resourceDictionaries.GetField(
-                "_themedDictionary", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            var dictionaries = (IDictionary)dictionariesField.GetValue(null);
-            if (dictionaries != null) {
-                foreach (object themedDict in dictionaries.Values) {
-                    var resources = (ResourceDictionary)themedDictionaryField.GetValue(themedDict);
-                    foreach (var entry in EnumerateStyles(resources))
-                        yield return entry;
-                }
-            }
-        }
-
-        private IEnumerable<DictionaryEntry> EnumerateStyles(FrameworkElement fe)
-        {
-            if (!visited.Add(fe))
-                yield break;
-
-            foreach (var entry in EnumerateStyles(fe.Resources))
-                yield return entry;
-
-            int children = VisualTreeHelper.GetChildrenCount(fe);
-            for (int i = 0; i < children; ++i) {
-                var child = VisualTreeHelper.GetChild(fe, i) as FrameworkElement;
-                if (child != null)
-                    foreach (var entry in EnumerateStyles(child))
-                        yield return entry;
-            }
-        }
-
-        private IEnumerable<DictionaryEntry> EnumerateStyles(ResourceDictionary resources)
-        {
-            if (resources == null || resources == newResources)
-                yield break;
-
-            foreach (DictionaryEntry entry in resources) {
-                var style = entry.Value as Style;
-                if (style != null)
-                    yield return entry;
-            }
-
-            foreach (var mergedDictionary in resources.MergedDictionaries) {
-                foreach (var entry in EnumerateStyles(mergedDictionary))
-                    yield return entry;
-            }
-        }
-
-        private void CollectStyleKeys()
-        {
-            var styleToKeyMap = new Dictionary<Style, object>();
-            foreach (var entry in EnumerateStyles())
-                styleToKeyMap[(Style)entry.Value] = entry.Key;
-
-            foreach (var entry in EnumerateStyles()) {
-                var style = (Style)entry.Value;
-                if (style.BasedOn != null) {
-                    if (styleToKeyMap.ContainsKey(style.BasedOn))
-                        basedOnStyleToKeyMap[style] = styleToKeyMap[style.BasedOn];
-                }
-            }
-        }
-
-        private void RecreateStyles()
-        {
-            RecreateStyles(k => (Style)app.FindResource(k), app.Resources);
-            foreach (Window window in app.Windows)
-                RecreateStyles(window);
-
-            foreach (var element in trackedElements)
-                RecreateStyles(element);
-        }
-
-        private void RecreateStyles(FrameworkElement fe)
-        {
-            if (!visited.Add(fe))
-                return;
-
-            if (!fe.IsLoaded) {
-                fe.Loaded += OnElementLoaded;
-                return;
-            }
-
-            RecreateStyles(k => (Style)fe.FindResource(k), fe.Resources);
-
-            int children = VisualTreeHelper.GetChildrenCount(fe);
-            for (int i = 0; i < children; ++i) {
-                var child = VisualTreeHelper.GetChild(fe, i) as FrameworkElement;
-                if (child != null)
-                    RecreateStyles(child);
-            }
-        }
-
-        private void OnElementLoaded(object sender, RoutedEventArgs args)
-        {
-            var fe = (FrameworkElement)sender;
-            fe.Loaded -= OnElementLoaded;
-            RecreateStyles(fe);
-        }
-
-        private void RecreateStyles(Func<object, Style> findStyle, ResourceDictionary resources)
-        {
-            if (resources == null || resources == newResources)
-                return;
-
-            foreach (var key in new ArrayList(resources.Keys)) {
-                var style = resources[key] as Style;
-                if (style?.BasedOn == null)
-                    continue;
-
-                resources.Remove(key);
-                resources.Add(key, Clone(findStyle, style));
-            }
-
-            foreach (var mergedDictionary in resources.MergedDictionaries)
-                RecreateStyles(findStyle, mergedDictionary);
-        }
-
-        private Style Clone(Func<object, Style> findStyle, Style source)
-        {
-            if (!basedOnStyleToKeyMap.ContainsKey(source))
-                return source;
-
-            var styleKey = basedOnStyleToKeyMap[source];
-            var basedOn = findStyle(styleKey);
-            return Clone(source, basedOn);
-        }
-
-        private Style Clone(Style source, Style basedOn)
-        {
-            var clone = new Style(source.TargetType, basedOn);
-
-            foreach (DictionaryEntry resource in source.Resources)
-                clone.Resources.Add(resource.Key, resource.Value);
-
-            foreach (var setter in source.Setters)
-                clone.Setters.Add(CloneGeneric(setter));
-
-            foreach (var trigger in source.Triggers)
-                clone.Triggers.Add(CloneGeneric(trigger));
-
-            return clone;
-        }
-
-        private T CloneGeneric<T>(T obj)
-        {
-            var buffer = new MemoryStream();
-
-            var writer = XmlWriter.Create(buffer, new XmlWriterSettings {
-                Indent = true,
-                ConformanceLevel = ConformanceLevel.Fragment,
-                OmitXmlDeclaration = true,
-                NamespaceHandling = NamespaceHandling.OmitDuplicates,
-            });
-
-            var xdsMgr = new XamlDesignerSerializationManager(writer);
-            xdsMgr.XamlWriterMode = XamlWriterMode.Expression;
-            XamlWriter.Save(obj, xdsMgr);
-
-            buffer.Position = 0;
-            var reader = XmlReader.Create(buffer);
-            return (T)XamlReader.Load(reader);
         }
     }
 }

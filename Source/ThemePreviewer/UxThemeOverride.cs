@@ -1,7 +1,47 @@
 namespace ThemePreviewer
 {
+    using System;
     using System.Threading.Tasks;
+    using System.Windows.Threading;
+    using PresentationTheme.Aero;
     using StyleCore.Native;
+
+    public class UxThemeLoadParams : IEquatable<UxThemeLoadParams>
+    {
+        public bool IsHighContrast { get; set; }
+        public UxColorScheme CustomColors { get; set; }
+
+        public bool Equals(UxThemeLoadParams other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return
+                IsHighContrast == other.IsHighContrast &&
+                Equals(CustomColors, other.CustomColors);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as UxThemeLoadParams);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked {
+                return (IsHighContrast.GetHashCode() * 397) ^ (CustomColors != null ? CustomColors.GetHashCode() : 0);
+            }
+        }
+
+        public static bool operator ==(UxThemeLoadParams left, UxThemeLoadParams right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(UxThemeLoadParams left, UxThemeLoadParams right)
+        {
+            return !Equals(left, right);
+        }
+    }
 
     public class UxThemeOverride
     {
@@ -9,25 +49,33 @@ namespace ThemePreviewer
 
         public string CurrentOverride { get; private set; }
 
-        public static SafeThemeFileHandle LoadTheme(string path, bool highContrast)
+        public static SafeThemeFileHandle LoadTheme(
+            string path, UxThemeLoadParams loadParams = null)
         {
             SafeThemeFileHandle themeFile;
-            UxThemeExNativeMethods.UxOpenThemeFile(path, highContrast, out themeFile).ThrowIfFailed();
+            UxThemeExNativeMethods.UxOpenThemeFileEx(
+                path,
+                loadParams?.IsHighContrast ?? false,
+                loadParams?.CustomColors,
+                out themeFile).ThrowIfFailed();
+
             return themeFile;
         }
 
-        public async Task SetThemeAsync(string path, bool highContrast)
+        public async Task SetThemeAsync(string path, UxThemeLoadParams loadParams = null)
         {
             if (path != null)
-                SetTheme(await Task.Run(() => LoadTheme(path, highContrast)));
+                SetNativeTheme(await Task.Run(() => LoadTheme(path, loadParams)));
             else
-                SetTheme(SafeThemeFileHandle.Zero);
+                SetNativeTheme(SafeThemeFileHandle.Zero);
+
             CurrentOverride = path;
-            ThemeUtils.SendThemeChangedProcessLocal();
+            UxThemeExNativeMethods.UxBroadcastThemeChange();
         }
 
-        private void SetTheme(SafeThemeFileHandle newTheme)
+        private void SetNativeTheme(SafeThemeFileHandle newTheme)
         {
+            var oldTheme = theme;
             if (newTheme != null && !newTheme.IsInvalid && !newTheme.IsClosed) {
                 UxThemeExNativeMethods.UxOverrideTheme(newTheme).ThrowIfFailed();
                 UxThemeExNativeMethods.UxHook().ThrowIfFailed();
@@ -35,7 +83,22 @@ namespace ThemePreviewer
             } else {
                 theme = null;
                 UxThemeExNativeMethods.UxUnhook().ThrowIfFailed();
-                UxThemeExNativeMethods.UxOverrideTheme(newTheme).ThrowIfFailed();
+                UxThemeExNativeMethods.UxOverrideTheme(SafeThemeFileHandle.Zero).ThrowIfFailed();
+            }
+
+            oldTheme?.Dispose();
+        }
+
+        public async Task SetPresentationFrameworkTheme(Dispatcher dispatcher, Uri resourceUri)
+        {
+            ThemeHelper.ClearPresentationFrameworkTheme();
+            UxThemeExNativeMethods.UxBroadcastThemeChange();
+
+            if (resourceUri != null) {
+                await dispatcher.InvokeAsync(() => {
+                    ThemeHelper.SetPresentationFrameworkTheme(resourceUri);
+                    UxThemeExNativeMethods.UxBroadcastThemeChange();
+                }, DispatcherPriority.ContextIdle);
             }
         }
     }

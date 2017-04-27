@@ -27,6 +27,10 @@
             set => SetProperty(ref wpfSampleType, value);
         }
 
+        public object NativeSample => NativeSampleType;
+
+        public object WpfSample => WpfSampleType;
+
         public static ControlComparisonViewModel Create<TNative, TWpf>(string name)
             where TWpf : FrameworkElement, new()
             where TNative : System.Windows.Forms.Control, new()

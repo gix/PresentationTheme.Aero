@@ -22,8 +22,8 @@
     <DataTemplate DataType="{x:Type local:ControlComparisonViewModel}">
       <controls:ControlComparison
         Label="{Binding Label}"
-        NativeSample="{Binding NativeSampleType, Converter={StaticResource TypeFactoryConverter}}"
-        WpfSample="{Binding WpfSampleType, Converter={StaticResource TypeFactoryConverter}}"/>
+        NativeSample="{Binding NativeSample, Converter={StaticResource TypeFactoryConverter}}"
+        WpfSample="{Binding WpfSample, Converter={StaticResource TypeFactoryConverter}}"/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type local:ProgressInfo}">
       <Border Padding="10" Background="#EEEEEEEE" BorderThickness="1"

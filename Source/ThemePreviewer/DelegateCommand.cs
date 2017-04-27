@@ -51,7 +51,7 @@
 
         public void Execute(object parameter)
         {
-            if (parameter is T)
+            if (parameter is T || (default(T) == null && parameter == null))
                 action((T)parameter);
         }
     }

@@ -107,8 +107,6 @@
         private void OnWpfSampleChanged(FrameworkElement oldValue, FrameworkElement newValue)
         {
             UpdateOptions(oldValue, newValue);
-            App.Current.UntrackElement(oldValue);
-            App.Current.TrackElement(newValue);
         }
 
         private void UpdateOptions(object oldValue, object newValue)
