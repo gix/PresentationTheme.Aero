@@ -10,11 +10,11 @@ class CThemePNGDecoder
 {
 public:
     HRESULT _Init();
-    HRESULT ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, int* pf32bpp);
+    HRESULT ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, bool* pf32bpp);
 
-    BITMAPHEADER* GetBitmapHeader()
+    BITMAPINFOHEADER* GetBitmapHeader()
     {
-        return reinterpret_cast<BITMAPHEADER*>(
+        return reinterpret_cast<BITMAPINFOHEADER*>(
             _stream.GetBuffer(nullptr) + sizeof(BITMAPFILEHEADER));
     }
 

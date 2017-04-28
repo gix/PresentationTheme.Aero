@@ -101,7 +101,7 @@ private:
                                        MARGINS const* pTransparentMargins,
                                        BYTE** ppbNewBitmap, int* pcbNewBitmap);
     HRESULT _GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
-                                     HCIMAGEPROPERTIES* pHCImageProperties,
+                                     HCIMAGEPROPERTIES const* pHCImageProperties,
                                      int iImageCount);
     HRESULT _EnsureBufferSize(unsigned cbBytes);
 

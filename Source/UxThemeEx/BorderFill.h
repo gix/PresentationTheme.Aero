@@ -31,12 +31,12 @@ public:
 
     BOOL _fNoDraw;
     BORDERTYPE _eBorderType;
-    unsigned _crBorder;
+    COLORREF _crBorder;
     int _iBorderSize;
     int _iRoundCornerWidth;
     int _iRoundCornerHeight;
     FILLTYPE _eFillType;
-    unsigned _crFill;
+    COLORREF _crFill;
     int _iDibOffset;
     MARGINS _ContentMargins;
     int _iGradientPartCount;

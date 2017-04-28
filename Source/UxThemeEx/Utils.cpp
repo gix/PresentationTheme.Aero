@@ -167,13 +167,13 @@ void TraceFormatArgs(char const* file, int lineNumber, char const* function,
 
     HRESULT hr = S_OK;
     hr = StringCchPrintfExW(ptr, static_cast<size_t>(end - ptr),
-        &ptr, nullptr, 0,
-        L"%ls(tid %x): %s(%d): %s: ", L"<module>",
-        GetCurrentThreadId(), fileName, lineNumber, function);
+                            &ptr, nullptr, 0,
+                            L"%ls(tid %x): %s(%d): %s: ", L"<module>",
+                            GetCurrentThreadId(), fileName, lineNumber, function);
 
     hr = StringCchVPrintfExW(ptr, static_cast<size_t>(end - ptr),
-        &ptr, nullptr, 0,
-        format, args);
+                             &ptr, nullptr, 0,
+                             format, args);
 
     wchar_t const* message = FixupMessage(buffer, hr);
 
@@ -192,7 +192,7 @@ void TraceFormatArgs(char const* file, int lineNumber, char const* function,
 }
 
 static void TraceFormat(char const* file, int lineNumber,
-    char const* function, wchar_t const* format, ...)
+                        char const* function, wchar_t const* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -303,7 +303,8 @@ BOOL EnumProcessWindows(
     _In_ WNDENUMPROC callback,
     _In_opt_ LPARAM param)
 {
-    struct Params {
+    struct Params
+    {
         WNDENUMPROC callback;
         LPARAM param;
     };

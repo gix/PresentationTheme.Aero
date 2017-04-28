@@ -24,7 +24,7 @@ public:
                       unsigned dwCharCount, unsigned dwTextFlags, RECT* pRect,
                       DTTOPTS const* pOptions);
 
-    int _fComposited;
+    BOOL _fComposited;
     COLORREF _crText;
     COLORREF _crEdgeLight;
     COLORREF _crEdgeHighlight;
@@ -32,16 +32,16 @@ public:
     COLORREF _crEdgeDkShadow;
     COLORREF _crEdgeFill;
     POINT _ptShadowOffset;
-    unsigned _crShadow;
+    COLORREF _crShadow;
     TEXTSHADOWTYPE _eShadowType;
     int _iBorderSize;
     COLORREF _crBorder;
     COLORREF _crGlow;
-    int _fApplyOverlay;
+    BOOL _fApplyOverlay;
     int _iGlowSize;
     int _iGlowIntensity;
     unsigned short _iFontIndex;
-    int _fItalicFont;
+    BOOL _fItalicFont;
     int _iSourcePartId;
     int _iSourceStateId;
 };

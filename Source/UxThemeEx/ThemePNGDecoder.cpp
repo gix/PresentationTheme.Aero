@@ -29,145 +29,100 @@ HRESULT CThemePNGDecoder::_Init()
     return S_OK;
 }
 
-HRESULT CThemePNGDecoder::ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, int* pf32bpp)
+HRESULT CThemePNGDecoder::ConvertToDIB(BYTE const* lpBits, unsigned cbDIB,
+                                       bool* pf32bpp)
 {
-    HRESULT hr;
-    int v24;
-    unsigned v1;
-    unsigned v2;
-    IWICBitmapFrameEncode* encoderFrame;
-    IWICBitmapFrameDecode* decoderFrame;
-    IWICBitmapEncoder* encoder;
-    IWICBitmapDecoder* decoder;
-    unsigned v46;
-    IWICStream* stream;
-    double v49;
-    double v48;
-    GUID v50;
-    GUID v53;
+    if (!_bInited)
+        ENSURE_HR(_Init());
 
-    if (_bInited || (hr = _Init(), hr >= 0))
-    {
-        stream = 0;
-        v49 = 0;
-        v48 = 0;
-        decoder = 0;
-        decoderFrame = 0;
-        v50 = GUID_WICPixelFormat1bppIndexed;
-        encoder = 0;
-        encoderFrame = 0;
-        v1 = 0;
-        v2 = 0;
-        v46 = 0;
-        v53 = GUID_WICPixelFormat32bppBGRA;
-        hr = _pICodecFactory->CreateStream(&stream);
-        if (hr >= 0)
-        {
-            hr = stream->InitializeFromMemory((WICInProcPointer)lpBits, cbDIB);
-            if (hr >= 0)
-            {
-                hr = _pBitmapDecoderInfo->CreateInstance(&decoder);
-                if (hr >= 0)
-                {
-                    hr = decoder->Initialize(stream, WICDecodeMetadataCacheOnDemand);
-                    if (hr >= 0)
-                    {
-                        hr = decoder->GetFrameCount(&v46);
-                        if (hr >= 0)
-                        {
-                            if ((unsigned)v46 < 1)
-                                hr = -2147467259;
-                            if (hr >= 0)
-                            {
-                                hr = decoder->GetFrame(0, &decoderFrame);
-                                if (hr >= 0)
-                                {
-                                    hr = decoderFrame->GetSize(&v1, &v2);
-                                    if (hr >= 0)
-                                    {
-                                        hr = decoderFrame->GetResolution(&v49, &v48);
-                                        if (hr >= 0)
-                                        {
-                                            hr = decoderFrame->GetPixelFormat(&v50);
-                                            if (hr >= 0)
-                                            {
-                                                if (v50 != GUID_WICPixelFormat24bppBGR)
-                                                {
-                                                    if (v50 != GUID_WICPixelFormat32bppBGRA)
-                                                        hr = E_FAIL;
-                                                    else
-                                                        *pf32bpp = 1;
-                                                } else
-                                                {
-                                                    *pf32bpp = 0;
-                                                }
-                                                if (hr >= 0)
-                                                {
-                                                    hr = _pBitmapEncoderInfo->CreateInstance(&encoder);
-                                                    if (hr >= 0)
-                                                    {
-                                                        v24 = 4 * v1 * v1;
-                                                        if (cbDIB > v24)
-                                                            v24 = cbDIB;
-                                                        hr = _stream.SetMaxSize((unsigned)v24);
-                                                        if (hr >= 0)
-                                                        {
-                                                            hr = encoder->Initialize(&_stream, WICBitmapEncoderNoCache);
-                                                            if (hr >= 0)
-                                                            {
-                                                                hr = encoder->CreateNewFrame(&encoderFrame, nullptr);
-                                                                if (hr >= 0)
-                                                                {
-                                                                    hr = encoderFrame->Initialize(nullptr);
-                                                                    if (hr >= 0)
-                                                                    {
-                                                                        hr = encoderFrame->SetSize(v1, v2);
-                                                                        if (hr >= 0)
-                                                                        {
-                                                                            hr = encoderFrame->SetPixelFormat(&v53);
-                                                                            if (hr >= 0)
-                                                                            {
-                                                                                hr = encoderFrame->SetResolution(v49, v48);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        WICRect v51 = {};
-        v51.Width = v1;
-        v51.Height = v2;
-        if (hr >= 0)
-        {
-            hr = encoderFrame->WriteSource(decoderFrame, &v51);
-            if (hr >= 0)
-            {
-                hr = encoderFrame->Commit();
-                if (hr >= 0)
-                {
-                    hr = encoder->Commit();
-                }
-            }
-        }
+    IWICStream* stream = nullptr;
+    IWICBitmapDecoder* decoder = nullptr;
+    IWICBitmapFrameDecode* decoderFrame = nullptr;
+    IWICBitmapEncoder* encoder = nullptr;
+    IWICBitmapFrameEncode* encoderFrame = nullptr;
 
-        SafeRelease(encoderFrame);
-        SafeRelease(encoder);
-        SafeRelease(decoderFrame);
-        SafeRelease(decoder);
-        SafeRelease(stream);
+    unsigned width = 0;
+    unsigned height = 0;
+    double dpiX = 0;
+    double dpiY = 0;
+    unsigned frameCount = 0;
+
+    HRESULT hr = _pICodecFactory->CreateStream(&stream);
+    if (hr >= 0)
+        hr = stream->InitializeFromMemory((WICInProcPointer)lpBits, cbDIB);
+
+    if (hr >= 0)
+        hr = _pBitmapDecoderInfo->CreateInstance(&decoder);
+    if (hr >= 0)
+        hr = decoder->Initialize(stream, WICDecodeMetadataCacheOnDemand);
+    if (hr >= 0)
+        hr = decoder->GetFrameCount(&frameCount);
+    if (hr >= 0)
+        if (frameCount < 1)
+            hr = E_FAIL;
+
+    if (hr >= 0)
+        hr = decoder->GetFrame(0, &decoderFrame);
+    if (hr >= 0)
+        hr = decoderFrame->GetSize(&width, &height);
+    if (hr >= 0)
+        hr = decoderFrame->GetResolution(&dpiX, &dpiY);
+
+    GUID pixelFormat = GUID_WICPixelFormat1bppIndexed;
+    if (hr >= 0)
+        hr = decoderFrame->GetPixelFormat(&pixelFormat);
+
+    if (hr >= 0) {
+        if (pixelFormat == GUID_WICPixelFormat24bppBGR)
+            *pf32bpp = false;
+        else if (pixelFormat == GUID_WICPixelFormat32bppBGRA)
+            *pf32bpp = true;
+        else
+            hr = E_FAIL;
     }
+
+    if (hr >= 0)
+        hr = _pBitmapEncoderInfo->CreateInstance(&encoder);
+
+    if (hr >= 0) {
+        int v24 = 4 * width * width;
+        if (cbDIB > v24)
+            v24 = cbDIB;
+        hr = _stream.SetMaxSize(v24);
+    }
+    if (hr >= 0)
+        hr = encoder->Initialize(&_stream, WICBitmapEncoderNoCache);
+    if (hr >= 0)
+        hr = encoder->CreateNewFrame(&encoderFrame, nullptr);
+    if (hr >= 0)
+        hr = encoderFrame->Initialize(nullptr);
+    if (hr >= 0)
+        hr = encoderFrame->SetSize(width, height);
+    if (hr >= 0) {
+        GUID format = GUID_WICPixelFormat32bppBGRA;
+        hr = encoderFrame->SetPixelFormat(&format);
+    }
+    if (hr >= 0)
+        hr = encoderFrame->SetResolution(dpiX, dpiY);
+
+    if (hr >= 0) {
+        WICRect rect = {};
+        rect.Width = width;
+        rect.Height = height;
+        hr = encoderFrame->WriteSource(decoderFrame, &rect);
+    }
+
+    if (hr >= 0)
+        hr = encoderFrame->Commit();
+    if (hr >= 0)
+        hr = encoder->Commit();
+
+    SafeRelease(encoderFrame);
+    SafeRelease(encoder);
+    SafeRelease(decoderFrame);
+    SafeRelease(decoder);
+    SafeRelease(stream);
+
     return hr;
 }
 

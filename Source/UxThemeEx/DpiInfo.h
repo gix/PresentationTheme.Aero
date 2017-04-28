@@ -43,7 +43,7 @@ public:
 private:
     unsigned _nDpiPlateausCurrentlyPresent = 0;
     unsigned _nNonStandardDpi = 0;
-    int _fIsInitialized = 0;
+    BOOL _fIsInitialized = FALSE;
 };
 
 extern bool g_fForcedDpi;
