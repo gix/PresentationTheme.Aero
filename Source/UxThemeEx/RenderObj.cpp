@@ -62,7 +62,7 @@ CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot,
         _pbNonSharableData = (BYTE*)pThemeFile->NonSharableDataHeader();
 
         auto hdr = pThemeFile->NonSharableDataHeader();
-        _phBitmapsArray = (HBITMAP64 *)(_pbNonSharableData + hdr->iBitmapsOffset);
+        _phBitmapsArray = (HBITMAP64*)(_pbNonSharableData + hdr->iBitmapsOffset);
     } else {
         _pbSharableData = nullptr;
         _pbSectionData = nullptr;

@@ -6,6 +6,7 @@
 #include "Handle.h"
 #include "RenderObj.h"
 #include "TextDraw.h"
+#include "ThemeUtils.h"
 #include "Utils.h"
 #include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
@@ -673,75 +674,60 @@ HRESULT CThemeLoader::CopyDummyNonSharableDataToLive()
 }
 
 HRESULT CThemeLoader::CreateReuseSection(
-    wchar_t const* pszSharableSectionName, void** phReuseSection)
+    wchar_t const* pszSharableSectionName, HANDLE* phReuseSection)
 {
-    HRESULT hr = S_OK;
-
-    int v3 = _rgDIBDataArray.size();
-    DWORD maxSize = sizeof(REUSEDATAHDR) + sizeof(DIBREUSEDATA) * v3;
-    if ((8 * (BYTE)v3 + 0x14) & 3)
-        maxSize = (maxSize & 0xFFFFFFFC) + 4;
+    DWORD offset = sizeof(REUSEDATAHDR) + sizeof(DIBREUSEDATA) * _rgDIBDataArray.size();
+    offset = AlignPower2<4>(offset);
 
     for (auto& dibData : _rgDIBDataArray) {
         if (dibData.pDIBBits) {
-            dibData.dibReuseData.iDIBBitsOffset = maxSize;
-            maxSize += sizeof(int) * dibData.dibReuseData.iWidth * dibData.dibReuseData.iHeight;
+            dibData.dibReuseData.iDIBBitsOffset = offset;
+            offset += sizeof(int) * dibData.dibReuseData.iWidth * dibData.dibReuseData.iHeight;
         } else {
             dibData.dibReuseData.iDIBBitsOffset = -1;
         }
     }
 
-    REUSEDATAHDR* reuseDataHdr = nullptr;
+    FileMappingHandle hReuseSection{
+        CreateFileMappingW(FileHandle::InvalidHandle(), nullptr, PAGE_READWRITE,
+                           0, offset, nullptr)};
+    if (!hReuseSection)
+        return MakeErrorLast();
 
-    *phReuseSection = CreateFileMappingW(FileHandle::InvalidHandle(), nullptr,
-                                         PAGE_READWRITE, 0, maxSize, nullptr);
-    if (!*phReuseSection)
-        hr = MakeErrorLast();
+    FileViewHandle<REUSEDATAHDR> reuseDataHdr{
+        MapViewOfFile(hReuseSection, FILE_MAP_WRITE, 0, 0, 0)};
+    if (!reuseDataHdr)
+        return MakeErrorLast();
 
-    if (SUCCEEDED(hr)) {
-        reuseDataHdr = (REUSEDATAHDR*)MapViewOfFile(*phReuseSection, FILE_MAP_WRITE, 0, 0, 0);
-        if (!reuseDataHdr)
-            hr = MakeErrorLast();
+    reuseDataHdr->iDIBReuseRecordsCount = _rgDIBDataArray.size();
+    reuseDataHdr->iDIBReuseRecordsOffset = sizeof(REUSEDATAHDR);
+    reuseDataHdr->dwTotalLength = offset;
+
+    if (pszSharableSectionName)
+        ENSURE_HR(StringCchCopyW(reuseDataHdr->szSharableSectionName,
+                                 countof(reuseDataHdr->szSharableSectionName),
+                                 pszSharableSectionName));
+
+    auto reuseIt = (DIBREUSEDATA*)((BYTE*)reuseDataHdr.Get() + reuseDataHdr->iDIBReuseRecordsOffset);
+    for (auto const& dibData : _rgDIBDataArray) {
+        auto const& reuseData = dibData.dibReuseData;
+        if (dibData.pDIBBits)
+            memcpy_s(
+            (BYTE*)reuseDataHdr.Get() + reuseData.iDIBBitsOffset,
+                (size_t)(offset - reuseData.iDIBBitsOffset),
+                dibData.pDIBBits,
+                sizeof(COLORREF) * reuseData.iWidth * reuseData.iHeight);
+
+        *reuseIt++ = reuseData;
     }
 
-    if (SUCCEEDED(hr)) {
-        reuseDataHdr->iDIBReuseRecordsCount = _rgDIBDataArray.size();
-        reuseDataHdr->iDIBReuseRecordsOffset = sizeof(REUSEDATAHDR);
-        reuseDataHdr->dwTotalLength = maxSize;
-
-        if (pszSharableSectionName)
-            hr = StringCchCopyW(reuseDataHdr->szSharableSectionName, 260, pszSharableSectionName);
-
-        if (SUCCEEDED(hr)) {
-            auto reuseIt = (DIBREUSEDATA*)((BYTE*)reuseDataHdr + reuseDataHdr->iDIBReuseRecordsOffset);
-            for (auto const& dibData : _rgDIBDataArray) {
-                auto const& reuseData = dibData.dibReuseData;
-                if (dibData.pDIBBits)
-                    memcpy_s(
-                        (BYTE*)reuseDataHdr + reuseData.iDIBBitsOffset,
-                        (size_t)(maxSize - reuseData.iDIBBitsOffset),
-                        dibData.pDIBBits,
-                        sizeof(COLORREF) * reuseData.iWidth * reuseData.iHeight);
-
-                *reuseIt++ = reuseData;
-            }
-        }
-    }
-
-    if (reuseDataHdr)
-        UnmapViewOfFile(reuseDataHdr);
-
-    if (FAILED(hr) && *phReuseSection) {
-        CloseHandle(*phReuseSection);
-        *phReuseSection = nullptr;
-    }
-
-    return hr;
+    *phReuseSection = hReuseSection.Detach();
+    return S_OK;
 }
 
 static HRESULT GenerateNonSharableData(HANDLE hReuseSection, void* pNonSharableData)
 {
-    FileViewHandle view{MapViewOfFile(hReuseSection, FILE_MAP_READ, 0, 0, 0)};
+    FileViewHandle<> view{MapViewOfFile(hReuseSection, FILE_MAP_READ, 0, 0, 0)};
 
     auto const reuseDataHdr = static_cast<REUSEDATAHDR*>(view.Get());
     if (!reuseDataHdr)
@@ -1240,220 +1226,77 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
     return S_OK;
 }
 
-class CBitmapPixels
-{
-public:
-    HRESULT OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                       unsigned** pPixels, int* piWidth, int* piHeight,
-                       int* piBytesPerPixel, int* piBytesPerRow,
-                       int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
-    void CloseBitmap(HDC hdc, HBITMAP hBitmap);
-
-private:
-    malloc_ptr<BYTE[]> _buffer;
-    BITMAPINFOHEADER* _hdrBitmap;
-    int _iWidth;
-    int _iHeight;
-};
-
-HRESULT CBitmapPixels::OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                                  unsigned** pPixels, int* piWidth,
-                                  int* piHeight, int* piBytesPerPixel,
-                                  int* piBytesPerRow,
-                                  int* piPreviousBytesPerPixel,
-                                  unsigned cbBytesBefore)
-{
-    if (!pPixels)
-        return E_INVALIDARG;
-
-    OptionalDC screenDC{hdc};
-    if (!screenDC)
-        return MakeErrorLast();
-
-    BITMAP bminfo;
-    GetObjectW(bitmap, sizeof(BITMAP), &bminfo);
-
-    _iWidth = bminfo.bmWidth;
-    _iHeight = bminfo.bmHeight;
-
-    unsigned bytesPerRow;
-    if (FAILED(UIntMult(4u, bminfo.bmWidth, &bytesPerRow)) || bytesPerRow > 0x7FFFFFFC)
-        return E_OUTOFMEMORY;
-
-    bytesPerRow = AlignPower2<4>(bytesPerRow);
-    unsigned cbPixels;
-    if (FAILED(UIntMult(AlignPower2<4>(bytesPerRow), bminfo.bmHeight, &cbPixels)) ||
-        FAILED(UIntAdd(cbPixels, sizeof(BITMAPINFOHEADER) + 100, &cbPixels)))
-        return E_OUTOFMEMORY;
-
-    _buffer = make_unique_malloc<BYTE[]>(cbPixels);
-    if (!_buffer)
-        return E_OUTOFMEMORY;
-
-    _hdrBitmap = reinterpret_cast<BITMAPINFOHEADER*>(_buffer.get());
-    fill_zero(*_hdrBitmap);
-    _hdrBitmap->biSize = sizeof(BITMAPINFOHEADER);
-    _hdrBitmap->biWidth = _iWidth;
-    _hdrBitmap->biHeight = _iHeight;
-    _hdrBitmap->biPlanes = 1;
-    _hdrBitmap->biBitCount = 32;
-    _hdrBitmap->biCompression = 0;
-
-    if (!GetDIBits(screenDC, bitmap, 0, _iHeight, GetBitmapBits(_hdrBitmap),
-                   reinterpret_cast<LPBITMAPINFO>(_hdrBitmap), DIB_RGB_COLORS))
-        return E_FAIL;
-
-    *pPixels = reinterpret_cast<unsigned*>(GetBitmapBits(_hdrBitmap));
-
-    if (piWidth)
-        *piWidth = _iWidth;
-    if (piHeight)
-        *piHeight = _iHeight;
-    if (piBytesPerPixel)
-        *piBytesPerPixel = 4;
-    if (piBytesPerRow)
-        *piBytesPerRow = bytesPerRow;
-
-    return S_OK;
-}
-
-void CBitmapPixels::CloseBitmap(HDC hdc, HBITMAP hBitmap)
-{
-    if (!_hdrBitmap || !_buffer)
-        return;
-
-    if (hBitmap) {
-        HDC screenDC = GetWindowDC(nullptr);
-        SetDIBits(
-            screenDC,
-            hBitmap,
-            0,
-            _iHeight,
-            (BYTE*)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
-            (const BITMAPINFO *)_hdrBitmap,
-            0);
-        if (screenDC)
-            ReleaseDC(nullptr, screenDC);
-    }
-
-    _buffer.reset();
-    _hdrBitmap = nullptr;
-}
-
 HRESULT CThemeLoader::PackImageFileInfo(
     DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender,
     int iPartId, int iStateId)
 {
-    HRESULT hr;
-    signed __int64 v11;
-    __int64 v12;
-    signed __int64 v14;
-    TMBITMAPHEADER* v16;
-    HBITMAP v22;
-    int v23;
-    signed __int64 v24;
-    int v28;
-    void* v29;
-    int v30;
-    int v31;
-    HBITMAP v32;
-    unsigned* v33;
-    signed __int64 v34;
-    int iPartIda;
-
-    hr = 0;
     if (iStateId != 0 || !pdi->fPartiallyTransparent || pdi->iDibOffset <= 0)
-        return hr;
-    //if (pdi->iDibOffset == 56864) // FIXME
-    //    return hr;
+        return S_OK;
 
-    v11 = pImageObj->_iImageCount;
-    pdi->iRgnListOffset = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader()) + 8;
+    pdi->iRgnListOffset = (uintptr_t)u->pb - (uintptr_t)_LoadingThemeFile.ThemeHeader() + 8;
 
-    hr = EmitEntryHdr(u, TMT_RGNLIST, TMT_RGNLIST);
+    HRESULT hr = EmitEntryHdr(u, TMT_RGNLIST, TMT_RGNLIST);
     if (hr < 0) {
         EndEntry(u);
         return hr;
     }
 
-    v12 = Align8(4 * (pImageObj->_iImageCount + 1));
-    hr = AllocateThemeFileBytes(u->pb, v12 + 8);
+    size_t jumpTableSize = Align8(sizeof(int) * (pImageObj->_iImageCount + 1));
+    hr = AllocateThemeFileBytes(u->pb, jumpTableSize + 8);
     if (hr < 0) {
         EndEntry(u);
         return hr;
     }
 
     *u->pb = pImageObj->_iImageCount + 1;
-    v14 = (signed __int64)(u->pb + 8);
-    v34 = (signed __int64)(u->pb + 8);
-    memset(u->pb + 8, 0, (unsigned)v12);
+    auto const jumpTable = (int*)(u->pb + 8);
+    memset(jumpTable, 0, (unsigned)jumpTableSize);
 
-    u->pb = (BYTE*)(v14 + v12);
+    u->pb = (BYTE*)jumpTable + jumpTableSize;
 
-    v32 = 0;
-    v28 = 0;
-    if (pImageObj->_iImageCount >= 0) {
-        if (pdi->fPartiallyTransparent) {
-            if (pRender->_pbSharableData && pdi->iDibOffset > 0) {
-                v16 = pRender->GetBitmapHeader(pdi->iDibOffset);
-                v28 = pRender->_phBitmapsArray[v16->iBitmapIndex].hBitmap != nullptr;
-            }
+    if (pImageObj->_iImageCount < 0 || !pdi->fPartiallyTransparent) {
+        EndEntry(u);
+        return hr;
+    }
 
-            hr = pRender->ExternalGetBitmap(nullptr, pdi->iDibOffset, GBF_DIRECT, &v32);
-            v22 = v32;
-            if (hr >= 0) {
-                CBitmapPixels pixels;
-                hr = pixels.OpenBitmap(
-                    nullptr,
-                    v32,
-                    0,
-                    &v33,
-                    &v31,
-                    &v30,
-                    nullptr,
-                    nullptr,
-                    nullptr,
-                    0);
-                if (hr >= 0) {
-                    v23 = 0;
-                    v29 = 0;
-                    iPartIda = 0;
-                    if (v11 >= 0) {
-                        v24 = (signed __int64)v29;
-                        do {
-                            RGNDATA* rgnData = nullptr;
-                            int rgnDataLen;
-                            hr = pImageObj->BuildRgnData(
-                                v33,
-                                v31,
-                                v30,
-                                pdi,
-                                pRender,
-                                v23,
-                                &rgnData,
-                                &rgnDataLen);
-                            if (hr >= 0) {
-                                if (rgnDataLen) {
-                                    *(DWORD *)(v34 + 4 * v24) = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
-                                    hr = EmitEntryHdr(u, TMT_RGNDATA, TMT_RGNDATA);
-                                    if (hr >= 0) {
-                                        hr = EmitAndCopyBlock(u, rgnData, rgnDataLen);
-                                        EndEntry(u);
-                                    }
-                                }
-                            }
-                            free(rgnData);
-                            ++v24;
-                            v23 = iPartIda++ + 1;
-                        } while (v24 <= v11);
-                        v22 = v32;
+    bool fStock = false;
+    if (pRender->_pbSharableData && pdi->iDibOffset > 0) {
+        TMBITMAPHEADER* tmhdr = pRender->GetBitmapHeader(pdi->iDibOffset);
+        fStock = pRender->_phBitmapsArray[tmhdr->iBitmapIndex].hBitmap != nullptr;
+    }
+
+    HBITMAP hBitmap;
+    hr = pRender->ExternalGetBitmap(nullptr, pdi->iDibOffset, GBF_DIRECT, &hBitmap);
+    if (hr >= 0) {
+        unsigned* prgdwPixels;
+        int cHeight;
+        int cWidth;
+        BitmapPixels pixels;
+        hr = pixels.OpenBitmap(nullptr, hBitmap, false, &prgdwPixels, &cWidth,
+                               &cHeight, nullptr, nullptr, nullptr, 0);
+        if (hr >= 0) {
+            for (int stateId = 0; stateId <= pImageObj->_iImageCount; ++stateId) {
+                RGNDATA* rgnData = nullptr;
+                int rgnDataLen;
+                hr = pImageObj->BuildRgnData(prgdwPixels, cWidth,
+                                             cHeight, pdi, pRender, stateId,
+                                             &rgnData, &rgnDataLen);
+                if (hr >= 0 && rgnDataLen != 0) {
+                    jumpTable[stateId] = (int)((uintptr_t)u->pb - (uintptr_t)_LoadingThemeFile.ThemeHeader());
+                    hr = EmitEntryHdr(u, TMT_RGNDATA, TMT_RGNDATA);
+                    if (hr >= 0) {
+                        hr = EmitAndCopyBlock(u, rgnData, rgnDataLen);
+                        EndEntry(u);
                     }
                 }
+
+                free(rgnData);
             }
-            if (v22 && !v28)
-                DeleteObject(v22);
         }
     }
+
+    if (hBitmap && !fStock)
+        DeleteObject(hBitmap);
 
     EndEntry(u);
     return hr;

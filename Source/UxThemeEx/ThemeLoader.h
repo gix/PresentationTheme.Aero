@@ -51,7 +51,7 @@ public:
     HRESULT PackTextObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT PackMetrics();
     HRESULT CopyDummyNonSharableDataToLive();
-    HRESULT CreateReuseSection(wchar_t const* pszSharableSectionName, void** phReuseSection);
+    HRESULT CreateReuseSection(wchar_t const* pszSharableSectionName, HANDLE* phReuseSection);
     HRESULT CopyNonSharableDataToLive(HANDLE hReuseSection);
     HRESULT PackAndLoadTheme(HANDLE hFile,
                              wchar_t const* pszThemeName,

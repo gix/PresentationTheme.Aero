@@ -22,6 +22,7 @@
     <ClCompile Include="Sections.cpp" />
     <ClCompile Include="ScalingUtil.cpp" />
     <ClCompile Include="AnimationLoader.cpp" />
+    <ClCompile Include="ThemeUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UxThemeEx.def" />
@@ -54,5 +55,6 @@
     <ClInclude Include="WinInternal.h" />
     <ClInclude Include="ScalingUtil.h" />
     <ClInclude Include="AnimationLoader.h" />
+    <ClInclude Include="ThemeUtils.h" />
   </ItemGroup>
 </Project>

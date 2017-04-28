@@ -40,6 +40,7 @@ public:
     static HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
 
     THEMEHDR* ThemeHeader() { return _pbSharableData; }
+    THEMEHDR const* ThemeHeader() const { return _pbSharableData; }
 
     NONSHARABLEDATAHDR* NonSharableDataHeader()
     {

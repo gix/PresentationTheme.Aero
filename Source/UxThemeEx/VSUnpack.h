@@ -65,7 +65,7 @@ struct IParserCallBack
     virtual HRESULT AddIndex(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen) = 0;
     virtual HRESULT AddData(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen) = 0;
     virtual int GetNextDataIndex() = 0;
-    virtual int AddToDIBDataArray(void* pDIBBits, __int16 width, __int16 height) = 0;
+    virtual int AddToDIBDataArray(void* pDIBBits, short width, short height) = 0;
     virtual HRESULT AddBaseClass(int idClass, int idBaseClass) = 0;
     virtual int GetScreenPpi() = 0;
 };

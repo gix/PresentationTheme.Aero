@@ -39,7 +39,7 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
         return st;
 
     if (mapView) {
-        FileViewHandle sectionData{MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
+        FileViewHandle<> sectionData{MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
         if (!sectionData)
             return MakeErrorLast();
 

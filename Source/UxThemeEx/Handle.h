@@ -137,14 +137,41 @@ using ThreadHandle = Handle<ThreadHandleTraits>;
 struct FileMappingHandleTraits : NullIsInvalidHandleTraits {};
 using FileMappingHandle = Handle<FileMappingHandleTraits>;
 
+template<typename T>
 struct FileViewHandleTraits
 {
-    using HandleType = void*;
+    using HandleType = T*;
     constexpr static HandleType InvalidHandle() noexcept { return nullptr; }
     constexpr static bool IsValid(HandleType h) noexcept { return h != InvalidHandle(); }
     static void Close(HandleType h) noexcept { ::UnmapViewOfFile(h); }
 };
-using FileViewHandle = Handle<FileViewHandleTraits>;
+
+template<typename T = void>
+class FileViewHandle : public Handle<FileViewHandleTraits<T>>
+{
+public:
+    using Handle<FileViewHandleTraits<T>>::Handle;
+
+    constexpr explicit FileViewHandle(void* handle) noexcept
+        : Handle<FileViewHandleTraits<T>>(static_cast<T*>(handle))
+    {
+    }
+
+    T* operator->() noexcept { return this->Get(); }
+    T const* operator->() const noexcept { return this->Get(); }
+
+    bool Reset(void* handle) noexcept
+    {
+        return Reset(static_cast<T*>(handle));
+    }
+};
+
+template<>
+class FileViewHandle<void> : public Handle<FileViewHandleTraits<void>>
+{
+public:
+    using Handle<FileViewHandleTraits<void>>::Handle;
+};
 
 struct ModuleHandleTraits
 {

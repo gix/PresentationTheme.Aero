@@ -104,6 +104,7 @@
     <ClCompile Include="ThemeLoader.cpp" />
     <ClCompile Include="ThemeMemStream.cpp" />
     <ClCompile Include="ThemePNGDecoder.cpp" />
+    <ClCompile Include="ThemeUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="UxThemeFile.cpp" />
     <ClCompile Include="VSUnpack.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="ThemeLoader.h" />
     <ClInclude Include="ThemeMemStream.h" />
     <ClInclude Include="ThemePNGDecoder.h" />
+    <ClInclude Include="ThemeUtils.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="UxThemeEx.h" />
     <ClInclude Include="UxThemeFile.h" />

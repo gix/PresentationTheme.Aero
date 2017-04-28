@@ -23,7 +23,7 @@ protected:
 
     std::array<wchar_t, MAX_PATH> sectionName;
     SectionHandle sectionHandle;
-    FileViewHandle sectionData;
+    FileViewHandle<> sectionData;
     DWORD desiredSectionAccess;
     DWORD desiredViewAccess;
 };
