@@ -5,6 +5,8 @@
 #include <strsafe.h>
 #include <tlhelp32.h>
 #include <windows.h>
+#include "UxThemeEx.h"
+#include <atomic>
 
 namespace uxtheme
 {
@@ -97,6 +99,8 @@ void MemoryDC::CloseDC()
 }
 
 static bool highContrastEnabled = false;
+static std::atomic<bool> hasCustomColorScheme = false;
+static UX_COLOR_SCHEME customColorScheme = {};
 
 bool IsHighContrastMode()
 {
@@ -106,6 +110,63 @@ bool IsHighContrastMode()
 void SetHighContrastMode(bool enabled)
 {
     highContrastEnabled = enabled;
+}
+
+UX_COLOR_SCHEME const* GetCustomColorScheme()
+{
+    return hasCustomColorScheme ? &customColorScheme : nullptr;
+}
+
+void SetCustomColorScheme(UX_COLOR_SCHEME const* scheme)
+{
+    if (scheme) {
+        customColorScheme = *scheme;
+        hasCustomColorScheme = true;
+    } else {
+        hasCustomColorScheme = false;
+        customColorScheme = {};
+    }
+}
+
+DWORD GetSysColorEx(int index)
+{
+    if (auto custom = GetCustomColorScheme()) {
+        switch (index) {
+        case COLOR_ACTIVECAPTION: return custom->ActiveTitle;
+        case COLOR_BACKGROUND: return custom->Background;
+        case COLOR_BTNFACE: return custom->ButtonFace;
+        case COLOR_BTNTEXT: return custom->ButtonText;
+        case COLOR_GRAYTEXT: return custom->GrayText;
+        case COLOR_HIGHLIGHT: return custom->Hilight;
+        case COLOR_HIGHLIGHTTEXT: return custom->HilightText;
+        case COLOR_HOTLIGHT: return custom->HotTrackingColor;
+        case COLOR_INACTIVECAPTION: return custom->InactiveTitle;
+        case COLOR_INACTIVECAPTIONTEXT: return custom->InactiveTitleText;
+        case COLOR_CAPTIONTEXT: return custom->TitleText;
+        case COLOR_WINDOW: return custom->Window;
+        case COLOR_WINDOWTEXT: return custom->WindowText;
+        case COLOR_SCROLLBAR: return custom->Scrollbar;
+        case COLOR_MENU: return custom->Menu;
+        case COLOR_WINDOWFRAME: return custom->WindowFrame;
+        case COLOR_MENUTEXT: return custom->MenuText;
+        case COLOR_ACTIVEBORDER: return custom->ActiveBorder;
+        case COLOR_INACTIVEBORDER: return custom->InactiveBorder;
+        case COLOR_APPWORKSPACE: return custom->AppWorkspace;
+        case COLOR_BTNSHADOW: return custom->ButtonShadow;
+        case COLOR_BTNHIGHLIGHT: return custom->ButtonHilight;
+        case COLOR_3DDKSHADOW: return custom->ButtonDkShadow;
+        case COLOR_3DLIGHT: return custom->ButtonLight;
+        case COLOR_INFOTEXT: return custom->InfoText;
+        case COLOR_INFOBK: return custom->InfoWindow;
+        //case : return custom->ButtonAlternateFace;
+        case COLOR_GRADIENTACTIVECAPTION: return custom->GradientActiveTitle;
+        case COLOR_GRADIENTINACTIVECAPTION: return custom->GradientInactiveTitle;
+        case COLOR_MENUHILIGHT: return custom->MenuHilight;
+        case COLOR_MENUBAR: return custom->MenuBar;
+        }
+    }
+
+    return GetSysColor(index);
 }
 
 static wchar_t const g_pszAppName[] = {0};
@@ -330,6 +391,7 @@ void SafeSendMessage(HWND hwnd, DWORD uMsg, WPARAM wParam, LPARAM lParam)
 void SendThemeChanged(HWND hwnd)
 {
     SafeSendMessage(hwnd, WM_THEMECHANGED, 0, 0);
+    SafeSendMessage(hwnd, WM_SYSCOLORCHANGE, 0, 0);
 }
 
 void SendThemeChangedProcessLocal()

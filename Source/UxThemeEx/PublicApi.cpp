@@ -434,6 +434,13 @@ THEMEEXAPI UxOpenThemeFile(
     _In_ wchar_t const* themeFileName, bool highContrast,
     _Out_ HTHEMEFILE* phThemeFile)
 {
+    return UxOpenThemeFileEx(themeFileName, highContrast, nullptr, phThemeFile);
+}
+
+THEMEEXAPI UxOpenThemeFileEx(
+    _In_ wchar_t const* themeFileName, bool highContrast,
+    _In_opt_ UX_COLOR_SCHEME* colorScheme, _Out_ HTHEMEFILE* phThemeFile)
+{
     HMODULE module;
     ENSURE_HR(LoadThemeLibrary(themeFileName, &module, nullptr));
 
@@ -445,9 +452,13 @@ THEMEEXAPI UxOpenThemeFile(
     //tp.pszThemeName = themeFileName;
     //tp.pszColorParam = colorParam;
     //tp.pszSizeParam = sizeParam;
+    //tp.fForceHighContrast = highContrast ? TRUE : FALSE;
+    //tp.fEmulateGlobal = TRUE;
     //auto LoaderLoadThemeForTesting = (HRESULT(__stdcall*)(LOADTHEMEFORTESTPARAMS*))GetProcAddress(
     //    GetModuleHandleW(L"uxtheme"), (LPCSTR)127);
     //HRESULT hr = LoaderLoadThemeForTesting(&tp);
+
+    SetCustomColorScheme(colorScheme);
 
     CThemeLoader loader;
 
@@ -1048,7 +1059,7 @@ THEMEEXAPI_(COLORREF) UxGetThemeSysColor(
     }
 
     SetLastError(0);
-    return GetSysColor(iColorId);
+    return GetSysColorEx(iColorId);
 }
 
 THEMEEXAPI_(HBRUSH) UxGetThemeSysColorBrush(

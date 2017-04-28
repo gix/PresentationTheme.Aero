@@ -1121,19 +1121,19 @@ static void UnloadVSRecordData(VSRECORD* pRecord, void* pvBuf)
 static DWORD MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
 {
     switch (hcColor) {
-    case HCC_COLOR_ACTIVECAPTION: return GetSysColor(COLOR_ACTIVECAPTION);
-    case HCC_COLOR_CAPTIONTEXT: return GetSysColor(COLOR_CAPTIONTEXT);
-    case HCC_COLOR_BTNFACE: return GetSysColor(COLOR_BTNFACE);
-    case HCC_COLOR_BTNTEXT: return GetSysColor(COLOR_BTNTEXT);
-    case HCC_COLOR_DESKTOP: return GetSysColor(COLOR_BACKGROUND);
-    case HCC_COLOR_GRAYTEXT: return GetSysColor(COLOR_GRAYTEXT);
-    case HCC_COLOR_HOTLIGHT: return GetSysColor(COLOR_HOTLIGHT);
-    case HCC_COLOR_INACTIVECAPTION: return GetSysColor(COLOR_INACTIVECAPTION);
-    case HCC_COLOR_INACTIVECAPTIONTEXT: return GetSysColor(COLOR_INACTIVECAPTIONTEXT);
-    case HCC_COLOR_HIGHLIGHT: return GetSysColor(COLOR_HIGHLIGHT);
-    case HCC_COLOR_HIGHLIGHTTEXT: return GetSysColor(COLOR_HIGHLIGHTTEXT);
-    case HCC_COLOR_WINDOW: return GetSysColor(COLOR_WINDOW);
-    case HCC_COLOR_WINDOWTEXT: return GetSysColor(COLOR_WINDOWTEXT);
+    case HCC_COLOR_ACTIVECAPTION: return GetSysColorEx(COLOR_ACTIVECAPTION);
+    case HCC_COLOR_CAPTIONTEXT: return GetSysColorEx(COLOR_CAPTIONTEXT);
+    case HCC_COLOR_BTNFACE: return GetSysColorEx(COLOR_BTNFACE);
+    case HCC_COLOR_BTNTEXT: return GetSysColorEx(COLOR_BTNTEXT);
+    case HCC_COLOR_DESKTOP: return GetSysColorEx(COLOR_BACKGROUND);
+    case HCC_COLOR_GRAYTEXT: return GetSysColorEx(COLOR_GRAYTEXT);
+    case HCC_COLOR_HOTLIGHT: return GetSysColorEx(COLOR_HOTLIGHT);
+    case HCC_COLOR_INACTIVECAPTION: return GetSysColorEx(COLOR_INACTIVECAPTION);
+    case HCC_COLOR_INACTIVECAPTIONTEXT: return GetSysColorEx(COLOR_INACTIVECAPTIONTEXT);
+    case HCC_COLOR_HIGHLIGHT: return GetSysColorEx(COLOR_HIGHLIGHT);
+    case HCC_COLOR_HIGHLIGHTTEXT: return GetSysColorEx(COLOR_HIGHLIGHTTEXT);
+    case HCC_COLOR_WINDOW: return GetSysColorEx(COLOR_WINDOW);
+    case HCC_COLOR_WINDOWTEXT: return GetSysColorEx(COLOR_WINDOWTEXT);
     default: return 0;
     }
 }

@@ -43,9 +43,50 @@ struct TA_TRANSFORM_3D
     float rOriginZ;
 };
 
+struct UX_COLOR_SCHEME
+{
+    DWORD ActiveTitle;
+    DWORD Background;
+    DWORD ButtonFace;
+    DWORD ButtonText;
+    DWORD GrayText;
+    DWORD Hilight;
+    DWORD HilightText;
+    DWORD HotTrackingColor;
+    DWORD InactiveTitle;
+    DWORD InactiveTitleText;
+    DWORD TitleText;
+    DWORD Window;
+    DWORD WindowText;
+    DWORD Scrollbar;
+    DWORD Menu;
+    DWORD WindowFrame;
+    DWORD MenuText;
+    DWORD ActiveBorder;
+    DWORD InactiveBorder;
+    DWORD AppWorkspace;
+    DWORD ButtonShadow;
+    DWORD ButtonHilight;
+    DWORD ButtonDkShadow;
+    DWORD ButtonLight;
+    DWORD InfoText;
+    DWORD InfoWindow;
+    DWORD ButtonAlternateFace;
+    DWORD GradientActiveTitle;
+    DWORD GradientInactiveTitle;
+    DWORD MenuHilight;
+    DWORD MenuBar;
+};
+
 THEMEEXAPI UxOpenThemeFile(
     _In_ wchar_t const* themeFileName,
     _In_ bool highContrast,
+    _Out_ HTHEMEFILE* phThemeFile);
+
+THEMEEXAPI UxOpenThemeFileEx(
+    _In_ wchar_t const* themeFileName,
+    _In_ bool highContrast,
+    _In_opt_ UX_COLOR_SCHEME* colorScheme,
     _Out_ HTHEMEFILE* phThemeFile);
 
 THEMEEXAPI UxCloseThemeFile(_In_ HTHEMEFILE hThemeFile);

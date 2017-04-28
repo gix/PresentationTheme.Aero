@@ -4,6 +4,8 @@
 #include <memory>
 #include <windows.h>
 
+struct UX_COLOR_SCHEME;
+
 namespace uxtheme
 {
 
@@ -253,6 +255,10 @@ private:
 
 bool IsHighContrastMode();
 void SetHighContrastMode(bool enabled);
+
+UX_COLOR_SCHEME const* GetCustomColorScheme();
+void SetCustomColorScheme(UX_COLOR_SCHEME const* scheme);
+DWORD GetSysColorEx(int index);
 
 class CUxThemeFile;
 wchar_t const* ThemeString(CUxThemeFile* pThemeFile, int iOffset);

@@ -187,6 +187,7 @@ union HookHandles
                              unsigned dwFlags, wchar_t const* pszApiName,
                              int iForDPI)> PFnOpenThemeDataExInternal;
         HookTraceInfo<void(CThemeMenuBar*, HWND hwnd, UAHDRAWMENUITEM* pudmi)> PFnCThemeMenuBar_DrawItem;
+        DECLARE_HOOK_INFO(GetSysColor);
     } t;
     HOOK_TRACE_INFO handles[sizeof(TypedHooks) / sizeof(HOOK_TRACE_INFO)];
 } g_hookHandles;
@@ -1000,6 +1001,11 @@ THEMEEXAPI UxOverrideTheme(_In_ HTHEMEFILE hThemeFile)
     return S_OK;
 }
 
+extern "C" DWORD WINAPI GetSysColorHook(int nIndex)
+{
+    return GetSysColorEx(nIndex);
+}
+
 THEMEEXAPI UxHook()
 {
     for (HOOK_TRACE_INFO& hHook : g_hookHandles.handles) {
@@ -1007,7 +1013,10 @@ THEMEEXAPI UxHook()
         hHook = {};
     }
 
+    LhWaitForPendingRemovals();
+
     HMODULE uxtheme = GetModuleHandleW(L"uxtheme");
+    HMODULE user32 = GetModuleHandleW(L"user32");
 
     NTSTATUS st;
 
@@ -1055,6 +1064,7 @@ THEMEEXAPI UxHook()
     ADD_HOOK(DrawThemeBackgroundEx);
     ADD_HOOK(DrawThemeText);
     ADD_HOOK(DrawThemeTextEx);
+    ADD_HOOK2(GetSysColor, GetProcAddress(user32, "GetSysColor"));
 
     ULONG aclEntries[1] = {0};
     for (HOOK_TRACE_INFO& hHook : g_hookHandles.handles)
