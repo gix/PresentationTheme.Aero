@@ -42,6 +42,8 @@
     <Compile Include="SystemVisualStateManager.cs" />
     <Compile Include="TextBoxService.cs" />
     <Compile Include="ThemeHelper.cs" />
+    <Compile Include="TreeViewItemLevelConverter.cs" />
+    <Compile Include="ThemeOptions.cs" />
     <Compile Include="TreeViewService.cs" />
   </ItemGroup>
   <Import Project="..\SharedPropertiesDotNet.props" />

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:aero10="clr-namespace:PresentationTheme.Aero.Win10;assembly=PresentationTheme.Aero.Win10"
+    xmlns:aero="clr-namespace:PresentationTheme.Aero;assembly=PresentationTheme.Aero"
     mc:Ignorable="d"
     d:DesignHeight="500"
     d:DesignWidth="300">
@@ -22,8 +22,7 @@
         </GridView>
       </ListView.View>
     </ListView>
-    <ListView Grid.Row="1" Margin="3" x:Name="lv2"
-              Style="{DynamicResource {x:Static aero10:ExplorerStyles.ListViewStyleKey}}">
+    <ListView Grid.Row="1" Margin="3" x:Name="lv2" aero:ThemeOptions.UseExplorerStyle="True">
       <ListView.View>
         <GridView x:Name="gridView2">
           <GridViewColumn Header="Name" Width="60" DisplayMemberBinding="{Binding Item1}"/>

@@ -4056,7 +4056,7 @@
           </Setter.Value>
         </Setter>
       </Trigger>
-      <Trigger Property="aero:TreeViewService.UseExplorerStyle" Value="True">
+      <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
         <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
       </Trigger>
     </Style.Triggers>
@@ -4085,7 +4085,7 @@
       <Trigger Property="aero:TreeViewService.FullRowSelect" Value="True">
         <Setter Property="Template" Value="{StaticResource TreeViewItem.Template.FullRowSelect}"/>
       </Trigger>
-      <Trigger Property="aero:TreeViewService.UseExplorerStyle" Value="True">
+      <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -4096,7 +4096,7 @@
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="aero:TreeViewService.FullRowSelect" Value="True"/>
-          <Condition Property="aero:TreeViewService.UseExplorerStyle" Value="True"/>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
         </MultiTrigger.Conditions>
         <Setter Property="Padding" Value="2,1,2,2"/>
         <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>

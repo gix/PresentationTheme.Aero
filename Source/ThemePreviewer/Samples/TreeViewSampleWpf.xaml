@@ -17,6 +17,6 @@
               aero:TreeViewService.FullRowSelect="True"/>
     <TreeView x:Name="treeView2" Margin="3" Grid.Row="1"
               aero:TreeViewService.FullRowSelect="True"
-              aero:TreeViewService.UseExplorerStyle="True"/>
+              aero:ThemeOptions.UseExplorerStyle="True"/>
   </Grid>
 </UserControl>
