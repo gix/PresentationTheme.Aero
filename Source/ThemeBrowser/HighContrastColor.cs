@@ -11,7 +11,7 @@ namespace ThemeBrowser
         }
 
         public HIGHCONTRASTCOLOR Index { get; }
-        public Color Color => ThemeExtensions.ColorFromArgb(MapEnumToSysColor(Index));
+        public Color Color => ThemeExtensions.ColorFromCOLORREF(MapEnumToSysColor(Index));
 
         private static int MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
         {
