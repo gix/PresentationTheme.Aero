@@ -3,6 +3,7 @@ namespace ThemeBrowser
     using System.Collections.Generic;
     using System.Linq;
     using StyleCore;
+    using StyleCore.Native;
 
     public class ThemeClassViewModel : ThemePropertyContainer
     {
@@ -109,6 +110,12 @@ namespace ThemeBrowser
             }
 
             return part;
+        }
+
+        public override void AddDefaultProperty(TMT propertyId, TMT primitiveType, object value)
+        {
+            var property = new ThemeProperty(Class, -1, -1, propertyId, primitiveType, PropertyOrigin.Default, value);
+            properties.Add(new OwnedThemePropertyViewModel(property));
         }
     }
 }

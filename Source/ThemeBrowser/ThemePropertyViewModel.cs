@@ -5,8 +5,6 @@ namespace ThemeBrowser
     using System.Drawing;
     using System.IO;
     using System.Linq;
-    using System.Runtime.InteropServices;
-    using System.Text;
     using System.Windows.Media.Imaging;
     using StyleCore;
     using StyleCore.Native;
@@ -16,6 +14,62 @@ namespace ThemeBrowser
     {
         public abstract IReadOnlyList<ThemePropertyViewModel> Properties { get; }
         public abstract IReadOnlyList<ThemePropertyViewModel> AllProperties { get; }
+        public abstract void AddDefaultProperty(TMT propertyId, TMT primitiveType, object value);
+
+        public bool HasProperty(TMT propertyId)
+        {
+            return Properties.Any(x => x.PropertyId == propertyId);
+        }
+
+        public bool Find<T>(TMT propertyId, out T value)
+        {
+            var entry = Properties.FirstOrDefault(x => x.PropertyId == propertyId);
+            if (entry == null) {
+                value = default(T);
+                return false;
+            }
+
+            value = (T)entry.RawValue;
+            return true;
+        }
+
+        public T EnsurePropertyValue<T>(TMT propertyId, TMT primitiveType, T defaultValue)
+        {
+            T value;
+            if (Find(propertyId, out value))
+                return value;
+
+            AddDefaultProperty(propertyId, primitiveType, defaultValue);
+            return defaultValue;
+        }
+
+        public bool EnsureBoolValue(TMT propertyId, bool defaultValue)
+        {
+            return EnsurePropertyValue(propertyId, TMT.BOOL, defaultValue);
+        }
+
+        public int EnsureIntValue(TMT propertyId, int defaultValue)
+        {
+            return EnsurePropertyValue(propertyId, TMT.INT, defaultValue);
+        }
+
+        public Color EnsureColorValue(TMT propertyId, Color defaultValue)
+        {
+            return EnsurePropertyValue(propertyId, TMT.COLOR, defaultValue);
+        }
+
+        public MARGINS EnsureMarginsValue(TMT propertyId, MARGINS defaultValue)
+        {
+            return EnsurePropertyValue(propertyId, TMT.MARGINS, defaultValue);
+        }
+
+        public T EnsureEnumValue<T>(TMT propertyId, T defaultValue)
+            where T : struct
+        {
+            if (!typeof(T).IsEnum)
+                throw new ArgumentException("Type must be enum");
+            return EnsurePropertyValue(propertyId, TMT.ENUM, defaultValue);
+        }
     }
 
     public abstract class ThemePropertyViewModel
