@@ -7,6 +7,7 @@
     public class ProgressBarEx : ProgressBar
     {
         private ProgressBarState state = ProgressBarState.Normal;
+        private Orientation orientation = Orientation.Horizontal;
 
         [DefaultValue(ProgressBarState.Normal)]
         [Category("Behavior")]
@@ -23,6 +24,35 @@
                 if (IsHandleCreated)
                     NativeMethods.SendMessage(
                         Handle, NativeMethods.PBM_SETSTATE, (IntPtr)state, IntPtr.Zero);
+            }
+        }
+
+        [DefaultValue(Orientation.Horizontal)]
+        [Category("Appearance")]
+        public Orientation Orientation
+        {
+            get { return orientation; }
+            set
+            {
+                if (orientation == value)
+                    return;
+
+                orientation = value;
+
+                if (IsHandleCreated)
+                    NativeMethods.SetWindowStyle(
+                        this, NativeMethods.PBS_VERTICAL, Orientation == Orientation.Vertical);
+            }
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                if (Orientation == Orientation.Vertical)
+                    cp.Style |= NativeMethods.PBS_VERTICAL;
+                return cp;
             }
         }
 

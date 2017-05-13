@@ -29,6 +29,7 @@
         {
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.progressBarEx3 = new ThemePreviewer.Controls.ProgressBarEx();
             this.progressBarEx2 = new ThemePreviewer.Controls.ProgressBarEx();
             this.progressBarEx1 = new ThemePreviewer.Controls.ProgressBarEx();
             this.progressBar10 = new ThemePreviewer.Controls.ProgressBarEx();
@@ -62,6 +63,15 @@
             this.button2.TabIndex = 12;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.OnChangeStateButtonClicked);
+            // 
+            // progressBarEx3
+            // 
+            this.progressBarEx3.Location = new System.Drawing.Point(3, 365);
+            this.progressBarEx3.Name = "progressBarEx3";
+            this.progressBarEx3.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.progressBarEx3.Size = new System.Drawing.Size(16, 100);
+            this.progressBarEx3.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBarEx3.TabIndex = 15;
             // 
             // progressBarEx2
             // 
@@ -171,6 +181,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.progressBarEx3);
             this.Controls.Add(this.progressBarEx2);
             this.Controls.Add(this.progressBarEx1);
             this.Controls.Add(this.button2);
@@ -187,7 +198,7 @@
             this.Controls.Add(this.progressBar1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ProgressBarSampleNative";
-            this.Size = new System.Drawing.Size(469, 459);
+            this.Size = new System.Drawing.Size(469, 679);
             this.ResumeLayout(false);
 
         }
@@ -208,5 +219,6 @@
         private System.Windows.Forms.Button button2;
         private Controls.ProgressBarEx progressBarEx1;
         private Controls.ProgressBarEx progressBarEx2;
+        private Controls.ProgressBarEx progressBarEx3;
     }
 }

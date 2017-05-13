@@ -12,6 +12,9 @@ namespace ThemePreviewer
 
     internal static class NativeMethods
     {
+        public const int GWL_STYLE = -16;
+        public const int GWL_EXSTYLE = -20;
+
         public const int WM_CREATE = 0x1;
         public const int WM_PAINT = 0x000F;
         public const int WM_NOTIFY = 0x004E;
@@ -177,6 +180,7 @@ namespace ThemePreviewer
         public const int TBM_SETSELSTART = WM_USER + 11;
         public const int TBM_SETSELEND = WM_USER + 12;
 
+        public const int PBS_VERTICAL = 0x4;
         public const int PBM_SETSTATE = WM_USER + 16;
         public const int PBM_GETSTATE = WM_USER + 17;
 
@@ -201,6 +205,43 @@ namespace ThemePreviewer
         {
             return ((color.R | (color.G << 8)) | (color.B << 0x10));
         }
+
+        public static void SetWindowStyle(Control control, int flag, bool value)
+        {
+            int styleFlags = unchecked((int)(long)GetWindowLong(
+                new HandleRef(control, control.Handle), GWL_STYLE));
+
+            styleFlags = value ? styleFlags | flag : styleFlags & ~flag;
+
+            SetWindowLong(
+                new HandleRef(control, control.Handle), GWL_STYLE, (IntPtr)styleFlags);
+        }
+
+        public static IntPtr GetWindowLong(HandleRef hWnd, int nIndex)
+        {
+            if (IntPtr.Size == 4)
+                return new IntPtr(GetWindowLong32(hWnd, nIndex));
+            return GetWindowLongPtr64(hWnd, nIndex);
+        }
+
+        public static IntPtr SetWindowLong(HandleRef hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size == 4)
+                return SetWindowLongPtr32(hWnd, nIndex, dwNewLong.ToInt32());
+            return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+        }
+
+        [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "GetWindowLong")]
+        private static extern int GetWindowLong32(HandleRef hWnd, int nIndex);
+
+        [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "GetWindowLongPtr")]
+        private static extern IntPtr GetWindowLongPtr64(HandleRef hWnd, int nIndex);
+
+        [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "SetWindowLong")]
+        private static extern IntPtr SetWindowLongPtr32(HandleRef hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "SetWindowLongPtr")]
+        private static extern IntPtr SetWindowLongPtr64(HandleRef hWnd, int nIndex, IntPtr dwNewLong);
 
         [DllImport("gdi32", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
         public static extern uint GetBkColor(IntPtr hDC);
