@@ -21,7 +21,7 @@ namespace ThemeBrowser
             Parent = parent;
 
             properties.AddRange(@class.Properties.Select(x => new OwnedThemePropertyViewModel(x)));
-            allProperties = new CombinedList<ThemePropertyViewModel>(Parent.Properties, properties);
+            allProperties = new CombinedList<ThemePropertyViewModel>(properties, Parent.Properties);
 
             parts = @class.Parts.Select(x => new ThemePartViewModel(x, this)).ToList();
             parts.Sort((x, y) => x.Id.CompareTo(y.Id));
@@ -54,6 +54,9 @@ namespace ThemeBrowser
         {
             if (inheritedPropertiesAdded)
                 return;
+
+            foreach (var part in Parts)
+                part.AddInheritedProperties();
 
             if (BaseClass != null) {
                 BaseClass.AddInheritedProperties();

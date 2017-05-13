@@ -16,7 +16,7 @@ namespace ThemeBrowser
             Parent = parent;
 
             properties.AddRange(part.Properties.Select(x => new OwnedThemePropertyViewModel(x)));
-            allProperties = new CombinedList<ThemePropertyViewModel>(Parent.AllProperties, properties);
+            allProperties = new CombinedList<ThemePropertyViewModel>(properties, Parent.AllProperties);
 
             states = part.States.Select(x => new ThemeStateViewModel(x, this)).ToList();
             states.Sort((x, y) => x.Id.CompareTo(y.Id));
@@ -48,6 +48,16 @@ namespace ThemeBrowser
             }
 
             return state;
+        }
+
+        public void AddInheritedProperties()
+        {
+            foreach (var inherited in Parent.Properties)
+                if (properties.All(x => x.PropertyId != inherited.PropertyId))
+                    properties.Add(new InheritedThemePropertyViewModel(inherited));
+
+            foreach (var state in States)
+                state.AddInheritedProperties();
         }
 
         public void AddInheritedProperties(ThemePartViewModel basePart)

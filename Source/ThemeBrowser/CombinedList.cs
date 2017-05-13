@@ -16,7 +16,12 @@ namespace ThemeBrowser
             if (lists.Any(x => x == null))
                 throw new ArgumentException("Sub lists must not be null.", nameof(lists));
 
-            this.lists = lists.ToArray();
+            this.lists = lists.SelectMany(x => {
+                var nested = x as CombinedList<T>;
+                if (nested != null)
+                    return nested.lists;
+                return new[] { x };
+            }).ToArray();
         }
 
         public int Count => lists.Sum(x => x.Count);

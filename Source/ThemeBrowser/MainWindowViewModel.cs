@@ -190,7 +190,7 @@
         private void AppendVisualStates(StringBuilder builder, ThemePartViewModel part)
         {
             var statesCount = part.States.Count;
-            var durationProp = part.AllProperties.FirstOrDefault(x => x.PropertyId == TMT.TRANSITIONDURATIONS);
+            var durationProp = part.Properties.FirstOrDefault(x => x.PropertyId == TMT.TRANSITIONDURATIONS);
             var intList = durationProp?.Value as IntList;
             if (intList == null)
                 return;

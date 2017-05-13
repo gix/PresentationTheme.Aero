@@ -1213,11 +1213,7 @@ namespace StyleCore
 
         public static Color ColorFromArgb(uint value)
         {
-            var a = (byte)((value >> 24) & 0xFF);
-            var r = (byte)((value >> 16) & 0xFF);
-            var g = (byte)((value >> 8) & 0xFF);
-            var b = (byte)((value >> 0) & 0xFF);
-            return Color.FromArgb(a, r, g, b);
+            return Color.FromArgb(value);
         }
     }
 
@@ -1229,6 +1225,15 @@ namespace StyleCore
             R = r;
             G = g;
             B = b;
+        }
+
+        public static Color FromArgb(uint value)
+        {
+            var a = (byte)((value >> 24) & 0xFF);
+            var r = (byte)((value >> 16) & 0xFF);
+            var g = (byte)((value >> 8) & 0xFF);
+            var b = (byte)((value >> 0) & 0xFF);
+            return FromArgb(a, r, g, b);
         }
 
         public static Color FromArgb(byte a, byte r, byte g, byte b)

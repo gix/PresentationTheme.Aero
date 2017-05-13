@@ -241,6 +241,7 @@ namespace StyleCore.Native
         State = 8,
         NotFound = 16,
         Inherited = 32,
+        Default = 64,
     }
 
     [StructLayout(LayoutKind.Sequential)]

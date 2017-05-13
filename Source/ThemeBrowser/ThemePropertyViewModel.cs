@@ -26,6 +26,7 @@ namespace ThemeBrowser
         public abstract TMT PrimitiveType { get; }
         public abstract PropertyOrigin Origin { get; }
         public abstract object Value { get; }
+        public abstract object RawValue { get; }
         public abstract string StringValue { get; }
 
         public PropertyOrigin SimpleOrigin => Origin & ~PropertyOrigin.Inherited;
@@ -66,6 +67,7 @@ namespace ThemeBrowser
         public override TMT PrimitiveType => property.PrimitiveType;
         public override PropertyOrigin Origin => property.Origin;
         public override object Value { get; }
+        public override object RawValue => property.Value;
         public override string StringValue => Value?.ToString();
 
         public override string DisplayName
@@ -105,6 +107,7 @@ namespace ThemeBrowser
         public override TMT PrimitiveType => property.PrimitiveType;
         public override PropertyOrigin Origin { get; }
         public override object Value => property.Value;
+        public override object RawValue => property.RawValue;
         public override string StringValue => property.StringValue;
     }
 
