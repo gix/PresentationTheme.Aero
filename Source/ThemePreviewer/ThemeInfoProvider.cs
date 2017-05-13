@@ -16,6 +16,9 @@ namespace ThemePreviewer
     public class ThemeInfoProvider
     {
         private readonly Lazy<UxColorScheme> highContrast1;
+        private readonly Lazy<UxColorScheme> highContrastWhite;
+        private readonly Lazy<UxColorScheme> highContrastDebugLight;
+        private readonly Lazy<UxColorScheme> highContrastDebugDark;
         private readonly List<ThemeInfoPair> themes = new List<ThemeInfoPair>();
         private readonly List<WpfThemeInfo> wpfThemes = new List<WpfThemeInfo>();
         private readonly List<NativeThemeInfo> nativeThemes = new List<NativeThemeInfo>();
@@ -23,6 +26,9 @@ namespace ThemePreviewer
         public ThemeInfoProvider()
         {
             highContrast1 = new Lazy<UxColorScheme>(CreateHighContrast1Scheme);
+            highContrastWhite = new Lazy<UxColorScheme>(CreateHighContrastWhiteScheme);
+            highContrastDebugLight = new Lazy<UxColorScheme>(CreateHighContrastDebugLightScheme);
+            highContrastDebugDark = new Lazy<UxColorScheme>(CreateHighContrastDebugDarkScheme);
 
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8)", AeroWin8Theme.ResourceUri));
@@ -30,6 +36,9 @@ namespace ThemePreviewer
             wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 10)", AeroLiteWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 10)", HighContrastWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("High Contrast #1 (Windows 10)", HighContrastWin10Theme.ResourceUri, highContrast1.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast White (Windows 10)", HighContrastWin10Theme.ResourceUri, highContrastWhite.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast Debug Light (Windows 10)", HighContrastWin10Theme.ResourceUri, highContrastDebugLight.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast Debug Dark (Windows 10)", HighContrastWin10Theme.ResourceUri, highContrastDebugDark.Value));
             wpfThemes.Add(new WpfThemeInfo("Built-in Classic", BuiltinThemes.ClassicUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero", BuiltinThemes.AeroUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero 2", BuiltinThemes.Aero2Uri));
@@ -37,6 +46,19 @@ namespace ThemePreviewer
 
             foreach (var nativeTheme in FindNativeThemes().OrderBy(x => x))
                 nativeThemes.Add(nativeTheme);
+
+            foreach (var nativeTheme in nativeThemes) {
+                if (nativeTheme.Name == "Aero (Windows 10)") {
+                    nativeThemes.Add(
+                        new NativeThemeInfo(
+                            "Aero Debug Dark ", nativeTheme.Version,
+                            nativeTheme.Path, new UxThemeLoadParams {
+                                IsHighContrast = false,
+                                CustomColors = highContrastDebugDark.Value
+                            }));
+                    break;
+                }
+            }
 
             foreach (var nativeTheme in nativeThemes) {
                 foreach (var wpfTheme in wpfThemes) {
@@ -68,21 +90,48 @@ namespace ThemePreviewer
                     var versionInfo = FileVersionInfo.GetVersionInfo(styleFile.FullName);
 
                     yield return new NativeThemeInfo("Aero Lite", versionInfo, styleFile);
-
-                    yield return new NativeThemeInfo(
-                        "High Contrast", versionInfo, styleFile,
-                        new UxThemeLoadParams {
-                            IsHighContrast = true
-                        });
-
-                    yield return new NativeThemeInfo(
-                        "High Contrast #1", versionInfo, styleFile,
-                        new UxThemeLoadParams {
-                            IsHighContrast = true,
-                            CustomColors = highContrast1.Value
-                        });
+                    foreach (var hcTheme in EnumerateHighContrastSchemes(versionInfo, styleFile))
+                        yield return hcTheme;
                 }
             }
+        }
+
+        private IEnumerable<NativeThemeInfo> EnumerateHighContrastSchemes(
+            FileVersionInfo versionInfo, FileInfo styleFile)
+        {
+            yield return new NativeThemeInfo(
+                "High Contrast", versionInfo, styleFile,
+                new UxThemeLoadParams {
+                    IsHighContrast = true
+                });
+
+            yield return new NativeThemeInfo(
+                "High Contrast #1", versionInfo, styleFile,
+                new UxThemeLoadParams {
+                    IsHighContrast = true,
+                    CustomColors = highContrast1.Value
+                });
+
+            yield return new NativeThemeInfo(
+                "High Contrast White", versionInfo, styleFile,
+                new UxThemeLoadParams {
+                    IsHighContrast = true,
+                    CustomColors = highContrastWhite.Value
+                });
+
+            yield return new NativeThemeInfo(
+                "High Contrast Debug Light", versionInfo, styleFile,
+                new UxThemeLoadParams {
+                    IsHighContrast = true,
+                    CustomColors = highContrastDebugLight.Value
+                });
+
+            yield return new NativeThemeInfo(
+                "High Contrast Debug Dark", versionInfo, styleFile,
+                new UxThemeLoadParams {
+                    IsHighContrast = true,
+                    CustomColors = highContrastDebugDark.Value
+                });
         }
 
         private UxColorScheme CreateHighContrast1Scheme()
@@ -119,6 +168,117 @@ namespace ThemePreviewer
             scheme.GradientInactiveTitle = RGB(0x00, 0xFF, 0xFF);
             scheme.MenuHilight = RGB(0x00, 0x80, 0x00);
             scheme.MenuBar = RGB(0x00, 0x00, 0x00);
+            return scheme;
+        }
+
+        private UxColorScheme CreateHighContrastWhiteScheme()
+        {
+            var scheme = new UxColorScheme();
+            scheme.ActiveTitle = RGB(0, 0, 0);
+            scheme.Background = RGB(255, 255, 255);
+            scheme.ButtonFace = RGB(255, 255, 255);
+            scheme.ButtonText = RGB(0, 0, 0);
+            scheme.GrayText = RGB(96, 0, 0);
+            scheme.Hilight = RGB(55, 0, 110);
+            scheme.HilightText = RGB(255, 255, 255);
+            scheme.HotTrackingColor = RGB(0, 0, 159);
+            scheme.InactiveTitle = RGB(255, 255, 255);
+            scheme.InactiveTitleText = RGB(0, 0, 0);
+            scheme.TitleText = RGB(255, 255, 255);
+            scheme.Window = RGB(255, 255, 255);
+            scheme.WindowText = RGB(0, 0, 0);
+            scheme.Scrollbar = RGB(255, 255, 255);
+            scheme.Menu = RGB(255, 255, 255);
+            scheme.WindowFrame = RGB(0, 0, 0);
+            scheme.MenuText = RGB(0, 0, 0);
+            scheme.ActiveBorder = RGB(128, 128, 128);
+            scheme.InactiveBorder = RGB(192, 192, 192);
+            scheme.AppWorkspace = RGB(128, 128, 128);
+            scheme.ButtonShadow = RGB(128, 128, 128);
+            scheme.ButtonHilight = RGB(192, 192, 192);
+            scheme.ButtonDkShadow = RGB(0, 0, 0);
+            scheme.ButtonLight = RGB(192, 192, 192);
+            scheme.InfoText = RGB(0, 0, 0);
+            scheme.InfoWindow = RGB(255, 255, 255);
+            scheme.ButtonAlternateFace = RGB(192, 192, 192);
+            scheme.GradientActiveTitle = RGB(0, 0, 0);
+            scheme.GradientInactiveTitle = RGB(255, 255, 255);
+            scheme.MenuHilight = RGB(0, 0, 0);
+            scheme.MenuBar = RGB(255, 255, 255);
+            return scheme;
+        }
+
+        private UxColorScheme CreateHighContrastDebugLightScheme()
+        {
+            var scheme = new UxColorScheme();
+            scheme.ActiveTitle = RGB(204, 112, 81);
+            scheme.Background = RGB(127, 51, 51);
+            scheme.ButtonFace = RGB(173, 204, 255);
+            scheme.ButtonText = RGB(0, 81, 142);
+            scheme.GrayText = RGB(255, 0, 255);
+            scheme.Hilight = RGB(255, 255, 0);
+            scheme.HilightText = RGB(142, 81, 204);
+            scheme.HotTrackingColor = RGB(127, 0, 0);
+            scheme.InactiveTitle = RGB(204, 173, 81);
+            scheme.InactiveTitleText = RGB(51, 51, 0);
+            scheme.TitleText = RGB(81, 0, 0);
+            scheme.Window = RGB(204, 204, 204);
+            scheme.WindowText = RGB(0, 0, 255);
+            scheme.Scrollbar = RGB(51, 70, 127);
+            scheme.Menu = RGB(255, 127, 204);
+            scheme.WindowFrame = RGB(127, 51, 108);
+            scheme.MenuText = RGB(127, 0, 81);
+            scheme.ActiveBorder = RGB(127, 79, 51);
+            scheme.InactiveBorder = RGB(188, 204, 81);
+            scheme.AppWorkspace = RGB(117, 127, 51);
+            scheme.ButtonShadow = RGB(0, 255, 255);
+            scheme.ButtonHilight = RGB(51, 0, 188);
+            scheme.ButtonDkShadow = RGB(255, 255, 0);
+            scheme.ButtonLight = RGB(127, 127, 0);
+            scheme.InfoText = RGB(81, 158, 204);
+            scheme.InfoWindow = RGB(51, 98, 127);
+            scheme.ButtonAlternateFace = RGB(96, 81, 204);
+            scheme.GradientActiveTitle = RGB(60, 51, 127);
+            scheme.GradientInactiveTitle = RGB(188, 81, 204);
+            scheme.MenuHilight = RGB(117, 51, 127);
+            scheme.MenuBar = RGB(204, 81, 127);
+            return scheme;
+        }
+
+        private UxColorScheme CreateHighContrastDebugDarkScheme()
+        {
+            var scheme = new UxColorScheme();
+            scheme.ActiveTitle = RGB(51, 143, 174);
+            scheme.Background = RGB(128, 204, 204);
+            scheme.ButtonFace = RGB(82, 51, 0);
+            scheme.ButtonText = RGB(255, 174, 113);
+            scheme.GrayText = RGB(0, 255, 0);
+            scheme.Hilight = RGB(0, 0, 255);
+            scheme.HilightText = RGB(113, 174, 51);
+            scheme.HotTrackingColor = RGB(128, 255, 255);
+            scheme.InactiveTitle = RGB(51, 82, 174);
+            scheme.InactiveTitleText = RGB(204, 204, 255);
+            scheme.TitleText = RGB(174, 255, 255);
+            scheme.Window = RGB(51, 51, 51);
+            scheme.WindowText = RGB(255, 255, 0);
+            scheme.Scrollbar = RGB(204, 185, 128);
+            scheme.Menu = RGB(0, 128, 51);
+            scheme.WindowFrame = RGB(128, 204, 147);
+            scheme.MenuText = RGB(128, 255, 174);
+            scheme.ActiveBorder = RGB(128, 176, 204);
+            scheme.InactiveBorder = RGB(67, 51, 174);
+            scheme.AppWorkspace = RGB(138, 128, 204);
+            scheme.ButtonShadow = RGB(255, 0, 0);
+            scheme.ButtonHilight = RGB(204, 255, 67);
+            scheme.ButtonDkShadow = RGB(0, 0, 255);
+            scheme.ButtonLight = RGB(128, 128, 255);
+            scheme.InfoText = RGB(174, 97, 51);
+            scheme.InfoWindow = RGB(204, 157, 128);
+            scheme.ButtonAlternateFace = RGB(159, 174, 51);
+            scheme.GradientActiveTitle = RGB(195, 204, 128);
+            scheme.GradientInactiveTitle = RGB(67, 174, 51);
+            scheme.MenuHilight = RGB(138, 204, 128);
+            scheme.MenuBar = RGB(51, 174, 128);
             return scheme;
         }
 

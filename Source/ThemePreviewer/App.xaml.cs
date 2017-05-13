@@ -120,6 +120,9 @@
                 case "aerolite10": return "Aero Lite (Windows 10)";
                 case "hc": return "High Contrast (Windows 10)";
                 case "hc1": return "High Contrast #1 (Windows 10)";
+                case "hcdebuglight": return "High Contrast Debug Light (Windows 10)";
+                case "hcdebugdark": return "High Contrast Debug Dark (Windows 10)";
+                case "hcwhite": return "High Contrast White (Windows 10)";
                 default: return null;
             }
         }
