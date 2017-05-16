@@ -728,8 +728,7 @@ THEMEEXAPI UxGetThemeBool(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetBool(
-        iPartId, iStateId, iPropId, pfVal));
+    ENSURE_HR(renderObj->ExternalGetBool(iPartId, iStateId, iPropId, pfVal));
     return S_OK;
 }
 
@@ -747,8 +746,8 @@ THEMEEXAPI UxGetThemeColor(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetInt(
-        iPartId, iStateId, iPropId, reinterpret_cast<int*>(pColor)));
+    ENSURE_HR(renderObj->ExternalGetInt(iPartId, iStateId, iPropId,
+                                        reinterpret_cast<int*>(pColor)));
     return S_OK;
 }
 
@@ -776,8 +775,8 @@ THEMEEXAPI UxGetThemeEnumValue(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetEnumValue(
-        iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR(
+        renderObj->ExternalGetEnumValue(iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -796,8 +795,8 @@ THEMEEXAPI UxGetThemeFilename(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetString(
-        iPartId, iStateId, iPropId, pszThemeFileName, cchMaxBuffChars));
+    ENSURE_HR(renderObj->ExternalGetString(iPartId, iStateId, iPropId,
+                                           pszThemeFileName, cchMaxBuffChars));
     return S_OK;
 }
 
@@ -816,8 +815,8 @@ THEMEEXAPI UxGetThemeFont(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetFont(
-        hdc, iPartId, iStateId, iPropId, TRUE, pFont));
+    ENSURE_HR(renderObj->ExternalGetFont(hdc, iPartId, iStateId, iPropId, TRUE,
+                                         pFont));
     return S_OK;
 }
 
@@ -835,8 +834,7 @@ THEMEEXAPI UxGetThemeInt(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetInt(
-        iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR(renderObj->ExternalGetInt(iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -854,8 +852,8 @@ THEMEEXAPI UxGetThemeIntList(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetIntList(
-        iPartId, iStateId, iPropId, pIntList));
+    ENSURE_HR(
+        renderObj->ExternalGetIntList(iPartId, iStateId, iPropId, pIntList));
     return S_OK;
 }
 
@@ -875,8 +873,8 @@ THEMEEXAPI UxGetThemeMargins(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetMargins(
-        hdc, iPartId, iStateId, iPropId, prc, pMargins));
+    ENSURE_HR(renderObj->ExternalGetMargins(hdc, iPartId, iStateId, iPropId,
+                                            prc, pMargins));
     return S_OK;
 }
 
@@ -895,8 +893,8 @@ THEMEEXAPI UxGetThemeMetric(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetMetric(
-        hdc, iPartId, iStateId, iPropId, piVal));
+    ENSURE_HR(
+        renderObj->ExternalGetMetric(hdc, iPartId, iStateId, iPropId, piVal));
     return S_OK;
 }
 
@@ -941,8 +939,7 @@ THEMEEXAPI UxGetThemePosition(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetPosition(
-        iPartId, iStateId, iPropId, pPoint));
+    ENSURE_HR(renderObj->ExternalGetPosition(iPartId, iStateId, iPropId, pPoint));
     return S_OK;
 }
 
@@ -979,8 +976,7 @@ THEMEEXAPI UxGetThemeRect(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetRect(
-        iPartId, iStateId, iPropId, pRect));
+    ENSURE_HR(renderObj->ExternalGetRect(iPartId, iStateId, iPropId, pRect));
     return S_OK;
 }
 
@@ -1000,8 +996,8 @@ THEMEEXAPI UxGetThemeStream(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetStream(
-        iPartId, iStateId, iPropId, ppvStream, pcbStream, hInst));
+    ENSURE_HR(renderObj->ExternalGetStream(iPartId, iStateId, iPropId,
+                                           ppvStream, pcbStream, hInst));
     return S_OK;
 }
 
@@ -1020,8 +1016,8 @@ THEMEEXAPI UxGetThemeString(
     CThemeApiHelper helper;
     CRenderObj* renderObj;
     ENSURE_HR(helper.OpenHandle(hThemeFile, hTheme, &renderObj));
-    ENSURE_HR_EX(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), renderObj->ExternalGetString(
-        iPartId, iStateId, iPropId, pszBuff, cchMaxBuffChars));
+    ENSURE_HR(renderObj->ExternalGetString(iPartId, iStateId, iPropId, pszBuff,
+                                           cchMaxBuffChars));
     return S_OK;
 }
 
