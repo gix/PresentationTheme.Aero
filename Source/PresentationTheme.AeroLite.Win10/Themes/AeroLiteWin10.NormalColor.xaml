@@ -7,6 +7,7 @@
   xmlns:aero10="clr-namespace:PresentationTheme.AeroLite.Win10">
 
   <aero10:TypeOfConverter x:Key="TypeOfConverter"/>
+  <aero10:EqualsConverter x:Key="EqualsConverter"/>
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -65,7 +66,7 @@
                   Padding="1"
                   SnapsToDevicePixels="True">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Background">
+              <VisualStateGroup x:Name="BackgroundStates">
                 <VisualState x:Name="BackgroundNormal"/>
                 <VisualState x:Name="BackgroundHot"/>
                 <VisualState x:Name="BackgroundFocused"/>
@@ -276,7 +277,6 @@
   <Color x:Key="Button.Border.Hot.Color">#FF3C7FB1</Color>
   <Color x:Key="Button.Border.Pressed.Color">#FF2C628B</Color>
   <Color x:Key="Button.Border.Disabled.Color">#FFADB2B5</Color>
-  <Color x:Key="Button.Border.Defaulted.Color">#FF3C7FB1</Color>
   <SolidColorBrush x:Key="Button.Foreground.Disabled" Color="#FF838383" po:Freeze="True"/>
 
   <Style TargetType="{x:Type aero10:ButtonChrome}">
@@ -294,7 +294,7 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   SnapsToDevicePixels="True">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="Hot">
                   <Storyboard>
@@ -324,7 +324,7 @@
                   <Storyboard>
                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Defaulted.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource Button.Border.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -369,8 +369,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ButtonBase}">
-          <aero10:ButtonChrome x:Name="chrome"
-                               Style="{StaticResource {x:Type aero10:ButtonChrome}}"
+          <aero10:ButtonChrome Style="{StaticResource {x:Type aero10:ButtonChrome}}"
                                Focusable="False"
                                Background="{TemplateBinding Background}"
                                BorderBrush="{TemplateBinding BorderBrush}"
@@ -380,9 +379,11 @@
                                RenderEnabled="{TemplateBinding IsEnabled}"
                                RenderPressed="{TemplateBinding IsPressed}"
                                RenderFocused="{TemplateBinding IsKeyboardFocused}"
-                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
-            <ContentPresenter/>
-          </aero10:ButtonChrome>
+                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}"
+                               Content="{TemplateBinding Content}"
+                               ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                               ContentTemplate="{TemplateBinding ContentTemplate}"
+                               ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -407,8 +408,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type Button}">
-          <aero10:ButtonChrome x:Name="chrome"
-                               Style="{StaticResource {x:Type aero10:ButtonChrome}}"
+          <aero10:ButtonChrome Style="{StaticResource {x:Type aero10:ButtonChrome}}"
                                Focusable="False"
                                Background="{TemplateBinding Background}"
                                BorderBrush="{TemplateBinding BorderBrush}"
@@ -419,9 +419,11 @@
                                RenderPressed="{TemplateBinding IsPressed}"
                                RenderFocused="{TemplateBinding IsKeyboardFocused}"
                                RenderDefaulted="{TemplateBinding IsDefaulted}"
-                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
-            <ContentPresenter/>
-          </aero10:ButtonChrome>
+                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}"
+                               Content="{TemplateBinding Content}"
+                               ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                               ContentTemplate="{TemplateBinding ContentTemplate}"
+                               ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -458,12 +460,6 @@
   <SolidColorBrush x:Key="CheckBox.Mark.Hot" Color="#FF26A0DA" po:Freeze="True"/>
   <SolidColorBrush x:Key="CheckBox.Mark.Pressed" Color="#FF2C628B" po:Freeze="True"/>
   <SolidColorBrush x:Key="CheckBox.Mark.Disabled" Color="#FFADB2B5" po:Freeze="True"/>
-  <Color x:Key="CheckBox.Border.Hot.Color">#FF26A0DA</Color>
-  <Color x:Key="CheckBox.Border.Pressed.Color">#FF2C628B</Color>
-  <Color x:Key="CheckBox.Border.Disabled.Color">#FFADB2B5</Color>
-  <Color x:Key="CheckBox.Background.Hot.Color">#FFFFFFFF</Color>
-  <Color x:Key="CheckBox.Background.Pressed.Color">#FFFFFFFF</Color>
-  <Color x:Key="CheckBox.Background.Disabled.Color">#FFFFFFFF</Color>
 
   <Style x:Key="OptionMarkEmptyFocusVisual">
     <Setter Property="Control.Template">
@@ -602,7 +598,9 @@
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border x:Name="Border"
-                    Width="12" Height="12" Margin="0,0,1,1"
+                    Width="12"
+                    Height="12"
+                    Margin="0,0,1,1"
                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -680,7 +678,6 @@
 
   <SolidColorBrush x:Key="ComboBox.Editable.Background.Normal" Color="#FFFFFFFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.Editable.Border.Normal" Color="#FF707070" po:Freeze="True"/>
-  <SolidColorBrush x:Key="ComboBox.Editable.Border.Disabled" Color="#FFADB2B5" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.DropDownButton.Background.Normal" Color="Transparent" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.DropDownButton.Border.Normal" Color="Transparent" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.ListBox.Background.Hot" Color="#FFFFFFFF" po:Freeze="True"/>
@@ -725,7 +722,7 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   SnapsToDevicePixels="True">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
@@ -802,7 +799,7 @@
               <Border Grid.Column="1"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Center"
-                      Margin="1,1,3,1"
+                      Margin="2,1,3,1"
                       Width="10"
                       Height="19">
                 <Path x:Name="Glyph"
@@ -872,7 +869,7 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   SnapsToDevicePixels="True">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="MouseOver">
                   <Storyboard>
@@ -940,10 +937,10 @@
               <Path x:Name="Glyph"
                     Fill="{StaticResource ComboBox.Glyph.Normal}"
                     Data="{StaticResource ComboBox.Glyph}"
-                    Stretch="Uniform"
-                    Margin="2,6,1,6"
                     Width="7"
                     Height="7"
+                    Margin="2,6,1,6"
+                    Stretch="Uniform"
                     RenderOptions.EdgeMode="Aliased"
                     UseLayoutRounding="False"/>
             </Border>
@@ -953,15 +950,15 @@
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="ComboBox.ReadOnly" TargetType="{x:Type ComboBox}">
+  <ControlTemplate x:Key="ComboBox.Template.ReadOnly" TargetType="{x:Type ComboBox}">
     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
-                AllowsTransparency="True"
-                Margin="1"
-                Placement="Bottom"
-                IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-        <aero10:SystemDropShadowChrome x:Name="shadow"
+             AllowsTransparency="True"
+             Margin="1"
+             Placement="Bottom"
+             IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+             PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+        <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                        MinWidth="{Binding ActualWidth, ElementName=TemplateRoot}">
@@ -970,13 +967,13 @@
                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                   BorderThickness="1">
             <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="canvas"
+              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
+                <Canvas x:Name="Canvas"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Height="0"
                         Width="0">
-                  <Rectangle x:Name="opaqueRect"
+                  <Rectangle x:Name="OpaqueRect"
                              Fill="{Binding Background, ElementName=DropDownBorder}"
                              Height="{Binding ActualHeight, ElementName=DropDownBorder}"
                              Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
@@ -989,7 +986,7 @@
           </Border>
         </aero10:SystemDropShadowChrome>
       </Popup>
-      <ToggleButton x:Name="toggleButton"
+      <ToggleButton x:Name="ToggleButton"
                     Style="{StaticResource ComboBox.ReadOnly.Button}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     Background="{TemplateBinding Background}"
@@ -1009,8 +1006,8 @@
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
       <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
-        <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5"/>
-        <Setter TargetName="shadow" Property="Color" Value="#71000000"/>
+        <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
+        <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
       <Trigger Property="HasItems" Value="False">
         <Setter TargetName="DropDownBorder" Property="Height" Value="95"/>
@@ -1023,20 +1020,20 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
       <Trigger SourceName="DropDownScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-        <Setter TargetName="opaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="opaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="ComboBox.Editable" TargetType="{x:Type ComboBox}">
+  <ControlTemplate x:Key="ComboBox.Template.Editable" TargetType="{x:Type ComboBox}">
     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
-                AllowsTransparency="True"
-                Placement="Bottom"
-                IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-        <aero10:SystemDropShadowChrome x:Name="shadow"
+             AllowsTransparency="True"
+             Placement="Bottom"
+             IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+             PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+        <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                        MinWidth="{Binding ActualWidth, ElementName=TemplateRoot}">
@@ -1045,13 +1042,13 @@
                   Background="{StaticResource ComboBox.ListBox.Background.Hot}"
                   BorderThickness="1">
             <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="canvas"
+              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
+                <Canvas x:Name="Canvas"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         Width="0"
                         Height="0">
-                  <Rectangle x:Name="opaqueRect"
+                  <Rectangle x:Name="OpaqueRect"
                              Fill="{Binding Background, ElementName=DropDownBorder}"
                              Height="{Binding ActualHeight, ElementName=DropDownBorder}"
                              Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
@@ -1089,7 +1086,7 @@
                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
         </Border>
-        <ToggleButton x:Name="toggleButton"
+        <ToggleButton x:Name="ToggleButton"
                       Grid.Column="1"
                       IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                       Style="{StaticResource ComboBox.Editable.DropDownButton}"
@@ -1105,8 +1102,8 @@
         <Setter Property="Foreground" Value="Black"/>
       </Trigger>
       <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
-        <Setter TargetName="shadow" Property="Margin" Value="0,0,5,5"/>
-        <Setter TargetName="shadow" Property="Color" Value="#71000000"/>
+        <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
+        <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
       <Trigger Property="HasItems" Value="False">
         <Setter TargetName="DropDownBorder" Property="Height" Value="95"/>
@@ -1119,8 +1116,8 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
       <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="False">
-        <Setter TargetName="opaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="opaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -1139,14 +1136,15 @@
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="Template" Value="{StaticResource ComboBox.ReadOnly}"/>
+    <Setter Property="Template" Value="{StaticResource ComboBox.Template.ReadOnly}"/>
     <Style.Triggers>
       <Trigger Property="IsEditable" Value="True">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Template" Value="{StaticResource ComboBox.Editable}"/>
+        <Setter Property="Template" Value="{StaticResource ComboBox.Template.Editable}"/>
         <Setter Property="Background" Value="{StaticResource ComboBox.Editable.Background.Normal}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Editable.Border.Normal}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Padding" Value="2"/>
       </Trigger>
     </Style.Triggers>
@@ -1235,7 +1233,7 @@
     <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1363,6 +1361,16 @@
   <SolidColorBrush x:Key="Header.Border.Hot" Color="#FF26A0DA" po:Freeze="True"/>
   <SolidColorBrush x:Key="Header.Border.Pressed" Color="#FF26A0DA" po:Freeze="True"/>
 
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Normal" Color="Transparent" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Hot" Color="#66E3F0FF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.Hot" Color="#AD98C4FB" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Selected" Color="#BFD2E6FF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.Selected" Color="#E677A3D9" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.HotSelected" Color="#BFBFDAFC" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.HotSelected" Color="#E66F98C9" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.SelectedNotFocus" Color="#FFF2F2F2" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.SelectedNotFocus" Color="#FFDADADA" po:Freeze="True"/>
+
   <Style x:Key="GridViewColumnHeaderGripper" TargetType="{x:Type Thumb}">
     <Setter Property="Canvas.Right" Value="-9"/>
     <Setter Property="Width" Value="18"/>
@@ -1473,6 +1481,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="0,2"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -1513,8 +1522,72 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
+      <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ListViewItem}">
+              <Border BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"
+                      Background="{TemplateBinding Background}"
+                      Padding="{TemplateBinding Padding}"
+                      SnapsToDevicePixels="True"
+                      HorizontalAlignment="Left">
+                <!-- Use a negative margin on the row presenter instead of a
+                     reduced padding on the border to be able to use the same
+                     padding values for explorer and non-explorer style. -->
+                <GridViewRowPresenter
+                  Margin="-1"
+                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="False"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="Selector.IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
     </Style.Triggers>
   </Style>
 
@@ -1602,59 +1675,6 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <!--<Style x:Key="{x:Type ListView}" TargetType="{x:Type ListView}">
-    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Padding" Value="1"/>
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ListView}">
-          <Border Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True">
-            <ScrollViewer Focusable="False">
-              <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-            </ScrollViewer>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <DataTrigger Binding="{Binding View, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
-                   Value="{x:Type GridView}">
-        <Setter Property="Template" Value="{StaticResource GridViewTemplate}"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource GridViewItemStyle}"/>
-      </DataTrigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Background" Value="{StaticResource ListBox.Background.Disabled}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Disabled}"/>
-      </Trigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsGrouping" Value="True"/>
-          <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-      </MultiTrigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static GridView.GridViewItemContainerStyleKey}" TargetType="{x:Type ListViewItem}"
-         BasedOn="{StaticResource GridViewItemStyle}"/>
-  <Style x:Key="{x:Static GridView.GridViewStyleKey}" TargetType="{x:Type ListView}"
-         BasedOn="{StaticResource GridViewStyle}"/>
-  -->
-
   <Style x:Key="{x:Static GridView.GridViewItemContainerStyleKey}" TargetType="{x:Type ListViewItem}"
          BasedOn="{StaticResource GridViewItemStyle}"/>
 
@@ -1662,7 +1682,7 @@
     <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1686,96 +1706,6 @@
     </Style.Triggers>
   </Style>
 
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Normal">Transparent</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Hot">#66E3F0FF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.Hot">#AD98C4FB</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Selected">#BFD2E6FF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.Selected">#E677A3D9</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.HotSelected">#BFBFDAFC</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.HotSelected">#E66F98C9</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.SelectedNotFocus">#FFF2F2F2</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.SelectedNotFocus">#FFDADADA</SolidColorBrush>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.ListViewItemStyleKey}" TargetType="{x:Type ListViewItem}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource ListBoxItem.FocusVisual}"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Margin" Value="0"/>
-    <Setter Property="Padding" Value="0,2"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ListViewItem}">
-          <Border BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Background="{TemplateBinding Background}"
-                  Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True"
-                  HorizontalAlignment="Left">
-            <GridViewRowPresenter
-              Margin="-1"
-              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="True"/>
-          <Condition Property="IsSelected" Value="True"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="True"/>
-          <Condition Property="IsSelected" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="False"/>
-          <Condition Property="IsSelected" Value="True"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsSelected" Value="True"/>
-          <Condition Property="Selector.IsSelectionActive" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
-      </MultiTrigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Foreground"
-                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.ListViewStyleKey}" TargetType="{x:Type ListView}"
-         BasedOn="{StaticResource {x:Static GridView.GridViewStyleKey}}">
-    <Style.Resources>
-      <Style TargetType="{x:Type ListViewItem}"
-             BasedOn="{StaticResource {x:Static aero10:ExplorerStyles.ListViewItemStyleKey}}"/>
-    </Style.Resources>
-    <Style.Triggers>
-      <!--<DataTrigger Binding="{Binding View, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
-                   Value="{x:Type GridView}">
-        <Setter Property="Template" Value="{StaticResource GridViewTemplate}"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource {x:Static aero10:ExplorerStyles.ListViewItemStyleKey}}"/>
-      </DataTrigger>-->
-    </Style.Triggers>
-  </Style>
 
   <!-- Menu ================================================================ -->
 
@@ -1812,10 +1742,13 @@
   <SolidColorBrush x:Key="Menu.PopupCheck.Normal.Foreground" Color="#FF0C12A1" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheck.Disabled.Foreground" Color="#FF848589" po:Freeze="True"/>
 
+  <SolidColorBrush x:Key="Menu.PopupSubmenu.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupSubmenu.Disabled.Foreground" Color="#FF6D6D6D" po:Freeze="True"/>
+
   <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
   <Geometry x:Key="Menu.DownArrowGlyph">M 0,0 3.5,4 7,0 z</Geometry>
   <Geometry x:Key="Menu.UpArrowGlyph">M 0,4 3.5,0 7,4 z</Geometry>
-  <Geometry x:Key="Menu.RightArrowGlyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
+  <Geometry x:Key="Menu.PopupSubmenu.Glyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
   <Geometry x:Key="Menu.CheckmarkGlyph">F1 M 3.5,7 7.5,13 12.5,3 12,1.5 7.5,9 5.5,7 z</Geometry>
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type FrameworkElement}, SubmenuContent}"
@@ -2215,7 +2148,7 @@
                 VerticalAlignment="Top"
                 Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         </Border>
-        <Border x:Name="menuHeaderContainer"
+        <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
                 Margin="0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
@@ -2226,7 +2159,7 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="menuGestureContainer" Grid.Column="4" Margin="0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
@@ -2236,8 +2169,8 @@
     <ControlTemplate.Triggers>
       <DataTrigger Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
                    Value="{x:Type system:String}">
-        <Setter TargetName="menuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
-        <Setter TargetName="menuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
       </DataTrigger>
       <Trigger Property="Icon" Value="{x:Null}">
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
@@ -2318,7 +2251,7 @@
                 Width="16"
                 Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         </Border>
-        <Border x:Name="menuHeaderContainer"
+        <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
                 Margin="0,-1,0,0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
@@ -2329,18 +2262,18 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="menuGestureContainer" Grid.Column="4" Margin="0,-1,0,0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0,-1,0,0">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
         </Border>
         <Path x:Name="RightArrow"
               Grid.Column="5"
-              Data="{StaticResource Menu.RightArrowGlyph}"
+              Data="{StaticResource Menu.PopupSubmenu.Glyph}"
               Margin="5,0,0,1"
               VerticalAlignment="Center"
               HorizontalAlignment="Left"
-              Fill="{StaticResource Menu.PopupItem.Normal.Foreground}"
+              Fill="{StaticResource Menu.PopupSubmenu.Normal.Foreground}"
               UseLayoutRounding="False"/>
         <Popup x:Name="PART_Popup"
                AllowsTransparency="True"
@@ -2387,8 +2320,8 @@
     <ControlTemplate.Triggers>
       <DataTrigger Binding="{Binding Header, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
                    Value="{x:Type system:String}">
-        <Setter TargetName="menuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
-        <Setter TargetName="menuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
+        <Setter TargetName="MenuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
       </DataTrigger>
       <Trigger Property="IsSuspendingPopupAnimation" Value="True">
         <Setter TargetName="PART_Popup" Property="PopupAnimation" Value="None"/>
@@ -2412,7 +2345,7 @@
         <Setter TargetName="Glyph" Property="Fill"
                 Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
         <Setter TargetName="RightArrow" Property="Fill"
-                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
+                Value="{StaticResource Menu.PopupSubmenu.Disabled.Foreground}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
@@ -3259,18 +3192,32 @@
     F1 M2.88,6.12 4.119,4.881 8.119,8.881 7.5,9.5 6.881,8.881 10.881,4.881 12.119,6.119 7.5,10.737 6.881,10.119 2.881,6.119 z
   </Geometry>
 
-  <Style x:Key="ExplorerTreeViewExpanderStyle" TargetType="{x:Type ToggleButton}">
+  <Style x:Key="Explorer.TreeViewItem.ExpanderStyle" TargetType="{x:Type ToggleButton}">
     <Setter Property="Focusable" Value="False"/>
-    <Setter Property="Width" Value="19"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
-          <Border Background="Transparent">
+          <Border x:Name="Bd" Background="Transparent">
             <Path x:Name="Glyph" Data="{StaticResource ExplorerTreeViewGlyphPlus}"
-                  Stretch="None" Fill="#59000000" Margin="0,1,0,0"/>
+                  Width="16" Height="16" Stretch="None" Fill="#59000000" Margin="1,0,0,0"/>
           </Border>
           <ControlTemplate.Triggers>
+            <!-- Account for the weird rounding behavior of SysTreeView, at
+                 least for the default height. -->
+            <DataTrigger Value="True">
+              <DataTrigger.Binding>
+                <MultiBinding Converter="{StaticResource EqualsConverter}">
+                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"/>
+                  <Binding>
+                    <Binding.Source>
+                      <system:Double>18</system:Double>
+                    </Binding.Source>
+                  </Binding>
+                </MultiBinding>
+              </DataTrigger.Binding>
+              <Setter TargetName="Glyph" Property="Margin" Value="1,2,0,0"/>
+            </DataTrigger>
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExplorerTreeViewGlyphMinus}"/>
               <Setter TargetName="Glyph" Property="Fill" Value="#80000000"/>
@@ -3291,7 +3238,7 @@
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
+  <ControlTemplate x:Key="Explorer.TreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" MinWidth="19"/>
@@ -3302,7 +3249,7 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
       <ToggleButton x:Name="Expander"
-                    Style="{StaticResource ExplorerTreeViewExpanderStyle}"
+                    Style="{StaticResource Explorer.TreeViewItem.ExpanderStyle}"
                     Margin="3,0,0,0"
                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                     ClickMode="Press"/>
@@ -3311,12 +3258,14 @@
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
-              Padding="{TemplateBinding Padding}"
               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
               SnapsToDevicePixels="True">
-        <ContentPresenter x:Name="PART_Header"
+        <Border x:Name="InnerBd"
+                Padding="{TemplateBinding Padding}">
+          <ContentPresenter x:Name="PART_Header"
                           ContentSource="Header"
                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
       </Border>
       <ItemsPresenter x:Name="ItemsHost"
                       Margin="19,0,0,0"
@@ -3324,6 +3273,19 @@
                       Grid.ColumnSpan="2"/>
     </Grid>
     <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualsConverter}">
+            <Binding Path="ActualHeight" ElementName="InnerBd"/>
+            <Binding>
+              <Binding.Source>
+                <system:Double>17</system:Double>
+              </Binding.Source>
+            </Binding>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="InnerBd" Property="Margin" Value="0,-1,0,0"/>
+      </DataTrigger>
       <Trigger Property="IsExpanded" Value="False">
         <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
       </Trigger>
@@ -3335,32 +3297,32 @@
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground"
@@ -3369,9 +3331,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <aero10:InvertThicknessConverter x:Key="InvertMarginConverter"/>
-
-  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
+  <ControlTemplate x:Key="Explorer.TreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -3382,7 +3342,7 @@
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
               SnapsToDevicePixels="True">
-        <Grid Margin="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource InvertMarginConverter}}">
+        <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1e300">
               <ColumnDefinition.MaxWidth>
@@ -3398,20 +3358,35 @@
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
           <ToggleButton x:Name="Expander" Grid.Column="1"
-                        Style="{StaticResource ExplorerTreeViewExpanderStyle}"
-                        Margin="3,0,0,0"
+                        Style="{StaticResource Explorer.TreeViewItem.ExpanderStyle}"
+                        Margin="2,-1,1,-1"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
-                            ContentSource="Header"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          <Border x:Name="InnerBd" Grid.Column="2"
+                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+            <ContentPresenter x:Name="PART_Header"
+                              ContentSource="Header"
+                              Margin="{TemplateBinding Padding}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
         </Grid>
       </Border>
       <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
     </Grid>
     <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualsConverter}">
+            <Binding Path="ActualHeight" ElementName="InnerBd"/>
+            <Binding>
+              <Binding.Source>
+                <system:Double>17</system:Double>
+              </Binding.Source>
+            </Binding>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="InnerBd" Property="Margin" Value="0,-1,0,0"/>
+      </DataTrigger>
       <Trigger Property="IsExpanded" Value="False">
         <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
       </Trigger>
@@ -3423,32 +3398,32 @@
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground"
@@ -3457,23 +3432,24 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="ExplorerTreeView.Template" TargetType="{x:Type TreeView}">
+  <ControlTemplate x:Key="Explorer.TreeView.Template" TargetType="{x:Type TreeView}">
     <Border x:Name="Border"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
+            Padding="{TemplateBinding Padding}"
             SnapsToDevicePixels="True">
       <Grid>
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
           <RowDefinition/>
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="scrollViewer" Grid.Row="1"
+        <ScrollViewer x:Name="ScrollViewer"
+                      Grid.Row="1"
                       Background="{TemplateBinding Background}"
                       Focusable="False"
                       CanContentScroll="False"
                       HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                       VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                      Padding="{TemplateBinding Padding}"
                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
           <ItemsPresenter/>
         </ScrollViewer>
@@ -3485,7 +3461,7 @@
                 Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
       </Trigger>
       <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter TargetName="scrollViewer" Property="CanContentScroll"
+        <Setter TargetName="ScrollViewer" Property="CanContentScroll"
                 Value="True"/>
       </Trigger>
     </ControlTemplate.Triggers>
@@ -3511,7 +3487,7 @@
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Padding="{TemplateBinding Padding}"
                   SnapsToDevicePixels="True">
-            <ScrollViewer x:Name="scrollViewer"
+            <ScrollViewer x:Name="ScrollViewer"
                           Background="{TemplateBinding Background}"
                           CanContentScroll="False"
                           HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
@@ -3526,7 +3502,7 @@
                       Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
             </Trigger>
             <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-              <Setter TargetName="scrollViewer" Property="CanContentScroll"
+              <Setter TargetName="ScrollViewer" Property="CanContentScroll"
                       Value="True"/>
             </Trigger>
           </ControlTemplate.Triggers>
@@ -3544,7 +3520,7 @@
         </Setter>
       </Trigger>
       <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeView.Template}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -3557,7 +3533,7 @@
     <Setter Property="VerticalContentAlignment"
             Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
     <Setter Property="Padding" Value="2,1,2,2"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Template" Value="{StaticResource TreeViewItem.Template.Default}"/>
     <Style.Triggers>
       <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
@@ -3576,75 +3552,17 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <!--<Setter Property="Padding" Value="3,0,3,1"/>-->
-        <Setter Property="Padding" Value="1,0,1,1"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
+        <Setter Property="Padding" Value="3,1,3,1"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeViewItem.Template.Default}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="aero:TreeViewService.FullRowSelect" Value="True"/>
           <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter Property="Padding" Value="2,1,2,2"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeViewItem.Template.FullRowSelect}"/>
       </MultiTrigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}" TargetType="{x:Type TreeViewItem}">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="HorizontalContentAlignment"
-            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="VerticalContentAlignment"
-            Value="{Binding VerticalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="Padding" Value="3,0,3,1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-      </Trigger>
-      <Trigger Property="aero:TreeViewService.FullRowSelect" Value="True">
-        <Setter Property="Padding" Value="1,0,0,1"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewStyleKey}" TargetType="{x:Type TreeView}">
-    <Style.Resources>
-      <Style x:Key="{x:Type TreeViewItem}" TargetType="{x:Type TreeViewItem}"
-             BasedOn="{StaticResource {x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}}"/>
-    </Style.Resources>
-    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Padding" Value="1"/>
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
-    <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-      </Trigger>
     </Style.Triggers>
   </Style>
 
@@ -3686,13 +3604,13 @@
               <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
               <RowDefinition x:Name="RowDefinition1" Height="*"/>
             </Grid.RowDefinitions>
-            <TabPanel x:Name="headerPanel"
+            <TabPanel x:Name="HeaderPanel"
                       Background="Transparent"
                       IsItemsHost="True"
                       Margin="2,2,2,0"
                       KeyboardNavigation.TabIndex="1"
                       Panel.ZIndex="1"/>
-            <Border x:Name="contentPanel"
+            <Border x:Name="ContentPanel"
                     Grid.Row="1"
                     KeyboardNavigation.DirectionalNavigation="Contained"
                     KeyboardNavigation.TabNavigation="Local"
@@ -3708,33 +3626,33 @@
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="TabStripPlacement" Value="Bottom">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="1"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="1"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="Auto"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="2,0,2,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="2,0,2,2"/>
             </Trigger>
             <Trigger Property="TabStripPlacement" Value="Left">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Grid.Column" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Column" Value="1"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Column" Value="1"/>
               <Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto"/>
               <Setter TargetName="ColumnDefinition1" Property="Width" Value="*"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="2,2,0,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="2,2,0,2"/>
             </Trigger>
             <Trigger Property="TabStripPlacement" Value="Right">
-              <Setter TargetName="headerPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="contentPanel" Property="Grid.Row" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Grid.Column" Value="1"/>
-              <Setter TargetName="contentPanel" Property="Grid.Column" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0"/>
+              <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="1"/>
+              <Setter TargetName="ContentPanel" Property="Grid.Column" Value="0"/>
               <Setter TargetName="ColumnDefinition0" Property="Width" Value="*"/>
               <Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto"/>
               <Setter TargetName="RowDefinition0" Property="Height" Value="*"/>
               <Setter TargetName="RowDefinition1" Property="Height" Value="0"/>
-              <Setter TargetName="headerPanel" Property="Margin" Value="0,2,2,2"/>
+              <Setter TargetName="HeaderPanel" Property="Margin" Value="0,2,2,2"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
@@ -3763,7 +3681,7 @@
 
   <Style TargetType="{x:Type TabItem}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource TabItem.FocusVisual}"/>
-    <Setter Property="Foreground" Value="Black"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource TabItem.Border.Normal}"/>
     <Setter Property="Margin" Value="0"/>
@@ -3802,7 +3720,7 @@
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
               <Setter Property="Panel.ZIndex" Value="1"/>
-              <Setter Property="Margin" Value="-2,-2,-2,-1"/>
+              <Setter Property="Margin" Value="-2"/>
               <Setter Property="Padding" Value="5,0,5,4"/>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
@@ -3989,7 +3907,13 @@
   <SolidColorBrush x:Key="ProgressBar.Border" Color="#FF9E9E9E" po:Freeze="True"/>
   <SolidColorBrush x:Key="ProgressBar.Indeterminate.Background" Color="#F4D9D9D9" po:Freeze="True"/>
   <SolidColorBrush x:Key="ProgressBar.Indeterminate.Border" Color="#FFA1A1A1" po:Freeze="True"/>
-  <aero10:EqualsConverter x:Key="EqualsConverter"/>
+
+  <BitmapImage x:Key="ProgressBar.MoveOverlay"
+               BaseUri="pack://application:,,,/"
+               UriSource="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.MoveOverlay.png"/>
+  <BitmapImage x:Key="ProgressBar.PulseOverlay"
+               BaseUri="pack://application:,,,/"
+               UriSource="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.PulseOverlay.png"/>
 
   <Style TargetType="{x:Type aero10:ProgressBarChrome}">
     <Setter Property="Foreground" Value="{x:Null}"/>
@@ -4021,11 +3945,11 @@
                       VerticalAlignment="Stretch"
                       Visibility="Collapsed">
                 <Image x:Name="DeterminateOverlay"
-                       Source="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.MoveOverlay.png"
+                       Source="{StaticResource ProgressBar.MoveOverlay}"
                        Stretch="Fill"/>
                 <Rectangle x:Name="IndeterminateOverlay"
-                       Fill="{TemplateBinding Foreground}"
-                       Visibility="Collapsed"/>
+                           Fill="{TemplateBinding Foreground}"
+                           Visibility="Collapsed"/>
               </Grid>
 
               <Grid x:Name="PART_PulseOverlay"
@@ -4041,19 +3965,19 @@
                 </Grid.ColumnDefinitions>
                 <Image Stretch="Fill">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="0,0,21,18"/>
                   </Image.Source>
                 </Image>
                 <Image Stretch="Fill" Grid.Column="1">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="21,0,1,18"/>
                   </Image.Source>
                 </Image>
                 <Image Stretch="Fill" Grid.Column="2">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.AeroLite.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="22,0,20,18"/>
                   </Image.Source>
                 </Image>
