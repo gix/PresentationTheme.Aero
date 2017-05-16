@@ -7,6 +7,7 @@
   xmlns:aero10="clr-namespace:PresentationTheme.Aero.Win10">
 
   <aero10:TypeOfConverter x:Key="TypeOfConverter"/>
+  <aero10:EqualsConverter x:Key="EqualsConverter"/>
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -302,7 +303,7 @@
       <Setter.Value>
         <ControlTemplate>
           <Border Margin="{Binding AdornedElement.BorderThickness, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Adorner}}}">
-            <Rectangle Margin="1"
+            <Rectangle Margin="2"
                        SnapsToDevicePixels="True"
                        Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
                        StrokeThickness="1"
@@ -341,7 +342,7 @@
                   SnapsToDevicePixels="True"
                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="Normal" To="Hot" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
@@ -460,9 +461,11 @@
                                RenderEnabled="{TemplateBinding IsEnabled}"
                                RenderPressed="{TemplateBinding IsPressed}"
                                RenderFocused="{TemplateBinding IsKeyboardFocused}"
-                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
-            <ContentPresenter/>
-          </aero10:ButtonChrome>
+                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}"
+                               Content="{TemplateBinding Content}"
+                               ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                               ContentTemplate="{TemplateBinding ContentTemplate}"
+                               ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -498,9 +501,11 @@
                                RenderPressed="{TemplateBinding IsPressed}"
                                RenderFocused="{TemplateBinding IsKeyboardFocused}"
                                RenderDefaulted="{TemplateBinding IsDefaulted}"
-                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}">
-            <ContentPresenter/>
-          </aero10:ButtonChrome>
+                               RenderHot="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}"
+                               Content="{TemplateBinding Content}"
+                               ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                               ContentTemplate="{TemplateBinding ContentTemplate}"
+                               ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -533,6 +538,11 @@
   <Color x:Key="CheckBox.Background.Hot.Color">#FFFFFFFF</Color>
   <Color x:Key="CheckBox.Background.Pressed.Color">#FFCCE4F7</Color>
   <Color x:Key="CheckBox.Background.Disabled.Color">#FFFFFFFF</Color>
+  <SolidColorBrush x:Key="CheckBox.Mark.Normal" Color="#FF202020" po:Freeze="True"/>
+  <Color x:Key="CheckBox.Mark.Hot.Color">#FF0078D7</Color>
+  <Color x:Key="CheckBox.Mark.Pressed.Color">#FF005499</Color>
+  <Color x:Key="CheckBox.OptionMark.Disabled.Color">#FFB7B7B7</Color>
+  <Color x:Key="CheckBox.IndeterminateMark.Disabled.Color">#FFCCCCCC</Color>
 
   <Style x:Key="OptionMarkEmptyFocusVisual">
     <Setter Property="Control.Template">
@@ -566,6 +576,14 @@
     </Setter>
   </Style>
 
+  <Geometry x:Key="Checkbox.CheckMark">
+    F1 M 1.3875,4.6875 3.8875,7.1875 9.6375,1.4375 10.5125,2.3125 3.7625,9.0625 0.3875,5.6875 z
+  </Geometry>
+
+  <Geometry x:Key="Checkbox.IndeterminateMark">
+    F1 M 0,0 7,0 7,7 0,7 z
+  </Geometry>
+
   <Style TargetType="{x:Type CheckBox}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkEmptyFocusVisual}"/>
     <Setter Property="Background" Value="{StaticResource CheckBox.Background.Normal}"/>
@@ -581,7 +599,7 @@
           <Grid SnapsToDevicePixels="True" Background="Transparent"
                 VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:0:0.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:0:0.100"/>
@@ -607,6 +625,14 @@
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="OptionMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Mark.Hot.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Mark.Hot.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
                 <VisualState x:Name="Pressed">
@@ -619,6 +645,14 @@
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="OptionMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Mark.Pressed.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Mark.Pressed.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
                 <VisualState x:Name="Disabled">
@@ -630,6 +664,14 @@
                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
                                                   Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
                       <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.Background.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="OptionMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.OptionMark.Disabled.Color}"/>
+                    </ColorAnimationUsingKeyFrames>
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="IndeterminateMark"
+                                                  Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource CheckBox.IndeterminateMark.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -647,10 +689,10 @@
               <Grid Width="11" Height="11">
                 <Path x:Name="OptionMark" Stretch="None" Opacity="0"
                       Data="F1 M 1.3875,4.6875 3.8875,7.1875 9.6375,1.4375 10.5125,2.3125 3.7625,9.0625 0.3875,5.6875 z"
-                      Fill="{Binding BorderBrush, ElementName=Border}"/>
+                      Fill="{StaticResource CheckBox.Mark.Normal}"/>
                 <Path x:Name="IndeterminateMark" Stretch="None" Margin="2" Opacity="0"
                       Data="F1 M 0,0 7,0 7,7 0,7 z"
-                      Fill="{Binding BorderBrush, ElementName=Border}"/>
+                      Fill="{StaticResource CheckBox.Mark.Normal}"/>
               </Grid>
             </Border>
             <ContentPresenter x:Name="Content"
@@ -707,7 +749,7 @@
           <Grid SnapsToDevicePixels="True" Background="Transparent"
                 VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:0:0.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:0:0.100"/>
@@ -766,7 +808,8 @@
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border x:Name="Border"
-                    Width="13" Height="13"
+                    Width="13"
+                    Height="13"
                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                     BorderThickness="{TemplateBinding BorderThickness}"
@@ -822,9 +865,9 @@
   <Color x:Key="ComboBox.Button.Border.Pressed.Color">#FF005499</Color>
   <Color x:Key="ComboBox.Button.Border.Disabled.Color">#FFBFBFBF</Color>
 
-  <SolidColorBrush x:Key="ComboBox.Glyph.Normal" Color="#CC333333" po:Freeze="True"/>
-  <Color x:Key="ComboBox.Glyph.Hot.Color">#CC333333</Color>
-  <Color x:Key="ComboBox.Glyph.Pressed.Color">#CC333333</Color>
+  <SolidColorBrush x:Key="ComboBox.Glyph.Normal" Color="#CC292929" po:Freeze="True"/>
+  <Color x:Key="ComboBox.Glyph.Hot.Color">#CC000000</Color>
+  <Color x:Key="ComboBox.Glyph.Pressed.Color">#112D2D2D</Color>
   <Color x:Key="ComboBox.Glyph.Disabled.Color">#CCA3A3A3</Color>
 
   <SolidColorBrush x:Key="ComboBox.Editable.Background.Normal" Color="#FFFFFFFF" po:Freeze="True"/>
@@ -876,7 +919,7 @@
                   SnapsToDevicePixels="True"
                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
@@ -1044,7 +1087,7 @@
                   SnapsToDevicePixels="True"
                   VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualStateGroup.Transitions>
                   <VisualTransition From="Normal" To="MouseOver" GeneratedDuration="0:00:00.225"/>
                   <VisualTransition From="Normal" To="Pressed" GeneratedDuration="0:00:00.15"/>
@@ -1125,33 +1168,31 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            <Border x:Name="DefaultedBorder"
-                    BorderThickness="1"
-                    BorderBrush="Transparent"
-                    SnapsToDevicePixels="True">
-              <Path x:Name="Glyph"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Fill="{StaticResource ComboBox.Glyph.Normal}"
-                    Data="{StaticResource ComboBox.Glyph}"
-                    Width="10"
-                    Height="19"
-                    Stretch="None"/>
-            </Border>
+
+            <Path x:Name="Glyph"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Fill="{StaticResource ComboBox.Glyph.Normal}"
+                  Data="{StaticResource ComboBox.Glyph}"
+                  Width="10"
+                  Height="19"
+                  Margin="2,1,3,1"
+                  Stretch="None"/>
+
           </Border>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="ComboBox.ReadOnly" TargetType="{x:Type ComboBox}">
+  <ControlTemplate x:Key="ComboBox.Template.ReadOnly" TargetType="{x:Type ComboBox}">
     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
-                AllowsTransparency="True"
-                Margin="1"
-                Placement="Bottom"
-                IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+             AllowsTransparency="True"
+             Margin="1"
+             Placement="Bottom"
+             IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+             PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
         <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
@@ -1220,13 +1261,13 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="ComboBox.Editable" TargetType="{x:Type ComboBox}">
+  <ControlTemplate x:Key="ComboBox.Template.Editable" TargetType="{x:Type ComboBox}">
     <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
       <Popup x:Name="PART_Popup"
-                AllowsTransparency="True"
-                Placement="Bottom"
-                IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+             AllowsTransparency="True"
+             Placement="Bottom"
+             IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+             PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
         <aero10:SystemDropShadowChrome x:Name="Shadow"
                                        Color="Transparent"
                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
@@ -1330,14 +1371,15 @@
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="Template" Value="{StaticResource ComboBox.ReadOnly}"/>
+    <Setter Property="Template" Value="{StaticResource ComboBox.Template.ReadOnly}"/>
     <Style.Triggers>
       <Trigger Property="IsEditable" Value="True">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Template" Value="{StaticResource ComboBox.Editable}"/>
+        <Setter Property="Template" Value="{StaticResource ComboBox.Template.Editable}"/>
         <Setter Property="Background" Value="{StaticResource ComboBox.Editable.Background.Normal}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Editable.Border.Normal}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
         <Setter Property="Padding" Value="2"/>
       </Trigger>
     </Style.Triggers>
@@ -1426,7 +1468,7 @@
     <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1546,6 +1588,16 @@
 
   <!-- ListView ============================================================ -->
 
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Normal" Color="Transparent" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Hot" Color="#1A0089FF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.Hot" Color="#1A0089FF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Selected" Color="#32008AFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.Selected" Color="#32008AFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.HotSelected" Color="#33008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.HotSelected" Color="#66008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.SelectedNotFocus" Color="#26000000" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Explorer.ListView.Item.Border.SelectedNotFocus" Color="#26000000" po:Freeze="True"/>
+
   <Style x:Key="GridViewColumnHeaderGripper" TargetType="{x:Type Thumb}">
     <Setter Property="Canvas.Right" Value="-9"/>
     <Setter Property="Width" Value="18"/>
@@ -1642,13 +1694,44 @@
     </Style.Triggers>
   </Style>
 
+  <Style x:Key="GridViewItem.FocusVisual">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle SnapsToDevicePixels="True"
+                     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     StrokeThickness="1"
+                     StrokeDashArray="1 1"
+                     StrokeDashOffset="1.5"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="Explorer.GridViewItem.FocusVisual">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle Margin="1"
+                     SnapsToDevicePixels="True"
+                     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     StrokeThickness="1"
+                     StrokeDashArray="1 1"
+                     StrokeDashOffset="1.5"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <Style x:Key="GridViewItemStyle" TargetType="{x:Type ListViewItem}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource ListBoxItem.FocusVisual}"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource GridViewItem.FocusVisual}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="0,2"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template">
       <Setter.Value>
@@ -1657,8 +1740,7 @@
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Background="{TemplateBinding Background}"
                   Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True"
-                  HorizontalAlignment="Left">
+                  SnapsToDevicePixels="True">
             <GridViewRowPresenter
               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -1687,8 +1769,73 @@
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
+      <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Explorer.GridViewItem.FocusVisual}"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ListViewItem}">
+              <Border BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"
+                      Background="{TemplateBinding Background}"
+                      Padding="{TemplateBinding Padding}"
+                      SnapsToDevicePixels="True"
+                      HorizontalAlignment="Left">
+                <!-- Use a negative margin on the row presenter instead of a
+                     reduced padding on the border to be able to use the same
+                     padding values for explorer and non-explorer style. -->
+                <GridViewRowPresenter
+                  Margin="-1"
+                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsMouseOver" Value="False"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="Selector.IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+      </MultiTrigger>
     </Style.Triggers>
   </Style>
 
@@ -1776,59 +1923,6 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <!--<Style x:Key="{x:Type ListView}" TargetType="{x:Type ListView}">
-    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Padding" Value="1"/>
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ListView}">
-          <Border Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True">
-            <ScrollViewer Focusable="False">
-              <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-            </ScrollViewer>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <DataTrigger Binding="{Binding View, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
-                   Value="{x:Type GridView}">
-        <Setter Property="Template" Value="{StaticResource GridViewTemplate}"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource GridViewItemStyle}"/>
-      </DataTrigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Background" Value="{StaticResource ListBox.Background.Disabled}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Disabled}"/>
-      </Trigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsGrouping" Value="True"/>
-          <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-      </MultiTrigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static GridView.GridViewItemContainerStyleKey}" TargetType="{x:Type ListViewItem}"
-         BasedOn="{StaticResource GridViewItemStyle}"/>
-  <Style x:Key="{x:Static GridView.GridViewStyleKey}" TargetType="{x:Type ListView}"
-         BasedOn="{StaticResource GridViewStyle}"/>
-  -->
-
   <Style x:Key="{x:Static GridView.GridViewItemContainerStyleKey}" TargetType="{x:Type ListViewItem}"
          BasedOn="{StaticResource GridViewItemStyle}"/>
 
@@ -1836,7 +1930,7 @@
     <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1860,96 +1954,6 @@
     </Style.Triggers>
   </Style>
 
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Normal">Transparent</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Hot">#1A0089FF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.Hot">#1A0089FF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.Selected">#32008AFF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.Selected">#32008AFF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.HotSelected">#33008CFF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.HotSelected">#66008CFF</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Background.SelectedNotFocus">#26000000</SolidColorBrush>
-  <SolidColorBrush x:Key="ExplorerListViewItem.Border.SelectedNotFocus">#26000000</SolidColorBrush>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.ListViewItemStyleKey}" TargetType="{x:Type ListViewItem}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource ListBoxItem.FocusVisual}"/>
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Margin" Value="0"/>
-    <Setter Property="Padding" Value="0,2"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ListViewItem}">
-          <Border BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}"
-                  Background="{TemplateBinding Background}"
-                  Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True"
-                  HorizontalAlignment="Left">
-            <GridViewRowPresenter
-              Margin="-1"
-              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-          </Border>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-    <Style.Triggers>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="True"/>
-          <Condition Property="IsSelected" Value="True"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="True"/>
-          <Condition Property="IsSelected" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsMouseOver" Value="False"/>
-          <Condition Property="IsSelected" Value="True"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
-      </MultiTrigger>
-      <MultiTrigger>
-        <MultiTrigger.Conditions>
-          <Condition Property="IsSelected" Value="True"/>
-          <Condition Property="Selector.IsSelectionActive" Value="False"/>
-        </MultiTrigger.Conditions>
-        <Setter Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
-      </MultiTrigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="Foreground"
-                Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.ListViewStyleKey}" TargetType="{x:Type ListView}"
-         BasedOn="{StaticResource {x:Static GridView.GridViewStyleKey}}">
-    <Style.Resources>
-      <Style TargetType="{x:Type ListViewItem}"
-             BasedOn="{StaticResource {x:Static aero10:ExplorerStyles.ListViewItemStyleKey}}"/>
-    </Style.Resources>
-    <Style.Triggers>
-      <!--<DataTrigger Binding="{Binding View, RelativeSource={RelativeSource Self}, Converter={StaticResource TypeOfConverter}}"
-                   Value="{x:Type GridView}">
-        <Setter Property="Template" Value="{StaticResource GridViewTemplate}"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource {x:Static aero10:ExplorerStyles.ListViewItemStyleKey}}"/>
-      </DataTrigger>-->
-    </Style.Triggers>
-  </Style>
 
   <!-- Menu ================================================================ -->
 
@@ -1986,10 +1990,13 @@
   <SolidColorBrush x:Key="Menu.PopupCheck.Normal.Foreground" Color="#FF333333" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheck.Disabled.Foreground" Color="#FFA3A3A3" po:Freeze="True"/>
 
+  <SolidColorBrush x:Key="Menu.PopupSubmenu.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupSubmenu.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
+
   <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
   <Geometry x:Key="Menu.DownArrowGlyph">M 0,0 3.5,4 7,0 z</Geometry>
   <Geometry x:Key="Menu.UpArrowGlyph">M 0,4 3.5,0 7,4 z</Geometry>
-  <Geometry x:Key="Menu.RightArrowGlyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
+  <Geometry x:Key="Menu.PopupSubmenu.Glyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
   <Geometry x:Key="Menu.CheckmarkGlyph">F1 M 4.1875,6.6875 6.6875,9.1875 12.4375,3.4375 13.3125,4.3125 6.5625,11.0625 3.1875,7.6875 z</Geometry>
 
   <ControlTemplate x:Key="{ComponentResourceKey {x:Type FrameworkElement}, SubmenuContent}"
@@ -2510,11 +2517,11 @@
         </Border>
         <Path x:Name="RightArrow"
               Grid.Column="5"
-              Data="{StaticResource Menu.RightArrowGlyph}"
+              Data="{StaticResource Menu.PopupSubmenu.Glyph}"
               Margin="5,0,0,1"
               VerticalAlignment="Center"
               HorizontalAlignment="Left"
-              Fill="{StaticResource Menu.PopupItem.Normal.Foreground}"
+              Fill="{StaticResource Menu.PopupSubmenu.Normal.Foreground}"
               UseLayoutRounding="False"/>
         <Popup x:Name="PART_Popup"
                AllowsTransparency="True"
@@ -2586,7 +2593,7 @@
         <Setter TargetName="Glyph" Property="Fill"
                 Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
         <Setter TargetName="RightArrow" Property="Fill"
-                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
+                Value="{StaticResource Menu.PopupSubmenu.Disabled.Foreground}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
@@ -2754,23 +2761,23 @@
   <SolidColorBrush x:Key="ScrollBar.Border.Light" Color="#FFFFFFFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="ScrollBar.Border.Dark" Color="#FFF0F0F0" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="ScrollBar.Thumb.Normal" Color="#FFCDCDCD" po:Freeze="True"/>
-  <Color x:Key="ScrollBar.Thumb.Hot.Color">#FFA6A6A6</Color>
-  <Color x:Key="ScrollBar.Thumb.Pressed.Color">#FF606060</Color>
-  <Color x:Key="ScrollBar.Thumb.Disabled.Color">#FFF0F0F0</Color>
-  <Color x:Key="ScrollBar.Thumb.Hover.Color">#FFC0C0C0</Color>
+  <SolidColorBrush x:Key="ScrollBar.Thumb.Background.Normal" Color="#FFCDCDCD" po:Freeze="True"/>
+  <Color x:Key="ScrollBar.Thumb.Background.Hot.Color">#FFA6A6A6</Color>
+  <Color x:Key="ScrollBar.Thumb.Background.Pressed.Color">#FF606060</Color>
+  <Color x:Key="ScrollBar.Thumb.Background.Disabled.Color">#FFF0F0F0</Color>
+  <Color x:Key="ScrollBar.Thumb.Background.Hover.Color">#FFC0C0C0</Color>
 
-  <SolidColorBrush x:Key="ScrollBar.Glyph.Normal" Color="#FF606060" po:Freeze="True"/>
-  <Color x:Key="ScrollBar.Glyph.Hot.Color">#FF000000</Color>
-  <Color x:Key="ScrollBar.Glyph.Pressed.Color">#FFFFFFFF</Color>
-  <Color x:Key="ScrollBar.Glyph.Disabled.Color">#FFBFBFBF</Color>
-  <Color x:Key="ScrollBar.Glyph.Hover.Color">#FF606060</Color>
+  <SolidColorBrush x:Key="ScrollBar.ArrowButton.Glyph.Normal" Color="#FF606060" po:Freeze="True"/>
+  <Color x:Key="ScrollBar.ArrowButton.Glyph.Hot.Color">#FF000000</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Glyph.Pressed.Color">#FFFFFFFF</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Glyph.Disabled.Color">#FFBFBFBF</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Glyph.Hover.Color">#FF606060</Color>
 
-  <SolidColorBrush x:Key="ScrollBar.ArrowButton.Normal" Color="#FFF0F0F0" po:Freeze="True"/>
-  <Color x:Key="ScrollBar.ArrowButton.Hot.Color">#FFDADADA</Color>
-  <Color x:Key="ScrollBar.ArrowButton.Pressed.Color">#FF606060</Color>
-  <Color x:Key="ScrollBar.ArrowButton.Disabled.Color">#FFF0F0F0</Color>
-  <Color x:Key="ScrollBar.ArrowButton.Hover.Color">#FFF0F0F0</Color>
+  <SolidColorBrush x:Key="ScrollBar.ArrowButton.Background.Normal" Color="#FFF0F0F0" po:Freeze="True"/>
+  <Color x:Key="ScrollBar.ArrowButton.Background.Hot.Color">#FFDADADA</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Background.Pressed.Color">#FF606060</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Background.Disabled.Color">#FFF0F0F0</Color>
+  <Color x:Key="ScrollBar.ArrowButton.Background.Hover.Color">#FFF0F0F0</Color>
 
   <Style x:Key="RepeatButtonTransparent" TargetType="{x:Type RepeatButton}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -2800,7 +2807,7 @@
           <aero10:ScrollBarChrome x:Name="Border"
                                   SnapsToDevicePixels="True"
                                   Orientation="Vertical"
-                                  Background="{StaticResource ScrollBar.ArrowButton.Normal}"
+                                  Background="{StaticResource ScrollBar.ArrowButton.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2839,12 +2846,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2853,12 +2860,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2867,12 +2874,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2881,12 +2888,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2897,7 +2904,7 @@
                   Data="M0,3.5 0,6.5 3.5,3 7,6.5 7,3.5 3.5,0 z"
                   Stretch="Uniform"
                   Margin="3,4,3,2"
-                  Fill="{StaticResource ScrollBar.Glyph.Normal}"
+                  Fill="{StaticResource ScrollBar.ArrowButton.Glyph.Normal}"
                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                   SnapsToDevicePixels="True"
@@ -2924,7 +2931,7 @@
           <aero10:ScrollBarChrome x:Name="Border"
                                   SnapsToDevicePixels="True"
                                   Orientation="Vertical"
-                                  Background="{StaticResource ScrollBar.ArrowButton.Normal}"
+                                  Background="{StaticResource ScrollBar.ArrowButton.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2963,12 +2970,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2977,12 +2984,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -2991,12 +2998,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3005,12 +3012,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3019,8 +3026,8 @@
             <Path x:Name="Glyph"
                   Data="M0,3 0,0 3.5,3.5 7,0 7,3 3.5,6.5 z"
                   Stretch="Uniform"
-                  Margin="3,3,3,3"
-                  Fill="{StaticResource ScrollBar.Glyph.Normal}"
+                  Margin="3"
+                  Fill="{StaticResource ScrollBar.ArrowButton.Glyph.Normal}"
                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                   SnapsToDevicePixels="True"
@@ -3047,7 +3054,7 @@
           <aero10:ScrollBarChrome x:Name="Border"
                                   SnapsToDevicePixels="True"
                                   Orientation="Horizontal"
-                                  Background="{StaticResource ScrollBar.ArrowButton.Normal}"
+                                  Background="{StaticResource ScrollBar.ArrowButton.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -3086,12 +3093,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3100,12 +3107,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3114,12 +3121,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3128,12 +3135,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3142,8 +3149,8 @@
             <Path x:Name="Glyph"
                   Data="M0,3.5 3.5,0 6.5,0 3,3.5 6.5,7 3.5,7 z"
                   Stretch="Uniform"
-                  Margin="3,3,3,3"
-                  Fill="{StaticResource ScrollBar.Glyph.Normal}"
+                  Margin="3"
+                  Fill="{StaticResource ScrollBar.ArrowButton.Glyph.Normal}"
                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                   SnapsToDevicePixels="True"
@@ -3169,7 +3176,7 @@
           <aero10:ScrollBarChrome x:Name="Border"
                                   SnapsToDevicePixels="True"
                                   Orientation="Horizontal"
-                                  Background="{StaticResource ScrollBar.ArrowButton.Normal}"
+                                  Background="{StaticResource ScrollBar.ArrowButton.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   ParentElement="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -3208,12 +3215,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3222,12 +3229,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3236,12 +3243,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3250,12 +3257,12 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Glyph"
                       Storyboard.TargetProperty="Fill.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Glyph.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.ArrowButton.Glyph.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3264,8 +3271,8 @@
             <Path x:Name="Glyph"
                   Data="M3,7 0,7 3.5,3.5 0,0 3,0 6.5,3.5 z"
                   Stretch="Uniform"
-                  Margin="3,3,3,3"
-                  Fill="{StaticResource ScrollBar.Glyph.Normal}"
+                  Margin="3"
+                  Fill="{StaticResource ScrollBar.ArrowButton.Glyph.Normal}"
                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                   SnapsToDevicePixels="True"
@@ -3287,7 +3294,7 @@
         <ControlTemplate TargetType="{x:Type Thumb}">
           <aero10:ScrollBarChrome x:Name="Border"
                                   Orientation="Vertical"
-                                  Background="{StaticResource ScrollBar.Thumb.Normal}"
+                                  Background="{StaticResource ScrollBar.Thumb.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   SnapsToDevicePixels="True"
@@ -3326,7 +3333,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3335,7 +3342,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3344,7 +3351,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ObjectAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
@@ -3358,7 +3365,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3378,7 +3385,7 @@
         <ControlTemplate TargetType="{x:Type Thumb}">
           <aero10:ScrollBarChrome x:Name="Border"
                                   Orientation="Horizontal"
-                                  Background="{StaticResource ScrollBar.Thumb.Normal}"
+                                  Background="{StaticResource ScrollBar.Thumb.Background.Normal}"
                                   LightBorderBrush="{StaticResource ScrollBar.Border.Light}"
                                   DarkBorderBrush="{StaticResource ScrollBar.Border.Dark}"
                                   SnapsToDevicePixels="True"
@@ -3417,7 +3424,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hot.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Hot.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3426,7 +3433,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Pressed.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Pressed.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3435,7 +3442,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Disabled.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Disabled.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                     <ObjectAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
@@ -3449,7 +3456,7 @@
                     <ColorAnimationUsingKeyFrames
                       Storyboard.TargetName="Border"
                       Storyboard.TargetProperty="Background.(SolidColorBrush.Color)">
-                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Hover.Color}"/>
+                      <DiscreteColorKeyFrame KeyTime="0" Value="{StaticResource ScrollBar.Thumb.Background.Hover.Color}"/>
                     </ColorAnimationUsingKeyFrames>
                   </Storyboard>
                 </VisualState>
@@ -3611,18 +3618,32 @@
     </DrawingImage.Drawing>
   </DrawingImage>
 
-  <Style x:Key="TreeViewExpanderStyle" TargetType="{x:Type ToggleButton}">
+  <Style x:Key="TreeViewItem.ExpanderStyle" TargetType="{x:Type ToggleButton}">
     <Setter Property="Focusable" Value="False"/>
-    <Setter Property="Width" Value="19"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
-          <Border Background="Transparent">
+          <Border x:Name="Bd" Background="Transparent">
             <Image x:Name="Glyph" Source="{StaticResource TreeViewGlyphPlus}"
-                   Width="9" Height="9" Margin="0,3,0,0"/>
+                   Width="9" Height="9" Margin="5,4,3,3"/>
           </Border>
           <ControlTemplate.Triggers>
+            <!-- Account for the weird rounding behavior of SysTreeView, at
+                 least for the default height. -->
+            <DataTrigger Value="True">
+              <DataTrigger.Binding>
+                <MultiBinding Converter="{StaticResource EqualsConverter}">
+                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"/>
+                  <Binding>
+                    <Binding.Source>
+                      <system:Double>18</system:Double>
+                    </Binding.Source>
+                  </Binding>
+                </MultiBinding>
+              </DataTrigger.Binding>
+              <Setter TargetName="Glyph" Property="Margin" Value="5,5,3,2"/>
+            </DataTrigger>
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="Glyph" Property="Source" Value="{StaticResource TreeViewGlyphMinus}"/>
             </Trigger>
@@ -3643,8 +3664,8 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
       <ToggleButton x:Name="Expander"
-                    Style="{StaticResource TreeViewExpanderStyle}"
-                    Margin="3,0,0,0"
+                    Style="{StaticResource TreeViewItem.ExpanderStyle}"
+                    Margin="3,0,2,0"
                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                     ClickMode="Press"/>
       <Border x:Name="Bd"
@@ -3721,15 +3742,17 @@
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
           <ToggleButton x:Name="Expander" Grid.Column="1"
-                        Style="{StaticResource TreeViewExpanderStyle}"
-                        Margin="3,0,0,0"
+                        Style="{StaticResource TreeViewItem.ExpanderStyle}"
+                        Margin="3,0,2,0"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
-                            ContentSource="Header"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          <Border x:Name="InnerBd" Grid.Column="2"
+                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+            <ContentPresenter x:Name="PART_Header"
+                              ContentSource="Header"
+                              Margin="{TemplateBinding Padding}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
         </Grid>
       </Border>
       <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
@@ -3772,18 +3795,32 @@
     F1 M2.88,6.12 4.119,4.881 8.119,8.881 7.5,9.5 6.881,8.881 10.881,4.881 12.119,6.119 7.5,10.737 6.881,10.119 2.881,6.119 z
   </Geometry>
 
-  <Style x:Key="ExplorerTreeViewExpanderStyle" TargetType="{x:Type ToggleButton}">
+  <Style x:Key="Explorer.TreeViewItem.ExpanderStyle" TargetType="{x:Type ToggleButton}">
     <Setter Property="Focusable" Value="False"/>
-    <Setter Property="Width" Value="19"/>
     <Setter Property="VerticalAlignment" Value="Stretch"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
-          <Border Background="Transparent">
+          <Border x:Name="Bd" Background="Transparent">
             <Path x:Name="Glyph" Data="{StaticResource ExplorerTreeViewGlyphPlus}"
-                  Stretch="None" Fill="#59000000" Margin="0,1,0,0"/>
+                  Width="16" Height="16" Stretch="None" Fill="#59000000" Margin="1,0,0,0"/>
           </Border>
           <ControlTemplate.Triggers>
+            <!-- Account for the weird rounding behavior of SysTreeView, at
+                 least for the default height. -->
+            <DataTrigger Value="True">
+              <DataTrigger.Binding>
+                <MultiBinding Converter="{StaticResource EqualsConverter}">
+                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"/>
+                  <Binding>
+                    <Binding.Source>
+                      <system:Double>18</system:Double>
+                    </Binding.Source>
+                  </Binding>
+                </MultiBinding>
+              </DataTrigger.Binding>
+              <Setter TargetName="Glyph" Property="Margin" Value="1,2,0,0"/>
+            </DataTrigger>
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExplorerTreeViewGlyphMinus}"/>
               <Setter TargetName="Glyph" Property="Fill" Value="#BF000000"/>
@@ -3804,7 +3841,7 @@
     </Setter>
   </Style>
 
-  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
+  <ControlTemplate x:Key="Explorer.TreeViewItem.Template.Default" TargetType="{x:Type TreeViewItem}">
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" MinWidth="19"/>
@@ -3815,7 +3852,7 @@
         <RowDefinition/>
       </Grid.RowDefinitions>
       <ToggleButton x:Name="Expander"
-                    Style="{StaticResource ExplorerTreeViewExpanderStyle}"
+                    Style="{StaticResource Explorer.TreeViewItem.ExpanderStyle}"
                     Margin="3,0,0,0"
                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                     ClickMode="Press"/>
@@ -3824,12 +3861,14 @@
               Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
-              Padding="{TemplateBinding Padding}"
               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
               SnapsToDevicePixels="True">
-        <ContentPresenter x:Name="PART_Header"
+        <Border x:Name="InnerBd"
+                Padding="{TemplateBinding Padding}">
+          <ContentPresenter x:Name="PART_Header"
                           ContentSource="Header"
                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
       </Border>
       <ItemsPresenter x:Name="ItemsHost"
                       Margin="19,0,0,0"
@@ -3837,6 +3876,19 @@
                       Grid.ColumnSpan="2"/>
     </Grid>
     <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualsConverter}">
+            <Binding Path="ActualHeight" ElementName="InnerBd"/>
+            <Binding>
+              <Binding.Source>
+                <system:Double>17</system:Double>
+              </Binding.Source>
+            </Binding>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="InnerBd" Property="Margin" Value="0,-1,0,0"/>
+      </DataTrigger>
       <Trigger Property="IsExpanded" Value="False">
         <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
       </Trigger>
@@ -3848,32 +3900,32 @@
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground"
@@ -3882,9 +3934,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <aero10:InvertThicknessConverter x:Key="InvertMarginConverter"/>
-
-  <ControlTemplate x:Key="ExplorerTreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
+  <ControlTemplate x:Key="Explorer.TreeViewItem.Template.FullRowSelect" TargetType="{x:Type TreeViewItem}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -3895,7 +3945,7 @@
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
               SnapsToDevicePixels="True">
-        <Grid Margin="{Binding BorderThickness, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource InvertMarginConverter}}">
+        <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1e300">
               <ColumnDefinition.MaxWidth>
@@ -3911,20 +3961,35 @@
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
           <ToggleButton x:Name="Expander" Grid.Column="1"
-                        Style="{StaticResource ExplorerTreeViewExpanderStyle}"
-                        Margin="3,0,0,0"
+                        Style="{StaticResource Explorer.TreeViewItem.ExpanderStyle}"
+                        Margin="2,-1,1,-1"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
-                            ContentSource="Header"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          <Border x:Name="InnerBd" Grid.Column="2"
+                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+            <ContentPresenter x:Name="PART_Header"
+                              ContentSource="Header"
+                              Margin="{TemplateBinding Padding}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
         </Grid>
       </Border>
       <ItemsPresenter x:Name="ItemsHost" Grid.Row="1"/>
     </Grid>
     <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualsConverter}">
+            <Binding Path="ActualHeight" ElementName="InnerBd"/>
+            <Binding>
+              <Binding.Source>
+                <system:Double>17</system:Double>
+              </Binding.Source>
+            </Binding>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="InnerBd" Property="Margin" Value="0,-1,0,0"/>
+      </DataTrigger>
       <Trigger Property="IsExpanded" Value="False">
         <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed"/>
       </Trigger>
@@ -3936,32 +4001,32 @@
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.HotSelected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.HotSelected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.HotSelected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.HotSelected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="True"/>
           <Condition Property="IsSelected" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Hot}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Hot}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Hot}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Hot}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.Selected}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.Selected}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.Selected}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.Selected}"/>
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{StaticResource ExplorerListViewItem.Background.SelectedNotFocus}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ExplorerListViewItem.Border.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{StaticResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground"
@@ -3970,23 +4035,24 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <ControlTemplate x:Key="ExplorerTreeView.Template" TargetType="{x:Type TreeView}">
+  <ControlTemplate x:Key="Explorer.TreeView.Template" TargetType="{x:Type TreeView}">
     <Border x:Name="Border"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
+            Padding="{TemplateBinding Padding}"
             SnapsToDevicePixels="True">
       <Grid>
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
           <RowDefinition/>
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="ScrollViewer" Grid.Row="1"
+        <ScrollViewer x:Name="ScrollViewer"
+                      Grid.Row="1"
                       Background="{TemplateBinding Background}"
                       Focusable="False"
                       CanContentScroll="False"
                       HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                       VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                      Padding="{TemplateBinding Padding}"
                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
           <ItemsPresenter/>
         </ScrollViewer>
@@ -4057,7 +4123,7 @@
         </Setter>
       </Trigger>
       <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeView.Template}"/>
       </Trigger>
     </Style.Triggers>
   </Style>
@@ -4070,7 +4136,7 @@
     <Setter Property="VerticalContentAlignment"
             Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
     <Setter Property="Padding" Value="2,1,2,2"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Template" Value="{StaticResource TreeViewItem.Template.Default}"/>
     <Style.Triggers>
       <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
@@ -4089,75 +4155,17 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <!--<Setter Property="Padding" Value="3,0,3,1"/>-->
-        <Setter Property="Padding" Value="1,0,1,1"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
+        <Setter Property="Padding" Value="3,1,3,1"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeViewItem.Template.Default}"/>
       </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
           <Condition Property="aero:TreeViewService.FullRowSelect" Value="True"/>
           <Condition Property="aero:ThemeOptions.UseExplorerStyle" Value="True"/>
         </MultiTrigger.Conditions>
-        <Setter Property="Padding" Value="2,1,2,2"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
+        <Setter Property="Template" Value="{StaticResource Explorer.TreeViewItem.Template.FullRowSelect}"/>
       </MultiTrigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}" TargetType="{x:Type TreeViewItem}">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="HorizontalContentAlignment"
-            Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="VerticalContentAlignment"
-            Value="{Binding VerticalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    <Setter Property="Padding" Value="3,0,3,1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.Default}"/>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-      </Trigger>
-      <Trigger Property="aero:TreeViewService.FullRowSelect" Value="True">
-        <Setter Property="Padding" Value="1,0,0,1"/>
-        <Setter Property="Template" Value="{StaticResource ExplorerTreeViewItem.Template.FullRowSelect}"/>
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-
-  <Style x:Key="{x:Static aero10:ExplorerStyles.TreeViewStyleKey}" TargetType="{x:Type TreeView}">
-    <Style.Resources>
-      <Style x:Key="{x:Type TreeViewItem}" TargetType="{x:Type TreeViewItem}"
-             BasedOn="{StaticResource {x:Static aero10:ExplorerStyles.TreeViewItemStyleKey}}"/>
-    </Style.Resources>
-    <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-    <Setter Property="Padding" Value="1"/>
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-    <Setter Property="KeyboardNavigation.TabNavigation" Value="Once"/>
-    <Setter Property="Template" Value="{StaticResource ExplorerTreeView.Template}"/>
-    <Style.Triggers>
-      <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="True">
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel/>
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-      </Trigger>
     </Style.Triggers>
   </Style>
 
@@ -4278,7 +4286,7 @@
 
   <Style TargetType="{x:Type TabItem}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource TabItem.FocusVisual}"/>
-    <Setter Property="Foreground" Value="Black"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource TabItem.Border.Normal}"/>
     <Setter Property="Margin" Value="0"/>
@@ -4341,17 +4349,17 @@
             <ControlTemplate TargetType="{x:Type TabItem}">
               <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
                 <Border x:Name="Border"
-                    BorderThickness="1,1,1,0"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}">
+                        BorderThickness="1,1,1,0"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}">
                   <ContentPresenter x:Name="Content"
-                                ContentSource="Header"
-                                HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                Focusable="False"
-                                Margin="{TemplateBinding Padding}"
-                                RecognizesAccessKey="True"/>
+                                    ContentSource="Header"
+                                    HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                    VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    Focusable="False"
+                                    Margin="{TemplateBinding Padding}"
+                                    RecognizesAccessKey="True"/>
                 </Border>
               </Grid>
               <ControlTemplate.Triggers>
@@ -4506,10 +4514,16 @@
 
   <!-- ProgressBar ========================================================= -->
 
-  <SolidColorBrush x:Key="ProgressBar.Fill.Normal" Color="#FF06B025" po:Freeze="True"/>
+  <SolidColorBrush x:Key="ProgressBar.Fill.Background.Normal" Color="#FF06B025" po:Freeze="True"/>
   <SolidColorBrush x:Key="ProgressBar.Background" Color="#FFE6E6E6" po:Freeze="True"/>
   <SolidColorBrush x:Key="ProgressBar.Border" Color="#FFBCBCBC" po:Freeze="True"/>
-  <aero10:EqualsConverter x:Key="EqualsConverter"/>
+
+  <BitmapImage x:Key="ProgressBar.MoveOverlay"
+               BaseUri="pack://application:,,,/"
+               UriSource="/PresentationTheme.Aero.Win10;component/Resources/Progress.MoveOverlay.png"/>
+  <BitmapImage x:Key="ProgressBar.PulseOverlay"
+               BaseUri="pack://application:,,,/"
+               UriSource="/PresentationTheme.Aero.Win10;component/Resources/Progress.PulseOverlay.png"/>
 
   <Style TargetType="{x:Type aero10:ProgressBarChrome}">
     <Setter Property="Foreground" Value="{x:Null}"/>
@@ -4541,11 +4555,11 @@
                       VerticalAlignment="Stretch"
                       Visibility="Collapsed">
                 <Image x:Name="DeterminateOverlay"
-                       Source="/PresentationTheme.Aero.Win10;component/Resources/Progress.MoveOverlay.png"
+                       Source="{StaticResource ProgressBar.MoveOverlay}"
                        Stretch="Fill"/>
                 <Rectangle x:Name="IndeterminateOverlay"
-                       Fill="{TemplateBinding Foreground}"
-                       Visibility="Collapsed"/>
+                           Fill="{TemplateBinding Foreground}"
+                           Visibility="Collapsed"/>
               </Grid>
 
               <Grid x:Name="PART_PulseOverlay"
@@ -4561,19 +4575,19 @@
                 </Grid.ColumnDefinitions>
                 <Image Stretch="Fill">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.Aero.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="0,0,21,18"/>
                   </Image.Source>
                 </Image>
                 <Image Stretch="Fill" Grid.Column="1">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.Aero.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="21,0,1,18"/>
                   </Image.Source>
                 </Image>
                 <Image Stretch="Fill" Grid.Column="2">
                   <Image.Source>
-                    <CroppedBitmap Source="/PresentationTheme.Aero.Win10;component/Resources/Progress.PulseOverlay.png"
+                    <CroppedBitmap Source="{StaticResource ProgressBar.PulseOverlay}"
                                    SourceRect="22,0,20,18"/>
                   </Image.Source>
                 </Image>
@@ -4589,8 +4603,8 @@
               </Setter>
             </Trigger>
             <Trigger Property="Foreground" Value="{x:Null}">
-              <Setter TargetName="Indicator" Property="Fill" Value="{StaticResource ProgressBar.Fill.Normal}"/>
-              <Setter TargetName="IndeterminateOverlay" Property="Fill" Value="{StaticResource ProgressBar.Fill.Normal}"/>
+              <Setter TargetName="Indicator" Property="Fill" Value="{StaticResource ProgressBar.Fill.Background.Normal}"/>
+              <Setter TargetName="IndeterminateOverlay" Property="Fill" Value="{StaticResource ProgressBar.Fill.Background.Normal}"/>
               <Setter TargetName="PART_MoveOverlay" Property="Visibility" Value="Visible"/>
               <Setter TargetName="PART_PulseOverlay" Property="Visibility" Value="Visible"/>
             </Trigger>
