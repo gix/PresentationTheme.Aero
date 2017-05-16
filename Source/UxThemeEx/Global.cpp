@@ -4,7 +4,6 @@ namespace uxtheme
 {
 
 std::vector<ThemeFileEntry> g_ThemeFileHandles;
-CRenderList g_pRenderList;
 HTHEMEFILE g_OverrideTheme = nullptr;
 
 size_t ThemeFileSlotFromHandle(HTHEMEFILE hThemeFile)
@@ -15,10 +14,16 @@ size_t ThemeFileSlotFromHandle(HTHEMEFILE hThemeFile)
     return 0;
 }
 
+ThemeFileEntry* ThemeFileEntryFromHandle(HTHEMEFILE hThemeFile)
+{
+    auto idx = ThemeFileSlotFromHandle(hThemeFile);
+    return idx ? &g_ThemeFileHandles[idx] : nullptr;
+}
+
 CUxThemeFile* ThemeFileFromHandle(HTHEMEFILE hThemeFile)
 {
     auto idx = ThemeFileSlotFromHandle(hThemeFile);
-    return idx ? g_ThemeFileHandles[idx].ThemeFile.get() : nullptr;
+    return idx ? &g_ThemeFileHandles[idx].ThemeFile() : nullptr;
 }
 
 } // namespace uxtheme

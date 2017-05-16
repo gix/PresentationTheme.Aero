@@ -357,23 +357,24 @@ HTHEME OpenThemeDataExInternal(
         return nullptr;
     }
 
-    auto themeFile = ThemeFileFromHandle(hThemeFile);
-    if (!themeFile)
+    auto entry = ThemeFileEntryFromHandle(hThemeFile);
+    if (!entry)
         return nullptr;
 
     int themeOffset;
     int appNameOffset;
     int classNameOffset;
-    HRESULT hr = MatchThemeClassList(hwnd, pszClassIdList, themeFile, &themeOffset,
-                                     &appNameOffset, &classNameOffset);
+    HRESULT hr =
+        MatchThemeClassList(hwnd, pszClassIdList, &entry->ThemeFile(),
+                            &themeOffset, &appNameOffset, &classNameOffset);
     if (FAILED(hr)) {
         SetLastError(hr);
         return nullptr;
     }
 
     HTHEME hTheme;
-    if (FAILED(g_pRenderList.OpenRenderObject(
-        themeFile, themeOffset, appNameOffset, classNameOffset, nullptr, nullptr,
+    if (FAILED(entry->RenderList().OpenRenderObject(
+        &entry->ThemeFile(), themeOffset, appNameOffset, classNameOffset, nullptr, nullptr,
         hwnd, 0, dwFlags, false, &hTheme)))
         return nullptr;
 
@@ -395,23 +396,25 @@ private:
     wchar_t const* _pszFuncName = nullptr;
     int _iRenderSlotNum = -1;
     int _iEntryValue = -1;
+    CRenderList* _renderList = nullptr;
 };
 
 HRESULT CThemeApiHelper::OpenHandle(
     HTHEMEFILE hThemeFile, HTHEME hTheme, CRenderObj** renderObj)
 {
-    auto themeFile = ThemeFileFromHandle(hThemeFile);
-    if (!themeFile)
+    auto entry = ThemeFileEntryFromHandle(hThemeFile);
+    if (!entry)
         return E_HANDLE;
 
-    ENSURE_HR(g_pRenderList.OpenThemeHandle(hTheme, renderObj, &_iRenderSlotNum));
+    ENSURE_HR(entry->RenderList().OpenThemeHandle(hTheme, renderObj, &_iRenderSlotNum));
+    _renderList = &entry->RenderList();
     return S_OK;
 }
 
 void CThemeApiHelper::CloseHandle()
 {
     if (_iRenderSlotNum > -1)
-        g_pRenderList.CloseThemeHandle(_iRenderSlotNum);
+        _renderList->CloseThemeHandle(_iRenderSlotNum);
 }
 
 } // namespace uxtheme
@@ -468,16 +471,20 @@ THEMEEXAPI UxOpenThemeFileEx(
                                highContrast));
     SetHighContrastMode(highContrast);
 
-    std::unique_ptr<CUxThemeFile> themeFile(new CUxThemeFile(std::move(loader._LoadingThemeFile)));
+    auto themeFile = make_unique_nothrow<CUxThemeFile>(std::move(loader._LoadingThemeFile));
+    auto renderList = make_unique_nothrow<CRenderList>();
+    if (!themeFile || !renderList)
+        return E_OUTOFMEMORY;
 
-    ThemeFileEntry entry{std::move(reuseSection), std::move(themeFile)};
+    ThemeFileEntry entry{std::move(themeFile), std::move(reuseSection),
+                         std::move(renderList)};
 
     if (g_ThemeFileHandles.empty())
         g_ThemeFileHandles.resize(1);
 
     size_t i = 1;
     for (; i < g_ThemeFileHandles.size(); ++i) {
-        if (!g_ThemeFileHandles[i].ThemeFile) {
+        if (!g_ThemeFileHandles[i]) {
             g_ThemeFileHandles[i] = std::move(entry);
             break;
         }
@@ -492,15 +499,11 @@ THEMEEXAPI UxOpenThemeFileEx(
 
 THEMEEXAPI UxCloseThemeFile(_In_ HTHEMEFILE hThemeFile)
 {
-    auto slot = ThemeFileSlotFromHandle(hThemeFile);
-    if (!slot || !g_ThemeFileHandles[slot].ThemeFile)
+    auto entry = ThemeFileEntryFromHandle(hThemeFile);
+    if (!entry || !*entry)
         return E_HANDLE;
 
-    auto& themeFile = *g_ThemeFileHandles[slot].ThemeFile;
-    auto nonSharableDataHdr = themeFile.NonSharableDataHeader();
-
-    g_pRenderList.FreeRenderObjects(nonSharableDataHdr->iLoadId);
-    g_ThemeFileHandles[slot] = ThemeFileEntry();
+    entry->Free();
     return S_OK;
 }
 
@@ -527,7 +530,10 @@ THEMEEXAPI UxCloseThemeData(
     _In_ HTHEMEFILE hThemeFile,
     _In_ HTHEME hTheme)
 {
-    return g_pRenderList.CloseRenderObject(hTheme);
+    auto entry = ThemeFileEntryFromHandle(hThemeFile);
+    if (!entry)
+        return E_HANDLE;
+    return entry->RenderList().CloseRenderObject(hTheme);
 }
 
 THEMEEXAPI UxGetThemeAnimationProperty(

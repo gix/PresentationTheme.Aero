@@ -256,8 +256,7 @@ static HRESULT WINAPI CloseThemeDataHook(
     _In_ HTHEME hTheme)
 {
     if (g_OverrideTheme)
-        return g_pRenderList.CloseRenderObject(hTheme);
-
+        return UxCloseThemeData(g_OverrideTheme, hTheme);
     return CloseThemeData(hTheme);
 }
 
