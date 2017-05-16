@@ -1195,16 +1195,16 @@ static unsigned PremultiplyColor(unsigned rgba, uint8_t alpha)
     return (a << 24) | (b << 16) | (g << 8) | r;
 }
 
-static unsigned AlphaBlend(unsigned rgbDst, unsigned rgbaSrc)
+static unsigned AlphaBlend(unsigned rgbaDst, unsigned rgbaSrc)
 {
     uint8_t invSrcAlpha = ~(rgbaSrc >> 24) & 0xFF;
     if (invSrcAlpha == 0)
         return rgbaSrc; // Source is opaque.
 
-    uint8_t r = static_cast<uint8_t>(rgbDst >> 0);
-    uint8_t g = static_cast<uint8_t>(rgbDst >> 8);
-    uint8_t b = static_cast<uint8_t>(rgbDst >> 16);
-    uint8_t a = static_cast<uint8_t>(rgbDst >> 24);
+    uint8_t r = static_cast<uint8_t>(rgbaDst >> 0);
+    uint8_t g = static_cast<uint8_t>(rgbaDst >> 8);
+    uint8_t b = static_cast<uint8_t>(rgbaDst >> 16);
+    uint8_t a = static_cast<uint8_t>(rgbaDst >> 24);
 
     r = PremultiplyChannel(r, invSrcAlpha);
     g = PremultiplyChannel(g, invSrcAlpha);
@@ -1227,14 +1227,14 @@ static unsigned PixelPremultiplyAlpha(unsigned rgbaSrc, unsigned rgbTint)
     return PremultiplyColor(color);
 }
 
-void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned rgbColor)
+static void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned bgrColor)
 {
-    unsigned const tint = SwapRGB(rgbColor);
+    unsigned const rgbTint = SwapRGB(bgrColor);
     unsigned const* src = reinterpret_cast<unsigned*>(GetBitmapBits(pBitmapHdr));
     unsigned* dst = reinterpret_cast<unsigned*>(pBytes);
 
     for (int i = 0; i < pBitmapHdr->biWidth * pBitmapHdr->biHeight; ++i)
-        *dst++ = PixelPremultiplyAlpha(*src++, tint);
+        *dst++ = PixelPremultiplyAlpha(*src++, rgbTint);
 }
 
 static void ColorizeAndComposeImages(
@@ -1530,12 +1530,19 @@ HRESULT CVSUnpack::LoadClassDataMap(
                     ENSURE_HR(_TerminateSection(pfnCB, appName, className,
                                                 currPartId, currStateId, startOfSection));
 
-                appName[0] = 0;
-                className[0] = 0;
                 if (pRec->iClass <= -1 || pRec->iClass >= _rgClassNames.size())
                     return E_ABORT;
 
-                _ParseClassName(_rgClassNames[pRec->iClass].c_str(), appName, 260, className, 230);
+                if (isNewClass) {
+                    appName[0] = 0;
+                    className[0] = 0;
+                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), appName, 260, className, 230);
+                } else if (*className != 0) {
+                    wchar_t tmpClassName[230];
+                    wchar_t tmpAppName[260];
+                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), tmpAppName, 260, tmpClassName, 230);
+                    assert(wcscmp(appName, tmpAppName) == 0 && wcscmp(className, tmpClassName) == 0);
+                }
 
                 hasDelayedRecords = false;
                 hasPlateauRecords = false;
@@ -2144,7 +2151,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         }
 
         if (_fGlobal) {
-            HDC screenDC = GetWindowDC(nullptr);
+            OptionalDC screenDC{nullptr};
             if (!screenDC)
                 return 0x8007000E;
 
@@ -2188,26 +2195,22 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                         if (fComposedImage) {
                             iImageCount = 1;
                             int size = sizeof(iImageCount);
-                            VSRECORD* pRecord;
-                            if (_FindVSRecord(
-                                _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                                pRec->iState, TMT_IMAGECOUNT, &pRecord) >= 0) {
-                                hr = LoadVSRecordData(_hInst, pRecord, &iImageCount, &size);
-                                if (hr < 0)
-                                    goto LABEL_70;
-                                if (iImageCount <= 0) {
-                                    hr = E_INVALIDARG;
-                                    goto LABEL_70;
-                                }
-                            }
+                            if (SUCCEEDED(_GetPropertyValue(
+                                _pbClassData, _cbClassData, pRec->iClass,
+                                pRec->iPart, pRec->iState, TMT_IMAGECOUNT,
+                                &iImageCount, &size)) &&
+                                iImageCount <= 0)
+                                hr = E_INVALIDARG;
 
-                            ColorizeGlyphByAlphaComposition(
-                                pbNewBitmap.get(), pBitmapHdr, iImageCount,
-                                hasGlyphColor ? &glyphColor : nullptr,
-                                hasGlyphBGColor ? &glyphBGColor : nullptr);
-                        } else {
-                            if (hasGlyphBGColor)
-                                ColorizeGlyphByAlpha(pbNewBitmap.get(), pBitmapHdr, glyphBGColor);
+                            if (hr >= 0) {
+                                ColorizeGlyphByAlphaComposition(
+                                    pbNewBitmap.get(), pBitmapHdr, iImageCount,
+                                    hasGlyphColor ? &glyphColor : nullptr,
+                                    hasGlyphBGColor ? &glyphBGColor : nullptr);
+                            }
+                        } else if (hasGlyphBGColor) {
+                            ColorizeGlyphByAlpha(pbNewBitmap.get(), pBitmapHdr,
+                                                 glyphBGColor);
                         }
                     }
                 }
@@ -2229,8 +2232,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                 }
             }
 
-        LABEL_70:
-            ReleaseDC(nullptr, screenDC);
+            screenDC.Release();
             if (!pbNewBitmap)
                 return HRESULT_FROM_WIN32(ERROR_OUTOFMEMORY);
 
@@ -2290,7 +2292,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
             v29->bmih = *pBitmapHdr;
             v29->masks[2] = 0xFF;
             Convert24to32BPP(buffer.get() + sizeof(TMBITMAPHEADER) +
-                                 sizeof(BITMAPHEADER),
+                             sizeof(BITMAPHEADER),
                              pBitmapHdr);
         }
 

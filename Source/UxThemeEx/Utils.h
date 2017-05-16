@@ -229,6 +229,14 @@ struct OptionalDC
             ReleaseDC(nullptr, hdc);
     }
 
+    void Release()
+    {
+        if (hdc) {
+            ReleaseDC(nullptr, hdc);
+            hdc = nullptr;
+        }
+    }
+
     HDC Get() const { return hdc; }
     operator HDC() const { return hdc; }
     explicit operator bool() const { return hdc != nullptr; }
