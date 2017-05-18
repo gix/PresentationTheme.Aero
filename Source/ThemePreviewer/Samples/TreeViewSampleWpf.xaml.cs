@@ -3,12 +3,14 @@ namespace ThemePreviewer.Samples
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Windows;
     using System.Windows.Controls;
     using PresentationTheme.Aero;
 
     public partial class TreeViewSampleWpf : IOptionControl
     {
         private readonly OptionList options;
+        private int itemHeight;
 
         public TreeViewSampleWpf()
         {
@@ -21,19 +23,45 @@ namespace ThemePreviewer.Samples
 
             options = new OptionList();
             options.AddOption("Enabled", treeView1, treeView2, l => l.IsEnabled);
-            options.Add(new GenericOption(
+            options.Add(new GenericBoolOption(
                 "FullRowSelect",
                 () => TreeViewService.GetFullRowSelect(treeView1),
                 v => {
                     TreeViewService.SetFullRowSelect(treeView1, v);
                     TreeViewService.SetFullRowSelect(treeView2, v);
                 }));
+            options.Add(new GenericIntOption(
+                "ItemHeight",
+                () => itemHeight,
+                v => {
+                    itemHeight = v;
+                    SetItemHeight(treeView1.Items, itemHeight > 0 ? (double?)itemHeight : null);
+                    SetItemHeight(treeView2.Items, itemHeight > 0 ? (double?)itemHeight : null);
+                }));
+        }
+
+        private void SetItemHeight(ItemCollection items, double? height)
+        {
+            foreach (TreeViewItem item in items) {
+                var element = (FrameworkElement)item.Header;
+                if (height == null)
+                    element.ClearValue(HeightProperty);
+                else
+                    element.Height = (double)height;
+
+                SetItemHeight(item.Items, height);
+            }
         }
 
         private void AddItem(ItemCollection items, ItemGenerator.TreeNode root)
         {
             var item = new TreeViewItem {
-                Header = root.Name,
+                Header = new Border {
+                    Child = new TextBlock {
+                        Text = root.Name,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
+                },
                 IsExpanded = true
             };
 

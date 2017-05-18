@@ -93,7 +93,7 @@ namespace ThemePreviewer
                 setter(control2, value ? trueValue : falseValue);
             };
 
-            Add(new GenericOption(name, optGetter, optSetter));
+            Add(new GenericBoolOption(name, optGetter, optSetter));
         }
 
         private void OnStateChanged(object sender, StateEventArgs e)

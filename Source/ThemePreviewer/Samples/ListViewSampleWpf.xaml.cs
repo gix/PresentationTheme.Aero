@@ -22,7 +22,7 @@
             options.AddOption("Enabled", lv1, l => l.IsEnabled);
             options.AddOption("Enabled", lv2, l => l.IsEnabled);
 
-            options.Add(new GenericOption(
+            options.Add(new GenericBoolOption(
                 "GridView", () => lv1.View is GridView,
                 v => {
                     lv1.View = v ? gridView1 : null;

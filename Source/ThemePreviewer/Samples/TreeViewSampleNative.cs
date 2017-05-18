@@ -5,6 +5,7 @@
     using System.Linq.Expressions;
     using System.Windows.Forms;
     using Controls;
+    using StyleCore.Native;
 
     public partial class TreeViewSampleNative : UserControl, IOptionControl
     {
@@ -131,17 +132,6 @@
 #define WS_MAXIMIZEBOX      0x00010000L
 #define WS_EX_CLIENTEDGE        0x00000200L   borderStyle == BorderStyle.Fixed3D
              */
-        }
-
-        private static void CheckBoxOnCheckedChanged(object sender, EventArgs eventArgs)
-        {
-            var checkBox = sender as CheckBox;
-            if (checkBox == null)
-                return;
-            var option = checkBox.Tag as BoolOption;
-            if (option == null)
-                return;
-            option.Enabled = checkBox.Checked;
         }
 
         private static void Expand(TreeNodeCollection nodes)

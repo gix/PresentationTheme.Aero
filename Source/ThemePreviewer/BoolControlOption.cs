@@ -11,7 +11,7 @@ namespace ThemePreviewer
             Enabled = enabled;
         }
 
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; }
     }
 
     public abstract class Option : INotifyPropertyChanged
@@ -111,28 +111,28 @@ namespace ThemePreviewer
             set
             {
                 if (Enabled != value) {
-                    RaisePropertyChanged("Enabled");
                     foreach (var control in controls)
                         setter(control, value);
+                    RaisePropertyChanged(nameof(Enabled));
                     StateChanged?.Invoke(this, new StateEventArgs(value));
                 }
             }
         }
     }
 
-    public class GenericOption : BoolOption
+    public class GenericBoolOption : BoolOption
     {
         private readonly Func<bool> getter;
         private readonly Action<bool> setter;
 
-        public GenericOption(string label, Func<bool> getter, Action<bool> setter)
+        public GenericBoolOption(string label, Func<bool> getter, Action<bool> setter)
         {
             this.getter = getter;
             this.setter = setter;
             Label = label;
         }
 
-        public EventHandler<StateEventArgs> StateChanged;
+        public event EventHandler<StateEventArgs> StateChanged;
 
         public override string Label { get; }
 
@@ -142,8 +142,8 @@ namespace ThemePreviewer
             set
             {
                 if (Enabled != value) {
-                    RaisePropertyChanged("Enabled");
                     setter(value);
+                    RaisePropertyChanged(nameof(Enabled));
                     StateChanged?.Invoke(this, new StateEventArgs(value));
                 }
             }
@@ -158,6 +158,33 @@ namespace ThemePreviewer
         {
             base.Refresh();
             Value = Value;
+        }
+    }
+
+    public class GenericIntOption : IntOption
+    {
+        private readonly Func<int> getter;
+        private readonly Action<int> setter;
+
+        public GenericIntOption(string label, Func<int> getter, Action<int> setter)
+        {
+            this.getter = getter;
+            this.setter = setter;
+            Label = label;
+        }
+
+        public override string Label { get; }
+
+        public override int Value
+        {
+            get { return getter(); }
+            set
+            {
+                if (Value != value) {
+                    setter(value);
+                    RaisePropertyChanged(nameof(Value));
+                }
+            }
         }
     }
 
