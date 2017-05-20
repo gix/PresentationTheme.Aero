@@ -10,6 +10,18 @@ namespace PresentationTheme.Aero
     using System.Windows;
     using System.Windows.Threading;
 
+    /// <summary>
+    ///   Allows overriding WPF theme resources.
+    /// </summary>
+    /// <remarks>
+    ///   WPF does not provide a way to replace the theme resources for system
+    ///   controls (i.e., those contained in the PresentationFramework assembly).
+    ///   Providing styles with proper type-keys in the resource inheritance
+    ///   tree or application-resources is not enough since those are skipped
+    ///   when looking up implicit base styles (i.e., for styles without explicit
+    ///   <see cref="Style.BasedOn"/>). This class uses reflection to manipulate
+    ///   the internal dictionaries WPF uses to store theme resources.
+    /// </remarks>
     public sealed class ThemeHelper
     {
         private const int WM_THEMECHANGED = 0x31A;
@@ -44,8 +56,8 @@ namespace PresentationTheme.Aero
         private readonly bool valid;
         private Delegate hwndWrapperHook;
 
-        private readonly Dictionary<Assembly, Uri> themeResources =
-            new Dictionary<Assembly, Uri>();
+        private readonly Dictionary<Assembly, Tuple<Uri, Func<Uri>>> themeResources =
+            new Dictionary<Assembly, Tuple<Uri, Func<Uri>>>();
 
         public ThemeHelper()
         {
@@ -119,9 +131,24 @@ namespace PresentationTheme.Aero
                 ResourceDictionaries_ClearThemedDictionary != null &&
                 ResourceDictionary_IsThemeDictionary != null;
 
-            if (valid)
-                HookThemeChangedMessage();
+            if (valid) {
+                try {
+                    HookThemeChangedMessage();
+                } catch {
+                    valid = false;
+                    throw;
+                }
+            }
         }
+
+        /// <summary>
+        ///   Gets a value indicating whether the <see cref="ThemeHelper"/> can
+        ///   manipulate internal WPF data structures. When <see lang="false"/>
+        ///   <see cref="SetTheme"/> and similar functions will always return
+        ///   <see langword="false"/>. This indicates that internal framework
+        ///   types may have changed.
+        /// </summary>
+        public bool IsOperational => valid;
 
         private void HookThemeChangedMessage()
         {
@@ -144,32 +171,125 @@ namespace PresentationTheme.Aero
 
         private void OnThemeChanged()
         {
-            foreach (var entry in themeResources)
-                SetThemeResources(entry.Key, entry.Value);
+            foreach (var entry in themeResources) {
+                var themeUri = entry.Value.Item2();
+                if (themeUri != null)
+                    SetThemeResources(entry.Key, themeUri);
+            }
         }
 
+        /// <summary>
+        ///   Sets the theme resources for the PresentationFramework assembly.
+        /// </summary>
+        /// <param name="themeUri">
+        ///   The pack <see cref="Uri"/> to the location of the theme resource
+        ///   dictionary to use.
+        /// </param>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="themeUri"/> is <see langword="null"/>.
+        /// </exception>
         public static bool SetPresentationFrameworkTheme(Uri themeUri)
         {
+            if (themeUri == null)
+                throw new ArgumentNullException(nameof(themeUri));
+
             var instance = Instance.Value;
-            return instance.SetThemeInternal(instance.PresentationFramework, themeUri);
+            return instance.SetThemeInternal(instance.PresentationFramework, () => themeUri);
         }
 
+        /// <summary>
+        ///   Sets the theme resources for the PresentationFramework assembly.
+        /// </summary>
+        /// <param name="themeUriProvider">
+        ///   A delegate providing the pack <see cref="Uri"/> to the location of
+        ///   the theme resource dictionary to use. The delegate will be invoked
+        ///   again to get an updated resource URI in case the system theme has
+        ///   changed. If the delegate returns <see langword="null"/> the default
+        ///   theme resources are used.
+        /// </param>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="themeUriProvider"/> is <see langword="null"/>.
+        /// </exception>
+        public static bool SetPresentationFrameworkTheme(Func<Uri> themeUriProvider)
+        {
+            if (themeUriProvider == null)
+                throw new ArgumentNullException(nameof(themeUriProvider));
+
+            var instance = Instance.Value;
+            return instance.SetThemeInternal(
+                instance.PresentationFramework, themeUriProvider);
+        }
+
+        /// <summary>
+        ///   Clears the theme resources for the PresentationFramework assembly.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        ///   Unless explicitly overridden again using <see cref="SetTheme"/>,
+        ///   the next time a resource is looked up the default theme resources
+        ///   are loaded again.
+        /// </remarks>
         public static bool ClearPresentationFrameworkTheme()
         {
             var instance = Instance.Value;
             return instance.ClearThemeInternal(instance.PresentationFramework);
         }
 
-        public static bool SetTheme(Assembly assembly, Uri themeUri)
+        /// <summary>
+        ///   Sets the theme resources for the specified assembly.
+        /// </summary>
+        /// <param name="assembly">
+        ///   An <see cref="Assembly"/> containing WPF controls.
+        /// </param>
+        /// <param name="themeUriProvider">
+        ///   A delegate providing the pack <see cref="Uri"/> to the location of
+        ///   the theme resource dictionary to use. The delegate will be invoked
+        ///   again to get an updated resource URI in case the system theme has
+        ///   changed. If the delegate returns <see langword="null"/> the default
+        ///   theme resources are used.
+        /// </param>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="assembly"/> or <paramref name="themeUriProvider"/>
+        ///   are <see langword="null"/>.
+        /// </exception>
+        public static bool SetTheme(Assembly assembly, Func<Uri> themeUriProvider)
         {
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
-            if (themeUri == null)
-                throw new ArgumentNullException(nameof(themeUri));
+            if (themeUriProvider == null)
+                throw new ArgumentNullException(nameof(themeUriProvider));
 
-            return Instance.Value.SetThemeInternal(assembly, themeUri);
+            return Instance.Value.SetThemeInternal(assembly, themeUriProvider);
         }
 
+        /// <summary>
+        ///   Clears the theme resources for the specified assembly.
+        /// </summary>
+        /// <param name="assembly">
+        ///   An <see cref="Assembly"/> containing WPF controls.
+        /// </param>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        ///   Unless explicitly overridden again using <see cref="SetTheme"/>,
+        ///   the next time a resource is looked up the default theme resources
+        ///   are loaded again.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="assembly"/> is <see langword="null"/>.
+        /// </exception>
         public static bool ClearTheme(Assembly assembly)
         {
             if (assembly == null)
@@ -178,12 +298,21 @@ namespace PresentationTheme.Aero
             return Instance.Value.ClearThemeInternal(assembly);
         }
 
-        private bool SetThemeInternal(Assembly assembly, Uri themeUri)
+        private bool SetThemeInternal(Assembly assembly, Func<Uri> themeUriFactory)
         {
             if (!valid)
                 return false;
 
-            themeResources.Add(assembly, themeUri);
+            Uri themeUri = themeUriFactory();
+
+            if (themeResources.TryGetValue(assembly, out var currentThemeEntry))
+                ClearThemeInternal(assembly);
+
+            themeResources[assembly] = Tuple.Create(themeUri, themeUriFactory);
+
+            if (themeUri == null)
+                return false;
+
             return SetThemeResources(assembly, themeUri);
         }
 
@@ -204,9 +333,15 @@ namespace PresentationTheme.Aero
 
         private bool SetThemeResources(Assembly assembly, Uri themeUri)
         {
+            GetAssemblyAndPartNameFromPackAppUri(
+                themeUri, out AssemblyName resourceAssemblyName, out string resourceName);
+
             Assembly resourceAssembly;
-            string resourceName;
-            GetAssemblyAndPartNameFromPackAppUri(themeUri, out resourceAssembly, out resourceName);
+            try {
+                resourceAssembly = Assembly.Load(resourceAssemblyName);
+            } catch (Exception) {
+                return false;
+            }
 
             return SetThemeResources(assembly, resourceAssembly, resourceName);
         }
@@ -254,10 +389,9 @@ namespace PresentationTheme.Aero
         private ResourceDictionary LoadThemedDictionary(Assembly resourceAssembly, string resourceName)
         {
             var resourceDictionaries = ResourceDictionaries_Ctor.Invoke(new object[] { resourceAssembly });
-            Uri themedDictionarySourceUri;
             return LoadThemedDictionary(
                 resourceDictionaries, resourceAssembly, resourceAssembly.GetName().Name, resourceName,
-                false, out themedDictionarySourceUri);
+                false, out Uri themedDictionarySourceUri);
         }
 
         private ResourceDictionary LoadThemedDictionary(
@@ -302,7 +436,7 @@ namespace PresentationTheme.Aero
         }
 
         private static void GetAssemblyAndPartNameFromPackAppUri(
-            Uri uri, out Assembly assembly, out string partName)
+            Uri uri, out AssemblyName assemblyName, out string partName)
         {
             if (!IsPackApplicationUri(uri))
                 throw new ArgumentException("Invalid pack application uri.", nameof(uri));
@@ -310,17 +444,14 @@ namespace PresentationTheme.Aero
             // Generate a relative Uri which gets rid of the pack://application:,,, authority part.
             var partUri = new Uri(uri.AbsolutePath, UriKind.Relative);
 
-            AssemblyName assemblyName;
             GetAssemblyNameAndPart(partUri, out assemblyName, out partName);
 
             if (assemblyName == null) {
                 // The uri doesn't contain ";component". it should map to the enty application assembly.
-                assembly = Assembly.GetEntryAssembly();
+                assemblyName = Assembly.GetEntryAssembly().GetName();
 
                 // The partName returned from GetAssemblyNameAndPart should be escaped.
                 Debug.Assert(string.Equals(partName, uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped), StringComparison.OrdinalIgnoreCase));
-            } else {
-                assembly = Assembly.Load(assemblyName);
             }
         }
 
