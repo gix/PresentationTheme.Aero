@@ -2,13 +2,13 @@
 {
     using System.Linq;
     using System.Windows;
-    using PresentationTheme.Aero.Win10;
+    using PresentationTheme.Aero;
 
     public partial class App
     {
         public App()
         {
-            AeroWin10Theme.SetCurrentTheme();
+            AeroTheme.SetAsCurrentTheme();
         }
 
         protected override void OnStartup(StartupEventArgs e)
