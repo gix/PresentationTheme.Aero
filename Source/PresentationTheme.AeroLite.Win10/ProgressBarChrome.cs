@@ -243,7 +243,7 @@
             }
 
             var storyboard = new Storyboard();
-            if (SystemVisualStateManager.Instance.Animates) {
+            if (IsIndeterminate || SystemVisualStateManager.Instance.Animates) {
                 var animation = new ThicknessAnimationUsingKeyFrames {
                     BeginTime = startTime,
                     Duration = duration,
