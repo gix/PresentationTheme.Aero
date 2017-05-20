@@ -5,6 +5,11 @@ namespace PresentationTheme.Aero.Win10
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
 
+    /// <summary>
+    ///   A <see cref="TabPanel"/> that sets the <see cref="TabItemKind"/>
+    ///   attached dependency property on contained <see cref="TabItem"/>
+    ///   elements.
+    /// </summary>
     public class TabPanelEx : TabPanel
     {
         #region public object SelectedTab { get; set; }
@@ -30,24 +35,21 @@ namespace PresentationTheme.Aero.Win10
 
         #endregion
 
-        private static readonly DependencyPropertyKey TabItemKindPropertyKey =
-            DependencyProperty.RegisterAttachedReadOnly(
-                "TabItemKind",
-                typeof(TabItemKind),
-                typeof(TabPanelEx),
-                new PropertyMetadata(TabItemKind.Left));
-
         /// <summary>
         ///   Identifies the <c>TabItemKind</c> attached dependency property.
         /// </summary>
         public static readonly DependencyProperty TabItemKindProperty =
-            TabItemKindPropertyKey.DependencyProperty;
+            DependencyProperty.RegisterAttached(
+                "TabItemKind",
+                typeof(TabItemKind),
+                typeof(TabPanelEx),
+                new PropertyMetadata(TabItemKind.Selected));
 
         /// <summary>
         ///   Gets the <see cref="TabItemKind"/> of the specified <see cref="TabItem"/>.
         /// </summary>
-        /// <param name="item">The tab item.</param>
-        /// <returns>The <see cref="TabItemKind"/>.</returns>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static TabItemKind GetTabItemKind(TabItem item)
         {
             if (item == null)
@@ -55,11 +57,16 @@ namespace PresentationTheme.Aero.Win10
             return (TabItemKind)item.GetValue(TabItemKindProperty);
         }
 
-        private static void SetTabItemKind(TabItem item, TabItemKind kind)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="kind"></param>
+        public static void SetTabItemKind(TabItem item, TabItemKind kind)
         {
-            if (d == null)
-                throw new ArgumentNullException(nameof(d));
-            item.SetValue(TabItemKindPropertyKey, kind);
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+            item.SetValue(TabItemKindProperty, kind);
         }
 
         private static void OnSelectedTabChanged(

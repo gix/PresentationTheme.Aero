@@ -4,7 +4,7 @@
     using System.Reflection;
     using System.Text;
 
-    /// <summary>AeroLite Windows 10 Theme</summary>
+    /// <summary>Aero Windows 10 Theme</summary>
     public static class AeroWin10Theme
     {
         /// <summary>
