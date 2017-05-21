@@ -143,6 +143,15 @@
     <Compile Include="Controls\TabControlEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Samples\StatusBarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\StatusBarSampleNative.Designer.cs">
+      <DependentUpon>StatusBarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\StatusBarSampleWpf.xaml.cs">
+      <DependentUpon>StatusBarSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Samples\TabControlSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -286,6 +295,9 @@
     <EmbeddedResource Include="Samples\ScrollBarSampleNative.resx">
       <DependentUpon>ScrollBarSampleNative.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Samples\StatusBarSampleNative.resx">
+      <DependentUpon>StatusBarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Samples\TabControlSampleNative.resx">
       <DependentUpon>TabControlSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -321,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Samples\ScrollBarSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\StatusBarSampleWpf.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

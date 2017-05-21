@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="ThemePreviewer.Samples.StatusBarSampleWpf"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="300">
+  <StackPanel VerticalAlignment="Bottom">
+    <StatusBar>Status Text</StatusBar>
+    <StatusBar>
+      <StatusBarItem>First</StatusBarItem>
+      <Separator/>
+      <StatusBarItem>Second</StatusBarItem>
+      <Separator/>
+      <StatusBarItem Width="97">Third</StatusBarItem>
+      <Separator/>
+      <StatusBarItem>Fourth</StatusBarItem>
+      <Separator/>
+      <StatusBarItem HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="0">
+        <ResizeGrip Padding="0,0,2,2"/>
+      </StatusBarItem>
+    </StatusBar>
+  </StackPanel>
+</UserControl>
