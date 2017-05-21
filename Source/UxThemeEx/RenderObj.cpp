@@ -865,6 +865,9 @@ HRESULT CRenderObj::GetPartObject(int iPartId, int iStateId, T** ppvObj)
         }
     }
 
+    if (reinterpret_cast<ENTRYHDR const*>(_pbSectionData)->usTypeNum != TMT_PARTJUMPTABLE)
+        return E_FAIL;
+
     if (int cParts = (int)_pParts.size()) {
         if (iPartId < 0)
             iPartId = 0;
