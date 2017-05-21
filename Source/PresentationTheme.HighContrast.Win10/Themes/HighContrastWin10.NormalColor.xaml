@@ -4719,13 +4719,14 @@
     <Setter Property="MinHeight"
             Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
     <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="0,0,3,2"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ResizeGrip}">
           <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}">
             <Path Data="M 0,6 2,6 2,8 0,8  M 3,6 5,6 5,8 3,8  M 6,6 8,6 8,8 6,8  M 3,3 5,3 5,5 3,5  M 6,3 8,3 8,5 6,5  M 6,0 8,0 8,2 6,2"
                   Fill="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                  Margin="0,0,3,2"
+                  Margin="{TemplateBinding Padding}"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom"/>
           </Grid>
