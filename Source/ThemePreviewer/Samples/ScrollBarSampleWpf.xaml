@@ -24,6 +24,10 @@
         <RowDefinition/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
+      <ResizeGrip Width="17" Height="17" Margin="3"
+                  HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                  Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+
       <ScrollBar Grid.Row="0" Grid.Column="1" Orientation="Vertical"
                  Minimum="0" Maximum="100" SmallChange="1" LargeChange="20" ViewportSize="25"
                  IsEnabled="False"/>

@@ -34,7 +34,6 @@
             this.hScrollBar2 = new System.Windows.Forms.HScrollBar();
             this.vScrollBar2 = new System.Windows.Forms.VScrollBar();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.sizeBox2 = new ThemePreviewer.Controls.SizeBox();
             this.sizeBox1 = new ThemePreviewer.Controls.SizeBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -116,7 +115,6 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.sizeBox2);
             this.panel1.Controls.Add(this.sizeBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
@@ -124,17 +122,10 @@
             this.panel1.Size = new System.Drawing.Size(371, 394);
             this.panel1.TabIndex = 2;
             // 
-            // sizeBox2
-            // 
-            this.sizeBox2.Enabled = false;
-            this.sizeBox2.Location = new System.Drawing.Point(3, 31);
-            this.sizeBox2.Name = "sizeBox2";
-            this.sizeBox2.Size = new System.Drawing.Size(17, 17);
-            this.sizeBox2.TabIndex = 1;
-            // 
             // sizeBox1
             // 
-            this.sizeBox1.Location = new System.Drawing.Point(3, 0);
+            this.sizeBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.sizeBox1.Location = new System.Drawing.Point(354, 377);
             this.sizeBox1.Name = "sizeBox1";
             this.sizeBox1.Size = new System.Drawing.Size(17, 17);
             this.sizeBox1.TabIndex = 0;
@@ -164,7 +155,6 @@
         private System.Windows.Forms.HScrollBar hScrollBar2;
         private System.Windows.Forms.VScrollBar vScrollBar2;
         private System.Windows.Forms.Panel panel1;
-        private Controls.SizeBox sizeBox2;
         private Controls.SizeBox sizeBox1;
     }
 }

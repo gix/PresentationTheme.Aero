@@ -4824,4 +4824,46 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+
+  <!-- ResizeGrip ========================================================== -->
+
+  <Style x:Key="{x:Type ResizeGrip}" TargetType="{x:Type ResizeGrip}">
+    <Setter Property="MinWidth"
+            Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+    <Setter Property="MinHeight"
+            Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ResizeGrip}">
+          <Grid SnapsToDevicePixels="True" Background="{TemplateBinding Background}">
+            <Path Data="M 6,0 8,0 8,8 0,8 0,6 3,6 3,3 6,3 z"
+                  Margin="0,0,3,2"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom">
+              <Path.Fill>
+                <DrawingBrush Viewbox="0,0,3,3"
+                              Viewport="0,0,3,3"
+                              TileMode="Tile"
+                              ViewportUnits="Absolute"
+                              ViewboxUnits="Absolute">
+                  <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                      <DrawingGroup.Children>
+                        <GeometryDrawing Geometry="M 0,0 1,0 1,1 0,1 z" Brush="White"/>
+                        <GeometryDrawing Geometry="M 1,0 2,0 2,1 1,1 z" Brush="#FFCFCFCF"/>
+                        <GeometryDrawing Geometry="M 0,1 1,1 1,2 0,2 z" Brush="#FFE7E7E7"/>
+                        <GeometryDrawing Geometry="M 1,1 2,1 2,2 1,2 z" Brush="#FFAFAFAF"/>
+                      </DrawingGroup.Children>
+                    </DrawingGroup>
+                  </DrawingBrush.Drawing>
+                </DrawingBrush>
+              </Path.Fill>
+            </Path>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </ResourceDictionary>
