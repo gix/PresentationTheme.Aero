@@ -63,6 +63,7 @@
             Pages.Add(ControlComparisonViewModel.Create<ProgressBarSampleNative, ProgressBarSampleWpf>("ProgressBar"));
             Pages.Add(ControlComparisonViewModel.Create<TrackbarSampleNative, TrackbarSampleWpf>("Trackbar"));
             Pages.Add(ControlComparisonViewModel.Create<GroupBoxSampleNative, GroupBoxSampleWpf>("GroupBox"));
+            Pages.Add(ControlComparisonViewModel.Create<System.Windows.Forms.UserControl, ExpanderSampleWpf>("Expander"));
             Pages.Add(new ColorList());
             CurrentPage = Pages[0];
 

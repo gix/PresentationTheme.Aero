@@ -4523,4 +4523,305 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+
+  <!-- Expander ============================================================== -->
+
+  <SolidColorBrush x:Key="Expander.Glyph.Normal" Color="#80000000"/>
+  <SolidColorBrush x:Key="Expander.Glyph.Hot" Color="#BF1CC4F7"/>
+  <SolidColorBrush x:Key="Expander.Glyph.Pressed" Color="#BF1CC4F7"/>
+
+  <Geometry x:Key="ExpanderGlyphCollapsed">
+    F1 M0.88,2.12 2.119,0.881 6.119,4.881 6.737,5.5 2.119,10.119 0.881,8.881 4.881,4.881 5.5,5.5 4.881,6.119 0.881,2.119 z
+  </Geometry>
+
+  <Geometry x:Key="ExpanderGlyphExpanded">
+    F1 M0.88,2.12 2.119,0.881 6.119,4.881 5.5,5.5 4.881,4.881 8.881,0.881 10.119,2.119 5.5,6.737 4.881,6.119 0.881,2.119 z
+  </Geometry>
+
+  <Style x:Key="ExpanderHeaderFocusVisual">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border>
+            <Rectangle Margin="-1"
+                       SnapsToDevicePixels="True"
+                       Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                       StrokeThickness="1"
+                       StrokeDashArray="1 1"
+                       StrokeDashOffset="1.5"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ExpanderDownHeaderStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+            <Grid SnapsToDevicePixels="False">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Path x:Name="Glyph"
+                    Data="{StaticResource ExpanderGlyphCollapsed}"
+                    Fill="{StaticResource Expander.Glyph.Normal}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    SnapsToDevicePixels="False"/>
+              <ContentPresenter Grid.Column="1"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                RecognizesAccessKey="True"/>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExpanderGlyphExpanded}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ExpanderUpHeaderStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+            <Grid SnapsToDevicePixels="False">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="19"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Grid>
+                <Grid.LayoutTransform>
+                  <TransformGroup>
+                    <TransformGroup.Children>
+                      <RotateTransform Angle="-180"/>
+                    </TransformGroup.Children>
+                  </TransformGroup>
+                </Grid.LayoutTransform>
+                <Path x:Name="Glyph"
+                      Data="{StaticResource ExpanderGlyphCollapsed}"
+                      Fill="{StaticResource Expander.Glyph.Normal}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      SnapsToDevicePixels="False"/>
+              </Grid>
+              <ContentPresenter Grid.Column="1"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="True"
+                                RecognizesAccessKey="True"/>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExpanderGlyphExpanded}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ExpanderLeftHeaderStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+            <Grid SnapsToDevicePixels="False">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="19"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <Grid>
+                <Grid.LayoutTransform>
+                  <TransformGroup>
+                    <TransformGroup.Children>
+                      <RotateTransform Angle="90"/>
+                    </TransformGroup.Children>
+                  </TransformGroup>
+                </Grid.LayoutTransform>
+                <Path x:Name="Glyph"
+                      Data="{StaticResource ExpanderGlyphCollapsed}"
+                      Fill="{StaticResource Expander.Glyph.Normal}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      SnapsToDevicePixels="False"/>
+              </Grid>
+              <ContentPresenter Grid.Row="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                SnapsToDevicePixels="True"
+                                RecognizesAccessKey="True"/>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExpanderGlyphExpanded}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ExpanderRightHeaderStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+            <Grid SnapsToDevicePixels="False">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="19"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <Grid x:Name="Grid">
+                <Grid.LayoutTransform>
+                  <RotateTransform Angle="90"/>
+                </Grid.LayoutTransform>
+                <Path x:Name="Glyph"
+                      Data="{StaticResource ExpanderGlyphCollapsed}"
+                      Fill="{StaticResource Expander.Glyph.Normal}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      SnapsToDevicePixels="False"/>
+              </Grid>
+              <ContentPresenter Grid.Row="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                SnapsToDevicePixels="True"
+                                RecognizesAccessKey="True"/>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExpanderGlyphExpanded}"/>
+              <Setter TargetName="Grid" Property="LayoutTransform">
+                <Setter.Value>
+                  <RotateTransform Angle="-90"/>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Glyph" Property="Fill" Value="{StaticResource Expander.Glyph.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Expander}">
+          <Border BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Background="{TemplateBinding Background}"
+                  SnapsToDevicePixels="True">
+            <DockPanel>
+              <ToggleButton x:Name="HeaderSite"
+                            DockPanel.Dock="Top"
+                            Margin="1"
+                            MinWidth="0"
+                            MinHeight="0"
+                            Style="{StaticResource ExpanderDownHeaderStyle}"
+                            FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}"
+                            IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            Content="{TemplateBinding Header}"
+                            ContentTemplate="{TemplateBinding HeaderTemplate}"
+                            ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                            Foreground="{TemplateBinding Foreground}"
+                            Padding="{TemplateBinding Padding}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontStyle="{TemplateBinding FontStyle}"
+                            FontStretch="{TemplateBinding FontStretch}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+              <ContentPresenter x:Name="ExpandSite"
+                                DockPanel.Dock="Bottom"
+                                Visibility="Collapsed"
+                                Focusable="False"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Margin="{TemplateBinding Padding}"/>
+            </DockPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsExpanded" Value="True">
+              <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="ExpandDirection" Value="Right">
+              <Setter TargetName="ExpandSite" Property="DockPanel.Dock" Value="Right"/>
+              <Setter TargetName="HeaderSite" Property="DockPanel.Dock" Value="Left"/>
+              <Setter TargetName="HeaderSite" Property="Style" Value="{StaticResource ExpanderRightHeaderStyle}"/>
+            </Trigger>
+            <Trigger Property="ExpandDirection" Value="Up">
+              <Setter TargetName="ExpandSite" Property="DockPanel.Dock" Value="Top"/>
+              <Setter TargetName="HeaderSite" Property="DockPanel.Dock" Value="Bottom"/>
+              <Setter TargetName="HeaderSite" Property="Style" Value="{StaticResource ExpanderUpHeaderStyle}"/>
+            </Trigger>
+            <Trigger Property="ExpandDirection" Value="Left">
+              <Setter TargetName="ExpandSite" Property="DockPanel.Dock" Value="Left"/>
+              <Setter TargetName="HeaderSite" Property="DockPanel.Dock" Value="Right"/>
+              <Setter TargetName="HeaderSite" Property="Style" Value="{StaticResource ExpanderLeftHeaderStyle}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground"
+                      Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </ResourceDictionary>

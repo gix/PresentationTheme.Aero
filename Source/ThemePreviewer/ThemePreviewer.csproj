@@ -100,6 +100,9 @@
     <Compile Include="Samples\GroupBoxSampleWpf.xaml.cs">
       <DependentUpon>GroupBoxSampleWpf.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Samples\ExpanderSampleWpf.xaml.cs">
+      <DependentUpon>ExpanderSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Samples\ListBoxSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -302,6 +305,10 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Page Include="Samples\GroupBoxSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Samples\ExpanderSampleWpf.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
