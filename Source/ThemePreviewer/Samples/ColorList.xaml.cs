@@ -13,7 +13,6 @@
     using Microsoft.Win32;
     using StyleCore.Native;
 
-    /// <summary>Interaction logic for Colors.xaml</summary>
     internal partial class ColorList : INotifyPropertyChanged
     {
         /// <summary>

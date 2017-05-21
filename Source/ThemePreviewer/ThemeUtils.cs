@@ -1,7 +1,6 @@
 ﻿namespace ThemePreviewer
 {
     using System;
-    using StyleCore.Native;
 
     public static class ThemeUtils
     {

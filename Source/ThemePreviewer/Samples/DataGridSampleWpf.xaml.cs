@@ -3,9 +3,6 @@
     using System.Collections.Generic;
     using System.Windows.Controls;
 
-    /// <summary>
-    /// Interaction logic for WpfDataGridSample.xaml
-    /// </summary>
     public partial class DataGridSampleWpf : IOptionControl
     {
         public DataGridSampleWpf()

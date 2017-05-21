@@ -1,9 +1,7 @@
 ﻿namespace ThemePreviewer
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows.Forms;
 
     public static class ItemGenerator
     {

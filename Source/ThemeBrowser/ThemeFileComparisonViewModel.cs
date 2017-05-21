@@ -1,7 +1,6 @@
 namespace ThemeBrowser
 {
     using System;
-    using System.CodeDom;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;

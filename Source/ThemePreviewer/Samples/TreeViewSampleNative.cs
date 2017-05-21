@@ -5,7 +5,6 @@
     using System.Linq.Expressions;
     using System.Windows.Forms;
     using Controls;
-    using StyleCore.Native;
 
     public partial class TreeViewSampleNative : UserControl, IOptionControl
     {

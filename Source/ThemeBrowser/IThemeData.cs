@@ -1,12 +1,7 @@
 namespace ThemeBrowser
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using StyleCore;
     using StyleCore.Native;
     using Color = System.Windows.Media.Color;
 

@@ -1,7 +1,5 @@
 namespace StyleCore
 {
-    using System.Runtime.InteropServices;
-
     public enum HIGHCONTRASTCOLOR
     {
         ACTIVECAPTION = 0x0,
