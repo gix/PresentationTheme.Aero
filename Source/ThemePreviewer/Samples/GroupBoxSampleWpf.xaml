@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             x:Class="ThemePreviewer.Samples.GroupBoxSampleWpf"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="300"
+             Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}">
+  <StackPanel>
+    <GroupBox Margin="3" Header="Normal" Width="200" Height="50" HorizontalAlignment="Left">
+      <Button Content="Button"/>
+    </GroupBox>
+    <GroupBox Margin="3" Header="Disabled" Width="200" Height="50" HorizontalAlignment="Left" IsEnabled="False">
+      <Button Content="Button"/>
+    </GroupBox>
+    <GroupBox Margin="3" Header="Filled" Width="200" HorizontalAlignment="Left">
+      <Rectangle Fill="Blue" Height="30"/>
+    </GroupBox>
+    <GroupBox Margin="3" Header="Padding 10" Width="200" HorizontalAlignment="Left" Padding="10"
+              Background="LightBlue" BorderBrush="Red" BorderThickness="5">
+      <Rectangle Fill="Blue" Height="30"/>
+    </GroupBox>
+  </StackPanel>
+</UserControl>

@@ -91,6 +91,15 @@
     <Compile Include="ImagingUtils.cs" />
     <Compile Include="ProgressInfo.cs" />
     <Compile Include="ControlComparisonViewModel.cs" />
+    <Compile Include="Samples\GroupBoxSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\GroupBoxSampleNative.Designer.cs">
+      <DependentUpon>GroupBoxSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\GroupBoxSampleWpf.xaml.cs">
+      <DependentUpon>GroupBoxSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Samples\ListBoxSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -244,6 +253,9 @@
     <Compile Include="ThemeUtils.cs" />
     <Compile Include="UxThemeOverride.cs" />
     <Compile Include="ViewModel.cs" />
+    <EmbeddedResource Include="Samples\GroupBoxSampleNative.resx">
+      <DependentUpon>GroupBoxSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Samples\ListBoxSampleNative.resx">
       <DependentUpon>ListBoxSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -289,6 +301,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Samples\GroupBoxSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Samples\ListBoxSampleWpf.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -88,6 +88,8 @@ namespace PresentationTheme.HighContrast.Win10
                 case "Explorer.TreeViewItem.Foreground.HotSelected": return SystemColors.HighlightTextBrushKey;
                 case "Explorer.TreeViewItem.Foreground.SelectedNotFocus": return SystemColors.HighlightTextBrushKey;
 
+                case "GroupBox.Border": return SystemColors.ControlTextBrushKey;
+
                 case "Header.Background.Normal": return SystemColors.ControlBrushKey;
                 case "Header.Background.Hot": return SystemColors.ControlBrushKey;
                 case "Header.Background.Pressed": return SystemColors.ControlBrushKey;

@@ -42,6 +42,7 @@
     <Compile Include="ButtonChrome.cs" />
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="EqualsConverter.cs" />
+    <Compile Include="GroupBoxBorder.cs" />
     <Compile Include="LessThanOrEqualBinding.cs" />
     <Compile Include="ProgressBarChrome.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
