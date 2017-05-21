@@ -1,10 +1,7 @@
 ﻿namespace ThemePreviewer.Samples
 {
-    using System;
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
-    using System.Windows.Media.Animation;
 
     public partial class ButtonSampleWpf
     {
