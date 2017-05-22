@@ -1328,12 +1328,19 @@
     [VisualClass("TOOLBAR")]
     public enum TOOLBARPARTS
     {
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_BUTTON = 1,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_DROPDOWNBUTTON = 2,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_SPLITBUTTON = 3,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_SPLITBUTTONDROPDOWN = 4,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_SEPARATOR = 5,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_SEPARATORVERT = 6,
+        [VisualStates(typeof(TOOLBARSTYLESTATES))]
         TP_DROPDOWNBUTTONGLYPH = 7,
     }
 
