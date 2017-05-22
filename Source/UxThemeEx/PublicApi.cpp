@@ -263,15 +263,56 @@ static HRESULT MatchThemeApp(
     return MatchThemeClass(pszClassId, pThemeFile, piOffset, piClassNameOffset);
 }
 
-static ATOM const SubIdListProp = 0xA910;
-static ATOM const SubAppNameProp = 0xA911;
-static ATOM const UnkProp_A912 = 0xA912;
-static ATOM const WindowThemeProp = 0xA914;
-static ATOM const UnkProp_A915 = 0xA915;
+enum THEMEATOM
+{
+    THEMEATOM_Nil = -1,
+    THEMEATOM_SUBIDLIST = 0,
+    THEMEATOM_SUBAPPNAME = 1,
+    THEMEATOM_HTHEME = 2,
+    THEMEATOM_UNUSED = 3,
+    THEMEATOM_FLAGPROPERTIES = 4,
+    THEMEATOM_PRINTING = 5,
+    THEMEATOM_DLGTEXTURING = 6,
+    THEMEATOM_MENUWINDOW = 7,
+    THEMEATOM_NONCLIENT = 8,
+    THEMEATOM_DWM_NCRENDERINGPOLICY = 9,
+    THEMEATOM_SHAKE = 10,
+    THEMEATOM_TAB = 11,
+    THEMEATOM_CUSTOM = 12,
+    THEMEATOM_TOUCHSCROLLFEEDBACK = 13,
+    THEMEATOM_Count = 14,
+};
+
+static ATOM const ThemeAtomBase = 0xA910;
+static ATOM const SubIdListProp = ThemeAtomBase + THEMEATOM_SUBIDLIST;
+static ATOM const SubAppNameProp = ThemeAtomBase + THEMEATOM_SUBAPPNAME;
+static ATOM const HThemeProp = ThemeAtomBase + THEMEATOM_HTHEME;
+
+static LPCWSTR MakeAtom(ATOM atom)
+{
+    return reinterpret_cast<LPCWSTR>(atom);
+}
+
+static void RemoveThemeProp(HWND hwnd, THEMEATOM atom)
+{
+    RemovePropW(hwnd, MakeAtom(ThemeAtomBase + atom));
+}
+
+static unsigned GetIntProp(HWND hwnd, THEMEATOM atom)
+{
+    auto handle = GetPropW(hwnd, MakeAtom(ThemeAtomBase + atom));
+    return narrow_cast<unsigned>(reinterpret_cast<uintptr_t>(handle));
+}
+
+static void SetIntProp(HWND hwnd, THEMEATOM atom, unsigned value)
+{
+    SetPropW(hwnd, MakeAtom(ThemeAtomBase + atom),
+             reinterpret_cast<HANDLE>(static_cast<uintptr_t>(value)));
+}
 
 static bool GetStringProp(HWND hwnd, ATOM prop, wchar_t* buffer, size_t bufferSize)
 {
-    auto handle = GetPropW(hwnd, reinterpret_cast<LPCWSTR>(prop));
+    auto handle = GetPropW(hwnd, MakeAtom(prop));
     if (!handle)
         return false;
 
@@ -379,7 +420,7 @@ HTHEME OpenThemeDataExInternal(
         return nullptr;
 
     if (!(dwFlags & OTD_NONCLIENT) && hwnd)
-        SetPropW(hwnd, (LPCWSTR)UnkProp_A912, hTheme);
+        SetPropW(hwnd, (LPCWSTR)HThemeProp, hTheme);
 
     return hTheme;
 }
@@ -1616,7 +1657,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
         return E_HANDLE;
 
     HWND hwndParent = GetParent(hwnd);
-    if ((uintptr_t)GetPropW(hwndParent, (LPCWSTR)UnkProp_A915) & 1)
+    if (GetIntProp(hwndParent, THEMEATOM_PRINTING) & 1)
         return S_FALSE;
 
     SaveClipRegion csrPrevClip;
@@ -1637,7 +1678,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
         }
 
         MapWindowPoints(v13, hwndParent, (LPPOINT)&rects, 2u);
-        SetPropW(hwndParent, (LPCWSTR)UnkProp_A915, (HANDLE)1);
+        SetIntProp(hwndParent, THEMEATOM_PRINTING, 1);
 
         UINT flags = 0;
         if (dwFlags & DTPB_USEERASEBKGND)
@@ -1657,7 +1698,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
 
         SetViewportOrgEx(hdc, point.x, point.y, nullptr);
 
-        char prop = (uintptr_t)GetPropW(hwndParent, (LPCWSTR)UnkProp_A915);
+        BYTE prop = GetIntProp(hwndParent, THEMEATOM_PRINTING);
         if (prop & 2) {
             if (!(prop & 4) && dwFlags & DTPB_USEERASEBKGND && bounds != 0) {
                 hr = 0;
@@ -1712,7 +1753,7 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(
             }
         }
 
-        RemovePropW(hwndParent, (LPCWSTR)UnkProp_A915);
+        RemoveThemeProp(hwndParent, THEMEATOM_PRINTING);
     }
 
     csrPrevClip.Restore(hdc);
