@@ -225,6 +225,28 @@ namespace PresentationTheme.HighContrast.Win10
                 case "TextBox.Border.ReadOnly.Color": return SystemColors.ControlTextColorKey;
                 case "TextBox.Border.Disabled.Color": return SystemColors.GrayTextColorKey;
 
+                case "ToolBar.Tray.Background": return SystemColors.ControlBrushKey;
+                case "ToolBar.Tray.Border": return SystemColors.ControlBrushKey;
+                case "ToolBar.Background": return SystemColors.ControlBrushKey;
+                case "ToolBar.TextBox.Background.Normal": return SystemColors.ControlBrushKey;
+                case "ToolBar.TextBox.Background.Disabled": return SystemColors.ControlBrushKey;
+                case "ToolBar.TextBox.Border.Normal": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.TextBox.Border.Hot": return SystemColors.HotTrackBrushKey;
+                case "ToolBar.TextBox.Border.Focused": return SystemColors.HotTrackBrushKey;
+                case "ToolBar.TextBox.Border.Disabled": return SystemColors.GrayTextBrushKey;
+                case "ToolBar.Gripper.Fill": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.Separator.Background": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.Button.Background.Normal": return SystemColors.ControlBrushKey;
+                case "ToolBar.Button.Background.Hot": return SystemColors.HighlightBrushKey;
+                case "ToolBar.Button.Background.Pressed": return SystemColors.ControlBrushKey;
+                case "ToolBar.Button.Background.Checked": return SystemColors.ControlBrushKey;
+                case "ToolBar.Button.Background.Disabled": return SystemColors.ControlBrushKey;
+                case "ToolBar.Button.Border.Normal": return SystemColors.ControlBrushKey;
+                case "ToolBar.Button.Border.Hot": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.Button.Border.Pressed": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.Button.Border.Checked": return SystemColors.ControlTextBrushKey;
+                case "ToolBar.Button.Border.Disabled": return SystemColors.ControlBrushKey;
+
                 case "TreeView.Background.Normal": return SystemColors.ControlBrushKey;
                 case "TreeView.Border.Normal": return SystemColors.ControlTextBrushKey;
 

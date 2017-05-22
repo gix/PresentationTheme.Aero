@@ -170,6 +170,15 @@
     <Compile Include="Samples\TextBoxSampleWpf.xaml.cs">
       <DependentUpon>TextBoxSampleWpf.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Samples\ToolBarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\ToolBarSampleNative.Designer.cs">
+      <DependentUpon>ToolBarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\ToolBarSampleWpf.xaml.cs">
+      <DependentUpon>ToolBarSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Samples\TrackbarSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -304,6 +313,9 @@
     <EmbeddedResource Include="Samples\TextBoxSampleNative.resx">
       <DependentUpon>TextBoxSampleNative.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Samples\ToolBarSampleNative.resx">
+      <DependentUpon>ToolBarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Samples\TrackbarSampleNative.resx">
       <DependentUpon>TrackbarSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -345,6 +357,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Samples\TextBoxSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\ToolBarSampleWpf.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

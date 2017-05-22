@@ -4806,4 +4806,840 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+
+  <!-- ToolBar ============================================================= -->
+
+  <Style x:Key="ToolBarMainPanelBorderStyle" TargetType="{x:Type Border}">
+    <Setter Property="Margin" Value="0,0,11,0"/>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.SeparatorStyleKey}" TargetType="{x:Type Separator}">
+    <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.Separator.Background}"/>
+    <Setter Property="MinWidth" Value="1"/>
+    <Setter Property="MinHeight" Value="1"/>
+    <Setter Property="Margin" Value="2,2,2,2"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Separator}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  SnapsToDevicePixels="True"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <Border x:Name="Border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Disabled}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Disabled}"/>
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border x:Name="Border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Checked}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Checked}"/>
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsMouseOver" Value="True"/>
+                <Condition Property="IsChecked" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.CheckBoxStyleKey}"
+         BasedOn="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+         TargetType="{x:Type CheckBox}"/>
+
+  <Style x:Key="{x:Static ToolBar.RadioButtonStyleKey}"
+         BasedOn="{StaticResource {x:Static ToolBar.ToggleButtonStyleKey}}"
+         TargetType="{x:Type RadioButton}"/>
+
+  <Style x:Key="ToolBar.ComboBox.DropDownButtonStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Width" Value="Auto"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Focusable" Value="False"/>
+    <Setter Property="ClickMode" Value="Press"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Grid Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxButton"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="Chrome"
+                    Grid.Column="1"
+                    Width="13"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="True">
+              <Path x:Name="ArrowDownPath"
+                    Data="M 2.5,0 8.5,0 5.5,3 Z"
+                    Fill="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                    VerticalAlignment="Center"/>
+            </Border>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsMouseOver" Value="True"/>
+                <Condition Property="IsChecked" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Hot}"/>
+            </MultiTrigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Focused}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Focused}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Chrome" Property="Background" Value="{x:Null}"/>
+              <Setter TargetName="Chrome" Property="BorderBrush" Value="{x:Null}"/>
+              <Setter TargetName="ArrowDownPath" Property="Fill" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.ComboBoxStyleKey}" TargetType="{x:Type ComboBox}">
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.TextBox.Background.Normal}"/>
+    <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Normal}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Margin" Value="1,0"/>
+    <Setter Property="Padding" Value="1"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+    <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="MinHeight" Value="18"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ComboBox}">
+          <Grid SnapsToDevicePixels="True">
+            <Grid Grid.IsSharedSizeScope="True">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxButton"/>
+              </Grid.ColumnDefinitions>
+              <Border x:Name="Border"
+                      Grid.ColumnSpan="2"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"/>
+              <Border x:Name="SelectedContentBorder" Margin="2">
+                <ContentPresenter x:Name="ContentSite"
+                                  Content="{TemplateBinding SelectionBoxItem}"
+                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                  Margin="{TemplateBinding Padding}"
+                                  VerticalAlignment="Center"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              </Border>
+              <ToggleButton x:Name="DropDownButton"
+                            Grid.ColumnSpan="2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Style="{StaticResource ToolBar.ComboBox.DropDownButtonStyle}"
+                            IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+              <TextBox x:Name="PART_EditableTextBox"
+                       Padding="{TemplateBinding Padding}"
+                       Margin="1"
+                       MinHeight="18"
+                       Style="{StaticResource ComboBox.Editable.TextBox}"
+                       Visibility="Collapsed"
+                       IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
+                       VerticalAlignment="Center"/>
+            </Grid>
+            <Popup x:Name="PART_Popup"
+                   AllowsTransparency="True"
+                   Placement="Bottom"
+                   IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                   Focusable="False"
+                   PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+              <aero10:SystemDropShadowChrome x:Name="Shdw"
+                                             Color="Transparent"
+                                             MinWidth="{TemplateBinding ActualWidth}"
+                                             MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                <Border x:Name="DropDownBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{aero10:SystemAliasResource Menu.Popup.Border}"
+                        BorderThickness="1">
+                  <ScrollViewer x:Name="DropDownScrollViewer">
+                    <Grid RenderOptions.ClearTypeHint="Enabled">
+                      <Canvas Width="0" Height="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Rectangle
+                          x:Name="OpaqueRect"
+                          Width="{Binding ActualWidth, ElementName=DropDownBorder}"
+                          Height="{Binding ActualHeight, ElementName=DropDownBorder}"
+                          Fill="{Binding Background, ElementName=DropDownBorder}"/>
+                      </Canvas>
+                      <ItemsPresenter x:Name="ItemsPresenter"
+                                      KeyboardNavigation.DirectionalNavigation="Contained"/>
+                    </Grid>
+                  </ScrollViewer>
+                </Border>
+              </aero10:SystemDropShadowChrome>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsKeyboardFocusWithin" Value="True"/>
+                <Condition Property="IsDropDownOpen" Value="False"/>
+                <Condition Property="IsEditable" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter TargetName="SelectedContentBorder" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+            </MultiTrigger>
+            <Trigger Property="IsEditable" Value="True">
+              <Setter TargetName="ContentSite" Property="Visibility" Value="Collapsed"/>
+              <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Focused}"/>
+            </Trigger>
+            <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+              <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
+              <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
+              <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
+            </Trigger>
+            <Trigger Property="HasItems" Value="False">
+              <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsGrouping" Value="True"/>
+                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsKeyboardFocusWithin" Value="True"/>
+                <Condition Property="IsDropDownOpen" Value="False"/>
+                <Condition Property="IsEditable" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+            </MultiTrigger>
+            <Trigger Property="IsEditable" Value="True">
+              <Setter Property="Padding" Value="2"/>
+              <Setter Property="IsTabStop" Value="False"/>
+            </Trigger>
+            <Trigger SourceName="DropDownScrollViewer"
+                     Property="ScrollViewer.CanContentScroll" Value="False">
+              <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+              <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.TextBox.Background.Disabled}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Disabled}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.TextBoxStyleKey}" TargetType="{x:Type TextBox}">
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+    <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.TextBox.Background.Normal}"/>
+    <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Normal}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Margin" Value="1,0"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="MinHeight" Value="18"/>
+    <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type TextBox}">
+          <Border x:Name="Border"
+                  Background="{TemplateBinding Background}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  SnapsToDevicePixels="True">
+            <ScrollViewer x:Name="PART_ContentHost"
+                          VerticalAlignment="Center"
+                          MinHeight="18"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Focused}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+              <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource ToolBar.TextBox.Background.Disabled}"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Disabled}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="{x:Type Menu}">
+    <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
+    <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
+    <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>
+    <Setter Property="FontWeight" Value="{DynamicResource {x:Static SystemFonts.MenuFontWeightKey}}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
+    <Setter Property="Background" Value="{x:Null}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue"/>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Menu}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Resources>
+      <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, TopLevelItemTemplateKey}"
+                       TargetType="{x:Type MenuItem}">
+        <Border x:Name="TemplateRoot"
+                SnapsToDevicePixels="True"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}">
+          <Grid VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ContentPresenter x:Name="Icon"
+                              ContentSource="Icon"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"
+                              Width="16"
+                              Height="16"
+                              Margin="2"/>
+            <Path x:Name="GlyphBorder"
+                  Data="{StaticResource Menu.CheckmarkGlyph}"
+                  FlowDirection="LeftToRight"
+                  Margin="2,-2"
+                  Width="16"
+                  Height="16"
+                  Visibility="Collapsed"
+                  VerticalAlignment="Center"
+                  Fill="{aero10:SystemAliasResource Menu.PopupCheck.Normal.Foreground}"/>
+            <ContentPresenter Grid.Column="1"
+                              ContentSource="Header"
+                              RecognizesAccessKey="True"
+                              Margin="{TemplateBinding Padding}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="Icon" Value="{x:Null}">
+            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+          </Trigger>
+          <Trigger Property="IsChecked" Value="True">
+            <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
+            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+          </Trigger>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Hot}"/>
+          </Trigger>
+          <Trigger Property="IsSubmenuOpen" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+          </Trigger>
+          <Trigger Property="IsPressed" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+          </Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+            <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                    Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
+            <Setter TargetName="GlyphBorder" Property="Fill"
+                    Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
+          </Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+
+      <ControlTemplate x:Key="{ComponentResourceKey {x:Type MenuItem}, TopLevelHeaderTemplateKey}"
+                       TargetType="{x:Type MenuItem}">
+        <Border x:Name="TemplateRoot"
+                SnapsToDevicePixels="True"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}">
+          <Grid VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ContentPresenter x:Name="Icon"
+                              ContentSource="Icon"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"
+                              Width="16"
+                              Height="16"
+                              Margin="2"/>
+            <Path x:Name="GlyphBorder"
+                  Data="{StaticResource Menu.CheckmarkGlyph}"
+                  FlowDirection="LeftToRight"
+                  Margin="2"
+                  Width="16"
+                  Height="16"
+                  Visibility="Collapsed"
+                  VerticalAlignment="Center"
+                  Fill="{TemplateBinding Menu.Foreground}"/>
+            <ContentPresenter Grid.Column="1"
+                              ContentSource="Header"
+                              RecognizesAccessKey="True"
+                              Margin="{TemplateBinding Padding}"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+            <Popup x:Name="PART_Popup"
+                   AllowsTransparency="True"
+                   Focusable="False"
+                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
+                   Placement="Bottom"
+                   PlacementTarget="{Binding ElementName=TemplateRoot}">
+              <aero10:SystemDropShadowChrome x:Name="Shdw" Color="Transparent">
+                <Border x:Name="SubMenuBorder"
+                        Background="{aero10:SystemAliasResource Menu.Popup.Background}"
+                        BorderBrush="{aero10:SystemAliasResource Menu.Popup.Border}"
+                        BorderThickness="1"
+                        Padding="2">
+                  <ScrollViewer x:Name="SubMenuScrollViewer"
+                                Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
+                    <Grid RenderOptions.ClearTypeHint="Enabled">
+                      <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Rectangle
+                          x:Name="OpaqueRect"
+                          Height="{Binding ActualHeight, ElementName=SubMenuBorder}"
+                          Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
+                          Fill="{Binding Background, ElementName=SubMenuBorder}"/>
+                      </Canvas>
+                      <Border x:Name="PopupGutter"
+                              HorizontalAlignment="Left"
+                              Width="28"
+                              Background="{aero10:SystemAliasResource Menu.PopupGutter.Background}"
+                              BorderBrush="{aero10:SystemAliasResource Menu.PopupGutter.Border}"
+                              BorderThickness="0,0,1,0"/>
+                      <ItemsPresenter x:Name="ItemsPresenter"
+                                      KeyboardNavigation.DirectionalNavigation="Cycle"
+                                      KeyboardNavigation.TabNavigation="Cycle"
+                                      Grid.IsSharedSizeScope="True"
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Grid>
+                  </ScrollViewer>
+                </Border>
+              </aero10:SystemDropShadowChrome>
+            </Popup>
+          </Grid>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+            <Setter TargetName="PART_Popup" Property="PopupAnimation" Value="None"/>
+          </Trigger>
+          <Trigger Property="Icon" Value="{x:Null}">
+            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+          </Trigger>
+          <Trigger Property="IsChecked" Value="True">
+            <Setter TargetName="GlyphBorder" Property="Visibility" Value="Visible"/>
+            <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
+          </Trigger>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Hot}"/>
+          </Trigger>
+          <Trigger Property="IsSubmenuOpen" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+          </Trigger>
+          <Trigger Property="IsPressed" Value="True">
+            <Setter TargetName="TemplateRoot" Property="Background"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Background.Pressed}"/>
+            <Setter TargetName="TemplateRoot" Property="BorderBrush"
+                    Value="{aero10:SystemAliasResource ToolBar.Button.Border.Pressed}"/>
+          </Trigger>
+          <Trigger Property="IsEnabled" Value="False">
+            <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                    Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
+            <Setter TargetName="GlyphBorder" Property="Fill"
+                    Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
+          </Trigger>
+          <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+            <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
+            <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
+          </Trigger>
+          <Trigger SourceName="SubMenuScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
+            <Setter TargetName="OpaqueRect" Property="Canvas.Top"
+                    Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+            <Setter TargetName="OpaqueRect" Property="Canvas.Left"
+                    Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+          </Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate>
+
+      <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
+        <Style.Triggers>
+          <Trigger Property="Role" Value="TopLevelHeader">
+            <Setter Property="Padding" Value="6,2"/>
+          </Trigger>
+          <Trigger Property="Role" Value="TopLevelItem">
+            <Setter Property="Padding" Value="6,2"/>
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+    </Style.Resources>
+  </Style>
+
+  <Style x:Key="ToolBar.ThumbStyle" TargetType="{x:Type Thumb}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Thumb}">
+          <Border Background="Transparent"
+                  Padding="{TemplateBinding Padding}"
+                  SnapsToDevicePixels="True">
+            <Rectangle>
+              <Rectangle.Fill>
+                <DrawingBrush Viewbox="0,0,4,4"
+                              Viewport="0,0,4,4"
+                              TileMode="Tile"
+                              ViewportUnits="Absolute"
+                              ViewboxUnits="Absolute">
+                  <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                      <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#B2FFFFFF"
+                                         Geometry="M 1,1 1,3 3,3 3,1 z"/>
+                        <GeometryDrawing Brush="#3C000000"
+                                         Geometry="M 0,0 0,2 2,2 2,0 z"/>
+                      </DrawingGroup.Children>
+                    </DrawingGroup>
+                  </DrawingBrush.Drawing>
+                </DrawingBrush>
+              </Rectangle.Fill>
+            </Rectangle>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="Cursor" Value="SizeAll"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ToolBarHorizontalOverflowButtonStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border x:Name="Bd"
+                  Background="{TemplateBinding Background}"
+                  SnapsToDevicePixels="True">
+            <Canvas Width="6"
+                    Height="7"
+                    Margin="7,2,2,2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    SnapsToDevicePixels="True">
+              <Path Stroke="{TemplateBinding Foreground}" Data="M 0 0.5 L 5 0.5"/>
+              <Path Fill="{TemplateBinding Foreground}" Data="M -0.5 3 L 5.5 3 L 2.5 6 Z"/>
+            </Canvas>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Checked}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{aero10:SystemAliasResource ToolBar.Gripper.Fill}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="ToolBarVerticalOverflowButtonStyle" TargetType="{x:Type ToggleButton}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToggleButton}">
+          <Border x:Name="Bd"
+                  Background="{TemplateBinding Background}"
+                  SnapsToDevicePixels="True">
+            <Canvas Width="7"
+                    Height="6"
+                    Margin="2,7,2,2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    SnapsToDevicePixels="True">
+              <Path Stroke="White" Data="M 1.5 1 L 1.5 6"/>
+              <Path Stroke="{TemplateBinding Foreground}" Data="M 0.5 0 L 0.5 5"/>
+              <Path Fill="White" Data="M 3.5 0.5 L 7 3.5 L 4 6.5 Z"/>
+              <Path Fill="{TemplateBinding Foreground}" Data="M 3 -0.5 L 6 2.5 L 3 5.5 Z"/>
+            </Canvas>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Hot}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource ToolBar.Button.Background.Checked}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{aero10:SystemAliasResource ToolBar.Gripper.Fill}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Type ToolBar}" TargetType="{x:Type ToolBar}">
+    <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.Background}"/>
+    <Setter Property="Padding" Value="1"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToolBar}">
+          <Grid x:Name="Grid" SnapsToDevicePixels="True">
+            <Grid x:Name="OverflowGrid" HorizontalAlignment="Right">
+              <ToggleButton x:Name="OverflowButton"
+                            FocusVisualStyle="{x:Null}"
+                            IsEnabled="{TemplateBinding HasOverflowItems}"
+                            Style="{StaticResource ToolBarHorizontalOverflowButtonStyle}"
+                            IsChecked="{Binding IsOverflowOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            ClickMode="Press"/>
+              <Popup x:Name="OverflowPopup"
+                     AllowsTransparency="True"
+                     Placement="Bottom"
+                     IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                     StaysOpen="False"
+                     Focusable="False"
+                     PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                <aero10:SystemDropShadowChrome x:Name="Shdw" Color="Transparent">
+                  <Border x:Name="ToolBarSubMenuBorder"
+                          Background="{aero10:SystemAliasResource ToolBar.Background}"
+                          BorderBrush="{aero10:SystemAliasResource Menu.Popup.Border}"
+                          BorderThickness="1"
+                          RenderOptions.ClearTypeHint="Enabled">
+                    <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel"
+                                          Margin="2"
+                                          WrapWidth="200"
+                                          Focusable="True"
+                                          FocusVisualStyle="{x:Null}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          KeyboardNavigation.TabNavigation="Cycle"
+                                          KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                  </Border>
+                </aero10:SystemDropShadowChrome>
+              </Popup>
+            </Grid>
+            <Border x:Name="MainPanelBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}"
+                    Style="{StaticResource ToolBarMainPanelBorderStyle}">
+              <DockPanel KeyboardNavigation.TabIndex="1"
+                         KeyboardNavigation.TabNavigation="Local">
+                <Thumb x:Name="ToolBarThumb"
+                       Style="{StaticResource ToolBar.ThumbStyle}"
+                       Width="8"
+                       Padding="3,4,2,4"/>
+                <ContentPresenter x:Name="ToolBarHeader"
+                                  ContentSource="Header"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Margin="4,0,4,0"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                <ToolBarPanel x:Name="PART_ToolBarPanel"
+                              IsItemsHost="True"
+                              Margin="0,1,2,1"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              </DockPanel>
+            </Border>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsOverflowOpen" Value="True">
+              <Setter TargetName="ToolBarThumb" Property="IsEnabled" Value="False"/>
+            </Trigger>
+            <Trigger Property="Header" Value="{x:Null}">
+              <Setter TargetName="ToolBarHeader" Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+            <Trigger Property="ToolBarTray.IsLocked" Value="True">
+              <Setter TargetName="ToolBarThumb" Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+            <Trigger SourceName="OverflowPopup"
+                     Property="Popup.HasDropShadow" Value="True">
+              <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
+              <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
+              <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
+            </Trigger>
+            <Trigger Property="Orientation" Value="Vertical">
+              <Setter TargetName="OverflowButton" Property="Style" Value="{StaticResource ToolBarVerticalOverflowButtonStyle}"/>
+              <Setter TargetName="ToolBarThumb" Property="Width" Value="Auto"/>
+              <Setter TargetName="ToolBarThumb" Property="Height" Value="8"/>
+              <Setter TargetName="ToolBarThumb" Property="Padding" Value="4,3,4,2"/>
+              <Setter TargetName="ToolBarHeader" Property="Margin" Value="0,4,0,4"/>
+              <Setter TargetName="PART_ToolBarPanel" Property="Margin" Value="1,0,1,2"/>
+              <Setter TargetName="ToolBarThumb" Property="DockPanel.Dock" Value="Top"/>
+              <Setter TargetName="ToolBarHeader" Property="DockPanel.Dock" Value="Top"/>
+              <Setter TargetName="OverflowGrid" Property="HorizontalAlignment" Value="Stretch"/>
+              <Setter TargetName="OverflowGrid" Property="VerticalAlignment" Value="Bottom"/>
+              <Setter TargetName="OverflowPopup" Property="Placement" Value="Right"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="{x:Type ToolBarTray}" TargetType="{x:Type ToolBarTray}">
+    <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.Tray.Background}"/>
+  </Style>
 </ResourceDictionary>
