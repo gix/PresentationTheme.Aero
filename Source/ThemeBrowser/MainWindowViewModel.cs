@@ -539,14 +539,15 @@
                 });
         }
 
-        private void DumpThemePart(IntPtr hwnd, string className, ThemePartViewModel part, ThemeStateViewModel state)
+        private void DumpThemePart(
+            IntPtr hwnd, string className, ThemePartViewModel part,
+            ThemeStateViewModel state)
         {
             var themeFileModel = (themeFile as ThemeFileViewModel)?.ThemeFile;
             if (themeFileModel == null)
                 return;
 
             hwnd = IntPtr.Zero;
-            using (IThemeData nativeTheme = ThemeData.Open(hwnd, className))
             using (IThemeData theme = UxThemeExData.Open(themeFileModel.NativeThemeFile, hwnd, className)) {
                 if (!theme.IsValid)
                     return;
@@ -558,8 +559,6 @@
 
                 foreach (var entry in EnumThemeProperties()) {
                     int propId = entry.Item1;
-                    foreach (var p in EnumPropertyValues(nativeTheme, partId, stateId, propId))
-                        AllProperties.Add(p);
                     foreach (var p in EnumPropertyValues(theme, partId, stateId, propId))
                         AllProperties.Add(p);
                 }
