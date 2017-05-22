@@ -91,9 +91,6 @@ namespace ThemePreviewer
 
         public async Task SetPresentationFrameworkTheme(Dispatcher dispatcher, Uri resourceUri)
         {
-            ThemeHelper.ClearPresentationFrameworkTheme();
-            UxThemeExNativeMethods.UxBroadcastThemeChange();
-
             if (resourceUri != null) {
                 await dispatcher.InvokeAsync(() => {
                     ThemeHelper.SetPresentationFrameworkTheme(resourceUri);
