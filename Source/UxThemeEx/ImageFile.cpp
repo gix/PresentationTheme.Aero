@@ -1458,7 +1458,7 @@ static HRESULT ScaleRectsAndCreateRegion(
         auto pptSrc = reinterpret_cast<POINT const*>(prd->Buffer);
         auto pptAlloc = reinterpret_cast<POINT*>(dstRgnData->Buffer);
 
-        for (int i = v28; i; ++pptSrc, ++pptAlloc, ++v30) {
+        for (int i = v28; i; --i, ++pptSrc, ++pptAlloc, ++v30) {
             auto v310 = *v30;
             if (v310 == 0) {
                 pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
