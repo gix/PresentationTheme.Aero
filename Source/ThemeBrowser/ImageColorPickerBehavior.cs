@@ -1,7 +1,9 @@
 namespace ThemeBrowser
 {
+    using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using System.Windows.Interactivity;
     using System.Windows.Media;
@@ -9,6 +11,68 @@ namespace ThemeBrowser
 
     public class ImageColorPickerBehavior : Behavior<Image>
     {
+        private readonly ToolTip toolTip = new ToolTip {
+            Placement = PlacementMode.Absolute
+        };
+        private Optional<object> oldToolTip = new Optional<object>();
+        private Optional<Cursor> oldCursor = new Optional<Cursor>();
+        private bool suppressMouseUp;
+
+        private struct Optional<T>
+        {
+            public T Value { get; private set; }
+            public bool HasValue { get; private set; }
+
+            public T Clear()
+            {
+                T ret = Value;
+                Value = default(T);
+                HasValue = false;
+                return ret;
+            }
+
+            public void Set(T value)
+            {
+                Value = value;
+                HasValue = true;
+            }
+
+            public void SetIfEmpty(T value)
+            {
+                if (!HasValue) {
+                    Value = value;
+                    HasValue = true;
+                }
+            }
+        }
+
+        private static readonly DependencyPropertyKey PixelColorPremultipliedPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(PixelColorPremultiplied),
+                typeof(Color?),
+                typeof(ImageColorPickerBehavior),
+                new PropertyMetadata(null, OnPixelColorPremultipliedChanged));
+
+        public static readonly DependencyProperty PixelColorPremultipliedProperty =
+            PixelColorPremultipliedPropertyKey.DependencyProperty;
+
+        public Color? PixelColorPremultiplied
+        {
+            get => (Color?)GetValue(PixelColorPremultipliedProperty);
+            private set => SetValue(PixelColorPremultipliedPropertyKey, value);
+        }
+
+        private static void OnPixelColorPremultipliedChanged(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var source = (ImageColorPickerBehavior)d;
+            var newColor = (Color?)e.NewValue;
+            if (newColor != null)
+                source.PixelColor = Unpremultiply(newColor.Value);
+            else
+                source.PixelColor = null;
+        }
+
         private static readonly DependencyPropertyKey PixelColorPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(PixelColor),
@@ -31,10 +95,15 @@ namespace ThemeBrowser
             AssociatedObject.MouseEnter += OnMouseEnter;
             AssociatedObject.MouseMove += OnMouseMove;
             AssociatedObject.MouseLeave += OnMouseLeave;
+            AssociatedObject.MouseDown += OnMouseDown;
+            AssociatedObject.MouseUp += OnMouseUp;
         }
 
         protected override void OnDetaching()
         {
+            HidePicker();
+            AssociatedObject.MouseUp -= OnMouseUp;
+            AssociatedObject.MouseDown -= OnMouseDown;
             AssociatedObject.MouseLeave -= OnMouseLeave;
             AssociatedObject.MouseMove -= OnMouseMove;
             AssociatedObject.MouseEnter -= OnMouseEnter;
@@ -55,6 +124,8 @@ namespace ThemeBrowser
 
         private void OnMouseLeave(object sender, MouseEventArgs args)
         {
+            HidePicker();
+
             var window = Window.GetWindow(AssociatedObject);
             if (window == null)
                 return;
@@ -65,28 +136,87 @@ namespace ThemeBrowser
                 Keyboard.PreviewKeyUpEvent, new KeyEventHandler(OnKeyUp));
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs args)
-        {
-            if (args.Key != Key.LeftShift && args.Key != Key.LeftShift)
-                return;
-
-            AssociatedObject.Cursor = Cursors.Cross;
-            Point point = Mouse.GetPosition(AssociatedObject);
-            PixelColor = GetPixelColor(AssociatedObject, point);
-        }
-
-        private void OnKeyUp(object sender, KeyEventArgs args)
-        {
-            AssociatedObject.Cursor = null;
-        }
-
-        private void OnMouseMove(object sender, MouseEventArgs args)
+        private void OnMouseDown(object sender, MouseButtonEventArgs args)
         {
             if (Keyboard.Modifiers != ModifierKeys.Shift)
                 return;
 
-            Point point = args.GetPosition(AssociatedObject);
-            PixelColor = GetPixelColor(AssociatedObject, point);
+            Color? color = null;
+            switch (args.ChangedButton) {
+                case MouseButton.Left:
+                    color = PixelColor;
+                    break;
+                case MouseButton.Right:
+                    color = PixelColorPremultiplied;
+                    break;
+            }
+
+            if (color != null) {
+                Clipboard.SetText(color.Value.ToString());
+                args.Handled = true;
+                suppressMouseUp = true;
+            }
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs args)
+        {
+            if (suppressMouseUp) {
+                args.Handled = true;
+                suppressMouseUp = false;
+            }
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs args)
+        {
+            if (args.Key == Key.LeftShift || args.Key == Key.LeftShift)
+                DoPick();
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs args)
+        {
+            if (args.Key == Key.LeftShift || args.Key == Key.LeftShift)
+                HidePicker();
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs args)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+                DoPick();
+        }
+
+        private void DoPick()
+        {
+            if (!toolTip.IsOpen)
+                ShowPicker();
+
+            Point localPos = Mouse.GetPosition(AssociatedObject);
+            PixelColorPremultiplied = GetPixelColor(AssociatedObject, localPos);
+
+            Point screenPos = AssociatedObject.PointToScreen(localPos);
+            toolTip.HorizontalOffset = screenPos.X + 10;
+            toolTip.VerticalOffset = screenPos.Y + 10;
+            toolTip.Content =
+                "Color: " + PixelColor + "\n" +
+                "Color (Premultiplied): " + PixelColorPremultiplied;
+        }
+
+        private void ShowPicker()
+        {
+            oldCursor.SetIfEmpty(AssociatedObject.Cursor);
+            oldToolTip.SetIfEmpty(AssociatedObject.ToolTip);
+
+            AssociatedObject.Cursor = Cursors.Cross;
+            AssociatedObject.ToolTip = toolTip;
+            toolTip.IsOpen = true;
+        }
+
+        private void HidePicker()
+        {
+            toolTip.IsOpen = false;
+            if (oldToolTip.HasValue)
+                AssociatedObject.Cursor = oldCursor.Clear();
+            if (oldToolTip.HasValue)
+                AssociatedObject.ToolTip = oldToolTip.Clear();
         }
 
         private static bool IsIdentityOrNull(Transform transform)
@@ -131,6 +261,24 @@ namespace ThemeBrowser
             cropped.CopyPixels(pixels, 4, 0);
 
             return Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
+        }
+
+        private static Color Unpremultiply(Color argb)
+        {
+            double a = argb.A / 255.0;
+            double r = argb.R / 255.0;
+            double g = argb.G / 255.0;
+            double b = argb.B / 255.0;
+
+            r /= a;
+            g /= a;
+            b /= a;
+
+            var ba = (byte)Math.Round(a * 255);
+            var br = (byte)Math.Round(r * 255);
+            var bg = (byte)Math.Round(g * 255);
+            var bb = (byte)Math.Round(b * 255);
+            return Color.FromArgb(ba, br, bg, bb);
         }
     }
 }

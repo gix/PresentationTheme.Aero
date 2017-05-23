@@ -156,8 +156,6 @@
           <TextBlock Text=" Zoom:"/>
           <Slider x:Name="ZoomSlider" Value="1" Minimum="1" Maximum="20" Width="100"
                   IsSnapToTickEnabled="True" TickFrequency="1"/>
-          <TextBox IsReadOnly="True" FontFamily="Consolas"
-                   Text="{Binding PixelColor, ElementName=imageColorPicker, Mode=OneWay}"/>
         </StackPanel>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#CCCCCC"
                 Background="{StaticResource CheckeredBrush}" Margin="5"

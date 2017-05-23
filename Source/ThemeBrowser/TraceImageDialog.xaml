@@ -83,7 +83,7 @@
           </Border>
         </Border>
       </ScrollViewer>
-      <TextBlock Text="{Binding PixelColor, ElementName=srcImageColorPicker}"
+      <TextBlock Text="{Binding PixelColorPremultiplied, ElementName=srcImageColorPicker}"
                  Style="{StaticResource ColorOverlayBox}"/>
     </Grid>
 
@@ -180,7 +180,7 @@
           </Border>
         </Border>
       </ScrollViewer>
-      <TextBlock Text="{Binding PixelColor, ElementName=diffImageColorPicker}"
+      <TextBlock Text="{Binding PixelColorPremultiplied, ElementName=diffImageColorPicker}"
                  Style="{StaticResource ColorOverlayBox}"/>
     </Grid>
   </Grid>
