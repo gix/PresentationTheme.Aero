@@ -71,7 +71,6 @@
     <Compile Include="BindingProxy.cs" />
     <Compile Include="BitmapValue.cs" />
     <Compile Include="ColorToBrushConverter.cs" />
-    <Compile Include="CombinedList.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Extensions\ColorUtils.cs" />
     <Compile Include="Extensions\FrameworkExtensions.cs" />

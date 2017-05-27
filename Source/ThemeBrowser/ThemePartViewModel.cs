@@ -9,7 +9,6 @@ namespace ThemeBrowser
     {
         private readonly List<ThemeStateViewModel> states;
         private readonly List<ThemePropertyViewModel> properties = new List<ThemePropertyViewModel>();
-        private readonly CombinedList<ThemePropertyViewModel> allProperties;
 
         public ThemePartViewModel(ThemePart part, ThemeClassViewModel parent)
         {
@@ -17,7 +16,6 @@ namespace ThemeBrowser
             Parent = parent;
 
             properties.AddRange(part.Properties.Select(x => new OwnedThemePropertyViewModel(x)));
-            allProperties = new CombinedList<ThemePropertyViewModel>(properties, Parent.AllProperties);
 
             states = part.States.Select(x => new ThemeStateViewModel(x, this)).ToList();
             states.Sort((x, y) => x.Id.CompareTo(y.Id));
@@ -33,7 +31,6 @@ namespace ThemeBrowser
         public IReadOnlyList<ThemeStateViewModel> States => states;
 
         public override IReadOnlyList<ThemePropertyViewModel> Properties => properties;
-        public override IReadOnlyList<ThemePropertyViewModel> AllProperties => allProperties;
 
         public ThemeStateViewModel FindState(int stateId)
         {

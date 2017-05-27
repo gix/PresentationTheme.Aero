@@ -13,7 +13,6 @@ namespace ThemeBrowser
     public abstract class ThemePropertyContainer
     {
         public abstract IReadOnlyList<ThemePropertyViewModel> Properties { get; }
-        public abstract IReadOnlyList<ThemePropertyViewModel> AllProperties { get; }
         public abstract void AddDefaultProperty(TMT propertyId, TMT primitiveType, object value);
 
         public bool HasProperty(TMT propertyId)

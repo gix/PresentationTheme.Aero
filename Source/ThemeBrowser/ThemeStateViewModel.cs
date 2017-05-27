@@ -9,7 +9,6 @@ namespace ThemeBrowser
     {
         private readonly ThemeState state;
         private readonly List<ThemePropertyViewModel> properties = new List<ThemePropertyViewModel>();
-        private readonly CombinedList<ThemePropertyViewModel> allProperties;
 
         public ThemeStateViewModel(ThemeState state, ThemePartViewModel parent)
         {
@@ -17,7 +16,6 @@ namespace ThemeBrowser
             Parent = parent;
 
             properties.AddRange(state.Properties.Select(x => new OwnedThemePropertyViewModel(x)));
-            allProperties = new CombinedList<ThemePropertyViewModel>(properties, Parent.AllProperties);
         }
 
         public ThemeState State => state;
@@ -29,7 +27,6 @@ namespace ThemeBrowser
         public string DisplayName => Name != null ? Name + " [" + Id + "]" : "[State " + Id + "]";
 
         public override IReadOnlyList<ThemePropertyViewModel> Properties => properties;
-        public override IReadOnlyList<ThemePropertyViewModel> AllProperties => allProperties;
 
         public void AddInheritedProperties()
         {

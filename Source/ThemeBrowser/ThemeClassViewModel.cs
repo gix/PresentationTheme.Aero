@@ -11,7 +11,6 @@ namespace ThemeBrowser
         private readonly List<object> children = new List<object>();
         private readonly List<ThemePartViewModel> parts;
         private readonly List<ThemePropertyViewModel> properties = new List<ThemePropertyViewModel>();
-        private readonly CombinedList<ThemePropertyViewModel> allProperties;
 
         private string name;
         private ThemeClassViewModel baseClass;
@@ -22,7 +21,6 @@ namespace ThemeBrowser
             Parent = parent;
 
             properties.AddRange(@class.Properties.Select(x => new OwnedThemePropertyViewModel(x)));
-            allProperties = new CombinedList<ThemePropertyViewModel>(properties, Parent.Properties);
 
             parts = @class.Parts.Select(x => new ThemePartViewModel(x, this)).ToList();
             parts.Sort((x, y) => x.Id.CompareTo(y.Id));
@@ -94,7 +92,6 @@ namespace ThemeBrowser
         public IReadOnlyList<ThemePartViewModel> Parts => parts;
 
         public override IReadOnlyList<ThemePropertyViewModel> Properties => properties;
-        public override IReadOnlyList<ThemePropertyViewModel> AllProperties => allProperties;
 
         public ThemePartViewModel FindPart(int partId)
         {
