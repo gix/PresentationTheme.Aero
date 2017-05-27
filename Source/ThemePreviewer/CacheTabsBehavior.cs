@@ -111,6 +111,9 @@
 
         private void OnSelectionChanged(object s, SelectionChangedEventArgs e)
         {
+            if (!ReferenceEquals(e.OriginalSource, AssociatedObject))
+                return;
+
             UpdateSelectedContent();
         }
 
