@@ -2409,7 +2409,14 @@
   <Style TargetType="{x:Type Menu}">
     <Setter Property="Background" Value="{StaticResource Menu.BarBackground.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource Menu.BarBackground.Border}"/>
-    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    <!-- Aero has a 1px bottom border that overlaps the content area, hence the
+         negative bottom padding. uxtheme.dll (in CThemeWnd::NcPaint) paints
+         an additional border between a window's menu and client area. This line
+         technically has an unknown height of (SM_CYMENU - SM_CYMENUSIZE), but
+         SM_CYMENU is defined as (SM_CYMENUSIZE + SM_CYBORDER), and SM_CYBORDER
+         is fixed to 1. -->
+    <Setter Property="BorderThickness" Value="0,0,0,2"/>
+    <Setter Property="Padding" Value="0,0,0,-1"/>
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
     <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>
@@ -2419,14 +2426,13 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type Menu}">
-          <Border
-            Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            Padding="{TemplateBinding Padding}"
-            SnapsToDevicePixels="True">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  SnapsToDevicePixels="True">
             <ItemsPresenter
-              Margin="0,0,0,-1"
+              x:Name="Items"
+              Margin="{TemplateBinding Padding}"
               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
           </Border>
         </ControlTemplate>
