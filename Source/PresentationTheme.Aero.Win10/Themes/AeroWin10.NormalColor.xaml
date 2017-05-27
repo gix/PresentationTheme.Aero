@@ -865,10 +865,10 @@
   <Color x:Key="ComboBox.Button.Border.Pressed.Color">#FF005499</Color>
   <Color x:Key="ComboBox.Button.Border.Disabled.Color">#FFBFBFBF</Color>
 
-  <SolidColorBrush x:Key="ComboBox.Glyph.Normal" Color="#CC292929" po:Freeze="True"/>
+  <SolidColorBrush x:Key="ComboBox.Glyph.Normal" Color="#CC333333" po:Freeze="True"/>
   <Color x:Key="ComboBox.Glyph.Hot.Color">#CC000000</Color>
-  <Color x:Key="ComboBox.Glyph.Pressed.Color">#112D2D2D</Color>
-  <Color x:Key="ComboBox.Glyph.Disabled.Color">#CCA3A3A3</Color>
+  <Color x:Key="ComboBox.Glyph.Pressed.Color">#CC333333</Color>
+  <Color x:Key="ComboBox.Glyph.Disabled.Color">#CCA2A2A2</Color>
 
   <SolidColorBrush x:Key="ComboBox.Editable.Background.Normal" Color="#FFFFFFFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="ComboBox.Editable.Border.Normal" Color="#FF7A7A7A" po:Freeze="True"/>
@@ -1962,9 +1962,9 @@
 
   <SolidColorBrush x:Key="Menu.BarItem.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Hot.Background" Color="#1A0089FF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.BarItem.Hot.Border" Color="#33008BFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.BarItem.Pressed.Background" Color="#33008BFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.BarItem.Pressed.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarItem.Hot.Border" Color="#33008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarItem.Pressed.Background" Color="#33008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.BarItem.Pressed.Border" Color="#66008CFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.BarItem.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
 
   <SolidColorBrush x:Key="Menu.Popup.Background" Color="#FFF2F2F2" po:Freeze="True"/>
@@ -1973,8 +1973,8 @@
   <SolidColorBrush x:Key="Menu.PopupItem.Normal.Foreground" Color="#FF000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Selected.Background" Color="#3D269FD9" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Selected.Border" Color="#FF26A0DA" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupItem.Hot.Background" Color="#66008BFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupItem.Hot.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupItem.Hot.Background" Color="#66008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupItem.Hot.Border" Color="#66008CFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.Disabled.Foreground" Color="#FF707070" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.DisabledHot.Background" Color="#0D000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupItem.DisabledHot.Border" Color="#0D000000" po:Freeze="True"/>
@@ -1983,8 +1983,8 @@
   <SolidColorBrush x:Key="Menu.PopupGutter.Background" Color="#FFF0F0F0" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupGutter.Border" Color="#FFF0F0F0" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Background" Color="#66008BFF" po:Freeze="True"/>
-  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Border" Color="#66008BFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Background" Color="#66008CFF" po:Freeze="True"/>
+  <SolidColorBrush x:Key="Menu.PopupCheckBackground.Normal.Border" Color="#66008CFF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Background" Color="#0D000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheckBackground.Disabled.Border" Color="#0D000000" po:Freeze="True"/>
   <SolidColorBrush x:Key="Menu.PopupCheck.Normal.Foreground" Color="#FF333333" po:Freeze="True"/>
