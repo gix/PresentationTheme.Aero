@@ -1135,7 +1135,7 @@ void CBitmapCache::ReturnBitmap()
 static CBitmapCache g_pBitmapCacheScaled;
 static CBitmapCache g_pBitmapCacheUnscaled;
 
-HBITMAP CreateScaledTempBitmap(
+static HBITMAP CreateScaledTempBitmap(
     HDC hdc, HBITMAP hSrcBitmap, int ixSrcOffset, int iySrcOffset,
     int iSrcWidth, int iSrcHeight, int iDestWidth, int iDestHeight)
 {
@@ -1146,72 +1146,60 @@ HBITMAP CreateScaledTempBitmap(
     if (!bmp)
         return nullptr;
 
-    HDC hdcDest = CreateCompatibleDC(hdc);
+    CompatibleDC hdcDest{hdc};
     if (!hdcDest)
         return bmp;
 
-    HGDIOBJ oldDstBmp = SelectObject(hdcDest, bmp);
-    HDC hdcSrc = CreateCompatibleDC(hdc);
+    SelectObjectScope<HBITMAP> oldDstBmp{hdcDest, bmp};
+    CompatibleDC hdcSrc{hdc};
+    if (!hdcSrc)
+        return bmp;
 
-    if (hdcSrc) {
-        SetLayout(hdcSrc, 0);
-        SetLayout(hdcDest, 0);
+    SetLayout(hdcSrc, 0);
+    SetLayout(hdcDest, 0);
 
-        HGDIOBJ oldSrcBmp = SelectObject(hdcSrc, hSrcBitmap);
-        int oldStretchBltMode = SetStretchBltMode(hdcDest, COLORONCOLOR);
+    SelectObjectScope<HBITMAP> oldSrcBmp{hdcSrc, hSrcBitmap};
+    StretchBltModeScope oldStretchBltMode{hdcDest, COLORONCOLOR};
 
-        StretchBlt(hdcDest, 0, 0, iDestWidth, iDestHeight, hdcSrc, ixSrcOffset,
-                   iySrcOffset, iSrcWidth, iSrcHeight, SRCCOPY);
-
-        SetStretchBltMode(hdcDest, oldStretchBltMode);
-        SelectObject(hdcSrc, oldSrcBmp);
-        DeleteDC(hdcSrc);
-    }
-
-    SelectObject(hdcDest, oldDstBmp);
-    DeleteDC(hdcDest);
+    StretchBlt(hdcDest, 0, 0, iDestWidth, iDestHeight, hdcSrc, ixSrcOffset,
+               iySrcOffset, iSrcWidth, iSrcHeight, SRCCOPY);
 
     return bmp;
 }
 
 static HBITMAP CreateUnscaledBitmap(
-    HDC hdc, HBITMAP hbmSrc, int cxSrcOffset, int cySrcOffset, int cxDest, int cyDest, bool fTemporary)
+    HDC hdc, HBITMAP hbmSrc, int cxSrcOffset, int cySrcOffset, int cxDest,
+    int cyDest, bool fTemporary)
 {
-    HBITMAP v7;
-    HDC v10;
-    HDC v11;
-    HGDIOBJ v12;
-    HDC v13;
-    HDC v14;
-    HGDIOBJ v15;
+    if (!hbmSrc)
+        return nullptr;
 
-    v7 = 0i64;
-    if (hbmSrc) {
-        v7 = g_pBitmapCacheUnscaled.AcquireBitmap(hdc, cxDest, cyDest);
-        if (v7)
-        {
-            v10 = CreateCompatibleDC(hdc);
-            v11 = v10;
-            if (v10)
-            {
-                v12 = SelectObject(v10, v7);
-                v13 = CreateCompatibleDC(hdc);
-                v14 = v13;
-                if (v13)
-                {
-                    SetLayout(v13, 0);
-                    SetLayout(v11, 0);
-                    v15 = SelectObject(v14, hbmSrc);
-                    BitBlt(v11, 0, 0, cxDest, cyDest, v14, cxSrcOffset, cySrcOffset, SRCCOPY);
-                    SelectObject(v14, v15);
-                    DeleteDC(v14);
-                }
-                SelectObject(v11, v12);
-                DeleteDC(v11);
-            }
-        }
-    }
-    return v7;
+    HBITMAP hbmOut = g_pBitmapCacheUnscaled.AcquireBitmap(hdc, cxDest, cyDest);
+    if (!hbmOut)
+        return nullptr;
+
+    CompatibleDC hdcOut{hdc};
+    if (!hdcOut)
+        return hbmOut;
+
+    SelectObjectScope<HBITMAP> hbmOutScope{hdcOut, hbmOut};
+
+    CompatibleDC hdcSrc{hdc};
+    if (!hdcSrc)
+        return hbmOut;
+
+    SetLayout(hdcSrc, 0);
+    SetLayout(hdcOut, 0);
+    SelectObjectScope<HBITMAP> hbmSrcScope{hdcSrc, hbmSrc};
+
+    BitBlt(hdcOut, 0, 0, cxDest, cyDest, hdcSrc, cxSrcOffset, cySrcOffset, SRCCOPY);
+
+    return hbmOut;
+}
+
+static void StreamInit(BYTE**, HDC, HBITMAP, RECTL*)
+{
+    
 }
 
 HRESULT CImageFile::DrawBackgroundDS(
@@ -1220,23 +1208,16 @@ HRESULT CImageFile::DrawBackgroundDS(
     bool fForceStretch, MARGINS* pmarDest, float xMarginFactor,
     float yMarginFactor, DTBGOPTS const* pOptions) const
 {
-    HBITMAP v19;
-    HRESULT hr;
-    int v23;
-    HBITMAP v28;
+    HRESULT hr = S_OK;
+    int tempSrcWidth = pdi->iSingleWidth;
+    int tempSrcHeight = pdi->iSingleHeight;
+    HBITMAP hBitmapStock = nullptr;
+    HBITMAP hBitmapTempUnscaled = nullptr;
+    HBITMAP hBitmapTempScaled = nullptr;
+    HBITMAP hDsBitmap;
+    GDIDRAWSTREAM gds = {};
     RECT dstRect;
     RECT clipRect;
-    HBITMAP v52;
-    HBITMAP v65;
-    HBITMAP v66;
-
-    GDIDRAWSTREAM gds = {};
-    v19 = 0i64;
-    hr = 0;
-    int unkWidth = pdi->iSingleWidth;
-    int unkHeight = pdi->iSingleHeight;
-    v65 = 0i64;
-    v66 = 0i64;
 
     DWORD const flags = pOptions ? pOptions->dwFlags : 0;
 
@@ -1245,19 +1226,21 @@ HRESULT CImageFile::DrawBackgroundDS(
     GetOffsets(iStateId, pdi, &offsetX, &offsetY);
 
     if (pThemeBitmapHeader) {
-        hr = pRender->ExternalGetBitmap(hdc, pdi->iDibOffset, GBF_DIRECT, &v19);
+        hr = pRender->ExternalGetBitmap(hdc, pdi->iDibOffset, GBF_DIRECT, &hBitmapStock);
         if (FAILED(hr))
-            goto LABEL_38;
+            goto done;
 
-        v28 = v19;
+        hDsBitmap = hBitmapStock;
     } else {
-        v66 = CreateUnscaledBitmap(hdc, pdi->uhbm.hBitmap, offsetX, offsetY,
-                                   pdi->iSingleWidth, pdi->iSingleHeight, 0);
-        v28 = v66;
-        if (!v66)
+        hBitmapTempUnscaled =
+            CreateUnscaledBitmap(hdc, pdi->uhbm.hBitmap, offsetX, offsetY,
+                                 pdi->iSingleWidth, pdi->iSingleHeight, false);
+        if (!hBitmapTempUnscaled)
             return TRACE_HR(E_FAIL);
-        offsetY = 0;
+
+        hDsBitmap = hBitmapTempUnscaled;
         offsetX = 0;
+        offsetY = 0;
     }
 
     if (xMarginFactor != 1.0 || yMarginFactor != 1.0) {
@@ -1265,43 +1248,47 @@ HRESULT CImageFile::DrawBackgroundDS(
         pRender->GetEffectiveDpi(hdc, &dpiX, nullptr);
 
         if (dpiX == GetScreenDpi()) {
-            unkWidth = _ScaledImageInfo.iSingleWidth;
-            unkHeight = _ScaledImageInfo.iSingleHeight;
+            tempSrcWidth = _ScaledImageInfo.iSingleWidth;
+            tempSrcHeight = _ScaledImageInfo.iSingleHeight;
 
             offsetX = MulDiv(offsetX, dpiX, 96);
             offsetY = MulDiv(offsetY, dpiX, 96);
 
-            hr = pRender->ExternalGetBitmap(hdc, _ScaledImageInfo.iDibOffset, GBF_DIRECT, &v28);
+            hr = pRender->ExternalGetBitmap(hdc, _ScaledImageInfo.iDibOffset,
+                                            GBF_DIRECT, &hDsBitmap);
         } else {
-            unkWidth = static_cast<int>(pdi->iSingleWidth * xMarginFactor);
-            unkHeight = static_cast<int>(pdi->iSingleHeight * yMarginFactor);
-            v52 = CreateScaledTempBitmap(hdc, v28, offsetX, offsetY, pdi->iSingleWidth, pdi->iSingleHeight, unkWidth, unkHeight);
-            v65 = v52;
-            if (!v52) {
+            tempSrcWidth = static_cast<int>(pdi->iSingleWidth * xMarginFactor);
+            tempSrcHeight = static_cast<int>(pdi->iSingleHeight * yMarginFactor);
+
+            hBitmapTempScaled = CreateScaledTempBitmap(
+                hdc, hDsBitmap, offsetX, offsetY, pdi->iSingleWidth,
+                pdi->iSingleHeight, tempSrcWidth, tempSrcHeight);
+
+            if (!hBitmapTempScaled) {
                 hr = E_FAIL;
                 TRACE_HR(hr);
-                goto LABEL_36;
+                goto done;
             }
 
-            offsetY = 0;
-            v28 = v52;
+            hDsBitmap = hBitmapTempScaled;
             offsetX = 0;
+            offsetY = 0;
         }
     }
 
-    if (hr < 0)
-        goto exit_15;
-    if (!v28) {
+    if (FAILED(hr))
+        goto done;
+    if (!hDsBitmap) {
         hr = E_FAIL;
         TRACE_HR(hr);
-        goto exit_15;
+        goto done;
     }
 
     RECT srcRect;
     srcRect.left = offsetX;
-    srcRect.right = offsetX + unkWidth;
+    srcRect.right = offsetX + tempSrcWidth;
     srcRect.top = offsetY;
-    srcRect.bottom = offsetY + unkHeight;
+    srcRect.bottom = offsetY + tempSrcHeight;
 
     clipRect = *pRect;
     if (pRect->left > pRect->right) {
@@ -1318,8 +1305,8 @@ HRESULT CImageFile::DrawBackgroundDS(
         IntersectRect(&dstRect, &clipRect, &pOptions->rcClip);
 
     gds.signature = 0x44727753i64;
-    gds.hImage = (DWORD)v28;
-    gds.hDC = (DWORD)hdc;
+    gds.hImage = (DWORD)reinterpret_cast<uintptr_t>(hDsBitmap);
+    gds.hDC = (DWORD)reinterpret_cast<uintptr_t>(hdc);
     gds.rcDest = dstRect;
     gds.one = 1;
     gds.nine = 9;
@@ -1365,18 +1352,15 @@ HRESULT CImageFile::DrawBackgroundDS(
 
     GdiDrawStream(hdc, sizeof(gds), &gds);
 
-exit_15:
-    if (v65)
+done:
+    if (hBitmapTempScaled)
         g_pBitmapCacheScaled.ReturnBitmap();
-
-LABEL_36:
-    if (v66)
+    if (hBitmapTempUnscaled)
         g_pBitmapCacheUnscaled.ReturnBitmap();
 
-LABEL_38:
-    if (v19) {
+    if (hBitmapStock) {
         if (!fStock)
-            DeleteObject(v19);
+            pRender->ReturnBitmap(hBitmapStock);
     }
 
     return hr;

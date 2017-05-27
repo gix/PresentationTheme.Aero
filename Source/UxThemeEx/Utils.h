@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <memory>
 #include <windows.h>
+#include <wtypes.h>
 
 struct UX_COLOR_SCHEME;
 
@@ -215,6 +216,78 @@ private:
     bool saved = false;
 };
 
+
+template<typename Traits>
+class GdiScope
+{
+public:
+    using T = typename Traits::ValueType;
+
+    GdiScope(HDC hdc, T value)
+        : hdc(hdc), oldValue(Traits::Acquire(hdc, value)) {}
+
+    ~GdiScope()
+    {
+        if (Traits::IsValid(oldValue))
+            (void)Traits::Release(hdc, oldValue);
+    }
+
+    GdiScope(GdiScope&&) = delete;
+    GdiScope& operator =(GdiScope&&) = delete;
+
+    T Old() const { return oldValue; }
+    explicit operator bool() const { return Traits::IsValid(oldValue); }
+
+private:
+    HDC hdc;
+    T oldValue;
+};
+
+struct StretchBltModeTraits
+{
+    using ValueType = int;
+    static int Acquire(HDC hdc, int mode) { return SetStretchBltMode(hdc, mode); }
+    static void Release(HDC hdc, int oldMode) { SetStretchBltMode(hdc, oldMode); }
+    static bool IsValid(int mode) { return mode != 0; }
+};
+using StretchBltModeScope = GdiScope<StretchBltModeTraits>;
+
+template<typename T>
+struct SelectObjectTraits
+{
+    using ValueType = T;
+    static T Acquire(HDC hdc, T obj) { return static_cast<T>(SelectObject(hdc, obj)); }
+    static void Release(HDC hdc, T oldObj) { SelectObject(hdc, oldObj); }
+    static bool IsValid(T obj) { return obj != nullptr; }
+};
+template<>
+inline bool SelectObjectTraits<HRGN>::IsValid(HRGN obj) { return obj != HGDI_ERROR; }
+template<typename T>
+using SelectObjectScope = GdiScope<SelectObjectTraits<T>>;
+
+
+struct CompatibleDC
+{
+    CompatibleDC(HDC hdc) : cdc(CreateCompatibleDC(hdc)) {}
+
+    ~CompatibleDC()
+    {
+        if (cdc)
+            DeleteDC(cdc);
+    }
+
+    HDC Get() const { return cdc; }
+    operator HDC() const { return cdc; }
+    explicit operator bool() const { return cdc != nullptr; }
+
+private:
+    HDC cdc = nullptr;
+};
+
+using ::DeleteDC;
+void DeleteDC(CompatibleDC const&) = delete;
+
+
 struct OptionalDC
 {
     OptionalDC(HDC hdc)
@@ -244,6 +317,10 @@ struct OptionalDC
 private:
     HDC hdc = nullptr;
 };
+
+using ::ReleaseDC;
+void ReleaseDC(HWND, OptionalDC const&) = delete;
+
 
 class MemoryDC
 {

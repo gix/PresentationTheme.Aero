@@ -976,18 +976,10 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
 HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
                                      APPCLASSLIVE* pacl)
 {
-    bool fGlobalsGroup;
-    HRESULT hr;
-    int* partJumpTable;
-    int iPartZeroIndex;
-    int screenDpi;
-    int v21;
-    BYTE* v26;
-    CRenderObj* pRender;
-
-    pRender = 0i64;
-    v26 = u->pb;
-    fGlobalsGroup = _iGlobalsOffset == (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+    BYTE* v26 = u->pb;
+    bool const fGlobalsGroup =
+        _iGlobalsOffset ==
+        (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
 
     int cParts = pac->iMaxPartNum + 1;
 
@@ -1002,19 +994,20 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
     u->pb = (BYTE*)(partJumpTableHdr + 1);
     RegisterPtr(partJumpTableHdr);
 
-    partJumpTable = (int*)u->pb;
+    int* partJumpTable = (int*)u->pb;
     for (int i = cParts; i; --i) {
         *(int*)u->pb = -1;
         u->pb += 4;
     }
     EndEntry(u);
 
-    iPartZeroIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+    int iPartZeroIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
     for (int partId = 0; partId <= pac->iMaxPartNum; ++partId)
         CopyPartGroup(pac, u, partId, partJumpTable, iPartZeroIndex, pacl->iBaseClassIndex, fGlobalsGroup);
 
-    screenDpi = GetScreenDpi();
-    hr = CRenderObj::Create(
+    int screenDpi = GetScreenDpi();
+    CRenderObj* pRender = nullptr;
+    HRESULT hr = CRenderObj::Create(
         &_LoadingThemeFile,
         0,
         (int)v26 - (uintptr_t)(_LoadingThemeFile.ThemeHeader()),
@@ -1043,8 +1036,7 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
                 _iGlobalsTextObj = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
             partJumpTableHdr->iFirstTextObjIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
             hr = PackTextObjects(u, pRender, pac->iMaxPartNum, fGlobalsGroup);
-            if (hr >= 0)
-            {
+            if (hr >= 0) {
                 hr = EmitEntryHdr(u, TMT_ENDOFCLASS, TMT_ENDOFCLASS);
                 if (hr >= 0)
                     EndEntry(u);

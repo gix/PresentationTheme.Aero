@@ -113,6 +113,11 @@ public:
             DeleteObject(hFont);
     }
 
+    void ReturnBitmap(HBITMAP hbmp)
+    {
+        DeleteObject(hbmp);
+    }
+
     int GetValueIndex(int iPartId, int iStateId, int iTarget) const;
     bool IsPartDefined(int iPartId, int iStateId) const;
     HRESULT GetPropertyOrigin(int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin) const;
