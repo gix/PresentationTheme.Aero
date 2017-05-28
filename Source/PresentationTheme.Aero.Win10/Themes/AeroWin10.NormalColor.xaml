@@ -1660,15 +1660,15 @@
     </Setter>
     <Style.Triggers>
       <Trigger Property="Role" Value="Floating">
-        <Setter Property="Opacity" Value="0.408"/>
+        <Setter Property="Opacity" Value="0.6"/>
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
               <Canvas x:Name="PART_FloatingHeaderCanvas">
                 <Rectangle Width="{TemplateBinding ActualWidth}"
                            Height="{TemplateBinding ActualHeight}"
-                           Fill="#FF000000"
-                           Opacity="0.469"/>
+                           Fill="#FF999999"
+                           Opacity="0.6"/>
               </Canvas>
             </ControlTemplate>
           </Setter.Value>
