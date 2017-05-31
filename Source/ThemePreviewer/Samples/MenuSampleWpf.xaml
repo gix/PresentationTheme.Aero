@@ -85,7 +85,7 @@
       <MenuItem Header="_Checked" IsChecked="True" IsCheckable="True"/>
       <MenuItem Header="_Disabled" IsEnabled="False"/>
     </Menu>
-    <Menu DockPanel.Dock="Top" IsEnabled="False">
+    <Menu DockPanel.Dock="Top" IsEnabled="False" Margin="0,10,0,0">
       <MenuItem Header="_Normal"/>
       <MenuItem Header="_Header">
         <MenuItem/>
