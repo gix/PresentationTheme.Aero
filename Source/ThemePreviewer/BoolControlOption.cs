@@ -77,6 +77,11 @@ namespace ThemePreviewer
         }
     }
 
+    public sealed class SeparatorOption : Option
+    {
+        public override string Label { get; }
+    }
+
     public abstract class BoolOption : Option
     {
         public abstract bool Enabled { get; set; }

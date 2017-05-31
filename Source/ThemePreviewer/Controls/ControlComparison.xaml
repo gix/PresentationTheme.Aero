@@ -10,6 +10,11 @@
   d:DesignWidth="300"
   x:Name="root">
   <UserControl.Resources>
+    <DataTemplate DataType="{x:Type local:SeparatorOption}">
+      <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+              BorderThickness="0,1,0,0"
+              Margin="0,5"/>
+    </DataTemplate>
     <DataTemplate DataType="{x:Type local:BoolOption}">
       <CheckBox IsChecked="{Binding Enabled}">
         <TextBlock Text="{Binding Label}"/>
@@ -44,12 +49,12 @@
       <Setter Property="Width" Value="6"/>
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
-          <Setter Property="Background" Value="#EEE"/>
+          <Setter Property="Background" Value="#FFEEEEEE"/>
         </Trigger>
       </Style.Triggers>
     </Style>
     <Style x:Key="Header" TargetType="Border">
-      <Setter Property="BorderBrush" Value="#CCC"/>
+      <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
       <Setter Property="BorderThickness" Value="0,0,0,1"/>
       <Setter Property="Padding" Value="2"/>
       <Setter Property="Margin" Value="0,0,0,2"/>

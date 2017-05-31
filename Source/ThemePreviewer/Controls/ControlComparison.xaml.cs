@@ -97,8 +97,7 @@
             sample.OnNativeSampleChanged(oldValue, newValue);
         }
 
-        private void OnNativeSampleChanged(
-            Control oldValue, Control newValue)
+        private void OnNativeSampleChanged(Control oldValue, Control newValue)
         {
             WinFormsHost.Child = newValue;
             UpdateOptions(oldValue, newValue);
@@ -109,7 +108,7 @@
             UpdateOptions(oldValue, newValue);
         }
 
-        private void UpdateOptions(object oldValue, object newValue)
+        private void UpdateOptions(object oldValue, object newValue, bool insertAtEnd = true)
         {
             var oldOptionControl = oldValue as IOptionControl;
             if (oldOptionControl != null) {
@@ -121,10 +120,18 @@
 
             var newOptionControl = newValue as IOptionControl;
             if (newOptionControl != null) {
+                int idx = insertAtEnd ? Options.Count : 0;
+
+                if (Options.Count > 0 && newOptionControl.Options.Count > 0 && insertAtEnd)
+                    Options.Insert(idx++, new SeparatorOption());
+
                 foreach (var option in newOptionControl.Options) {
                     option.PropertyChanged += OnOptionChanged;
-                    Options.Add(option);
+                    Options.Insert(idx++, option);
                 }
+
+                if (Options.Count > newOptionControl.Options.Count && !insertAtEnd)
+                    Options.Insert(idx++, new SeparatorOption());
             }
         }
 
