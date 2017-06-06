@@ -60,6 +60,8 @@ namespace PresentationTheme.HighContrast.Win10
                 case "ComboBox.ListBox.Background.Hot": return SystemColors.WindowBrushKey;
                 case "ComboBox.ListBox.Border.Hot": return SystemColors.WindowTextBrushKey;
 
+                case "DataGrid.GridLine.Normal": return SystemColors.ControlDarkBrushKey;
+
                 case "Explorer.ListView.Item.Background.Normal": return SystemColors.ControlBrushKey;
                 case "Explorer.ListView.Item.Background.Hot": return SystemColors.ControlBrushKey;
                 case "Explorer.ListView.Item.Background.Selected": return SystemColors.HighlightBrushKey;

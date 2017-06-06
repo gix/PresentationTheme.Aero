@@ -40,11 +40,11 @@
   <ItemGroup>
     <Compile Include="AeroWin10Theme.cs" />
     <Compile Include="ButtonChrome.cs" />
-    <Compile Include="DataGridHeaderBorder.cs" />
+    <Compile Include="DataGridLinesVisibilityConverter.cs" />
+    <Compile Include="HeaderChrome.cs" />
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="EqualsConverter.cs" />
     <Compile Include="FrameworkExtensions.cs" />
-    <Compile Include="GridViewColumnHeaderChrome.cs" />
     <Compile Include="ProgressBarChrome.cs" />
     <Compile Include="ScrollBarChrome.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

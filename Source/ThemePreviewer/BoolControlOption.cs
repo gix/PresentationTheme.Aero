@@ -1,7 +1,9 @@
 namespace ThemePreviewer
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq;
     using System.Linq.Expressions;
 
     public class StateEventArgs : EventArgs
@@ -158,6 +160,54 @@ namespace ThemePreviewer
         {
             base.Refresh();
             Value = Value;
+        }
+    }
+
+    public abstract class EnumOption : Option
+    {
+        public abstract object Value { get; set; }
+        public abstract IReadOnlyList<object> Values { get; }
+
+        public override void Refresh()
+        {
+            base.Refresh();
+            Value = Value;
+        }
+    }
+
+    public class EnumOption<T> : EnumOption
+    {
+        private readonly Func<T> getter;
+        private readonly Action<T> setter;
+
+        public override string Label { get; }
+        public override IReadOnlyList<object> Values { get; }
+
+        public EnumOption(string label, Func<T> getter, Action<T> setter)
+        {
+            this.getter = getter;
+            this.setter = setter;
+            Label = label;
+            T[] values = (T[])Enum.GetValues(typeof(T));
+            Values = values.Cast<object>().ToList();
+        }
+
+        public override object Value
+        {
+            get => TypedValue;
+            set => TypedValue = (T)value;
+        }
+
+        public T TypedValue
+        {
+            get { return getter(); }
+            set
+            {
+                if (!EqualityComparer<T>.Default.Equals(TypedValue, value)) {
+                    setter(value);
+                    RaisePropertyChanged(nameof(Value));
+                }
+            }
         }
     }
 

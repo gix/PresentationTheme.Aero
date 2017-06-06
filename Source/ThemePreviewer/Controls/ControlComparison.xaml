@@ -25,6 +25,18 @@
         <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"/>
       </Grid>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type local:EnumOption}">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label}" Margin="2" VerticalAlignment="Center"/>
+        <ComboBox Grid.Column="1"
+                  SelectedValue="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                  ItemsSource="{Binding Values}"/>
+      </Grid>
+    </DataTemplate>
     <Style x:Key="SplitterStyle" TargetType="GridSplitter">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>

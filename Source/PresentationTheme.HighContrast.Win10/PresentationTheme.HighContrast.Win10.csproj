@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="ColorizeByAlphaStreamSourceExtension.cs" />
     <Compile Include="GridViewRowPresenterEx.cs" />
+    <Compile Include="HeaderChrome.cs" />
     <Compile Include="HighContrastWin10Theme.cs" />
     <Compile Include="ButtonChrome.cs" />
     <Compile Include="DoubleUtil.cs" />

@@ -36,6 +36,22 @@ namespace ThemePreviewer
 
         public Option AddOption<TControl>(
             string name,
+            TControl control,
+            Expression<Func<TControl, int>> propertyExpression)
+        {
+            Func<TControl, int> getter;
+            Action<TControl, int> setter;
+            if (!propertyExpression.CreateDelegates(out getter, out setter))
+                throw new ArgumentException(nameof(propertyExpression));
+
+            var option = new IntControlOption<TControl>(new[] { control }, name, getter, setter);
+            Add(option);
+
+            return option;
+        }
+
+        public Option AddOption<TControl>(
+            string name,
             TControl control1,
             TControl control2,
             Expression<Func<TControl, int>> propertyExpression)
@@ -94,6 +110,28 @@ namespace ThemePreviewer
             };
 
             Add(new GenericBoolOption(name, optGetter, optSetter));
+        }
+
+        public Option AddEnumOption<TControl, T>(
+            string name,
+            TControl control,
+            Expression<Func<TControl, T>> expression)
+        {
+            var property = typeof(TControl).GetProperty(
+                ((MemberExpression)expression.Body).Member.Name);
+            if (property == null)
+                throw new ArgumentException("propertyName");
+
+            var getter = (Func<TControl, T>)property.GetGetMethod().CreateDelegate(typeof(Func<TControl, T>));
+            var setter = (Action<TControl, T>)property.GetSetMethod().CreateDelegate(typeof(Action<TControl, T>));
+
+            Func<T> optGetter = () => getter(control);
+            Action<T> optSetter = value => setter(control, value);
+
+            var option = new EnumOption<T>(name, optGetter, optSetter);
+            Add(option);
+
+            return option;
         }
 
         private void OnStateChanged(object sender, StateEventArgs e)

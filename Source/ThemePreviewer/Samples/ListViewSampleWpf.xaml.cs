@@ -2,7 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Reflection;
+    using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
+    using System.Windows.Input;
+    using System.Windows.Interactivity;
+    using System.Windows.Media;
+    using PresentationTheme.Aero.Win10;
 
     public partial class ListViewSampleWpf : IOptionControl
     {
@@ -31,5 +40,71 @@
         }
 
         public IReadOnlyList<Option> Options => options;
+    }
+
+    public static class FrameworkExtensions
+    {
+        public static TAncestor FindAncestor<TAncestor>(this DependencyObject obj)
+            where TAncestor : DependencyObject
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            for (obj = obj.GetAnyParent(); obj != null;
+                 obj = obj.GetAnyParent()) {
+                var ancestor = obj as TAncestor;
+                if (ancestor != null)
+                    return ancestor;
+            }
+
+            return null;
+        }
+
+        private static readonly PropertyInfo InheritanceContextProperty =
+            typeof(DependencyObject).GetProperty(
+                "InheritanceContext", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        public static DependencyObject GetAnyParent(this DependencyObject sourceElement)
+        {
+            if (sourceElement == null)
+                return null;
+            if (sourceElement is Visual) {
+                var parent = VisualTreeHelper.GetParent(sourceElement);
+                if (parent != null)
+                    return parent;
+            }
+
+            return LogicalTreeHelper.GetParent(sourceElement) ??
+                   InheritanceContextProperty.GetValue(sourceElement, null) as DependencyObject;
+        }
+
+        public static DependencyObject GetVisualOrLogicalParent(
+            this DependencyObject sourceElement)
+        {
+            if (sourceElement == null)
+                return null;
+            if (sourceElement is Visual)
+                return VisualTreeHelper.GetParent(sourceElement) ??
+                       LogicalTreeHelper.GetParent(sourceElement);
+            return LogicalTreeHelper.GetParent(sourceElement);
+        }
+
+        public static T FindDescendant<T>(this DependencyObject obj) where T : class
+        {
+            if (obj == null)
+                return default(T);
+
+            for (int i = 0, e = VisualTreeHelper.GetChildrenCount(obj); i < e; ++i) {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child == null)
+                    continue;
+
+                var d = (child as T) ?? child.FindDescendant<T>();
+                if (d != null)
+                    return d;
+            }
+
+            return null;
+        }
     }
 }

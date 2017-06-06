@@ -18,12 +18,15 @@
             sysListView.Items.AddRange(CreateItems().ToArray());
             sysListView.FullRowSelect = true;
             sysListView.HideSelection = false;
+            sysListView.ColumnClick += (s, e) => sysListView.ToggleSort(e.Column);
 
             explorerListView.Items.AddRange(CreateItems().ToArray());
             explorerListView.FullRowSelect = true;
             explorerListView.HideSelection = false;
+            explorerListView.ColumnClick += (s, e) => explorerListView.ToggleSort(e.Column);
 
             sysListView.Sort(0, SortOrder.Ascending);
+            explorerListView.Sort(0, SortOrder.Descending);
 
             options = new OptionList();
             CreateOptions();

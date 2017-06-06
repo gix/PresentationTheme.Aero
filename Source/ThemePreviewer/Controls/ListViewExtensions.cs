@@ -87,6 +87,19 @@ namespace ThemePreviewer.Controls
             }
         }
 
+        public static void ToggleSort(
+            this ListView listView, int columnIndex)
+        {
+            var currSortOrder = listView.GetSortIcon(columnIndex);
+            SortOrder newSortOrder;
+            if (currSortOrder == SortOrder.Ascending)
+                newSortOrder = SortOrder.Descending;
+            else
+                newSortOrder = SortOrder.Ascending;
+
+            Sort(listView, columnIndex, newSortOrder);
+        }
+
         public static void Sort(
             this ListView listView, int columnIndex, SortOrder order)
         {
@@ -94,10 +107,32 @@ namespace ThemePreviewer.Controls
             listView.SetSortIcon(columnIndex, order);
         }
 
+        public static SortOrder GetSortIcon(this ListView listView, int columnIndex)
+        {
+            IntPtr columnHeader = SendMessage(
+                listView.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+
+            var item = new HDITEM {
+                mask = HDITEM.Mask.Format
+            };
+
+            if (SendMessage(columnHeader, HDM_GETITEM, new IntPtr(columnIndex), ref item) == IntPtr.Zero)
+                throw new Win32Exception();
+
+            if ((item.fmt & HDITEM.Format.SortUp) != 0)
+                return SortOrder.Ascending;
+            if ((item.fmt & HDITEM.Format.SortDown) != 0)
+                return SortOrder.Descending;
+
+            return SortOrder.None;
+        }
+
         public static void SetSortIcon(
             this ListView listView, int columnIndex, SortOrder order)
         {
-            IntPtr columnHeader = SendMessage(listView.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+            IntPtr columnHeader = SendMessage(
+                listView.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+
             for (int column = 0; column <= listView.Columns.Count - 1; ++column) {
                 var columnPtr = new IntPtr(column);
                 var item = new HDITEM {

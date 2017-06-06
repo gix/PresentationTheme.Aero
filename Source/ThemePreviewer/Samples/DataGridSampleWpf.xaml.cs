@@ -21,10 +21,19 @@
                 dataGrid, c => c.SelectionUnit,
                 DataGridSelectionUnit.FullRow,
                 DataGridSelectionUnit.CellOrRowHeader);
-            options.AddOption("Show Grid Lines",
-                dataGrid, c => c.GridLinesVisibility,
-                DataGridGridLinesVisibility.All,
-                DataGridGridLinesVisibility.None);
+            options.AddEnumOption("Grid Lines",
+                dataGrid, c => c.GridLinesVisibility);
+            options.AddEnumOption("Headers",
+                dataGrid, c => c.HeadersVisibility);
+            options.AddOption("Wide Row Header",
+                dataGrid, c => c.RowHeaderWidth,
+                25,
+                double.NaN);
+            options.AddOption("Frozen Columns", dataGrid, c => c.FrozenColumnCount);
+            options.AddOption("Row Details", dataGrid,
+                c => c.RowDetailsVisibilityMode,
+                DataGridRowDetailsVisibilityMode.Visible,
+                DataGridRowDetailsVisibilityMode.Collapsed);
             Options = options;
         }
 
