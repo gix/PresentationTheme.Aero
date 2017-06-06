@@ -91,12 +91,13 @@ namespace ThemePreviewer
 
         public async Task SetPresentationFrameworkTheme(Dispatcher dispatcher, Uri resourceUri)
         {
-            if (resourceUri != null) {
-                await dispatcher.InvokeAsync(() => {
+            await dispatcher.InvokeAsync(() => {
+                if (resourceUri != null)
                     ThemeHelper.SetPresentationFrameworkTheme(resourceUri);
-                    UxThemeExNativeMethods.UxBroadcastThemeChange();
-                }, DispatcherPriority.ContextIdle);
-            }
+                else
+                    ThemeHelper.ClearPresentationFrameworkTheme();
+                UxThemeExNativeMethods.UxBroadcastThemeChange();
+            }, DispatcherPriority.ContextIdle);
         }
     }
 }
