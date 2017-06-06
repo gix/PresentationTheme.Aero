@@ -143,7 +143,20 @@ namespace PresentationTheme.HighContrast.Win10
                 case "ProgressBar.Fill.Border.Normal": return SystemColors.ControlTextBrushKey;
                 case "ProgressBar.Background": return SystemColors.ControlBrushKey;
                 case "ProgressBar.Border": return SystemColors.ControlTextBrushKey;
-                case "ProgressBar.Indeterminate.Background": return SystemColors.HighlightBrushKey;
+
+                // The native theme has no border on an indeterminate progress
+                // bar and for unknown reasons fills the background with the
+                // highlight color which normally would be used for the moving
+                // overlay:
+                //   ProgressBar.Indeterminate.Background: SystemColors.HighlightBrushKey
+                //   ProgressBar.Indeterminate.Border: SystemColors.ControlTextBrushKey
+                //
+                // The overlay instead has a hardcoded color of #FF00D228. In a
+                // bad case this results in mismatched colors, in the worst case
+                // low-contrast or even an invisible overlay. We instead mimick
+                // the behavior of the non-highcontrast aero themes, fill the
+                // overlay with the highlight color and keep the border.
+                case "ProgressBar.Indeterminate.Background": return SystemColors.ControlBrushKey;
                 case "ProgressBar.Indeterminate.Border": return SystemColors.ControlTextBrushKey;
 
                 case "ScrollBar.Background": return SystemColors.ControlBrushKey;

@@ -3888,7 +3888,8 @@
               <Setter TargetName="Indicator" Property="BorderBrush" Value="{aero10:SystemAliasResource ProgressBar.Fill.Border.Normal}"/>
               <Setter TargetName="Indicator" Property="BorderThickness" Value="1"/>
               <Setter TargetName="Indicator" Property="Margin" Value="0"/>
-              <Setter TargetName="IndeterminateOverlay" Property="Fill" Value="#FF00D228"/>
+              <!-- NB: The indeterminate overlay color is hardcoded in aerolite.msstyles. #FF00D228 -->
+              <Setter TargetName="IndeterminateOverlay" Property="Fill" Value="{aero10:SystemAliasResource ProgressBar.Fill.Background.Normal}"/>
               <Setter TargetName="PART_MoveOverlay" Property="Visibility" Value="Visible"/>
               <Setter TargetName="PART_PulseOverlay" Property="Visibility" Value="Visible"/>
             </Trigger>
@@ -3934,9 +3935,16 @@
     </Setter>
     <Style.Triggers>
       <Trigger Property="IsIndeterminate" Value="True">
+        <!-- The native theme has no border on an indeterminate progress bar and
+             for unknown reasons fills the background with the highlight color
+             which normally would be used for the moving overlay. The overlay
+             instead has a hardcoded color of #FF00D228. In a bad case this
+             results in mismatched colors, in the worst case low-contrast or
+             even an invisible overlay. We instead mimick the behavior of the
+             non-highcontrast aero themes, fill the overlay with the highlight
+             color and keep the border. -->
         <Setter Property="Background" Value="{aero10:SystemAliasResource ProgressBar.Indeterminate.Background}"/>
         <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ProgressBar.Indeterminate.Border}"/>
-        <Setter Property="BorderThickness" Value="0"/>
       </Trigger>
     </Style.Triggers>
   </Style>
