@@ -156,7 +156,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type Separator}" TargetType="{x:Type Separator}">
+  <Style TargetType="{x:Type Separator}">
     <Setter Property="Background" Value="{StaticResource Menu.Static.Separator}"/>
     <Setter Property="BorderBrush" Value="{StaticResource Menu.Static.Separator}"/>
     <Setter Property="MinHeight" Value="3"/>
@@ -697,7 +697,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
+  <Style TargetType="{x:Type ContextMenu}">
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
     <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>

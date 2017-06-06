@@ -75,7 +75,7 @@
         /// </value>
         public bool? UseAnimationsOverride
         {
-            get { return useAnimationsOverride; }
+            get => useAnimationsOverride;
             set
             {
                 if (useAnimationsOverride != value) {

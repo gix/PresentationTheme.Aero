@@ -44,7 +44,6 @@
     <Compile Include="HeaderChrome.cs" />
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="EqualsConverter.cs" />
-    <Compile Include="FrameworkExtensions.cs" />
     <Compile Include="ProgressBarChrome.cs" />
     <Compile Include="ScrollBarChrome.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

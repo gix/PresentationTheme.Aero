@@ -18,21 +18,27 @@ namespace PresentationTheme.Aero.Win10
         private const int BottomRight = 8;
         private const double ShadowDepth = 5;
 
-        private static readonly object ResourceAccess = new object();
+        private static readonly object Mutex = new object();
         private static Brush[] commonBrushes;
         private static CornerRadius commonCornerRadius;
 
         private Brush[] brushes;
 
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
-            nameof(Color), typeof(Color), typeof(SystemDropShadowChrome),
-            new FrameworkPropertyMetadata(
-                Color.FromArgb(0x71, 0, 0, 0), FrameworkPropertyMetadataOptions.AffectsRender,
-                ClearBrushes));
+        public static readonly DependencyProperty ColorProperty =
+            DependencyProperty.Register(
+                nameof(Color),
+                typeof(Color),
+                typeof(SystemDropShadowChrome),
+                new FrameworkPropertyMetadata(
+                    Color.FromArgb(0x71, 0, 0, 0),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    ClearBrushes));
 
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(
-                nameof(CornerRadius), typeof(CornerRadius), typeof(SystemDropShadowChrome),
+                nameof(CornerRadius),
+                typeof(CornerRadius),
+                typeof(SystemDropShadowChrome),
                 new FrameworkPropertyMetadata(
                     new CornerRadius(),
                     FrameworkPropertyMetadataOptions.AffectsRender,
@@ -207,7 +213,7 @@ namespace PresentationTheme.Aero.Win10
         private Brush[] GetBrushes(Color c, CornerRadius cornerRadius)
         {
             if (commonBrushes == null) {
-                lock (ResourceAccess) {
+                lock (Mutex) {
                     if (commonBrushes == null) {
                         commonBrushes = CreateBrushes(c, cornerRadius);
                         commonCornerRadius = cornerRadius;

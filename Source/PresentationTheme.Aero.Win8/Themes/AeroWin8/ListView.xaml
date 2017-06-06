@@ -111,7 +111,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="{x:Type ListBox}" TargetType="{x:Type ListBox}">
+  <Style TargetType="{x:Type ListBox}">
     <Setter Property="Background" Value="{StaticResource ListBox.Static.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Static.Border}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -125,7 +125,7 @@
     <Setter Property="Template" Value="{StaticResource Aero2ListBoxTemplate}"/>
   </Style>
 
-  <Style x:Key="{x:Type ListBoxItem}" TargetType="{x:Type ListBoxItem}">
+  <Style TargetType="{x:Type ListBoxItem}">
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Padding" Value="7,0"/>
     <Setter Property="HorizontalContentAlignment"
@@ -422,7 +422,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="{x:Type ListView}" TargetType="{x:Type ListView}">
+  <Style TargetType="{x:Type ListView}">
     <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
     <Setter Property="BorderBrush" Value="#828790"/>
     <Setter Property="BorderThickness" Value="1"/>

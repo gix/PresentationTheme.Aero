@@ -117,7 +117,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type TextBoxBase}" TargetType="{x:Type TextBoxBase}">
+  <Style TargetType="{x:Type TextBoxBase}">
     <Setter Property="Background" Value="{aero10:SystemAliasResource TextBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource TextBox.Border.Normal}"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
@@ -167,7 +167,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type PasswordBox}" TargetType="{x:Type PasswordBox}">
+  <Style TargetType="{x:Type PasswordBox}">
     <Setter Property="PasswordChar" Value="●"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource TextBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource TextBox.Border.Normal}"/>
@@ -214,16 +214,16 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}"
+  <Style TargetType="{x:Type TextBox}"
          BasedOn="{StaticResource {x:Type TextBoxBase}}"/>
 
-  <Style x:Key="{x:Type RichTextBox}" TargetType="{x:Type RichTextBox}"
+  <Style TargetType="{x:Type RichTextBox}"
            BasedOn="{StaticResource {x:Type TextBoxBase}}">
     <Style.Resources>
-      <Style x:Key="{x:Type FlowDocument}" TargetType="{x:Type FlowDocument}">
+      <Style TargetType="{x:Type FlowDocument}">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
       </Style>
-      <Style x:Key="{x:Type Hyperlink}" TargetType="{x:Type Hyperlink}"
+      <Style TargetType="{x:Type Hyperlink}"
              BasedOn="{StaticResource {x:Type Hyperlink}}">
         <Style.Triggers>
           <Trigger Property="IsMouseOver" Value="True">
@@ -273,7 +273,7 @@
                   BorderBrush="{TemplateBinding BorderBrush}"
                   SnapsToDevicePixels="True">
             <VisualStateManager.VisualStateGroups>
-              <VisualStateGroup x:Name="Common">
+              <VisualStateGroup x:Name="CommonStates">
                 <VisualState x:Name="Normal"/>
                 <VisualState x:Name="Hot">
                   <Storyboard>
@@ -425,15 +425,15 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type ToggleButton}" TargetType="{x:Type ToggleButton}"
+  <Style TargetType="{x:Type ToggleButton}"
          BasedOn="{StaticResource BaseButtonStyle}"/>
 
-  <Style x:Key="{x:Type RepeatButton}" TargetType="{x:Type RepeatButton}"
+  <Style TargetType="{x:Type RepeatButton}"
          BasedOn="{StaticResource BaseButtonStyle}">
     <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
   </Style>
 
-  <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}"
+  <Style TargetType="{x:Type Button}"
          BasedOn="{StaticResource ButtonStyle}"/>
 
 
@@ -660,9 +660,9 @@
 
   <Style x:Key="ComboBox.ReadOnly.Button" TargetType="{x:Type ToggleButton}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource ComboBox.Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ComboBox.Button.Border.Normal}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="IsTabStop" Value="False"/>
     <Setter Property="Focusable" Value="False"/>
@@ -1078,9 +1078,6 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
-      <Trigger Property="IsKeyboardFocusWithin" Value="True">
-        <Setter Property="Foreground" Value="Black"/>
-      </Trigger>
       <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
         <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
@@ -1156,8 +1153,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-          <Border x:Name="Bd"
-                  BorderBrush="{TemplateBinding BorderBrush}"
+          <Border BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Background="{TemplateBinding Background}"
                   Padding="{TemplateBinding Padding}"
@@ -1204,7 +1200,7 @@
 
   <!-- ListBox ============================================================= -->
 
-  <Style x:Key="{x:Type ListBox}" TargetType="{x:Type ListBox}">
+  <Style TargetType="{x:Type ListBox}">
     <Setter Property="Background" Value="{aero10:SystemAliasResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -1275,7 +1271,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ListBoxItem}" TargetType="{x:Type ListBoxItem}">
+  <Style TargetType="{x:Type ListBoxItem}">
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Padding" Value="2,0"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
@@ -1343,7 +1339,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type GridViewColumnHeader}" TargetType="{x:Type GridViewColumnHeader}">
+  <Style TargetType="{x:Type GridViewColumnHeader}">
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource Header.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Header.Border.Normal}"/>
@@ -1429,14 +1425,44 @@
     </Style.Triggers>
   </Style>
 
+  <Style x:Key="GridViewItem.FocusVisual">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle SnapsToDevicePixels="True"
+                     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     StrokeThickness="1"
+                     StrokeDashArray="1 1"
+                     StrokeDashOffset="1.5"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="Explorer.GridViewItem.FocusVisual">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Rectangle Margin="1"
+                     SnapsToDevicePixels="True"
+                     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     StrokeThickness="1"
+                     StrokeDashArray="1 1"
+                     StrokeDashOffset="1.5"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <Style x:Key="GridViewItemStyle" TargetType="{x:Type ListViewItem}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource ListBoxItem.FocusVisual}"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource GridViewItem.FocusVisual}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="0,2"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template">
       <Setter.Value>
@@ -1445,8 +1471,7 @@
                   BorderThickness="{TemplateBinding BorderThickness}"
                   Background="{TemplateBinding Background}"
                   Padding="{TemplateBinding Padding}"
-                  SnapsToDevicePixels="True"
-                  HorizontalAlignment="Left">
+                  SnapsToDevicePixels="True">
             <GridViewRowPresenter
               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -1480,6 +1505,7 @@
       </Trigger>
       <Trigger Property="aero:ThemeOptions.UseExplorerStyle" Value="True">
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource Explorer.GridViewItem.FocusVisual}"/>
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type ListViewItem}">
@@ -1544,7 +1570,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="GridViewScrollViewer" TargetType="{x:Type ScrollViewer}">
+  <Style x:Key="{x:Static GridView.GridViewScrollViewerStyleKey}" TargetType="{x:Type ScrollViewer}">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
       <Setter.Value>
@@ -1565,7 +1591,7 @@
                             VerticalScrollBarVisibility="Hidden">
                 <GridViewHeaderRowPresenter
                   AllowsColumnReorder="{Binding TemplatedParent.View.AllowsColumnReorder, RelativeSource={RelativeSource TemplatedParent}}"
-                  ColumnHeaderContainerStyle="{StaticResource GridViewColumnHeader}"
+                  ColumnHeaderContainerStyle="{Binding TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource TemplatedParent}}"
                   ColumnHeaderContextMenu="{Binding TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource TemplatedParent}}"
                   ColumnHeaderStringFormat="{Binding TemplatedParent.View.ColumnHeaderStringFormat, RelativeSource={RelativeSource TemplatedParent}}"
                   ColumnHeaderTemplate="{Binding TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource TemplatedParent}}"
@@ -1617,7 +1643,7 @@
             BorderThickness="{TemplateBinding BorderThickness}"
             Padding="{TemplateBinding Padding}"
             SnapsToDevicePixels="True">
-      <ScrollViewer Style="{StaticResource GridViewScrollViewer}">
+      <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
       </ScrollViewer>
     </Border>
@@ -1780,7 +1806,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type Separator}" TargetType="{x:Type Separator}">
+  <Style TargetType="{x:Type Separator}">
     <Setter Property="Background" Value="{aero10:SystemAliasResource Menu.PopupSeparator}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Menu.PopupSeparator}"/>
     <Setter Property="MinHeight" Value="3"/>
@@ -2363,7 +2389,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
+  <Style TargetType="{x:Type ContextMenu}">
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
     <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>
@@ -2779,7 +2805,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+  <Style TargetType="{x:Type ScrollBar}">
     <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource ScrollBar.Background}"/>
@@ -2801,9 +2827,9 @@
                 MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="1"
+                    SnapsToDevicePixels="True"
                     Background="{aero10:SystemAliasResource ScrollBar.Background}"
                     BorderBrush="{aero10:SystemAliasResource ScrollBar.Border}"
-                    SnapsToDevicePixels="True"
                     BorderThickness="1,0,1,0"/>
             <RepeatButton x:Name="PART_LineUpButton"
                           Command="{x:Static ScrollBar.LineUpCommand}"
@@ -2852,9 +2878,9 @@
                     MaxWidth="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarButtonWidthKey}}"/>
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="1"
+                        SnapsToDevicePixels="True"
                         Background="{aero10:SystemAliasResource ScrollBar.Background}"
                         BorderBrush="{aero10:SystemAliasResource ScrollBar.Border}"
-                        SnapsToDevicePixels="True"
                         BorderThickness="0,1,0,1"/>
                 <RepeatButton x:Name="PART_LineLeftButton"
                               Command="{x:Static ScrollBar.LineLeftCommand}"
@@ -3035,7 +3061,8 @@
                         Margin="3,0,0,0"
                         IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                         ClickMode="Press"/>
-          <ContentPresenter x:Name="PART_Header" Grid.Column="2"
+          <ContentPresenter x:Name="PART_Header"
+                            Grid.Column="2"
                             ContentSource="Header"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -3074,11 +3101,11 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Geometry x:Key="ExplorerTreeViewGlyphPlus">
+  <Geometry x:Key="Explorer.TreeView.Glyph.Plus">
     F1 M4.88,5.12 6.119,3.881 10.119,7.881 10.737,8.5 6.119,13.119 4.881,11.881 8.881,7.881 9.5,8.5 8.881,9.119 4.881,5.119 z
   </Geometry>
 
-  <Geometry x:Key="ExplorerTreeViewGlyphMinus">
+  <Geometry x:Key="Explorer.TreeView.Glyph.Minus">
     F1 M2.88,6.12 4.119,4.881 8.119,8.881 7.5,9.5 6.881,8.881 10.881,4.881 12.119,6.119 7.5,10.737 6.881,10.119 2.881,6.119 z
   </Geometry>
 
@@ -3089,7 +3116,7 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
           <Border x:Name="Bd" Background="Transparent">
-            <Path x:Name="Glyph" Data="{StaticResource ExplorerTreeViewGlyphPlus}"
+            <Path x:Name="Glyph" Data="{StaticResource Explorer.TreeView.Glyph.Plus}"
                   Width="16" Height="16" Stretch="None" Margin="1,0,0,0">
               <Path.Fill>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"
@@ -3114,7 +3141,7 @@
               <Setter TargetName="Glyph" Property="Margin" Value="1,2,0,0"/>
             </DataTrigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource ExplorerTreeViewGlyphMinus}"/>
+              <Setter TargetName="Glyph" Property="Data" Value="{StaticResource Explorer.TreeView.Glyph.Minus}"/>
               <Setter TargetName="Glyph" Property="Fill">
                 <Setter.Value>
                   <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"
@@ -3160,9 +3187,9 @@
               SnapsToDevicePixels="True">
         <Border x:Name="InnerBd"
                 Padding="{TemplateBinding Padding}">
-        <ContentPresenter x:Name="PART_Header"
-                          ContentSource="Header"
-                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+          <ContentPresenter x:Name="PART_Header"
+                            ContentSource="Header"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
       </Border>
       <ItemsPresenter x:Name="ItemsHost"
@@ -3476,13 +3503,13 @@
   <!-- TabControl ========================================================== -->
 
   <Style TargetType="{x:Type TabControl}">
-    <Setter Property="Padding" Value="6,4,6,6"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource TabItem.Background.Selected}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource TabItem.Border.Selected}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Padding" Value="6,4,6,6"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TabControl}">
@@ -3591,15 +3618,13 @@
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     Padding="{TemplateBinding Padding}">
-              <Border>
-                <ContentPresenter x:Name="Content"
-                                  ContentSource="Header"
-                                  HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                  VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                  Focusable="False"
-                                  RecognizesAccessKey="True"/>
-              </Border>
+              <ContentPresenter x:Name="Content"
+                                ContentSource="Header"
+                                HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"/>
             </Border>
           </Grid>
           <ControlTemplate.Triggers>
@@ -4350,7 +4375,7 @@
 
   <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
 
-  <Style x:Key="{x:Type GroupBox}" TargetType="{x:Type GroupBox}">
+  <Style TargetType="{x:Type GroupBox}">
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource GroupBox.Border}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Template">
@@ -4649,7 +4674,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
+  <Style TargetType="{x:Type Expander}">
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
@@ -4725,7 +4750,7 @@
 
   <!-- ResizeGrip ========================================================== -->
 
-  <Style x:Key="{x:Type ResizeGrip}" TargetType="{x:Type ResizeGrip}">
+  <Style TargetType="{x:Type ResizeGrip}">
     <Setter Property="MinWidth"
             Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
     <Setter Property="MinHeight"
@@ -4750,7 +4775,7 @@
 
   <!-- StatusBar =========================================================== -->
 
-  <Style x:Key="{x:Type StatusBar}" TargetType="{x:Type StatusBar}">
+  <Style TargetType="{x:Type StatusBar}">
     <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -4774,7 +4799,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type StatusBarItem}" TargetType="{x:Type StatusBarItem}">
+  <Style TargetType="{x:Type StatusBarItem}">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Padding" Value="2,5,9,3"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -5418,7 +5443,7 @@
         </ControlTemplate.Triggers>
       </ControlTemplate>
 
-      <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
+      <Style TargetType="{x:Type MenuItem}">
         <Style.Triggers>
           <Trigger Property="Role" Value="TopLevelHeader">
             <Setter Property="Padding" Value="6,2"/>
@@ -5549,7 +5574,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ToolBar}" TargetType="{x:Type ToolBar}">
+  <Style TargetType="{x:Type ToolBar}">
     <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.Background}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="Template">
@@ -5651,7 +5676,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ToolBarTray}" TargetType="{x:Type ToolBarTray}">
+  <Style TargetType="{x:Type ToolBarTray}">
     <Setter Property="Background" Value="{aero10:SystemAliasResource ToolBar.Tray.Background}"/>
   </Style>
 
@@ -5706,7 +5731,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type DataGrid}" TargetType="{x:Type DataGrid}">
+  <Style TargetType="{x:Type DataGrid}">
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource ListView.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ListView.Border.Normal}"/>
@@ -5863,7 +5888,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type DataGridRow}" TargetType="{x:Type DataGridRow}">
+  <Style TargetType="{x:Type DataGridRow}">
     <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
@@ -5928,7 +5953,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type DataGridCellsPresenter}" TargetType="{x:Type DataGridCellsPresenter}">
+  <Style TargetType="{x:Type DataGridCellsPresenter}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type DataGridCellsPresenter}">
@@ -5938,7 +5963,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type DataGridCell}" TargetType="{x:Type DataGridCell}">
+  <Style TargetType="{x:Type DataGridCell}">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -6025,7 +6050,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type DataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+  <Style TargetType="{x:Type DataGridColumnHeader}">
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource Header.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Header.Border.Normal}"/>
@@ -6074,7 +6099,7 @@
     </Style.Triggers>
   </Style>
 
-  <Style x:Key="{x:Type DataGridRowHeader}" TargetType="{x:Type DataGridRowHeader}">
+  <Style TargetType="{x:Type DataGridRowHeader}">
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource Header.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Header.Border.Normal}"/>

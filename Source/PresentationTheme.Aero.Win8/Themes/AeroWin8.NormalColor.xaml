@@ -329,7 +329,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type Separator}" TargetType="{x:Type Separator}">
+  <Style TargetType="{x:Type Separator}">
     <Setter Property="Background" Value="{StaticResource Menu.Static.Separator}"/>
     <Setter Property="BorderBrush" Value="{StaticResource Menu.Static.Separator}"/>
     <Setter Property="MinHeight" Value="3"/>
@@ -870,7 +870,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
+  <Style TargetType="{x:Type ContextMenu}">
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
     <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>
@@ -1147,7 +1147,7 @@
     </Setter>
   </Style>
 
-  <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+  <Style TargetType="{x:Type ScrollBar}">
     <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
     <Setter Property="Background" Value="{StaticResource ScrollBar.Static.Background}"/>
@@ -1469,7 +1469,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="{x:Type ListBox}" TargetType="{x:Type ListBox}">
+  <Style TargetType="{x:Type ListBox}">
     <Setter Property="Background" Value="{StaticResource ListBox.Static.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Static.Border}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -1483,7 +1483,7 @@
     <Setter Property="Template" Value="{StaticResource Aero2ListBoxTemplate}"/>
   </Style>
 
-  <Style x:Key="{x:Type ListBoxItem}" TargetType="{x:Type ListBoxItem}">
+  <Style TargetType="{x:Type ListBoxItem}">
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="Padding" Value="7,0"/>
     <Setter Property="HorizontalContentAlignment"
@@ -1780,7 +1780,7 @@
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
-  <Style x:Key="{x:Type ListView}" TargetType="{x:Type ListView}">
+  <Style TargetType="{x:Type ListView}">
     <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
     <Setter Property="BorderBrush" Value="#828790"/>
     <Setter Property="BorderThickness" Value="1"/>
