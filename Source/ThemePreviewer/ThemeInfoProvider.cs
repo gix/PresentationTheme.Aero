@@ -42,6 +42,7 @@ namespace ThemePreviewer
             wpfThemes.Add(new WpfThemeInfo("Built-in Classic", BuiltinThemes.ClassicUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero", BuiltinThemes.AeroUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Aero 2", BuiltinThemes.Aero2Uri));
+            wpfThemes.Add(new WpfThemeInfo("Built-in AeroLite", BuiltinThemes.AeroLiteUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Royale", BuiltinThemes.RoyaleUri));
 
             foreach (var nativeTheme in FindNativeThemes().OrderBy(x => x))
