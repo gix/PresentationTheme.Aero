@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AeroWin7Theme.cs" />
+    <Compile Include="DataGridHeaderBorder.cs" />
     <Compile Include="GridViewColumnHeaderChrome.cs" />
     <Compile Include="ListViewItemChrome.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
