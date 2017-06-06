@@ -5,8 +5,11 @@
     [VisualClass("AEROWIZARD")]
     public enum AEROWIZARDPARTS
     {
+        [VisualStates(typeof(TITLEBARSTATES))]
         AW_TITLEBAR = 1,
+        [VisualStates(typeof(HEADERAREASTATES))]
         AW_HEADERAREA = 2,
+        [VisualStates(typeof(CONTENTAREASTATES))]
         AW_CONTENTAREA = 3,
         AW_COMMANDAREA = 4,
         AW_BUTTON = 5,
@@ -203,6 +206,7 @@
     [VisualClass("COMMUNICATIONS")]
     public enum COMMUNICATIONSPARTS
     {
+        [VisualStates(typeof(TABSTATES))]
         CSST_TAB = 1,
     }
 
@@ -224,10 +228,14 @@
         CPANEL_CONTENTPANELABEL = 4,
         CPANEL_TITLE = 5,
         CPANEL_BODYTEXT = 6,
+        [VisualStates(typeof(HELPLINKSTATES))]
         CPANEL_HELPLINK = 7,
+        [VisualStates(typeof(TASKLINKSTATES))]
         CPANEL_TASKLINK = 8,
         CPANEL_GROUPTEXT = 9,
+        [VisualStates(typeof(CONTENTLINKSTATES))]
         CPANEL_CONTENTLINK = 10,
+        [VisualStates(typeof(SECTIONTITLELINKSTATES))]
         CPANEL_SECTIONTITLELINK = 11,
         CPANEL_LARGECOMMANDAREA = 12,
         CPANEL_SMALLCOMMANDAREA = 13,
@@ -272,10 +280,14 @@
 
     // DATEPICKERSTYLE class parts and states
 
+    [VisualClass("DATEPICKER")]
     public enum DATEPICKERPARTS
     {
+        [VisualStates(typeof(DATETEXTSTATES))]
         DP_DATETEXT = 1,
+        [VisualStates(typeof(DATEBORDERSTATES))]
         DP_DATEBORDER = 2,
+        [VisualStates(typeof(SHOWCALENDARBUTTONRIGHTSTATES))]
         DP_SHOWCALENDARBUTTONRIGHT = 3,
     }
 
@@ -304,13 +316,20 @@
 
     // DRAGDROPSTYLE class parts and states
 
+    [VisualClass("DRAGDROP")]
     public enum DRAGDROPPARTS
     {
+        [VisualStates(typeof(COPYSTATES))]
         DD_COPY = 1,
+        [VisualStates(typeof(MOVESTATES))]
         DD_MOVE = 2,
+        [VisualStates(typeof(UPDATEMETADATASTATES))]
         DD_UPDATEMETADATA = 3,
+        [VisualStates(typeof(CREATELINKSTATES))]
         DD_CREATELINK = 4,
+        [VisualStates(typeof(WARNINGSTATES))]
         DD_WARNING = 5,
+        [VisualStates(typeof(NONESTATES))]
         DD_NONE = 6,
         DD_IMAGEBG = 7,
         DD_TEXTBG = 8,
@@ -444,15 +463,22 @@
     public enum EXPLORERBARPARTS
     {
         EBP_HEADERBACKGROUND = 1,
+        [VisualStates(typeof(HEADERCLOSESTATES))]
         EBP_HEADERCLOSE = 2,
+        [VisualStates(typeof(HEADERPINSTATES))]
         EBP_HEADERPIN = 3,
+        [VisualStates(typeof(IEBARMENUSTATES))]
         EBP_IEBARMENU = 4,
         EBP_NORMALGROUPBACKGROUND = 5,
+        [VisualStates(typeof(NORMALGROUPCOLLAPSESTATES))]
         EBP_NORMALGROUPCOLLAPSE = 6,
+        [VisualStates(typeof(NORMALGROUPEXPANDSTATES))]
         EBP_NORMALGROUPEXPAND = 7,
         EBP_NORMALGROUPHEAD = 8,
         EBP_SPECIALGROUPBACKGROUND = 9,
+        [VisualStates(typeof(SPECIALGROUPCOLLAPSESTATES))]
         EBP_SPECIALGROUPCOLLAPSE = 10,
+        [VisualStates(typeof(SPECIALGROUPEXPANDSTATES))]
         EBP_SPECIALGROUPEXPAND = 11,
         EBP_SPECIALGROUPHEAD = 12,
     }
@@ -893,8 +919,11 @@
     [VisualClass("NAVIGATION")]
     public enum NAVIGATIONPARTS
     {
+        [VisualStates(typeof(NAV_BACKBUTTONSTATES))]
         NAV_BACKBUTTON = 1,
+        [VisualStates(typeof(NAV_FORWARDBUTTONSTATES))]
         NAV_FORWARDBUTTON = 2,
+        [VisualStates(typeof(NAV_MENUBUTTONSTATES))]
         NAV_MENUBUTTON = 3,
     }
 
@@ -1255,6 +1284,7 @@
         TDLG_PRIMARYPANEL = 1,
         TDLG_MAININSTRUCTIONPANE = 2,
         TDLG_MAINICON = 3,
+        [VisualStates(typeof(CONTENTPANESTATES))]
         TDLG_CONTENTPANE = 4,
         TDLG_CONTENTICON = 5,
         TDLG_EXPANDEDCONTENT = 6,
@@ -1264,6 +1294,7 @@
         TDLG_BUTTONSECTION = 10,
         TDLG_BUTTONWRAPPER = 11,
         TDLG_EXPANDOTEXT = 12,
+        [VisualStates(typeof(EXPANDOBUTTONSTATES))]
         TDLG_EXPANDOBUTTON = 13,
         TDLG_VERIFICATIONTEXT = 14,
         TDLG_FOOTNOTEPANE = 15,
@@ -1361,12 +1392,17 @@
     [VisualClass("TOOLTIP")]
     public enum TOOLTIPPARTS
     {
+        [VisualStates(typeof(STANDARDSTATES))]
         TTP_STANDARD = 1,
         TTP_STANDARDTITLE = 2,
+        [VisualStates(typeof(BALLOONSTATES))]
         TTP_BALLOON = 3,
         TTP_BALLOONTITLE = 4,
+        [VisualStates(typeof(CLOSESTATES))]
         TTP_CLOSE = 5,
+        [VisualStates(typeof(BALLOONSTEMSTATES))]
         TTP_BALLOONSTEM = 6,
+        [VisualStates(typeof(WRENCHSTATES))]
         TTP_WRENCH = 7,
     }
 
@@ -1586,33 +1622,61 @@
     [VisualClass("WINDOW")]
     public enum WINDOWPARTS
     {
+        [VisualStates(typeof(CAPTIONSTATES))]
         WP_CAPTION = 1,
+        [VisualStates(typeof(SMALLCAPTIONSTATES))]
         WP_SMALLCAPTION = 2,
+        [VisualStates(typeof(MINCAPTIONSTATES))]
         WP_MINCAPTION = 3,
+        [VisualStates(typeof(SMALLCAPTIONSTATES))]
         WP_SMALLMINCAPTION = 4,
+        [VisualStates(typeof(MAXCAPTIONSTATES))]
         WP_MAXCAPTION = 5,
+        [VisualStates(typeof(SMALLCAPTIONSTATES))]
         WP_SMALLMAXCAPTION = 6,
+        [VisualStates(typeof(FRAMELEFTSTATES))]
         WP_FRAMELEFT = 7,
+        [VisualStates(typeof(FRAMERIGHTSTATES))]
         WP_FRAMERIGHT = 8,
+        [VisualStates(typeof(FRAMEBOTTOMSTATES))]
         WP_FRAMEBOTTOM = 9,
+        [VisualStates(typeof(SMALLFRAMELEFTSTATES))]
         WP_SMALLFRAMELEFT = 10,
+        [VisualStates(typeof(SMALLFRAMERIGHTSTATES))]
         WP_SMALLFRAMERIGHT = 11,
+        [VisualStates(typeof(SMALLFRAMEBOTTOMSTATES))]
         WP_SMALLFRAMEBOTTOM = 12,
+        [VisualStates(typeof(SYSBUTTONSTATES))]
         WP_SYSBUTTON = 13,
+        [VisualStates(typeof(SYSBUTTONSTATES))]
         WP_MDISYSBUTTON = 14,
+        [VisualStates(typeof(MINBUTTONSTATES))]
         WP_MINBUTTON = 15,
+        [VisualStates(typeof(MDIMINBUTTONSTATES))]
         WP_MDIMINBUTTON = 16,
+        [VisualStates(typeof(MAXBUTTONSTATES))]
         WP_MAXBUTTON = 17,
+        [VisualStates(typeof(CLOSEBUTTONSTATES))]
         WP_CLOSEBUTTON = 18,
+        [VisualStates(typeof(SMALLCLOSEBUTTONSTATES))]
         WP_SMALLCLOSEBUTTON = 19,
+        [VisualStates(typeof(MDICLOSEBUTTONSTATES))]
         WP_MDICLOSEBUTTON = 20,
+        [VisualStates(typeof(RESTOREBUTTONSTATES))]
         WP_RESTOREBUTTON = 21,
+        [VisualStates(typeof(MDIRESTOREBUTTONSTATES))]
         WP_MDIRESTOREBUTTON = 22,
+        [VisualStates(typeof(HELPBUTTONSTATES))]
         WP_HELPBUTTON = 23,
+        [VisualStates(typeof(HELPBUTTONSTATES))]
         WP_MDIHELPBUTTON = 24,
+        [VisualStates(typeof(HORZSCROLLSTATES))]
         WP_HORZSCROLL = 25,
+        [VisualStates(typeof(HORZTHUMBSTATES))]
         WP_HORZTHUMB = 26,
+        [VisualStates(typeof(VERTSCROLLSTATES))]
         WP_VERTSCROLL = 27,
+        [VisualStates(typeof(VERTTHUMBSTATES))]
         WP_VERTTHUMB = 28,
         WP_DIALOG = 29,
         WP_CAPTIONSIZINGTEMPLATE = 30,
@@ -1623,7 +1687,9 @@
         WP_SMALLFRAMERIGHTSIZINGTEMPLATE = 35,
         WP_FRAMEBOTTOMSIZINGTEMPLATE = 36,
         WP_SMALLFRAMEBOTTOMSIZINGTEMPLATE = 37,
+        [VisualStates(typeof(FRAMESTATES))]
         WP_FRAME = 38,
+        [VisualStates(typeof(BORDERSTATES))]
         WP_BORDER = 39,
     }
 
