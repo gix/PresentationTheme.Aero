@@ -1874,4 +1874,293 @@
         MDRE_PUSHED = 3,
         MDRE_DISABLED = 4,
     }
+
+    // LINK class parts and states
+
+    [VisualClass("LINK")]
+    public enum LINKPARTS
+    {
+        [VisualStates(typeof(HYPERLINKSTATES))]
+        LP_HYPERLINK = 1,
+    }
+
+    public enum HYPERLINKSTATES
+    {
+        HLS_NORMALTEXT = 1,
+        HLS_LINKTEXT = 2,
+    }
+
+    // EMPTYMARKUP class parts and states
+
+    [VisualClass("EMPTYMARKUP")]
+    public enum EMPTYMARKUPPARTS
+    {
+        [VisualStates(typeof(MARKUPTEXTSTATES))]
+        EMP_MARKUPTEXT = 1,
+    }
+
+    public enum MARKUPTEXTSTATES
+    {
+        EMT_NORMALTEXT = 1,
+        EMT_LINKTEXT = 2,
+    }
+
+    // STATIC class parts and states
+
+    [VisualClass("STATIC")]
+    public enum STATICPARTS
+    {
+        STAT_TEXT = 1,
+    }
+
+    // PAGE class parts and states
+
+    [VisualClass("PAGE")]
+    public enum PAGEPARTS
+    {
+        PGRP_UP = 1,
+        PGRP_DOWN = 2,
+        PGRP_UPHORZ = 3,
+        PGRP_DOWNHORZ = 4,
+    }
+
+    // MONTHCAL class parts and states
+
+    [VisualClass("MONTHCAL")]
+    public enum MONTHCALPARTS
+    {
+        MC_BACKGROUND = 1,
+        MC_BORDERS = 2,
+        MC_GRIDBACKGROUND = 3,
+        MC_COLHEADERSPLITTER = 4,
+        [VisualStates(typeof(GRIDCELLBACKGROUNDSTATES))]
+        MC_GRIDCELLBACKGROUND = 5,
+        [VisualStates(typeof(GRIDCELLSTATES))]
+        MC_GRIDCELL = 6,
+        [VisualStates(typeof(GRIDCELLUPPERSTATES))]
+        MC_GRIDCELLUPPER = 7,
+        [VisualStates(typeof(TRAILINGGRIDCELLSTATES))]
+        MC_TRAILINGGRIDCELL = 8,
+        [VisualStates(typeof(TRAILINGGRIDCELLUPPERSTATES))]
+        MC_TRAILINGGRIDCELLUPPER = 9,
+        [VisualStates(typeof(NAVNEXTSTATES))]
+        MC_NAVNEXT = 10,
+        [VisualStates(typeof(NAVPREVSTATES))]
+        MC_NAVPREV = 11,
+    }
+
+    public enum GRIDCELLBACKGROUNDSTATES
+    {
+        MCGCB_SELECTED = 1,
+        MCGCB_HOT = 2,
+        MCGCB_SELECTEDHOT = 3,
+        MCGCB_SELECTEDNOTFOCUSED = 4,
+        MCGCB_TODAY = 5,
+        MCGCB_TODAYSELECTED = 6,
+    }
+
+    public enum GRIDCELLSTATES
+    {
+        MCGC_HOT = 1,
+        MCGC_HASSTATE = 2,
+        MCGC_HASSTATEHOT = 3,
+        MCGC_TODAY = 4,
+        MCGC_TODAYSELECTED = 5,
+        MCGC_SELECTED = 6,
+        MCGC_SELECTEDHOT = 7,
+    }
+
+    public enum GRIDCELLUPPERSTATES
+    {
+        MCGCU_HOT = 1,
+        MCGCU_HASSTATE = 2,
+        MCGCU_HASSTATEHOT = 3,
+        MCGCU_SELECTED = 4,
+        MCGCU_SELECTEDHOT = 5,
+    }
+
+    public enum TRAILINGGRIDCELLSTATES
+    {
+        MCTGC_HOT = 1,
+        MCTGC_HASSTATE = 2,
+        MCTGC_HASSTATEHOT = 3,
+        MCTGC_TODAY = 4,
+        MCTGC_TODAYSELECTED = 5,
+        MCTGC_SELECTED = 6,
+        MCTGC_SELECTEDHOT = 7,
+    }
+
+    public enum TRAILINGGRIDCELLUPPERSTATES
+    {
+        MCTGCU_HOT = 1,
+        MCTGCU_HASSTATE = 2,
+        MCTGCU_HASSTATEHOT = 3,
+        MCTGCU_SELECTED = 4,
+        MCTGCU_SELECTEDHOT = 5,
+    }
+
+    public enum NAVNEXTSTATES
+    {
+        MCNN_NORMAL = 1,
+        MCNN_HOT = 2,
+        MCNN_PRESSED = 3,
+        MCNN_DISABLED = 4,
+    }
+
+    public enum NAVPREVSTATES
+    {
+        MCNP_NORMAL = 1,
+        MCNP_HOT = 2,
+        MCNP_PRESSED = 3,
+        MCNP_DISABLED = 4,
+    }
+
+    // CLOCK class parts and states
+
+    [VisualClass("CLOCK")]
+    public enum CLOCKPARTS
+    {
+        [VisualStates(typeof(CLOCKSTATES))]
+        CLP_TIME = 1,
+    }
+
+    public enum CLOCKSTATES
+    {
+        CLS_NORMAL = 1,
+        CLS_HOT = 2,
+        CLS_PRESSED = 3,
+    }
+
+    // TRAYNOTIFY class parts and states
+
+    [VisualClass("TRAYNOTIFY")]
+    public enum TRAYNOTIFYPARTS
+    {
+        TNP_BACKGROUND = 1,
+        TNP_ANIMBACKGROUND = 2,
+    }
+
+    // TASKBAR class parts and states
+
+    [VisualClass("TASKBAR")]
+    public enum TASKBARPARTS
+    {
+        TBP_BACKGROUNDBOTTOM = 1,
+        TBP_BACKGROUNDRIGHT = 2,
+        TBP_BACKGROUNDTOP = 3,
+        TBP_BACKGROUNDLEFT = 4,
+        TBP_SIZINGBARBOTTOM = 5,
+        TBP_SIZINGBARRIGHT = 6,
+        TBP_SIZINGBARTOP = 7,
+        TBP_SIZINGBARLEFT = 8,
+    }
+
+    // TASKBAND class parts and states
+
+    [VisualClass("TASKBAND")]
+    public enum TASKBANDPARTS
+    {
+        TDP_GROUPCOUNT = 1,
+        TDP_FLASHBUTTON = 2,
+        TDP_FLASHBUTTONGROUPMENU = 3,
+    }
+
+    // STARTPANEL class parts and states
+
+    [VisualClass("STARTPANEL")]
+    public enum STARTPANELPARTS
+    {
+        SPP_USERPANE = 1,
+        SPP_MOREPROGRAMS = 2,
+        [VisualStates(typeof(MOREPROGRAMSARROWSTATES))]
+        SPP_MOREPROGRAMSARROW = 3,
+        SPP_PROGLIST = 4,
+        SPP_PROGLISTSEPARATOR = 5,
+        SPP_PLACESLIST = 6,
+        SPP_PLACESLISTSEPARATOR = 7,
+        SPP_LOGOFF = 8,
+        [VisualStates(typeof(LOGOFFBUTTONSSTATES))]
+        SPP_LOGOFFBUTTONS = 9,
+        SPP_USERPICTURE = 10,
+        SPP_PREVIEW = 11,
+        [VisualStates(typeof(MOREPROGRAMSTABSTATES))]
+        SPP_MOREPROGRAMSTAB = 12,
+        SPP_NSCHOST = 13,
+        [VisualStates(typeof(SOFTWAREEXPLORERSTATES))]
+        SPP_SOFTWAREEXPLORER = 14,
+        [VisualStates(typeof(OPENBOXSTATES))]
+        SPP_OPENBOX = 15,
+        SPP_SEARCHVIEW = 16,
+        [VisualStates(typeof(MOREPROGRAMSARROWBACKSTATES))]
+        SPP_MOREPROGRAMSARROWBACK = 17,
+        SPP_TOPMATCH = 18,
+        SPP_LOGOFFSPLITBUTTONDROPDOWN = 19,
+    }
+
+    public enum MOREPROGRAMSTABSTATES
+    {
+        SPMPT_NORMAL = 1,
+        SPMPT_HOT = 2,
+        SPMPT_SELECTED = 3,
+        SPMPT_DISABLED = 4,
+        SPMPT_FOCUSED = 5,
+    }
+
+    public enum SOFTWAREEXPLORERSTATES
+    {
+        SPSE_NORMAL = 1,
+        SPSE_HOT = 2,
+        SPSE_SELECTED = 3,
+        SPSE_DISABLED = 4,
+        SPSE_FOCUSED = 5,
+    }
+
+    public enum OPENBOXSTATES
+    {
+        SPOB_NORMAL = 1,
+        SPOB_HOT = 2,
+        SPOB_SELECTED = 3,
+        SPOB_DISABLED = 4,
+        SPOB_FOCUSED = 5,
+    }
+
+    public enum MOREPROGRAMSARROWSTATES
+    {
+        SPS_NORMAL = 1,
+        SPS_HOT = 2,
+        SPS_PRESSED = 3,
+    }
+
+    public enum MOREPROGRAMSARROWBACKSTATES
+    {
+        SPSB_NORMAL = 1,
+        SPSB_HOT = 2,
+        SPSB_PRESSED = 3,
+    }
+
+    public enum LOGOFFBUTTONSSTATES
+    {
+        SPLS_NORMAL = 1,
+        SPLS_HOT = 2,
+        SPLS_PRESSED = 3,
+    }
+
+    // MENUBAND class parts and states
+
+    [VisualClass("MENUBAND")]
+    public enum MENUBANDPARTS
+    {
+        MDP_NEWAPPBUTTON = 1,
+        MDP_SEPERATOR = 2,
+    }
+
+    public enum MENUBANDSTATES
+    {
+        MDS_NORMAL = 1,
+        MDS_HOT = 2,
+        MDS_PRESSED = 3,
+        MDS_DISABLED = 4,
+        MDS_CHECKED = 5,
+        MDS_HOTCHECKED = 6,
+    }
 }

@@ -8,16 +8,6 @@ namespace StyleCore
         DIBDATA = 2,
         GLYPHDIBDATA = 8,
 
-        _LoadThemeMetrics = 1,
-        _BaseClassIdx = 10,
-        _PartGrp = 11,
-        _UnknownAlwaysMinusOne = 12,
-        _DrawObj = 16,
-        _TextObj = 17,
-        _ImageInfo = 18,
-        _ImageInfoRgn = 19,
-        _ClsGrpEnd = 20,
-
         ENUM = 200,
         STRING = 201,
         INT = 202,
