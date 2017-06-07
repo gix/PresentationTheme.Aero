@@ -190,14 +190,16 @@ namespace ThemeBrowser
                 ShowPicker();
 
             Point localPos = Mouse.GetPosition(AssociatedObject);
-            PixelColorPremultiplied = GetPixelColor(AssociatedObject, localPos);
+            PixelColorPremultiplied = GetPixelColor(
+                AssociatedObject, localPos, out int x, out int y);
 
             Point screenPos = AssociatedObject.PointToScreen(localPos);
             toolTip.HorizontalOffset = screenPos.X + 10;
             toolTip.VerticalOffset = screenPos.Y + 10;
             toolTip.Content =
-                "Color: " + PixelColor + "\n" +
-                "Color (Premultiplied): " + PixelColorPremultiplied;
+                $"X: {x}, Y: {y}\n" +
+                $"Color: {PixelColor}\n" +
+                $"Color (Premultiplied): {PixelColorPremultiplied}";
         }
 
         private void ShowPicker()
@@ -224,30 +226,34 @@ namespace ThemeBrowser
             return transform == null || Equals(transform, Transform.Identity);
         }
 
-        private static Color? GetPixelColor(Image image, Point point)
+        private static Color? GetPixelColor(Image image, Point point, out int x, out int y)
         {
+            BitmapSource bitmap;
             if (IsIdentityOrNull(image.RenderTransform) &&
                 IsIdentityOrNull(image.LayoutTransform) &&
                 image.Source is BitmapSource) {
 
-                var bitmap = (BitmapSource)image.Source;
+                bitmap = (BitmapSource)image.Source;
 
                 var scaleX = bitmap.PixelWidth / image.ActualWidth;
                 var scaleY = bitmap.PixelHeight / image.ActualHeight;
 
                 point.X *= scaleX;
                 point.Y *= scaleY;
-
-                return GetPixelColor(bitmap, (int)point.X, (int)point.Y);
             } else {
                 // Use RenderTargetBitmap to get the visual, in case the image has
                 // been transformed.
-                var bitmap = new RenderTargetBitmap((int)image.ActualWidth,
+                var renderBitmap = new RenderTargetBitmap(
+                    (int)image.ActualWidth,
                     (int)image.ActualHeight,
                     96, 96, PixelFormats.Default);
-                bitmap.Render(image);
-                return GetPixelColor(bitmap, (int)point.X, (int)point.Y);
+                renderBitmap.Render(image);
+                bitmap = renderBitmap;
             }
+
+            x = (int)point.X;
+            y = (int)point.Y;
+            return GetPixelColor(bitmap, x, y);
         }
 
         private static Color? GetPixelColor(BitmapSource bitmap, int x, int y)
