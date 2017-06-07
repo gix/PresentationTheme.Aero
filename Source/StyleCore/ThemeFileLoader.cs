@@ -277,7 +277,7 @@ namespace StyleCore
                         value = data.ReadInt32(offset);
                         return true;
                     case TPID.COLOR:
-                        value = ThemeExt.ColorFromArgb(data.ReadInt32(offset));
+                        value = ColorUtils.ColorFromCOLORREF(data.ReadInt32(offset));
                         return true;
                     case TPID.MARGINS:
                         value = data.Read<MARGINS>(offset);
@@ -1200,15 +1200,14 @@ namespace StyleCore
         }
     }
 
-    public static class ThemeExt
+    public static class ColorUtils
     {
-        public static Color ColorFromArgb(int value)
+        public static Color ColorFromCOLORREF(int value)
         {
-            var a = (byte)((value >> 24) & 0xFF);
-            var r = (byte)((value >> 16) & 0xFF);
+            var b = (byte)((value >> 16) & 0xFF);
             var g = (byte)((value >> 8) & 0xFF);
-            var b = (byte)((value >> 0) & 0xFF);
-            return Color.FromArgb(a, r, g, b);
+            var r = (byte)((value >> 0) & 0xFF);
+            return Color.FromArgb(0xFF, r, g, b);
         }
 
         public static Color ColorFromArgb(uint value)
