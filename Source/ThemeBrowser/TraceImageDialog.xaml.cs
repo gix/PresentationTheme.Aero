@@ -10,6 +10,9 @@
 
     public partial class TraceImageDialog
     {
+        private readonly Brush pathBorderBrush =
+            new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC)).EnsureFrozen();
+
         public TraceImageDialog(BitmapSource bitmap)
         {
             InitializeComponent();
@@ -194,8 +197,26 @@
             set => SetValue(PathWidenProperty, value);
         }
 
-        private readonly Brush pathBorderBrush =
-            new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC)).EnsureFrozen();
+        public static readonly DependencyProperty RenderAliasedProperty =
+            DependencyProperty.Register(
+                nameof(RenderAliased),
+                typeof(bool),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(
+                    false,
+                    (d, e) => ((TraceImageDialog)d).OnRenderAliasedChanged((bool)e.NewValue)));
+
+        public bool RenderAliased
+        {
+            get => (bool)GetValue(RenderAliasedProperty);
+            set => SetValue(RenderAliasedProperty, value);
+        }
+
+        private void OnRenderAliasedChanged(bool newValue)
+        {
+            RenderOptions.SetEdgeMode(path, newValue ? EdgeMode.Aliased : EdgeMode.Unspecified);
+            OnPathVisualChanged();
+        }
 
         private Int32Rect OnCoerceSourceRect(Int32Rect baseValue)
         {

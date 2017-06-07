@@ -93,6 +93,8 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -102,19 +104,22 @@
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
       <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="Data" VerticalAlignment="Center"/>
-      <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding PathData, UpdateSourceTrigger=PropertyChanged}"/>
+      <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="3" Text="{Binding PathData, UpdateSourceTrigger=PropertyChanged}"/>
 
       <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Text="Widen" VerticalAlignment="Center"/>
       <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding PathWiden}"/>
 
+      <TextBlock Grid.Row="1" Grid.Column="2" Margin="3" Text="Render Aliased" VerticalAlignment="Center"/>
+      <CheckBox Grid.Row="1" Grid.Column="3" Margin="3" IsChecked="{Binding RenderAliased}"/>
+
       <TextBlock Grid.Row="2" Grid.Column="0" Margin="3" Text="Margin" VerticalAlignment="Center"/>
-      <TextBox Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding PathMargin}"/>
+      <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="3" Text="{Binding PathMargin}"/>
 
       <TextBlock Grid.Row="3" Grid.Column="0" Margin="3" Text="Fill" VerticalAlignment="Center"/>
-      <TextBox Grid.Row="3" Grid.Column="1" Margin="3" Text="{Binding PathFill}"/>
+      <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="3" Text="{Binding PathFill}"/>
 
       <TextBlock Grid.Row="4" Grid.Column="0" Margin="3" Text="Rendered" VerticalAlignment="Center"/>
-      <TextBox Grid.Row="4" Grid.Column="1" Margin="3" Text="{Binding PathRenderedData}" IsReadOnly="True"/>
+      <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Margin="3" Text="{Binding PathRenderedData}" IsReadOnly="True"/>
     </Grid>
     <Border Grid.Row="1" Grid.Column="2" Background="#939393">
       <ScrollViewer HorizontalScrollBarVisibility="Visible"
