@@ -168,8 +168,8 @@ namespace ThemeBrowser
     {
         public SimplifiedImage(IMAGEPROPERTIES imageProperties)
         {
-            BorderColor = ColorUtils.ColorFromArgb(imageProperties.BorderColor).ToWpfColor();
-            BackgroundColor = ColorUtils.ColorFromArgb(imageProperties.BackgroundColor).ToWpfColor();
+            BorderColor = ColorUtils.ColorFromPremultipliedArgb(imageProperties.BorderColor).ToWpfColor();
+            BackgroundColor = ColorUtils.ColorFromPremultipliedArgb(imageProperties.BackgroundColor).ToWpfColor();
         }
 
         public System.Windows.Media.Color BorderColor { get; }

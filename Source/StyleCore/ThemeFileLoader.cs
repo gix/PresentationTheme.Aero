@@ -1210,9 +1210,27 @@ namespace StyleCore
             return Color.FromArgb(0xFF, r, g, b);
         }
 
-        public static Color ColorFromArgb(uint value)
+        public static Color ColorFromPremultipliedArgb(uint value)
         {
-            return Color.FromArgb(value);
+            return Color.FromPremultipliedArgb(value);
+        }
+
+        public static Color Unpremultiply(Color argb)
+        {
+            double a = argb.A / 255.0;
+            double r = argb.R / 255.0;
+            double g = argb.G / 255.0;
+            double b = argb.B / 255.0;
+
+            r /= a;
+            g /= a;
+            b /= a;
+
+            var ba = (byte)Math.Round(a * 255);
+            var br = (byte)Math.Round(r * 255);
+            var bg = (byte)Math.Round(g * 255);
+            var bb = (byte)Math.Round(b * 255);
+            return Color.FromArgb(ba, br, bg, bb);
         }
     }
 
@@ -1233,6 +1251,11 @@ namespace StyleCore
             var g = (byte)((value >> 8) & 0xFF);
             var b = (byte)((value >> 0) & 0xFF);
             return FromArgb(a, r, g, b);
+        }
+
+        public static Color FromPremultipliedArgb(uint value)
+        {
+            return ColorUtils.Unpremultiply(FromArgb(value));
         }
 
         public static Color FromArgb(byte a, byte r, byte g, byte b)
