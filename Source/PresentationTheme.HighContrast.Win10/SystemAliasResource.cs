@@ -27,6 +27,21 @@ namespace PresentationTheme.HighContrast.Win10
                 case "Button.Foreground.Defaulted.Color": return SystemColors.HighlightTextColorKey;
                 case "Button.Foreground.Disabled": return SystemColors.GrayTextBrushKey;
 
+                case "Calendar.Button.Normal.Foreground": return SystemColors.ControlTextBrushKey;
+                case "Calendar.Button.Inactive.Foreground": return SystemColors.GrayTextBrushKey;
+                case "Calendar.Button.InactiveHot.Foreground": return SystemColors.GrayTextBrushKey;
+                case "Calendar.Button.Selected.Background": return SystemColors.HighlightBrushKey;
+                case "Calendar.Button.Selected.Border": return SystemColors.ControlTextBrushKey;
+                case "Calendar.Button.Today.Border": return SystemColors.ControlTextBrushKey;
+                case "Calendar.Button.Hot.Foreground": return SystemColors.ControlTextBrushKey;
+                case "Calendar.Button.Hot.Background": return SystemColors.ControlBrushKey;
+                case "Calendar.Button.Hot.Border": return SystemColors.HotTrackBrushKey;
+                case "Calendar.Button.SelectedHot.Background": return SystemColors.HighlightBrushKey;
+                case "Calendar.Button.SelectedHot.Border": return SystemColors.HotTrackBrushKey;
+                case "Calendar.Button.SelectedNotFocused.Background": return SystemColors.HighlightBrushKey;
+                case "Calendar.Button.SelectedNotFocused.Border": return SystemColors.ControlTextBrushKey;
+                case "Calendar.NavButton.Background": return SystemColors.ControlTextBrushKey;
+
                 case "CheckBox.Background.Normal": return SystemColors.ControlBrushKey;
                 case "CheckBox.Background.Hot": return SystemColors.ControlBrushKey;
                 case "CheckBox.Background.Pressed": return SystemColors.ControlBrushKey;

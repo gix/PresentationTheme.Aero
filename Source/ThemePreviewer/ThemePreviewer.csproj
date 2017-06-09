@@ -75,6 +75,15 @@
     <Compile Include="AsyncDelegateCommand.cs" />
     <Compile Include="BuiltinThemes.cs" />
     <Compile Include="CacheTabsBehavior.cs" />
+    <Compile Include="Samples\CalendarSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\CalendarSampleNative.Designer.cs">
+      <DependentUpon>CalendarSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\CalendarSampleWpf.xaml.cs">
+      <DependentUpon>CalendarSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ProgressBarEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -283,6 +292,9 @@
     <Compile Include="ThemeUtils.cs" />
     <Compile Include="UxThemeOverride.cs" />
     <Compile Include="ViewModel.cs" />
+    <EmbeddedResource Include="Samples\CalendarSampleNative.resx">
+      <DependentUpon>CalendarSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Samples\GroupBoxSampleNative.resx">
       <DependentUpon>GroupBoxSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -340,6 +352,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Samples\CalendarSampleWpf.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Samples\GroupBoxSampleWpf.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

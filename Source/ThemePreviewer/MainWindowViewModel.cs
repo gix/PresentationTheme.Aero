@@ -65,6 +65,7 @@
             Pages.Add(ControlComparisonViewModel.Create<GroupBoxSampleNative, GroupBoxSampleWpf>("GroupBox"));
             Pages.Add(ControlComparisonViewModel.Create<StatusBarSampleNative, StatusBarSampleWpf>("StatusBar"));
             Pages.Add(ControlComparisonViewModel.Create<ToolBarSampleNative, ToolBarSampleWpf>("ToolBar"));
+            Pages.Add(ControlComparisonViewModel.Create<CalendarSampleNative, CalendarSampleWpf>("Calendar"));
             Pages.Add(ControlComparisonViewModel.Create<MiscSampleNative, MiscSampleWpf>("Misc"));
             Pages.Add(ControlComparisonViewModel.Create<System.Windows.Forms.UserControl, ExpanderSampleWpf>("Expander"));
             Pages.Add(new ColorList());

@@ -6200,4 +6200,576 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+
+  <!-- DatePicker ========================================================== -->
+
+  <DrawingImage x:Key="DatePicker.DropDownGlyph">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="Transparent" Geometry="M0,0 24,0 24,17 0,17 z"/>
+        <!-- Outline -->
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Geometry="F0 M2,2 13,2 13,12 11,12 11,14 2,14 2,3 z"/>
+        <!-- Arrow -->
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Geometry="M14.5,6 22.5,6 18.5,10 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <Style x:Key="DatePicker.DropDownButtonStyle" TargetType="{x:Type Button}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Padding" Value="4,2"/>
+    <Setter Property="Focusable" Value="False"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Button}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <Image x:Name="Glyph"
+                   Width="24"
+                   Height="17"
+                   Source="{StaticResource DatePicker.DropDownGlyph}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style TargetType="{x:Type DatePicker}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="1,2"/>
+    <Setter Property="IsTodayHighlighted" Value="True"/>
+    <Setter Property="SelectedDateFormat" Value="Short"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type DatePicker}">
+          <Grid x:Name="PART_Root">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.ColumnSpan="2"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    Padding="{TemplateBinding Padding}"/>
+
+            <Button x:Name="PART_Button"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Style="{StaticResource DatePicker.DropDownButtonStyle}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Stretch"
+                    Foreground="{TemplateBinding Foreground}"/>
+
+            <DatePickerTextBox x:Name="PART_TextBox"
+                               Foreground="{TemplateBinding Foreground}"
+                               Padding="{TemplateBinding Padding}"
+                               HorizontalContentAlignment="Stretch"
+                               VerticalContentAlignment="Stretch"
+                               VerticalAlignment="Center"
+                               Focusable="{TemplateBinding Focusable}"/>
+
+            <Grid x:Name="PART_DisabledVisual"
+                    Grid.ColumnSpan="2"
+                    Opacity="0"
+                    IsHitTestVisible="False">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <Popup x:Name="PART_Popup"
+                     PlacementTarget="{Binding ElementName=PART_TextBox}"
+                     Placement="Bottom"
+                     StaysOpen="False"
+                     AllowsTransparency="True"/>
+            </Grid>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="PART_DisabledVisual" Property="Opacity" Value="1"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style TargetType="{x:Type DatePickerTextBox}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+    <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+    <Setter Property="aero:TextBoxService.ViewMargin" Value="0"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type DatePickerTextBox}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  VisualStateManager.CustomVisualStateManager="{x:Static aero:SystemVisualStateManager.Instance}">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="WatermarkStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition GeneratedDuration="0"/>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="Unwatermarked"/>
+                <VisualState x:Name="Watermarked">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_Watermark"
+                                                   Storyboard.TargetProperty="Visibility">
+                      <DiscreteObjectKeyFrame KeyTime="0">
+                        <DiscreteObjectKeyFrame.Value>
+                          <Visibility>Visible</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                      </DiscreteObjectKeyFrame>
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <Grid Margin="1"
+                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+              <ScrollViewer x:Name="PART_ContentHost"
+                            Focusable="False"
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden"/>
+              <ContentControl x:Name="PART_Watermark"
+                              Visibility="Hidden"
+                              VerticalAlignment="Center"
+                              Focusable="False"
+                              IsHitTestVisible="False"
+                              Foreground="#FF575757"/>
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+
+  <!-- Calendar ============================================================ -->
+
+  <Style TargetType="{x:Type Calendar}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="3"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type Calendar}">
+          <StackPanel x:Name="PART_Root" HorizontalAlignment="Center">
+            <CalendarItem x:Name="PART_CalendarItem"
+                          Style="{TemplateBinding CalendarItemStyle}"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          Padding="{TemplateBinding Padding}"/>
+          </StackPanel>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type CalendarItem}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type CalendarItem}">
+          <ControlTemplate.Resources>
+            <DataTemplate x:Key="{x:Static CalendarItem.DayTitleTemplateResourceKey}">
+              <TextBlock Text="{Binding}"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Margin="0,0,0,1"/>
+            </DataTemplate>
+          </ControlTemplate.Resources>
+          <Border x:Name="PART_Root"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+
+              <Grid.Resources>
+                <ControlTemplate x:Key="PreviousButtonTemplate" TargetType="{x:Type Button}">
+                  <Grid Background="Transparent">
+                    <Path x:Name="Glyph"
+                          Data="M9,3.5 5,7.5 9,11.5 z"
+                          Fill="{aero10:SystemAliasResource Calendar.NavButton.Background}"
+                          Width="16"
+                          Height="16"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center"
+                          Stretch="None"
+                          RenderOptions.EdgeMode="Aliased"/>
+                  </Grid>
+                  <ControlTemplate.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                      <Setter TargetName="Glyph" Property="Fill"
+                              Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                    </Trigger>
+                  </ControlTemplate.Triggers>
+                </ControlTemplate>
+
+                <ControlTemplate x:Key="NextButtonTemplate" TargetType="{x:Type Button}">
+                  <Grid Background="Transparent">
+                    <Path x:Name="Glyph"
+                          Data="M7,3.5 11,7.5 7,11.5 z"
+                          Fill="{aero10:SystemAliasResource Calendar.NavButton.Background}"
+                          Width="16"
+                          Height="16"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Stretch="None"
+                          RenderOptions.EdgeMode="Aliased"/>
+                  </Grid>
+                  <ControlTemplate.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                      <Setter TargetName="Glyph" Property="Fill"
+                              Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                    </Trigger>
+                  </ControlTemplate.Triggers>
+                </ControlTemplate>
+
+                <Style x:Key="HeaderButtonStyle" TargetType="{x:Type Button}">
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="Transparent">
+                          <ContentPresenter Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Margin="{TemplateBinding Padding}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                  <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                      <Setter Property="Foreground"
+                              Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                    </Trigger>
+                  </Style.Triggers>
+                </Style>
+              </Grid.Resources>
+
+              <Button x:Name="PART_PreviousButton"
+                      Grid.Row="0"
+                      Grid.Column="0"
+                      Template="{StaticResource PreviousButtonTemplate}"
+                      Width="16" Height="16"
+                      Margin="0,0,0,1"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Focusable="False"/>
+
+              <Button x:Name="PART_HeaderButton"
+                      Grid.Row="0"
+                      Grid.Column="1"
+                      Style="{StaticResource HeaderButtonStyle}"
+                      Padding="1,7"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Center"
+                      Focusable="False"/>
+
+              <Button x:Name="PART_NextButton"
+                      Grid.Row="0"
+                      Grid.Column="2"
+                      Template="{StaticResource NextButtonTemplate}"
+                      Width="16" Height="16"
+                      Margin="0,0,0,1"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Center"
+                      Focusable="False"/>
+
+              <Border x:Name="MonthViewBorder"
+                      Grid.Row="1"
+                      Grid.ColumnSpan="3"
+                      HorizontalAlignment="Center"
+                      Visibility="Visible"
+                      BorderBrush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                      BorderThickness="1">
+                <Grid x:Name="PART_MonthView" Margin="-1">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                  </Grid.ColumnDefinitions>
+                </Grid>
+              </Border>
+
+              <Border x:Name="YearViewBorder"
+                      Grid.Row="1"
+                      Grid.ColumnSpan="3"
+                      Visibility="Hidden"
+                      BorderBrush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                      BorderThickness="1">
+                <Grid x:Name="PART_YearView" Margin="-1">
+                  <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                  </Grid.ColumnDefinitions>
+                </Grid>
+              </Border>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <DataTrigger Value="Year">
+              <DataTrigger.Binding>
+                <Binding Path="DisplayMode">
+                  <Binding.RelativeSource>
+                    <RelativeSource Mode="FindAncestor" AncestorType="{x:Type Calendar}"/>
+                  </Binding.RelativeSource>
+                </Binding>
+              </DataTrigger.Binding>
+              <Setter TargetName="MonthViewBorder" Property="Visibility" Value="Hidden"/>
+              <Setter TargetName="YearViewBorder" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+            <DataTrigger Value="Decade">
+              <DataTrigger.Binding>
+                <Binding Path="DisplayMode">
+                  <Binding.RelativeSource>
+                    <RelativeSource Mode="FindAncestor" AncestorType="{x:Type Calendar}"/>
+                  </Binding.RelativeSource>
+                </Binding>
+              </DataTrigger.Binding>
+              <Setter TargetName="MonthViewBorder" Property="Visibility" Value="Hidden"/>
+              <Setter TargetName="YearViewBorder" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="PART_Root" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="{x:Type CalendarDayButton}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="5,0"/>
+    <Setter Property="MinWidth" Value="5"/>
+    <Setter Property="MinHeight" Value="5"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type CalendarDayButton}">
+          <Grid>
+            <Border x:Name="Border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter x:Name="NormalText"
+                                Margin="0,-1,0,-1"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Border>
+            <Path x:Name="Blackout"
+                  Data="M8.1772461,11.029181 L10.433105,11.029181 L11.700684,12.801641 L12.973633,11.029181 L15.191895,11.029181 L12.844727,13.999395 L15.21875,17.060919 L12.962891,17.060919 L11.673828,15.256231 L10.352539,17.060919 L8.1396484,17.060919 L10.519043,14.042364 z"
+                  Opacity="0.2"
+                  Margin="2"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  RenderTransformOrigin="0.5,0.5"
+                  Fill="#FF000000"
+                  Stretch="Fill"
+                  Visibility="Collapsed"/>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsBlackedOut" Value="True">
+              <Setter TargetName="Blackout" Property="Visibility" Value="Visible"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsInactive" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Inactive.Foreground}"/>
+      </Trigger>
+      <Trigger Property="IsToday" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Today.Border}"/>
+      </Trigger>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Normal.Foreground}"/>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Border}"/>
+      </Trigger>
+      <Trigger Property="IsHighlighted" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Normal.Foreground}"/>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Border}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsSelected" Value="True"/>
+          <Condition Property="Selector.IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.SelectedNotFocused.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.SelectedNotFocused.Border}"/>
+      </MultiTrigger>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Foreground}"/>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Border}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsFocused" Value="True"/>
+          <Condition Property="IsBlackedOut" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Border}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsSelected" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.SelectedHot.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.SelectedHot.Border}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsInactive" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.InactiveHot.Foreground}"/>
+      </MultiTrigger>
+      <Trigger Property="IsToday" Value="True">
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Today.Border}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style TargetType="{x:Type CalendarButton}">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type CalendarButton}">
+          <Border x:Name="Background"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}">
+            <ContentPresenter Margin="0,-1,0,0"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsInactive" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Inactive.Foreground}"/>
+      </Trigger>
+      <Trigger Property="HasSelectedDays" Value="True">
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Border}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="HasSelectedDays" Value="True"/>
+          <Condition Property="Selector.IsSelectionActive" Value="False"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.SelectedNotFocused.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.SelectedNotFocused.Border}"/>
+      </MultiTrigger>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Foreground}"/>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Hot.Border}"/>
+      </Trigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsFocused" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.Selected.Border}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="HasSelectedDays" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Background" Value="{aero10:SystemAliasResource Calendar.Button.SelectedHot.Background}"/>
+        <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource Calendar.Button.SelectedHot.Border}"/>
+      </MultiTrigger>
+      <MultiTrigger>
+        <MultiTrigger.Conditions>
+          <Condition Property="IsMouseOver" Value="True"/>
+          <Condition Property="IsInactive" Value="True"/>
+        </MultiTrigger.Conditions>
+        <Setter Property="Foreground" Value="{aero10:SystemAliasResource Calendar.Button.InactiveHot.Foreground}"/>
+      </MultiTrigger>
+    </Style.Triggers>
+  </Style>
 </ResourceDictionary>

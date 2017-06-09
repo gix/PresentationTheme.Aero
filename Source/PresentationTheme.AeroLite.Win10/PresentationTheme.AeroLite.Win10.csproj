@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AeroLiteWin10Theme.cs" />
+    <Compile Include="AutoDropShadowPopup.cs" />
     <Compile Include="ButtonChrome.cs" />
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="EqualsConverter.cs" />
