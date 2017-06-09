@@ -40,7 +40,9 @@
                 nameof(SourceBitmap),
                 typeof(BitmapSource),
                 typeof(TraceImageDialog),
-                new PropertyMetadata(null));
+                new PropertyMetadata(
+                    null,
+                    (d, e) => ((TraceImageDialog)d).OnSourceBitmapChanged()));
 
         public BitmapSource SourceBitmap
         {
@@ -48,35 +50,38 @@
             set => SetValue(SourceBitmapProperty, value);
         }
 
-        public static readonly DependencyProperty DiffBitmapProperty =
-            DependencyProperty.Register(
+        private static readonly DependencyPropertyKey DiffBitmapPropertyKey =
+            DependencyProperty.RegisterReadOnly(
                 nameof(DiffBitmap),
                 typeof(BitmapSource),
                 typeof(TraceImageDialog),
-                new PropertyMetadata(null));
+                new PropertyMetadata(
+                    null, null, (d, b) => ((TraceImageDialog)d).CoerceDiffBitmap(b)));
+
+        public static readonly DependencyProperty DiffBitmapProperty =
+            DiffBitmapPropertyKey.DependencyProperty;
 
         public BitmapSource DiffBitmap
         {
             get => (BitmapSource)GetValue(DiffBitmapProperty);
-            set => SetValue(DiffBitmapProperty, value);
         }
 
-        /// <summary>
-        ///   Identifies the <see cref="TracedBitmap"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TracedBitmapProperty =
-            DependencyProperty.Register(
+        private static readonly DependencyPropertyKey TracedBitmapPropertyKey =
+            DependencyProperty.RegisterReadOnly(
                 nameof(TracedBitmap),
                 typeof(BitmapSource),
                 typeof(TraceImageDialog),
                 new PropertyMetadata(
                     null,
-                    (d, e) => ((TraceImageDialog)d).OnTracedBitmapChanged()));
+                    (d, e) => ((TraceImageDialog)d).OnTracedBitmapChanged(),
+                    (d, b) => ((TraceImageDialog)d).CoerceTracedBitmap(b)));
+
+        public static readonly DependencyProperty TracedBitmapProperty =
+            TracedBitmapPropertyKey.DependencyProperty;
 
         public BitmapSource TracedBitmap
         {
             get => (BitmapSource)GetValue(TracedBitmapProperty);
-            set => SetValue(TracedBitmapProperty, value);
         }
 
         public static readonly DependencyProperty SourceRectProperty =
@@ -87,7 +92,7 @@
                 new PropertyMetadata(
                     Int32Rect.Empty,
                     (d, e) => ((TraceImageDialog)d).OnSourceRectChanged(),
-                    (d, v) => ((TraceImageDialog)d).OnCoerceSourceRect((Int32Rect)v)));
+                    (d, v) => ((TraceImageDialog)d).CoerceSourceRect((Int32Rect)v)));
 
         public Int32Rect SourceRect
         {
@@ -214,11 +219,12 @@
 
         private void OnRenderAliasedChanged(bool newValue)
         {
-            RenderOptions.SetEdgeMode(path, newValue ? EdgeMode.Aliased : EdgeMode.Unspecified);
+            RenderOptions.SetEdgeMode(
+                path, newValue ? EdgeMode.Aliased : EdgeMode.Unspecified);
             OnPathVisualChanged();
         }
 
-        private Int32Rect OnCoerceSourceRect(Int32Rect baseValue)
+        private Int32Rect CoerceSourceRect(Int32Rect baseValue)
         {
             if (baseValue.IsEmpty)
                 return new Int32Rect(0, 0, Bitmap.PixelWidth, Bitmap.PixelHeight);
@@ -232,11 +238,9 @@
 
         private void OnSourceRectChanged()
         {
-            SourceBitmap = Bitmap != null ? new CroppedBitmap(Bitmap, SourceRect) : null;
             pathBorder.Width = SourceRect.Width;
             pathBorder.Height = SourceRect.Height;
-
-            Dispatcher.BeginInvoke(new Action(UpdateDiff), DispatcherPriority.ContextIdle);
+            SourceBitmap = Bitmap != null ? new CroppedBitmap(Bitmap, SourceRect) : null;
         }
 
         private void OnPathDataChanged()
@@ -258,29 +262,38 @@
 
         private void OnPathVisualChanged()
         {
-            Dispatcher.BeginInvoke(new Action(() => {
-                TracedBitmap = ImagingUtils.RenderSnapshot(pathBorder);
-            }), DispatcherPriority.ContextIdle);
+            Dispatcher.InvokeAsync(
+                () => InvalidateProperty(TracedBitmapProperty),
+                DispatcherPriority.ContextIdle);
+        }
+
+        private void OnSourceBitmapChanged()
+        {
+            InvalidateProperty(DiffBitmapProperty);
         }
 
         private void OnTracedBitmapChanged()
         {
-            Dispatcher.BeginInvoke(new Action(UpdateDiff), DispatcherPriority.ContextIdle);
+            InvalidateProperty(DiffBitmapProperty);
         }
 
         private void OnShowTracedFlagChanged()
         {
-            UpdateDiff();
+            InvalidateProperty(DiffBitmapProperty);
         }
 
-        private void UpdateDiff()
+        private object CoerceTracedBitmap(object baseValue)
+        {
+            return ImagingUtils.RenderSnapshot(pathBorder);
+        }
+
+        private object CoerceDiffBitmap(object baseValue)
         {
             if (ShowTracedFlag)
-                DiffBitmap = TracedBitmap;
-            else if (TracedBitmap != null)
-                DiffBitmap = ImagingUtils.Difference(SourceBitmap, TracedBitmap, 0xFFFFFFFF);
-            else
-                DiffBitmap = null;
+                return TracedBitmap;
+            if (TracedBitmap != null)
+                return ImagingUtils.Difference(SourceBitmap, TracedBitmap, 0xFFFFFFFF);
+            return baseValue;
         }
 
         private static int Clamp(int value, int min, int max)
