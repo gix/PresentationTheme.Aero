@@ -39,6 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AeroTheme.cs" />
+    <Compile Include="AeroThemePolicy.cs" />
+    <Compile Include="PackUriUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemVisualStateManager.cs" />
     <Compile Include="TextBoxService.cs" />

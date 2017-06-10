@@ -75,6 +75,12 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
+      <Project>{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}</Project>
+      <Name>PresentationTheme.Aero</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\SharedPropertiesDotNet.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

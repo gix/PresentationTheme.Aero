@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:ThemePreviewer"
-        xmlns:win10="clr-namespace:PresentationTheme.Aero.Win10;assembly=PresentationTheme.Aero.Win10"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:samples="clr-namespace:ThemePreviewer.Samples"
         xmlns:controls="clr-namespace:ThemePreviewer.Controls"
@@ -51,7 +50,7 @@
       <Slider Margin="3,1" Width="100" Value="{Binding Scale}" Minimum="1" Maximum="4" SmallChange="1" LargeChange="1"/>
       <CheckBox Margin="3,1" IsChecked="{Binding UseLayoutRounding, ElementName=Root}">Use Layout Rounding</CheckBox>
       <CheckBox Margin="3,1" x:Name="textFormattingFlag" IsChecked="True" Click="OnTextFormattingFlagClicked">Text Formatting: Display</CheckBox>
-      <CheckBox Margin="3,1" x:Name="animationFlag" IsChecked="{x:Static win10:AeroWin10Theme.UseAnimationsOverride}" IsThreeState="True" Click="OnAnimationFlagClicked">Animations</CheckBox>
+      <CheckBox Margin="3,1" x:Name="animationFlag" IsThreeState="True" Click="OnAnimationFlagClicked">Animations</CheckBox>
     </StackPanel>
     <TabControl ItemsSource="{Binding Pages}" SelectedItem="{Binding CurrentPage}">
       <i:Interaction.Behaviors>
