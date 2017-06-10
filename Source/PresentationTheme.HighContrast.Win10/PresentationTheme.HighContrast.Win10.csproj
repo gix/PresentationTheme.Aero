@@ -55,7 +55,7 @@
     <Compile Include="TypeOfConverter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Themes\HighContrastWin10.NormalColor.xaml">
+    <Page Include="Themes\HighContrast.Win10.NormalColor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

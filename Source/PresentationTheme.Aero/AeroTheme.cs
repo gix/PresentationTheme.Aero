@@ -75,35 +75,28 @@
             var win8 = new Version(6, 2);
             var win10 = new Version(10, 0);
 
-            string partialName = null;
             string resourceName = null;
             if (string.Equals(uxThemeName, "Aero", StringComparison.OrdinalIgnoreCase)) {
-                if (osVersion >= win10) {
-                    partialName = "PresentationTheme.Aero.Win10";
-                    resourceName = "AeroWin10";
-                } else if (osVersion >= win8) {
-                    partialName = "PresentationTheme.Aero.Win8";
-                    resourceName = "AeroWin8";
-                } else if (osVersion >= win7) {
-                    partialName = "PresentationTheme.Aero.Win7";
-                    resourceName = "AeroWin7";
-                }
+                if (osVersion >= win10)
+                    resourceName = "Aero.Win10";
+                else if (osVersion >= win8)
+                    resourceName = "Aero.Win8";
+                else if (osVersion >= win7)
+                    resourceName = "Aero.Win7";
             } else if (string.Equals(uxThemeName, "AeroLite", StringComparison.OrdinalIgnoreCase)) {
                 if (highContrast) {
-                    if (osVersion >= win10) {
-                        partialName = "PresentationTheme.HighContrast.Win10";
-                        resourceName = "HighContrastWin10";
-                    }
+                    if (osVersion >= win10)
+                        resourceName = "HighContrast.Win10";
                 } else {
-                    if (osVersion >= win10) {
-                        partialName = "PresentationTheme.AeroLite.Win10";
-                        resourceName = "AeroLiteWin10";
-                    }
+                    if (osVersion >= win10)
+                        resourceName = "AeroLite.Win10";
                 }
             }
 
-            if (partialName == null)
+            if (resourceName == null)
                 return null;
+
+            string partialName = $"PresentationTheme.{resourceName}";
 
             var asmName = GetFullAssemblyNameFromPartialName(typeof(AeroTheme).Assembly, partialName);
             string themedResourceName =

@@ -70,7 +70,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Themes\AeroWin8.NormalColor.xaml">
+    <Page Include="Themes\Aero.Win8.NormalColor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

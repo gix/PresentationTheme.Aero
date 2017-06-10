@@ -8,7 +8,7 @@ namespace PresentationTheme.Aero.Win7
     public static class AeroWin7Theme
     {
         public static Uri ResourceUri =>
-            MakePackUri(typeof(AeroWin7Theme).Assembly, "Themes/AeroWin7.NormalColor.xaml");
+            MakePackUri(typeof(AeroWin7Theme).Assembly, "Themes/Aero.Win7.NormalColor.xaml");
 
         public static ResourceDictionary CreateResourceDictionary()
         {

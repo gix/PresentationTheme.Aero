@@ -8,7 +8,7 @@
     public static class AeroWin8Theme
     {
         public static Uri ResourceUri =>
-            MakePackUri(typeof(AeroWin8Theme).Assembly, "Themes/AeroWin8.NormalColor.xaml");
+            MakePackUri(typeof(AeroWin8Theme).Assembly, "Themes/Aero.Win8.NormalColor.xaml");
 
         public static ResourceDictionary CreateResourceDictionary()
         {

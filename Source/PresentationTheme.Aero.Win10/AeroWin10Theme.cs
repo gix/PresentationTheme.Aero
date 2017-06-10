@@ -11,7 +11,7 @@
         ///   Gets the Pack <see cref="Uri"/> for the theme resources.
         /// </summary>
         public static Uri ResourceUri =>
-            MakePackUri(typeof(AeroWin10Theme).Assembly, "Themes/AeroWin10.NormalColor.xaml");
+            MakePackUri(typeof(AeroWin10Theme).Assembly, "Themes/Aero.Win10.NormalColor.xaml");
 
         /// <summary>
         ///   Gets or sets a value determining whether animations are forcibly

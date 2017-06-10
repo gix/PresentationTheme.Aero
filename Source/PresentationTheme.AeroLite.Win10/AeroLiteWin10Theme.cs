@@ -12,7 +12,7 @@
         ///   Gets the Pack <see cref="Uri"/> for the theme resources.
         /// </summary>
         public static Uri ResourceUri =>
-            MakePackUri(typeof(AeroLiteWin10Theme).Assembly, "Themes/AeroLiteWin10.NormalColor.xaml");
+            MakePackUri(typeof(AeroLiteWin10Theme).Assembly, "Themes/AeroLite.Win10.NormalColor.xaml");
 
         /// <summary>
         ///   Gets or sets a value determining whether animations are forcibly
