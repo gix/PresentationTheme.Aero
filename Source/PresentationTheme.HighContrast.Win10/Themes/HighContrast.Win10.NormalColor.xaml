@@ -3125,21 +3125,6 @@
             </Path>
           </Border>
           <ControlTemplate.Triggers>
-            <!-- Account for the weird rounding behavior of SysTreeView, at
-                 least for the default height. -->
-            <DataTrigger Value="True">
-              <DataTrigger.Binding>
-                <MultiBinding Converter="{StaticResource EqualsConverter}">
-                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"/>
-                  <Binding>
-                    <Binding.Source>
-                      <system:Double>18</system:Double>
-                    </Binding.Source>
-                  </Binding>
-                </MultiBinding>
-              </DataTrigger.Binding>
-              <Setter TargetName="Glyph" Property="Margin" Value="1,2,0,0"/>
-            </DataTrigger>
             <Trigger Property="IsChecked" Value="True">
               <Setter TargetName="Glyph" Property="Data" Value="{StaticResource Explorer.TreeView.Glyph.Minus}"/>
               <Setter TargetName="Glyph" Property="Fill">
