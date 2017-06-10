@@ -358,9 +358,9 @@
 
   <Style x:Key="BaseButtonStyle" TargetType="{x:Type ButtonBase}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource Button.FocusVisual}"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource Button.Border.Normal}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -397,9 +397,9 @@
 
   <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource Button.FocusVisual}"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource Button.Border.Normal}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -705,7 +705,7 @@
 
   <Style x:Key="ComboBox.ReadOnly.Button" TargetType="{x:Type ToggleButton}">
     <Setter Property="OverridesDefaultStyle" Value="True"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource ComboBox.Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Button.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
@@ -1122,9 +1122,9 @@
 
   <Style TargetType="{x:Type ComboBox}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBox.ReadOnly.FocusVisual}"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource ComboBox.Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ComboBox.Button.Border.Normal}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="3,2,2,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -3708,7 +3708,7 @@
 
   <Style TargetType="{x:Type TabItem}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource TabItem.FocusVisual}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Foreground" Value="Black"/>
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource TabItem.Border.Normal}"/>
     <Setter Property="Margin" Value="0"/>
