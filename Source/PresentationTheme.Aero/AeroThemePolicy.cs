@@ -38,10 +38,6 @@ namespace PresentationTheme.Aero
             if (string.Equals(themeName, "Aero", StringComparison.OrdinalIgnoreCase)) {
                 if (osVersion >= win10)
                     resourceName = "Aero.Win10";
-                else if (osVersion >= win8)
-                    resourceName = "Aero.Win8";
-                else if (osVersion >= win7)
-                    resourceName = "Aero.Win7";
             } else if (string.Equals(themeName, "AeroLite", StringComparison.OrdinalIgnoreCase)) {
                 if (highContrast) {
                     if (osVersion >= win10)
