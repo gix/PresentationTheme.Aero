@@ -50,7 +50,7 @@
                 window.Height = bounds.Height;
                 window.WindowStartupLocation = WindowStartupLocation.Manual;
             } else {
-                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             if (opts.TabIndex != null && opts.TabIndex >= 0 && opts.TabIndex < viewModel.Pages.Count)
