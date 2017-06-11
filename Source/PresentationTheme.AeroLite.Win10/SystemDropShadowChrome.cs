@@ -18,7 +18,7 @@ namespace PresentationTheme.AeroLite.Win10
         private const int BottomRight = 8;
         private const double ShadowDepth = 5;
 
-        private static readonly object ResourceAccess = new object();
+        private static readonly object Mutex = new object();
         private static Brush[] commonBrushes;
         private static CornerRadius commonCornerRadius;
 
@@ -207,7 +207,7 @@ namespace PresentationTheme.AeroLite.Win10
         private Brush[] GetBrushes(Color c, CornerRadius cornerRadius)
         {
             if (commonBrushes == null) {
-                lock (ResourceAccess) {
+                lock (Mutex) {
                     if (commonBrushes == null) {
                         commonBrushes = CreateBrushes(c, cornerRadius);
                         commonCornerRadius = cornerRadius;

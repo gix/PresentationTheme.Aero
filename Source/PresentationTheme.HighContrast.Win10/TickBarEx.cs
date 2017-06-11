@@ -268,7 +268,7 @@
 
                 // Draw Selection Ticks
                 if (IsSelectionRangeEnabled) {
-                    var tickFill = Brushes.Black;
+                    var tickFill = SelectionTickBrush;
 
                     double x0 = (SelectionStart - Minimum) * logicalToPhysical + startPoint.X;
                     Point pt0 = new Point(x0, startPoint.Y);
