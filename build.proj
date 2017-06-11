@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+         ToolsVersion="15.0" DefaultTargets="Package">
+  <ItemGroup>
+    <Project Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
+    <Project Include="Source\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj"/>
+    <Project Include="Source\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj"/>
+    <Project Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>
+  </ItemGroup>
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <PackageDir>$(MSBuildThisFileDirectory)dist</PackageDir>
+  </PropertyGroup>
+
+  <Target Name="Build">
+    <MSBuild Projects="@(Project)"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU"
+             BuildInParallel="true"
+             StopOnFirstFailure="true"
+             Targets="Rebuild"/>
+  </Target>
+
+  <Target Name="GetVersion" DependsOnTargets="Build">
+    <GetAssemblyIdentity AssemblyFiles="build\any\bin\PresentationTheme.Aero.dll">
+      <Output TaskParameter="Assemblies"
+              ItemName="_AssemblyIdentities"/>
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <PackageVersion>%(_AssemblyIdentities.Version)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="Package" DependsOnTargets="Build;GetVersion">
+    <PropertyGroup>
+      <PackArgs>-Version "$(PackageVersion)" -NoPackageAnalysis</PackArgs>
+      <PackArgs>$(PackArgs) -OutputDirectory "$(PackageDir)"</PackArgs>
+      <PackArgs>$(PackArgs) -Symbols</PackArgs>
+    </PropertyGroup>
+    <MakeDir Directories="$(PackageDir)"/>
+    <Exec Command="nuget.exe pack $(PackArgs) PresentationTheme.Aero.nuspec"/>
+  </Target>
+</Project>
