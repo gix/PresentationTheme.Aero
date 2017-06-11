@@ -2,8 +2,8 @@ namespace ThemeBrowser
 {
     using System.Collections.Generic;
     using System.Linq;
-    using StyleCore;
-    using StyleCore.Native;
+    using ThemeCore;
+    using ThemeCore.Native;
 
     public class ThemeStateViewModel : ThemePropertyContainer
     {

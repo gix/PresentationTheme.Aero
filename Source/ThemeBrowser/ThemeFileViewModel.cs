@@ -3,8 +3,8 @@ namespace ThemeBrowser
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using StyleCore;
-    using StyleCore.Native;
+    using ThemeCore;
+    using ThemeCore.Native;
 
     public abstract class ThemeFileBase : ViewModel, IDisposable
     {

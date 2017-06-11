@@ -21,7 +21,7 @@ namespace ThemeBrowser
             return Color.FromArgb(a, r, g, b);
         }
 
-        public static Color ToWpfColor(this StyleCore.Color color)
+        public static Color ToWpfColor(this ThemeCore.Color color)
         {
             return Color.FromArgb(color.A, color.R, color.G, color.B);
         }

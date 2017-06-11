@@ -10,9 +10,9 @@ namespace ThemeBrowser
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Extensions;
-    using StyleCore;
-    using StyleCore.Native;
-    using Color = StyleCore.Color;
+    using ThemeCore;
+    using ThemeCore.Native;
+    using Color = ThemeCore.Color;
 
     public enum ComparisonResult
     {

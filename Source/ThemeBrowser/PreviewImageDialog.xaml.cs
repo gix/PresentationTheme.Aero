@@ -11,7 +11,7 @@
     using System.Windows.Input;
     using System.Windows.Media;
     using Extensions;
-    using StyleCore.Native;
+    using ThemeCore.Native;
     using Brushes = System.Windows.Media.Brushes;
     using Point = System.Windows.Point;
     using Size = System.Windows.Size;

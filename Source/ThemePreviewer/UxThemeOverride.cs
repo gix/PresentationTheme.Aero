@@ -4,7 +4,7 @@ namespace ThemePreviewer
     using System.Threading.Tasks;
     using System.Windows.Threading;
     using PresentationTheme.Aero;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public class UxThemeLoadParams : IEquatable<UxThemeLoadParams>
     {

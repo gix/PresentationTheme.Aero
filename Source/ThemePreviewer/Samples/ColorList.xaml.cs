@@ -11,7 +11,7 @@
     using System.Windows.Interop;
     using System.Windows.Media;
     using Microsoft.Win32;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     internal partial class ColorList : INotifyPropertyChanged
     {

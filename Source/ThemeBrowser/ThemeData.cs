@@ -5,7 +5,7 @@ namespace ThemeBrowser
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Media;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public class ThemeData : IThemeData
     {

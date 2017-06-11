@@ -11,7 +11,7 @@
     using System.Windows.Threading;
     using Microsoft.Win32;
     using Samples;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public class MainWindowViewModel : ViewModel
     {

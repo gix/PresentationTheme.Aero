@@ -16,8 +16,8 @@
     using System.Windows.Interop;
     using System.Windows.Media.Imaging;
     using Microsoft.Win32;
-    using StyleCore;
-    using StyleCore.Native;
+    using ThemeCore;
+    using ThemeCore.Native;
 
     public class MainWindowViewModel : ViewModel
     {

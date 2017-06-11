@@ -5,7 +5,7 @@ namespace ThemePreviewer.Controls
     using System.ComponentModel;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public sealed class ListViewEx : ListView
     {

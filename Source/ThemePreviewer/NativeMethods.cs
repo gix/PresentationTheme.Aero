@@ -7,7 +7,7 @@ namespace ThemePreviewer
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Text;
-    using StyleCore.Native;
+    using ThemeCore.Native;
     using Control = System.Windows.Forms.Control;
 
     internal static class NativeMethods

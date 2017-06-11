@@ -1,7 +1,7 @@
 namespace ThemeBrowser
 {
-    using StyleCore;
-    using StyleCore.Native;
+    using ThemeCore;
+    using ThemeCore.Native;
 
     public class ThemeRawProperty
     {

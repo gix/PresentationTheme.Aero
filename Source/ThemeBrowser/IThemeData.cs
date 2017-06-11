@@ -2,7 +2,7 @@ namespace ThemeBrowser
 {
     using System;
     using System.IO;
-    using StyleCore.Native;
+    using ThemeCore.Native;
     using Color = System.Windows.Media.Color;
 
     public interface IThemeData : IDisposable

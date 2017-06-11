@@ -1,6 +1,6 @@
 namespace ThemeBrowser
 {
-    using StyleCore;
+    using ThemeCore;
     using Color = System.Windows.Media.Color;
 
     public class HighContrastColor

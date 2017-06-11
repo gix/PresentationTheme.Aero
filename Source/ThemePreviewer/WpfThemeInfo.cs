@@ -3,7 +3,7 @@ namespace ThemePreviewer
     using System;
     using System.IO.Packaging;
     using System.Windows;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public class WpfThemeInfo
     {

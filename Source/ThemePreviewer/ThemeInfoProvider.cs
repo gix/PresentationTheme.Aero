@@ -11,7 +11,7 @@ namespace ThemePreviewer
     using PresentationTheme.Aero.Win8;
     using PresentationTheme.AeroLite.Win10;
     using PresentationTheme.HighContrast.Win10;
-    using StyleCore.Native;
+    using ThemeCore.Native;
 
     public class ThemeInfoProvider
     {

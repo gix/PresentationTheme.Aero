@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win7", "PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj", "{8BB1D809-EA59-490F-9867-80E031CE691C}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win10", "PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj", "{A6E7C65F-98F7-4297-89EA-CAD879719FD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StyleCore", "StyleCore\StyleCore.csproj", "{839BCDAF-C880-4F9E-B3B6-388C2AE77156}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeCore", "ThemeCore\ThemeCore.csproj", "{839BCDAF-C880-4F9E-B3B6-388C2AE77156}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemePreviewer", "ThemePreviewer\ThemePreviewer.csproj", "{4B44ACC1-0177-4A8A-AB35-D4B3F3986382}"
 	ProjectSection(ProjectDependencies) = postProject

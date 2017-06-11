@@ -6,9 +6,9 @@ namespace ThemeBrowser
     using System.IO;
     using System.Linq;
     using System.Windows.Media.Imaging;
-    using StyleCore;
-    using StyleCore.Native;
-    using Color = StyleCore.Color;
+    using ThemeCore;
+    using ThemeCore.Native;
+    using Color = ThemeCore.Color;
 
     public abstract class ThemePropertyContainer
     {
