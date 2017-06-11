@@ -3,8 +3,26 @@ namespace PresentationTheme.HighContrast.Win10
     using System;
     using System.Windows;
 
+    /// <summary>
+    ///   Provides a way to create a <see cref="DynamicResourceExtension"/> using
+    ///   an alias.
+    /// </summary>
+    /// <remarks>
+    ///   <see cref="DynamicResourceExtension"/> is not extensible, not even by
+    ///   using the result of its
+    ///   <see cref="System.Windows.Markup.MarkupExtension.ProvideValue"/>, because
+    ///   WPF checks for the concrete <see cref="DynamicResourceExtension"/>
+    ///   type in a few places. The only way to refer to dynamic resources via
+    ///   an alias is by converting the alias before calling the constructor of
+    ///   <see cref="DynamicResourceExtension"/>.
+    /// </remarks>
     public class SystemAliasResourceExtension : DynamicResourceExtension
     {
+        /// <summary>
+        ///   Initializes a new instance of the
+        ///   <see cref="SystemAliasResourceExtension"/> class.
+        /// </summary>
+        /// <param name="resourceKey">The resource key.</param>
         public SystemAliasResourceExtension(string resourceKey)
             : base(ConvertResourceKey(resourceKey))
         {

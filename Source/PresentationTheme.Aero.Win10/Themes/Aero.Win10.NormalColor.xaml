@@ -6,6 +6,7 @@
   xmlns:aero="clr-namespace:PresentationTheme.Aero;assembly=PresentationTheme.Aero"
   xmlns:aero10="clr-namespace:PresentationTheme.Aero.Win10">
 
+  <aero:TreeViewItemLevelConverter x:Key="TreeViewItemLevelConverter"/>
   <aero10:TypeOfConverter x:Key="TypeOfConverter"/>
   <aero10:EqualsConverter x:Key="EqualsConverter"/>
   <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -3726,7 +3727,7 @@
             <ColumnDefinition Width="1e300">
               <ColumnDefinition.MaxWidth>
                 <Binding RelativeSource="{RelativeSource TemplatedParent}"
-                         Converter="{x:Static aero:TreeViewItemLevelConverter.Instance}">
+                         Converter="{StaticResource TreeViewItemLevelConverter}">
                   <Binding.ConverterParameter>
                     <system:Int32>19</system:Int32>
                   </Binding.ConverterParameter>
@@ -3929,7 +3930,7 @@
             <ColumnDefinition Width="1e300">
               <ColumnDefinition.MaxWidth>
                 <Binding RelativeSource="{RelativeSource TemplatedParent}"
-                         Converter="{x:Static aero:TreeViewItemLevelConverter.Instance}">
+                         Converter="{StaticResource TreeViewItemLevelConverter}">
                   <Binding.ConverterParameter>
                     <system:Int32>19</system:Int32>
                   </Binding.ConverterParameter>
@@ -4614,7 +4615,12 @@
         <ControlTemplate TargetType="{x:Type ProgressBar}">
           <aero10:ProgressBarChrome
             Style="{StaticResource {x:Type aero10:ProgressBarChrome}}"
-            Bar="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+            Value="{TemplateBinding Value}"
+            Minimum="{TemplateBinding Minimum}"
+            Maximum="{TemplateBinding Maximum}"
+            Orientation="{TemplateBinding Orientation}"
+            IsIndeterminate="{TemplateBinding IsIndeterminate}"
+            Foreground="{TemplateBinding Foreground}"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"/>

@@ -6,26 +6,113 @@
     using System.Windows.Controls.Primitives;
     using System.Windows.Media;
 
+    /// <summary>
+    ///   Creates a theme-specific look for <see cref="ScrollBar"/> elements.
+    /// </summary>
+    /// <remarks>
+    ///   The actual appearance of <see cref="ScrollBar"/> elements is dependent
+    ///   on which theme is active on the user's system. The properties of this
+    ///   class allow WPF to set the appearance based on the current theme.
+    /// </remarks>
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Normal")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Disabled")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "MouseOver")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Pressed")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Hover")]
     public class ScrollBarChrome : Decorator
     {
         private Pen lightPenCache;
         private Pen darkPenCache;
 
+        /// <summary>
+        ///   Identifies the <see cref="Orientation"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty OrientationProperty =
             DependencyProperty.Register(
                 nameof(Orientation),
                 typeof(Orientation),
                 typeof(ScrollBarChrome),
-                new PropertyMetadata(Orientation.Vertical));
+                new FrameworkPropertyMetadata(
+                    Orientation.Vertical,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure));
 
+        /// <summary>
+        ///   Gets or sets the orientation of the scrollbar chrome.
+        /// </summary>
+        /// <value>
+        ///   An <see cref="System.Windows.Controls.Orientation"/> enumeration
+        ///   value that defines whether the <see cref="ScrollBarChrome"/> is
+        ///   displayed horizontally or vertically. The default is
+        ///   <see cref="System.Windows.Controls.Orientation.Horizontal"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="OrientationProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsMeasure"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
+        public Orientation Orientation
+        {
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
+        }
+
+        /// <summary>
+        ///   Identifies the <see cref="Background"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BackgroundProperty =
             Panel.BackgroundProperty.AddOwner(
                 typeof(ScrollBarChrome),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                    FrameworkPropertyMetadataOptions.AffectsRender));
+                    FrameworkPropertyMetadataOptions.AffectsRender |
+                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender));
 
+        /// <summary>
+        ///   Gets or sets the background <see cref="Brush"/>.
+        /// </summary>
+        /// <value>
+        ///   The <see cref="Brush"/> that draws the background. This property
+        ///   has no default value.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="BackgroundProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
+        public Brush Background
+        {
+            get => (Brush)GetValue(BackgroundProperty);
+            set => SetValue(BackgroundProperty, value);
+        }
+
+        /// <summary>
+        ///   Identifies the <see cref="LightBorderBrush"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty LightBorderBrushProperty =
             DependencyProperty.Register(
                 nameof(LightBorderBrush),
@@ -33,10 +120,44 @@
                 typeof(ScrollBarChrome),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    FrameworkPropertyMetadataOptions.AffectsRender |
+                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
                     OnClearPenCache));
 
+        /// <summary>
+        ///   Gets or sets the light border <see cref="Brush"/>.
+        /// </summary>
+        /// <value>
+        ///   The <see cref="Brush"/> for the light border. This property has no
+        ///   default value.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="LightBorderBrushProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
+        public Brush LightBorderBrush
+        {
+            get => (Brush)GetValue(LightBorderBrushProperty);
+            set => SetValue(LightBorderBrushProperty, value);
+        }
+
+        /// <summary>
+        ///   Identifies the <see cref="DarkBorderBrush"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty DarkBorderBrushProperty =
             DependencyProperty.Register(
                 nameof(DarkBorderBrush),
@@ -44,10 +165,44 @@
                 typeof(ScrollBarChrome),
                 new FrameworkPropertyMetadata(
                     null,
-                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender |
-                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    FrameworkPropertyMetadataOptions.AffectsRender |
+                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender,
                     OnClearPenCache));
 
+        /// <summary>
+        ///   Gets or sets the dark border <see cref="Brush"/>.
+        /// </summary>
+        /// <value>
+        ///   The <see cref="Brush"/> for the dark border. This property has no
+        ///   default value.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="DarkBorderBrushProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
+        public Brush DarkBorderBrush
+        {
+            get => (Brush)GetValue(DarkBorderBrushProperty);
+            set => SetValue(DarkBorderBrushProperty, value);
+        }
+
+        /// <summary>
+        ///   Identifies the <see cref="RenderHover"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty RenderHoverProperty =
             DependencyProperty.Register(
                 nameof(RenderHover),
@@ -56,85 +211,79 @@
                 new FrameworkPropertyMetadata(
                     false,
                     FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnRenderHoverChanged));
+                    OnUpdateVisualState));
 
+        /// <summary>
+        ///   Gets or sets a value indicating whether the scrollbar chrome should
+        ///   render a hover state.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the scrollbar chrome appears in a hover
+        ///   state; otherwise <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderHoverProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderHover
         {
             get => (bool)GetValue(RenderHoverProperty);
             set => SetValue(RenderHoverProperty, value);
         }
 
+        /// <summary>
+        ///   Identifies the <see cref="ParentElement"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ParentElementProperty =
             DependencyProperty.Register(
                 nameof(ParentElement),
-                typeof(Control),
+                typeof(FrameworkElement),
                 typeof(ScrollBarChrome),
                 new FrameworkPropertyMetadata(
                     null,
                     FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnRenderHoverChanged));
+                    OnUpdateVisualState));
 
-        public Control ParentElement
+        /// <summary>
+        ///   Gets or sets the parent <see cref="FrameworkElement"/>.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="ParentElementProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
+        public FrameworkElement ParentElement
         {
-            get => (Control)GetValue(ParentElementProperty);
+            get => (FrameworkElement)GetValue(ParentElementProperty);
             set => SetValue(ParentElementProperty, value);
         }
 
-        private static void OnRenderHoverChanged(
-            DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var source = (ScrollBarChrome)d;
-            source.UpdateVisualState();
-        }
-
-        public void UpdateVisualState(bool useTransitions = true)
-        {
-            ChangeVisualState(useTransitions);
-        }
-
-        private void ChangeVisualState(bool useTransitions)
-        {
-            if (ParentElement == null)
-                return;
-
-            var thumb = ParentElement as Thumb;
-            var button = ParentElement as ButtonBase;
-            if (!ParentElement.IsEnabled)
-                VisualStateManager.GoToState(ParentElement, "Disabled", useTransitions);
-            else if (ParentElement.IsMouseOver)
-                VisualStateManager.GoToState(ParentElement, "MouseOver", useTransitions);
-            else if (thumb?.IsDragging ?? button?.IsPressed ?? false)
-                VisualStateManager.GoToState(ParentElement, "Pressed", useTransitions);
-            else if (RenderHover)
-                VisualStateManager.GoToState(ParentElement, "Hover", useTransitions);
-            else
-                VisualStateManager.GoToState(ParentElement, "Normal", useTransitions);
-        }
-
-        public Orientation Orientation
-        {
-            get => (Orientation)GetValue(OrientationProperty);
-            set => SetValue(OrientationProperty, value);
-        }
-
-        public Brush Background
-        {
-            get => (Brush)GetValue(BackgroundProperty);
-            set => SetValue(BackgroundProperty, value);
-        }
-
-        public Brush LightBorderBrush
-        {
-            get => (Brush)GetValue(LightBorderBrushProperty);
-            set => SetValue(LightBorderBrushProperty, value);
-        }
-
-        public Brush DarkBorderBrush
-        {
-            get => (Brush)GetValue(DarkBorderBrushProperty);
-            set => SetValue(DarkBorderBrushProperty, value);
-        }
-
+        /// <inheritdoc/>
         protected override Size MeasureOverride(Size constraint)
         {
             var combined = Orientation == Orientation.Vertical
@@ -155,6 +304,7 @@
                 childSize.Height + combined.Height);
         }
 
+        /// <inheritdoc/>
         protected override Size ArrangeOverride(Size finalSize)
         {
             UIElement child = Child;
@@ -181,14 +331,7 @@
             return finalSize;
         }
 
-        private static void OnClearPenCache(
-            DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var source = (ScrollBarChrome)d;
-            source.lightPenCache = null;
-            source.darkPenCache = null;
-        }
-
+        /// <inheritdoc/>
         protected override void OnRender(DrawingContext dc)
         {
             var renderSize = RenderSize;
@@ -262,6 +405,51 @@
                 if (bottomRight.X > topLeft.X && bottomRight.Y > topLeft.Y)
                     dc.DrawRectangle(background, null, new Rect(topLeft, bottomRight));
             }
+        }
+
+        /// <summary>Changes the visual state of the scrollbar chrome.</summary>
+        /// <param name="useTransitions">
+        ///   <see langword="true"/> to use a <see cref="VisualTransition"/>
+        ///   object to transition between states; otherwise <see langword="false"/>.
+        /// </param>
+        /// <seealso cref="VisualStateManager.GoToState"/>
+        protected virtual void ChangeVisualState(bool useTransitions)
+        {
+            if (ParentElement == null)
+                return;
+
+            var thumb = ParentElement as Thumb;
+            var button = ParentElement as ButtonBase;
+            if (!ParentElement.IsEnabled)
+                VisualStateManager.GoToState(ParentElement, "Disabled", useTransitions);
+            else if (ParentElement.IsMouseOver)
+                VisualStateManager.GoToState(ParentElement, "MouseOver", useTransitions);
+            else if (thumb?.IsDragging ?? button?.IsPressed ?? false)
+                VisualStateManager.GoToState(ParentElement, "Pressed", useTransitions);
+            else if (RenderHover)
+                VisualStateManager.GoToState(ParentElement, "Hover", useTransitions);
+            else
+                VisualStateManager.GoToState(ParentElement, "Normal", useTransitions);
+        }
+
+        private static void OnUpdateVisualState(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var source = (ScrollBarChrome)d;
+            source.UpdateVisualState();
+        }
+
+        private void UpdateVisualState(bool useTransitions = true)
+        {
+            ChangeVisualState(useTransitions);
+        }
+
+        private static void OnClearPenCache(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var source = (ScrollBarChrome)d;
+            source.lightPenCache = null;
+            source.darkPenCache = null;
         }
     }
 }

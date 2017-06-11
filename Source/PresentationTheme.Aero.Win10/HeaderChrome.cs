@@ -29,7 +29,8 @@ namespace PresentationTheme.Aero.Win10
                 nameof(IsHovered),
                 typeof(bool),
                 typeof(HeaderChrome),
-                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(
+                    false, FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
         ///   Gets or sets a value that indicates whether the header appears as
@@ -40,6 +41,23 @@ namespace PresentationTheme.Aero.Win10
         ///   is moved over it; otherwise, <see langword="false"/>. The registered
         ///   default is <see langword="false"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="IsHoveredProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool IsHovered
         {
             get => (bool)GetValue(IsHoveredProperty);
@@ -67,6 +85,24 @@ namespace PresentationTheme.Aero.Win10
         ///   <see langword="true"/> if the header appears pressed; otherwise,
         ///   <see langword="false"/>. The registered default is <see langword="false"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="IsPressedProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.AffectsArrange"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool IsPressed
         {
             get => (bool)GetValue(IsPressedProperty);
@@ -93,6 +129,24 @@ namespace PresentationTheme.Aero.Win10
         ///   <see langword="true"/> if the header is clickable; otherwise,
         ///   <see langword="false"/>. The registered default is <see langword="true"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="IsClickableProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.AffectsArrange"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool IsClickable
         {
             get => (bool)GetValue(IsClickableProperty);
@@ -117,6 +171,23 @@ namespace PresentationTheme.Aero.Win10
         ///   One of the enumeration values that indicates which direction the
         ///   column is sorted. The registered default is <see langword="null"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="SortDirectionProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public ListSortDirection? SortDirection
         {
             get => (ListSortDirection?)GetValue(SortDirectionProperty);
@@ -142,6 +213,23 @@ namespace PresentationTheme.Aero.Win10
         ///   <see langword="true"/> if the header appears selected; otherwise,
         ///   <see langword="false"/>. The registered default is <see langword="false"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="IsSelectedProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool IsSelected
         {
             get => (bool)GetValue(IsSelectedProperty);
@@ -169,6 +257,23 @@ namespace PresentationTheme.Aero.Win10
         ///   header renders. The registered default is
         ///   <see cref="System.Windows.Controls.Orientation.Vertical"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="OrientationProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Orientation Orientation
         {
             get => (Orientation)GetValue(OrientationProperty);
@@ -183,7 +288,10 @@ namespace PresentationTheme.Aero.Win10
                 nameof(SeparatorBrush),
                 typeof(Brush),
                 typeof(HeaderChrome),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.AffectsRender |
+                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender));
 
         /// <summary>
         ///   Gets or sets the brush that draws the separation between headers.
@@ -192,6 +300,24 @@ namespace PresentationTheme.Aero.Win10
         ///   The brush that draws the separation between headers. The registered
         ///   default is <see langword="null"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="SeparatorBrushProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Brush SeparatorBrush
         {
             get => (Brush)GetValue(SeparatorBrushProperty);
@@ -218,6 +344,23 @@ namespace PresentationTheme.Aero.Win10
         ///   One of the enumeration values that indicates whether the separator
         ///   is visible. The registered default is <see cref="Visibility.Visible"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="SeparatorVisibilityProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Visibility SeparatorVisibility
         {
             get => (Visibility)GetValue(SeparatorVisibilityProperty);
@@ -245,6 +388,23 @@ namespace PresentationTheme.Aero.Win10
         ///   One of the enumeration values that indicates whether the border is
         ///   visible. The registered default is <see cref="Visibility.Visible"/>.
         /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="BorderVisibilityProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Visibility BorderVisibility
         {
             get => (Visibility)GetValue(BorderVisibilityProperty);

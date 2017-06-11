@@ -4,12 +4,21 @@
     using System.Windows.Controls;
     using System.Windows.Media;
 
+    /// <summary>
+    ///   Creates a theme-specific look for <see cref="GroupBox"/> elements.
+    /// </summary>
+    /// <remarks>
+    ///   The actual appearance of a <see cref="GroupBox"/> is dependent on which
+    ///   theme is active on the user's system. The properties of this class
+    ///   allow WPF to set the appearance based on the current theme.
+    /// </remarks>
     public class GroupBoxBorder : Border
     {
         private Pen darkPenCache;
         private Pen lightPenCache;
         private Pen cornerPenCache;
 
+        /// <inheritdoc/>
         protected override void OnRender(DrawingContext dc)
         {
             if (BorderThickness != new Thickness(1, 1, 1, 1)) {

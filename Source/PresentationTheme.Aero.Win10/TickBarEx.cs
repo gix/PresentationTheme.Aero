@@ -5,6 +5,9 @@
     using System.Windows.Controls.Primitives;
     using System.Windows.Media;
 
+    /// <summary>
+    ///   A modified <see cref="TickBar"/> to match the native theme.
+    /// </summary>
     public class TickBarEx : TickBar
     {
         #region public Brush SelectionTickBrush { get; set; }
@@ -18,11 +21,35 @@
                 typeof(Brush),
                 typeof(TickBarEx),
                 new FrameworkPropertyMetadata(
-                    Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
+                    Brushes.Black,
+                    FrameworkPropertyMetadataOptions.AffectsRender |
+                    FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender));
 
         /// <summary>
-        ///   Gets or sets the selection tick brush.
+        ///   Gets or sets the <see cref="Brush"/> for selection ticks.
         /// </summary>
+        /// <value>
+        ///   The <see cref="Brush"/> for selection ticks. The registered default
+        ///   is <see cref="Brushes.Black"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="SelectionTickBrushProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
+        ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Brush SelectionTickBrush
         {
             get => (Brush)GetValue(SelectionTickBrushProperty);
@@ -31,6 +58,7 @@
 
         #endregion
 
+        /// <inheritdoc/>
         protected override void OnRender(DrawingContext dc)
         {
             // Do not call base.OnRender, we replace it completely.

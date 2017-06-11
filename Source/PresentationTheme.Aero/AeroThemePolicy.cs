@@ -5,9 +5,52 @@ namespace PresentationTheme.Aero
     using System.Runtime.InteropServices;
     using System.Windows;
 
+    /// <summary>
+    ///   Provides the default Aero theme policy which chooses the appropriate
+    ///   theme resources depending on the current system theme and Windows version.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Use the policy by passing <see cref="GetCurrentThemeResourceUri"/>
+    ///     as delegate to
+    ///     <see cref="ThemeHelper.SetPresentationFrameworkTheme(Func{Uri})"/>.
+    ///   </para>
+    ///   <para>
+    ///     The policy chooses the following theme resource assemblies:
+    ///     <list type="table">
+    ///       <item>
+    ///         <term>Windows 10 with Aero theme</term>
+    ///         <description><c>PresentationTheme.Aero.Win10.dll</c></description>
+    ///       </item>
+    ///       <item>
+    ///         <term>Windows 10 with AeroLite theme</term>
+    ///         <description><c>PresentationTheme.AeroLite.Win10.dll</c></description>
+    ///       </item>
+    ///       <item>
+    ///         <term>Windows 10 in high contrast mode</term>
+    ///         <description>
+    ///           <c>PresentationTheme.HighContrast.Win10.dll</c>
+    ///         </description>
+    ///       </item>
+    ///       <item>
+    ///         <term>Other Windows versions</term>
+    ///         <description>Fallback to default theme</description>
+    ///       </item>
+    ///     </list>
+    ///   </para>
+    /// </remarks>
     public class AeroThemePolicy
     {
-        public virtual Uri BuildCurrentResourceUri()
+        /// <summary>
+        ///   Builds the pack <see cref="Uri"/> for the theme resources matching
+        ///   the current system theme and Windows version.
+        /// </summary>
+        /// <returns>
+        ///   An absolute pack <see cref="Uri"/> to a <see cref="ResourceDictionary"/>
+        ///   with the theme resources. Returns <see langword="null"/> if the
+        ///   current system theme or Windows version are not supported.
+        /// </returns>
+        public virtual Uri GetCurrentThemeResourceUri()
         {
             var osVersion = GetRealWindowsVersion();
             string uxThemeName = SystemParameters.UxThemeName;
@@ -27,6 +70,24 @@ namespace PresentationTheme.Aero
             return PackUriUtils.MakeContentPackUri(asmName, themedResourceName);
         }
 
+        /// <summary>
+        ///   Gets theme resource name matching the current system theme and
+        ///   Windows version.
+        /// </summary>
+        /// <param name="osVersion">The Windows version.</param>
+        /// <param name="themeName">The system theme name.</param>
+        /// <param name="themeColor">The system theme color.</param>
+        /// <param name="highContrast">
+        ///   Indicates whether Windows is in high contrast mode.
+        /// </param>
+        /// <returns>
+        ///   An absolute pack <see cref="Uri"/> to a <see cref="ResourceDictionary"/>
+        ///   with the theme resources.
+        /// </returns>
+        /// <returns>
+        ///   The theme resource name. Returns <see langword="null"/> if the
+        ///   current system theme or Windows version are not supported.
+        /// </returns>
         protected virtual string GetThemeResourceName(
             Version osVersion, string themeName, string themeColor, bool highContrast)
         {

@@ -7,8 +7,8 @@ namespace PresentationTheme.Aero.Win10
     using System.Windows.Data;
 
     /// <summary>
-    ///   A converter that converts a <see cref="DataGridGridLinesVisibility"/>
-    ///   to a <see cref="Visibility"/>.
+    ///   Converts a <see cref="DataGridGridLinesVisibility"/> to a
+    ///   <see cref="Visibility"/>.
     /// </summary>
     public sealed class DataGridLinesVisibilityConverter : IValueConverter
     {

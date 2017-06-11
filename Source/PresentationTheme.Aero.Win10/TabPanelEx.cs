@@ -29,7 +29,7 @@ namespace PresentationTheme.Aero.Win10
         /// </summary>
         public object SelectedTab
         {
-            get => (object)GetValue(SelectedTabProperty);
+            get => GetValue(SelectedTabProperty);
             set => SetValue(SelectedTabProperty, value);
         }
 
@@ -48,8 +48,12 @@ namespace PresentationTheme.Aero.Win10
         /// <summary>
         ///   Gets the <see cref="TabItemKind"/> of the specified <see cref="TabItem"/>.
         /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        /// <param name="item">
+        ///   The item from which to read the property value.
+        /// </param>
+        /// <returns>
+        ///   The value of the <c>TabItemKind</c> attached dependency property.
+        /// </returns>
         public static TabItemKind GetTabItemKind(TabItem item)
         {
             if (item == null)
@@ -58,10 +62,12 @@ namespace PresentationTheme.Aero.Win10
         }
 
         /// <summary>
-        /// 
+        ///   Sets the <see cref="TabItemKind"/> of the specified <see cref="TabItem"/>.
         /// </summary>
-        /// <param name="item"></param>
-        /// <param name="kind"></param>
+        /// <param name="item">
+        ///   The item from which to read the property value.
+        /// </param>
+        /// <param name="kind">The property value to set.</param>
         public static void SetTabItemKind(TabItem item, TabItemKind kind)
         {
             if (item == null)
@@ -86,11 +92,17 @@ namespace PresentationTheme.Aero.Win10
         }
     }
 
+    /// <summary>
+    ///   Specifies the kind of a <see cref="TabItem"/> with respect to the currently
+    ///   selected tab of a <see cref="TabControl"/>.
+    /// </summary>
     public enum TabItemKind
     {
-        None,
+        /// <summary>The tab is on the left of the selected tab.</summary>
         Left,
+        /// <summary>The tab is selected.</summary>
         Selected,
+        /// <summary>The tab is on the right of the selected tab.</summary>
         Right
     }
 }

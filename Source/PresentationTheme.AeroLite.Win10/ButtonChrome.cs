@@ -2,8 +2,27 @@
 {
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
 
+    /// <summary>
+    ///   Creates a theme-specific look for <see cref="Button"/> elements.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     The actual appearance of a <see cref="Button"/> is dependent on which
+    ///     theme is active on the user's system. The properties of this class
+    ///     allow WPF to set the appearance based on the current theme.
+    ///   </para>
+    ///   <para>
+    ///     <see cref="ButtonChrome"/> does not actually render a button but
+    ///     instead provides visual states allowing its <see cref="Control.Template"/>
+    ///     to accurately render the appearance of buttons.
+    ///   </para>
+    /// </remarks>
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Normal")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Disabled")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Hot")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Pressed")]
+    [TemplateVisualState(GroupName = "CommonStates", Name = "Defaulted")]
     public class ButtonChrome : ContentControl
     {
         #region public bool RenderEnabled { get; set; }
@@ -19,8 +38,28 @@
                 new PropertyMetadata(false, OnVisualStatePropertyChanged));
 
         /// <summary>
-        ///   Gets or sets the isEnabled.
+        ///   Gets or sets a value indicating whether the button chrome should
+        ///   render an enabled state.
         /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the button chrome appears enabled; otherwise
+        ///   <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderEnabledProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderEnabled
         {
             get => (bool)GetValue(RenderEnabledProperty);
@@ -42,8 +81,28 @@
                 new PropertyMetadata(false, OnVisualStatePropertyChanged));
 
         /// <summary>
-        ///   Gets or sets whether the button chrome shows a hot state.
+        ///   Gets or sets a value indicating whether the button chrome should
+        ///   render a hot state (i.e., as if the mouse is over it).
         /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the button chrome appears as if the mouse
+        ///   is over it; otherwise <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderHotProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderHot
         {
             get => (bool)GetValue(RenderHotProperty);
@@ -65,8 +124,28 @@
                 new PropertyMetadata(false, OnVisualStatePropertyChanged));
 
         /// <summary>
-        ///   Gets or sets whether the button chrome shows a pressed state.
+        ///   Gets or sets a value indicating whether the button chrome should
+        ///   render a pressed state.
         /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the button chrome appears pressed; otherwise
+        ///   <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderPressedProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderPressed
         {
             get => (bool)GetValue(RenderPressedProperty);
@@ -88,8 +167,28 @@
                 new PropertyMetadata(false, OnVisualStatePropertyChanged));
 
         /// <summary>
-        ///   Gets or sets whether the button chrome shows a focused state.
+        ///   Gets or sets a value indicating whether the button chrome shows a
+        ///   focused state.
         /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the button chrome appears focused; otherwise
+        ///   <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderFocusedProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderFocused
         {
             get => (bool)GetValue(RenderFocusedProperty);
@@ -113,6 +212,25 @@
         /// <summary>
         ///   Gets or sets whether the button chrome shows a defaulted state.
         /// </summary>
+        /// <value>
+        ///   <see langword="true"/> if the button chrome appears defauled; otherwise
+        ///   <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="RenderDefaultedProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool RenderDefaulted
         {
             get => (bool)GetValue(RenderDefaultedProperty);
@@ -121,6 +239,7 @@
 
         #endregion
 
+        /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -134,12 +253,18 @@
             control?.UpdateVisualState();
         }
 
-        public void UpdateVisualState(bool useTransitions = true)
+        private void UpdateVisualState(bool useTransitions = true)
         {
             ChangeVisualState(useTransitions);
         }
 
-        private void ChangeVisualState(bool useTransitions)
+        /// <summary>Changes the visual state of the button chrome.</summary>
+        /// <param name="useTransitions">
+        ///   <see langword="true"/> to use a <see cref="VisualTransition"/>
+        ///   object to transition between states; otherwise <see langword="false"/>.
+        /// </param>
+        /// <seealso cref="VisualStateManager.GoToState"/>
+        protected virtual void ChangeVisualState(bool useTransitions)
         {
             if (!RenderEnabled)
                 VisualStateManager.GoToState(this, "Disabled", useTransitions);
@@ -151,11 +276,6 @@
                 VisualStateManager.GoToState(this, "Defaulted", useTransitions);
             else
                 VisualStateManager.GoToState(this, "Normal", useTransitions);
-        }
-
-        protected override void OnRender(DrawingContext dc)
-        {
-            base.OnRender(dc);
         }
     }
 }

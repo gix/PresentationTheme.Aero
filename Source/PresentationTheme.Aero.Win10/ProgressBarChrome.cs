@@ -4,13 +4,16 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
-    using System.Windows.Data;
     using System.Windows.Media.Animation;
 
     /// <summary>
     ///   Provides improved animation styling for <see cref="ProgressBar"/>
     ///   controls.
     /// </summary>
+    [TemplatePart(Name = "PART_Track", Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = "PART_Indicator", Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = "PART_MoveOverlay", Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = "PART_PulseOverlay", Type = typeof(FrameworkElement))]
     public class ProgressBarChrome : RangeBase
     {
         // Property values from aero.msstyles
@@ -21,28 +24,7 @@
         private FrameworkElement indicator;
         private FrameworkElement moveOverlay;
         private FrameworkElement pulseOverlay;
-
         private Storyboard highlightStoryboard;
-
-        public ProgressBarChrome()
-        {
-            IsVisibleChanged += (s, e) => UpdateHighlightAnimation();
-            SystemVisualStateManager.Instance.AnimatesChanged +=
-                (s, e) => UpdateHighlightAnimation();
-        }
-
-        public static readonly DependencyProperty BarProperty =
-            DependencyProperty.Register(
-                nameof(Bar),
-                typeof(ProgressBar),
-                typeof(ProgressBarChrome),
-                new PropertyMetadata(null, OnProgressBarChanged));
-
-        public ProgressBar Bar
-        {
-            get => (ProgressBar)GetValue(BarProperty);
-            set => SetValue(BarProperty, value);
-        }
 
         static ProgressBarChrome()
         {
@@ -52,6 +34,20 @@
                 typeof(ProgressBarChrome), new FrameworkPropertyMetadata(100.0));
         }
 
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="ProgressBarChrome"/>
+        ///   class.
+        /// </summary>
+        public ProgressBarChrome()
+        {
+            IsVisibleChanged += (s, e) => UpdateHighlightAnimation();
+            SystemVisualStateManager.Instance.AnimatesChanged +=
+                (s, e) => UpdateHighlightAnimation();
+        }
+
+        /// <summary>
+        ///   Identifies the <see cref="IsIndeterminate"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsIndeterminateProperty =
             DependencyProperty.Register(
                 nameof(IsIndeterminate),
@@ -60,12 +56,40 @@
                 new FrameworkPropertyMetadata(
                     false, OnIsIndeterminateChanged));
 
+        /// <summary>
+        ///   Gets or sets whether the <see cref="ProgressBarChrome"/> shows
+        ///   actual values or generic, continuous progress feedback.
+        /// </summary>
+        /// <value>
+        ///   <see langword="false"/> if the <see cref="ProgressBarChrome"/>
+        ///   shows actual values; <see langword="true"/> if the
+        ///   <see cref="ProgressBarChrome"/> shows generic progress. The default
+        ///   is <see langword="false"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="IsIndeterminateProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>None</description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public bool IsIndeterminate
         {
             get => (bool)GetValue(IsIndeterminateProperty);
             set => SetValue(IsIndeterminateProperty, value);
         }
 
+        /// <summary>
+        ///   Identifies the <see cref="Orientation"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty OrientationProperty =
             DependencyProperty.Register(
                 nameof(Orientation),
@@ -77,12 +101,39 @@
                     OnOrientationChanged),
                 IsValidOrientation);
 
+        /// <summary>
+        ///   Gets or sets the orientation of the progress bar chrome.
+        /// </summary>
+        /// <value>
+        ///   An <see cref="System.Windows.Controls.Orientation"/> enumeration
+        ///   value that defines whether the <see cref="ProgressBarChrome"/> is
+        ///   displayed horizontally or vertically. The default is
+        ///   <see cref="System.Windows.Controls.Orientation.Horizontal"/>.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="OrientationProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsMeasure"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Orientation Orientation
         {
             get => (Orientation)GetValue(OrientationProperty);
             set => SetValue(OrientationProperty, value);
         }
 
+        /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -100,45 +151,25 @@
                 UpdateHighlightAnimation(true);
         }
 
+        /// <inheritdoc/>
         protected override void OnValueChanged(double oldValue, double newValue)
         {
             base.OnValueChanged(oldValue, newValue);
             SetIndicatorLength(animate: true);
         }
 
+        /// <inheritdoc/>
         protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
         {
             base.OnMinimumChanged(oldMinimum, newMinimum);
             SetIndicatorLength();
         }
 
+        /// <inheritdoc/>
         protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
         {
             base.OnMaximumChanged(oldMaximum, newMaximum);
             SetIndicatorLength();
-        }
-
-        private static void OnProgressBarChanged(
-            DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var source = (ProgressBarChrome)d;
-
-            var newValue = (ProgressBar)e.NewValue;
-            if (newValue != null) {
-                source.SetBinding(ValueProperty, new Binding(nameof(Value)) { Source = newValue });
-                source.SetBinding(MinimumProperty, new Binding(nameof(Minimum)) { Source = newValue });
-                source.SetBinding(MaximumProperty, new Binding(nameof(Maximum)) { Source = newValue });
-                source.SetBinding(OrientationProperty, new Binding(nameof(Orientation)) { Source = newValue });
-                source.SetBinding(IsIndeterminateProperty, new Binding(nameof(IsIndeterminate)) { Source = newValue });
-                source.SetBinding(ForegroundProperty, new Binding(nameof(Foreground)) { Source = newValue });
-            } else {
-                BindingOperations.ClearBinding(source, ValueProperty);
-                BindingOperations.ClearBinding(source, MinimumProperty);
-                BindingOperations.ClearBinding(source, MaximumProperty);
-                BindingOperations.ClearBinding(source, OrientationProperty);
-                BindingOperations.ClearBinding(source, IsIndeterminateProperty);
-                BindingOperations.ClearBinding(source, ForegroundProperty);
-            }
         }
 
         private static void OnIsIndeterminateChanged(

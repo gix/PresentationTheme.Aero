@@ -6,13 +6,33 @@
     using System.Windows.Controls;
     using System.Windows.Data;
 
+    /// <summary>
+    ///   Converts a <see cref="TreeViewItem"/> to its level in the hierarchy of
+    ///   its <see cref="TreeView"/>.
+    /// </summary>
     public class TreeViewItemLevelConverter : DependencyObject, IValueConverter
     {
-        private static readonly Lazy<TreeViewItemLevelConverter> LazyInstance =
-            new Lazy<TreeViewItemLevelConverter>(() => new TreeViewItemLevelConverter());
-
-        public static TreeViewItemLevelConverter Instance => LazyInstance.Value;
-
+        /// <summary>
+        ///   Converts a <see cref="TreeViewItem"/> to its level in the hierarchy
+        ///   of its <see cref="TreeView"/>. Also sets the
+        ///   <see cref="TreeViewService.ItemLevelProperty"/> on each converted
+        ///   <see cref="TreeViewItem"/>.
+        /// </summary>
+        /// <param name="value">The value produced by the binding source.</param>
+        /// <param name="targetType">
+        ///   The type of the binding target property.
+        /// </param>
+        /// <param name="parameter">
+        ///   An optional <see cref="int"/> or <see cref="double"/> factor.
+        /// </param>
+        /// <param name="culture">
+        ///   The culture to use in the converter. <b>Not used.</b>
+        /// </param>
+        /// <returns>
+        ///   The level of the <see cref="TreeViewItem"/>, multiplied by the
+        ///   factor specified by <paramref name="parameter"/> if provided. The
+        ///   level of root items is 0.
+        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var item = value as TreeViewItem;
@@ -31,7 +51,7 @@
             return level;
         }
 
-        public object ConvertBack(
+        object IValueConverter.ConvertBack(
             object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();

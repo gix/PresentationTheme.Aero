@@ -3,6 +3,9 @@ namespace PresentationTheme.Aero
     using System.Windows;
     using System.Windows.Controls;
 
+    /// <summary>
+    ///   Provides attached options for the <see cref="TreeView"/> control.
+    /// </summary>
     public static class TreeViewService
     {
         #region public int ItemLevel { get; set; }
@@ -54,8 +57,8 @@ namespace PresentationTheme.Aero
                     FrameworkPropertyMetadataOptions.Inherits));
 
         /// <summary>
-        ///   Gets a flag indicating whether the <see cref="TreeView"/> uses
-        ///   full-row select.
+        ///   Gets a flag indicating whether a <see cref="TreeView"/> style
+        ///   should use full-row selection if supported.
         /// </summary>
         public static bool GetFullRowSelect(TreeView d)
         {
@@ -63,8 +66,8 @@ namespace PresentationTheme.Aero
         }
 
         /// <summary>
-        ///   Sets a flag indicating whether the <see cref="TreeView"/> uses
-        ///   full-row select.
+        ///   Sets a flag indicating whether a <see cref="TreeView"/> style
+        ///   should use full-row selection if supported.
         /// </summary>
         public static void SetFullRowSelect(TreeView d, bool value)
         {

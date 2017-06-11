@@ -7,8 +7,8 @@
 
     /// <summary>
     ///   A <see cref="Popup"/> that automatically adds a
-    ///   <see cref="SystemDropShadowChrome"/> around <see cref="Popup.Child"/>
-    ///   elements.
+    ///   <see cref="SystemDropShadowChrome"/> around its <see cref="Popup.Child"/>
+    ///   element.
     /// </summary>
     public class AutoDropShadowPopup : Popup
     {
@@ -32,7 +32,7 @@
                 new PropertyMetadata(new Thickness()));
 
         /// <summary>
-        ///   Gets or sets the <see cref="SystemDropShadowChrome.Margin"/> of
+        ///   Gets or sets the <see cref="FrameworkElement.Margin"/> of
         ///   the <see cref="SystemDropShadowChrome"/>.
         /// </summary>
         public Thickness ShadowMargin

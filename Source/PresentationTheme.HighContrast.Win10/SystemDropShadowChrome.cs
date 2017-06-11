@@ -5,6 +5,14 @@ namespace PresentationTheme.HighContrast.Win10
     using System.Windows.Controls;
     using System.Windows.Media;
 
+    /// <summary>
+    ///   Creates a theme specific look for drop shadow effects.
+    /// </summary>
+    /// <remarks>
+    ///   The drop shadow effect creates a solid silhouette of the content of
+    ///   the element. This creates the illusion that the content is floating
+    ///   and casting a shadow.
+    /// </remarks>
     public sealed class SystemDropShadowChrome : Decorator
     {
         private const int TopLeft = 0;
@@ -24,27 +32,85 @@ namespace PresentationTheme.HighContrast.Win10
 
         private Brush[] brushes;
 
-        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(
-            nameof(Color), typeof(Color), typeof(SystemDropShadowChrome),
-            new FrameworkPropertyMetadata(
-                Color.FromArgb(0x71, 0, 0, 0), FrameworkPropertyMetadataOptions.AffectsRender,
-                ClearBrushes));
+        /// <summary>
+        ///   Identifies the <see cref="Color"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ColorProperty =
+            DependencyProperty.Register(
+                nameof(Color),
+                typeof(Color),
+                typeof(SystemDropShadowChrome),
+                new FrameworkPropertyMetadata(
+                    Color.FromArgb(0x71, 0, 0, 0),
+                    FrameworkPropertyMetadataOptions.AffectsRender,
+                    ClearBrushes));
 
+        /// <summary>
+        ///   Identifies the <see cref="CornerRadius"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(
-                nameof(CornerRadius), typeof(CornerRadius), typeof(SystemDropShadowChrome),
+                nameof(CornerRadius),
+                typeof(CornerRadius),
+                typeof(SystemDropShadowChrome),
                 new FrameworkPropertyMetadata(
                     new CornerRadius(),
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     ClearBrushes),
                 IsCornerRadiusValid);
 
+        /// <summary>
+        ///   Gets or sets the color used by the drop shadow.
+        /// </summary>
+        /// <value>
+        ///   The drop shadow color.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="ColorProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public Color Color
         {
             get => (Color)GetValue(ColorProperty);
             set => SetValue(ColorProperty, value);
         }
 
+        /// <summary>
+        ///   Gets or sets the radii of a rectangle's corners.
+        /// </summary>
+        /// <value>
+        ///   The radii of a rectangle's corners.
+        /// </value>
+        /// <remarks>
+        ///   <para>
+        ///     <b>Dependency Property Information</b>
+        ///     <list type="table">
+        ///       <item>
+        ///         <term>Identifier field</term>
+        ///         <description><see cref="CornerRadiusProperty"/></description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <description>
+        ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         public CornerRadius CornerRadius
         {
             get => (CornerRadius)GetValue(CornerRadiusProperty);
@@ -224,6 +290,7 @@ namespace PresentationTheme.HighContrast.Win10
             return brushes ?? (brushes = CreateBrushes(c, cornerRadius));
         }
 
+        /// <inheritdoc/>
         protected override void OnRender(DrawingContext drawingContext)
         {
             var shadowBounds = new Rect(

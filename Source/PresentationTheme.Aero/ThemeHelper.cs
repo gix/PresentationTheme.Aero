@@ -56,7 +56,7 @@ namespace PresentationTheme.Aero
         private readonly Dictionary<Assembly, Tuple<Uri, Func<Uri>>> themeResources =
             new Dictionary<Assembly, Tuple<Uri, Func<Uri>>>();
 
-        public ThemeHelper()
+        private ThemeHelper()
         {
             const BindingFlags nonPublicInstance = BindingFlags.NonPublic | BindingFlags.Instance;
             const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;

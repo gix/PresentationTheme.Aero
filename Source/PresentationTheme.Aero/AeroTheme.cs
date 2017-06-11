@@ -7,7 +7,7 @@
     public static class AeroTheme
     {
         private static readonly AeroThemePolicy policy = new AeroThemePolicy();
-        private static Lazy<Uri> resourceUriCache = new Lazy<Uri>(policy.BuildCurrentResourceUri);
+        private static Lazy<Uri> resourceUriCache = new Lazy<Uri>(policy.GetCurrentThemeResourceUri);
 
         static AeroTheme()
         {
@@ -38,12 +38,14 @@
         }
 
         /// <summary>
-        ///   Sets the current theme to Aero. The theme will update automatically
+        ///   Sets the current theme to Aero using the default
+        ///   <see cref="AeroThemePolicy"/>. The theme will update automatically
         ///   if the system theme changes.
         /// </summary>
+        /// <seealso cref="AeroThemePolicy"/>
         public static void SetAsCurrentTheme()
         {
-            ThemeHelper.SetPresentationFrameworkTheme(policy.BuildCurrentResourceUri);
+            ThemeHelper.SetPresentationFrameworkTheme(policy.GetCurrentThemeResourceUri);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@
             object sender, UserPreferenceChangedEventArgs args)
         {
             if (args.Category == UserPreferenceCategory.VisualStyle)
-                resourceUriCache = new Lazy<Uri>(policy.BuildCurrentResourceUri);
+                resourceUriCache = new Lazy<Uri>(policy.GetCurrentThemeResourceUri);
         }
     }
 }
