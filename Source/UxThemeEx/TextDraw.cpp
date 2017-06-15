@@ -196,59 +196,31 @@ HRESULT CTextDraw::DrawTextW(
     int iStateId, wchar_t const* pszText, unsigned dwCharCount,
     unsigned dwTextFlags, RECT* pRect, DTTOPTS const* pOptions)
 {
-    int isComposited;
-    COLORREF oldTextColor;
-    int hasChangedTextColor;
-    POINT shadowOffset;
-    int hasShadowType;
     HRESULT hr;
-    HFONT v26;
-    unsigned flags;
-    HPEN pen46;
-    HBRUSH brush;
-    HPEN oldPen;
-    COLORREF color;
-    COLORREF crText;
-    HFONT ho;
-    int hasFontProp;
-    unsigned glowSize;
-    DWORD eShadowType;
-    COLORREF crShadow;
-    int applyOverlay;
-    HPEN hhh;
-    int hasCallback;
-    int borderSize;
-    COLORREF crBorder;
-    HGDIOBJ oldFont;
-    int oldBkMode;
     RECT rc = {};
     LOGFONTW userFont = {};
-    unsigned dwTextFlagsa;
+    COLORREF oldTextColor = 0;
+    HFONT hFont = nullptr;
+    HFONT oldFont = nullptr;
 
-    color = 0;
-    ho = 0i64;
-    hhh = 0i64;
-    oldTextColor = 0;
-    oldFont = 0i64;
-    hasChangedTextColor = 0;
-    oldBkMode = SetBkMode(hdc, 1);
+    POINT shadowOffset = _ptShadowOffset;
+    COLORREF crText = _crText;
+    COLORREF crBorder = _crBorder;
+    COLORREF crShadow = _crShadow;
+    DWORD eShadowType = _eShadowType;
+    int borderSize = _iBorderSize;
+    int applyOverlay = _fApplyOverlay;
+    unsigned glowSize = _iGlowSize;
 
-    shadowOffset = _ptShadowOffset;
-    crText = _crText;
-    crBorder = _crBorder;
-    crShadow = _crShadow;
-    eShadowType = _eShadowType;
-    borderSize = _iBorderSize;
-    applyOverlay = _fApplyOverlay;
-    glowSize = _iGlowSize;
-
-    hasFontProp = 0;
-    isComposited = 0;
-    hasCallback = 0;
-    dwTextFlagsa = dwTextFlags & 0xFFFEFFFF;
+    bool isComposited = false;
+    bool hasChangedTextColor = false;
+    bool hasFontProp = false;
+    bool hasCallback = false;
+    unsigned textFlags = dwTextFlags & ~DT_MODIFYSTRING;
+    int oldBkMode = SetBkMode(hdc, TRANSPARENT);
 
     if (pOptions) {
-        flags = pOptions->dwFlags;
+        unsigned flags = pOptions->dwFlags;
         if (flags & DTT_TEXTCOLOR)
             crText = pOptions->crText;
         if (flags & DTT_BORDERCOLOR)
@@ -263,8 +235,8 @@ HRESULT CTextDraw::DrawTextW(
             borderSize = pOptions->iBorderSize;
         if (flags & DTT_FONTPROP) {
             pRender->ExternalGetFont(nullptr, iPartId, iStateId,
-                                     pOptions->iFontPropId, 0, &userFont);
-            hasFontProp = 1;
+                                     pOptions->iFontPropId, false, &userFont);
+            hasFontProp = true;
         }
         if (flags & DTT_COLORPROP) {
             pRender->ExternalGetInt(iPartId, iStateId, pOptions->iColorPropId,
@@ -275,70 +247,80 @@ HRESULT CTextDraw::DrawTextW(
         if (flags & DTT_GLOWSIZE)
             glowSize = pOptions->iGlowSize;
         if (flags & DTT_CALLBACK)
-            hasCallback = 1;
+            hasCallback = true;
         if (flags & DTT_COMPOSITED)
-            isComposited = 1;
+            isComposited = true;
     }
-
-    hasShadowType = 0;
-    if (eShadowType != TST_NONE)
-        hasShadowType = 1;
 
     if (hasFontProp) {
         ScaleThemeFont(hdc, pRender, &userFont);
-        ho = CreateFontIndirectW(&userFont);
-        oldFont = SelectObject(hdc, ho);
+        hFont = CreateFontIndirectW(&userFont);
+        oldFont = (HFONT)SelectObject(hdc, hFont);
     } else if (_iFontIndex != 0) {
-        hr = pRender->GetScaledFontHandle(hdc, _iFontIndex, (HFONT*)&hhh);
-        if (hr < 0) {
-            v26 = (HFONT)hhh;
-            goto exit_17;
-        }
+        hr = pRender->GetScaledFontHandle(hdc, _iFontIndex, &hFont);
+        if (hr < 0)
+            goto done;
 
-        ho = (HFONT)hhh;
-        oldFont = SelectObject(hdc, hhh);
+        oldFont = (HFONT)SelectObject(hdc, hFont);
     } else if (_fItalicFont) {
-        oldFont = GetCurrentObject(hdc, OBJ_FONT);
         LOGFONT lf;
         if (GetObjectW(oldFont, sizeof(lf), &lf) == sizeof(lf)) {
             lf.lfItalic = 1;
-            HFONT h4;
-            if (pRender->GetCachedDisplayFontHandle(hdc, lf, &h4) >= 0) {
-                ho = h4;
-            } else {
-                ho = CreateFontIndirectW(&lf);
-                hasFontProp = 1;
+            if (pRender->GetCachedDisplayFontHandle(hdc, lf, &hFont) < 0) {
+                hFont = CreateFontIndirectW(&lf);
+                hasFontProp = true;
             }
-            if (ho)
-                SelectObject(hdc, ho);
-            hhh = (HPEN)h4;
+
+            if (hFont)
+                oldFont = (HFONT)SelectObject(hdc, hFont);
         }
     }
 
     if (_fComposited || isComposited) {
-        if (dwTextFlagsa & 0x400) {
-            isComposited = 1;
+        if (textFlags & DT_CALCRECT) {
+            isComposited = true;
         } else {
-            auto v30 = (HBITMAP)GetCurrentObject(hdc, OBJ_BITMAP);
+            auto hbmp = (HBITMAP)GetCurrentObject(hdc, OBJ_BITMAP);
             DIBSECTION ds;
-            isComposited = 0;
-            if (v30 && GetObjectW(v30, sizeof(ds), &ds)
-                && ds.dsBm.bmBitsPixel == 32 && ds.dsBm.bmBits)
-                isComposited = 1;
+            isComposited = hbmp && GetObjectW(hbmp, sizeof(ds), &ds) &&
+                           ds.dsBm.bmBitsPixel == 32 &&
+                           ds.dsBm.bmBits != nullptr;
         }
     }
 
-    if (!isComposited) {
+    if (isComposited) {
+        DTT_CALLBACK_PROC const callback =
+            hasCallback ? pOptions->pfnDrawTextCallback : nullptr;
+        LPARAM const callbackParam = hasCallback ? pOptions->lParam : 0;
+
+        rc = *pRect;
+        hr = DrawTextWithGlow(
+            hdc,
+            pszText,
+            dwCharCount,
+            &rc,
+            textFlags,
+            crText,
+            _crGlow,
+            glowSize,
+            _iGlowIntensity,
+            TRUE,
+            callback,
+            callbackParam);
+
+        if (hr >= 0)
+            hr = 0;
+    } else {
         if (glowSize) {
             HTHEME themeTextGlow = UxOpenThemeData(hThemeFile, nullptr, L"TEXTGLOW");
             if (themeTextGlow) {
                 rc = *pRect;
-                if (DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, dwTextFlagsa | 0x400, nullptr)) {
+                if (DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags | DT_CALCRECT, nullptr)) {
                     long width = rc.right - rc.left;
                     long x;
-                    if (dwTextFlagsa & 2) {
+                    if (textFlags & DT_RIGHT) {
                         x = pRect->right - width;
-                    } else if (dwTextFlagsa & 1) {
+                    } else if (textFlags & DT_CENTER) {
                         x = pRect->left + ((unsigned)(pRect->right - pRect->left - width) >> 1);
                     } else {
                         x = pRect->left;
@@ -346,9 +328,9 @@ HRESULT CTextDraw::DrawTextW(
 
                     long height = rc.bottom - rc.top;
                     long y;
-                    if (dwTextFlagsa & 8) {
+                    if (textFlags & DT_BOTTOM) {
                         y = pRect->bottom - height;
-                    } else if (dwTextFlagsa & 4) {
+                    } else if (textFlags & DT_VCENTER) {
                         y = pRect->top + ((unsigned)(pRect->bottom - pRect->top - height) >> 1);
                     } else {
                         y = pRect->top;
@@ -365,140 +347,95 @@ HRESULT CTextDraw::DrawTextW(
             }
         }
 
-        if (hasShadowType) {
-            if (eShadowType == 2) {
-                rc = *pRect;
-                DrawShadowText(hdc, pszText, dwCharCount, &rc, dwTextFlagsa,
-                               crText, crShadow, shadowOffset.x, shadowOffset.y);
-                goto LABEL_111;
-            } else {
-                COLORREF oldTextColor2 = SetTextColor(hdc, crShadow);
-                hasChangedTextColor = 1;
-                color = oldTextColor2;
-                rc.left = shadowOffset.x + pRect->left;
-                rc.top = shadowOffset.y + pRect->top;
-                rc.right = shadowOffset.x + pRect->right;
-                rc.bottom = pRect->bottom;
-                if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, dwTextFlagsa, nullptr)) {
-                    oldTextColor = color;
-                    hr = MakeErrorLast();
-                    v26 = ho;
-                    goto exit_17;
-                }
-
-                goto LABEL_14;
+        switch (eShadowType) {
+        case TST_SINGLE:
+            oldTextColor = SetTextColor(hdc, crShadow);
+            hasChangedTextColor = true;
+            rc.left = pRect->left + shadowOffset.x;
+            rc.top = pRect->top + shadowOffset.y;
+            rc.right = pRect->right + shadowOffset.x;
+            rc.bottom = pRect->bottom;
+            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags, nullptr)) {
+                hr = MakeErrorLast();
+                goto done;
             }
-        } else {
-            goto LABEL_14;
 
-        LABEL_14:
+            [[fallthrough]];
+
+        case TST_NONE:
+        {
             rc = *pRect;
             if (!borderSize) {
                 goto LABEL_16;
             }
 
             if (!BeginPath(hdc)) {
-                oldTextColor = color;
                 hr = MakeErrorLast();
-                v26 = ho;
-                goto exit_17;
+                goto done;
             }
 
             LOGBRUSH logBrush = {};
             logBrush.lbColor = crBorder;
 
-            pen46 = ExtCreatePen(PS_GEOMETRIC, borderSize, &logBrush, 0, nullptr);
-
-            brush = CreateSolidBrush(applyOverlay ? crBorder : crText);
-            if (!pen46) {
+            GdiPenHandle pen{ExtCreatePen(PS_GEOMETRIC, borderSize, &logBrush, 0, nullptr)};
+            if (!pen) {
                 AbortPath(hdc);
-                oldTextColor = color;
                 hr = MakeErrorLast();
-                v26 = ho;
-                goto exit_17;
+                goto done;
             }
 
-            oldPen = (HPEN)SelectObject(hdc, pen46);
-            hhh = oldPen;
+            SelectObjectScope<HPEN> oldPen{hdc, pen};
+
+            GdiBrushHandle brush{CreateSolidBrush(applyOverlay ? crBorder : crText)};
             if (brush) {
-                auto v72_ = SelectObject(hdc, brush);
+                SelectObjectScope<HBRUSH> oldBrush{hdc, brush};
                 if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc,
                                  0, nullptr)) {
                     AbortPath(hdc);
-                    oldTextColor = color;
                     hr = MakeErrorLast();
-                    v26 = ho;
-                    goto exit_17;
+                    goto done;
                 }
 
                 EndPath(hdc);
                 StrokeAndFillPath(hdc);
-                SelectObject(hdc, v72_);
-                DeleteObject(brush);
             }
-
-            SelectObject(hdc, oldPen);
-            DeleteObject(pen46);
-            goto LABEL_111;
+            break;
         }
 
-    LABEL_111:
+        case TST_CONTINUOUS:
+            rc = *pRect;
+            DrawShadowText(hdc, pszText, dwCharCount, &rc, textFlags,
+                           crText, crShadow, shadowOffset.x, shadowOffset.y);
+            break;
+        }
+
         if (applyOverlay) {
         LABEL_16:
             if (hasChangedTextColor) {
                 SetTextColor(hdc, crText);
             } else {
-                color = SetTextColor(hdc, crText);
-                hasChangedTextColor = 1;
+                oldTextColor = SetTextColor(hdc, crText);
+                hasChangedTextColor = true;
             }
 
             hr = 0;
-            if (!DrawTextExW(hdc, (wchar_t*)pszText, dwCharCount, &rc,
-                             dwTextFlagsa, nullptr))
+            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc,
+                             textFlags, nullptr))
                 hr = MakeErrorLast();
         } else {
             hr = 0;
         }
 
-        oldTextColor = color;
-        v26 = ho;
-    } else {
-        DTT_CALLBACK_PROC const callback =
-            hasCallback ? pOptions->pfnDrawTextCallback : nullptr;
-        LPARAM const callbackParam = hasCallback ? pOptions->lParam : 0;
-
-        rc = *pRect;
-        hr = DrawTextWithGlow(
-            hdc,
-            pszText,
-            dwCharCount,
-            &rc,
-            dwTextFlagsa,
-            crText,
-            _crGlow,
-            glowSize,
-            _iGlowIntensity,
-            TRUE,
-            callback,
-            callbackParam);
-
-        if (hr >= 0) {
-            oldTextColor = color;
-            hr = 0;
-        } else {
-            oldTextColor = 0;
-        }
-        v26 = ho;
     }
 
-exit_17:
+done:
     SetBkMode(hdc, oldBkMode);
     if (hasChangedTextColor)
         SetTextColor(hdc, oldTextColor);
     if (oldFont)
         SelectObject(hdc, oldFont);
-    if (v26 && (hasFontProp || !pRender->_fCacheEnabled))
-        DeleteObject(v26);
+    if (hasFontProp)
+        pRender->ReturnFontHandle(hFont);
 
     if (FAILED(hr))
         return hr;
