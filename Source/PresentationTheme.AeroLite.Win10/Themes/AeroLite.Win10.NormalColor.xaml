@@ -3617,12 +3617,12 @@
               <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
               <RowDefinition x:Name="RowDefinition1" Height="*"/>
             </Grid.RowDefinitions>
-            <TabPanel x:Name="HeaderPanel"
-                      Background="Transparent"
-                      IsItemsHost="True"
-                      Margin="2,2,2,0"
-                      KeyboardNavigation.TabIndex="1"
-                      Panel.ZIndex="1"/>
+            <aero10:RoundingTabPanel x:Name="HeaderPanel"
+                                     Background="Transparent"
+                                     IsItemsHost="True"
+                                     Margin="2,2,2,0"
+                                     KeyboardNavigation.TabIndex="1"
+                                     Panel.ZIndex="1"/>
             <Border x:Name="ContentPanel"
                     Grid.Row="1"
                     KeyboardNavigation.DirectionalNavigation="Contained"

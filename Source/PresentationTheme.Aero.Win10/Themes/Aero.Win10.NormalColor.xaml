@@ -4183,14 +4183,13 @@
               <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
               <RowDefinition x:Name="RowDefinition1" Height="*"/>
             </Grid.RowDefinitions>
-            <aero10:TabPanelEx
-                      x:Name="HeaderPanel"
-                      SelectedTab="{TemplateBinding SelectedItem}"
-                      Background="Transparent"
-                      IsItemsHost="True"
-                      Margin="2,2,2,0"
-                      KeyboardNavigation.TabIndex="1"
-                      Panel.ZIndex="1"/>
+            <aero10:RoundingTabPanel x:Name="HeaderPanel"
+                                     SelectedTab="{TemplateBinding SelectedItem}"
+                                     Background="Transparent"
+                                     IsItemsHost="True"
+                                     Margin="2,2,2,0"
+                                     KeyboardNavigation.TabIndex="1"
+                                     Panel.ZIndex="1"/>
             <Border x:Name="ContentPanel"
                     Grid.Row="1"
                     KeyboardNavigation.DirectionalNavigation="Contained"
@@ -4266,13 +4265,12 @@
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource TabItem.Border.Normal}"/>
     <Setter Property="Margin" Value="0"/>
-    <Setter Property="Padding" Value="5,0"/>
+    <Setter Property="Padding" Value="5,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TabItem}">
-          <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
             <Border x:Name="Border"
                     BorderThickness="1,1,1,0"
                     Background="{TemplateBinding Background}"
@@ -4286,7 +4284,6 @@
                                 Focusable="False"
                                 RecognizesAccessKey="True"/>
             </Border>
-          </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
@@ -4300,17 +4297,17 @@
             <Trigger Property="IsSelected" Value="True">
               <Setter Property="Panel.ZIndex" Value="1"/>
               <Setter Property="Margin" Value="-2,-2,-2,-1"/>
-              <Setter Property="Padding" Value="5,0,5,4"/>
+              <Setter Property="Padding" Value="5,0,5,3"/>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
             </Trigger>
-            <Trigger Property="aero10:TabPanelEx.TabItemKind" Value="Left">
+            <Trigger Property="aero10:RoundingTabPanel.TabItemKind" Value="Leading">
               <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,0"/>
-              <Setter Property="Padding" Value="5,0,6,0"/>
+              <Setter Property="Padding" Value="5,2,6,2"/>
             </Trigger>
-            <Trigger Property="aero10:TabPanelEx.TabItemKind" Value="Right">
+            <Trigger Property="aero10:RoundingTabPanel.TabItemKind" Value="Trailing">
               <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,0"/>
-              <Setter Property="Padding" Value="6,0,5,0"/>
+              <Setter Property="Padding" Value="6,2,5,2"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
