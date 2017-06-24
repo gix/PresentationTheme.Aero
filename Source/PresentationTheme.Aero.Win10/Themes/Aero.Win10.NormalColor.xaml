@@ -2342,16 +2342,16 @@
                           Height="16"
                           Margin="2"/>
         <Border x:Name="GlyphBorder"
-                Visibility="Hidden"
-                Height="22"
-                Width="22"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 Background="{StaticResource Menu.PopupCheckBackground.Normal.Background}"
                 BorderBrush="{StaticResource Menu.PopupCheckBackground.Normal.Border}"
                 BorderThickness="1"
+                Width="22"
+                Height="22"
+                Margin="-1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 ClipToBounds="False"
-                Margin="-1">
+                Visibility="Hidden">
           <Path x:Name="Glyph"
                 Data="{StaticResource Menu.CheckmarkGlyph}"
                 FlowDirection="LeftToRight"
@@ -2364,7 +2364,6 @@
         </Border>
         <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
-                Margin="0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
           <ContentPresenter HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -2373,7 +2372,7 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
@@ -2404,12 +2403,10 @@
           <Condition Property="IsEnabled" Value="False"/>
           <Condition Property="IsHighlighted" Value="True"/>
         </MultiTrigger.Conditions>
-        <MultiTrigger.Setters>
-          <Setter TargetName="TemplateRoot" Property="Background"
+        <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Background}"/>
-          <Setter TargetName="TemplateRoot" Property="BorderBrush"
+        <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Border}"/>
-        </MultiTrigger.Setters>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
         <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
@@ -2445,29 +2442,33 @@
                           ContentSource="Icon"
                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                           VerticalAlignment="Center"
-                          HorizontalAlignment="Center"
+                          HorizontalAlignment="Left"
                           Width="16"
                           Height="16"
                           Margin="2"/>
         <Border x:Name="GlyphBorder"
+                Background="{StaticResource Menu.PopupCheckBackground.Normal.Background}"
+                BorderBrush="{StaticResource Menu.PopupCheckBackground.Normal.Border}"
                 BorderThickness="1"
-                Height="22"
                 Width="22"
-                Visibility="Hidden"
+                Height="22"
+                Margin="-1"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Margin="-1,-1,-1,-1"
-                BorderBrush="{StaticResource Menu.PopupItem.Hot.Border}"
-                Background="{StaticResource Menu.PopupItem.Hot.Background}">
+                ClipToBounds="False"
+                Visibility="Hidden">
           <Path x:Name="Glyph"
                 Data="{StaticResource Menu.CheckmarkGlyph}"
                 FlowDirection="LeftToRight"
                 Height="16"
                 Width="16"
+                Margin="2"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
                 Fill="{StaticResource Menu.PopupCheck.Normal.Foreground}"/>
         </Border>
         <Border x:Name="MenuHeaderContainer"
                 Grid.Column="2"
-                Margin="0,-1,0,0"
                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
           <ContentPresenter HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -2476,7 +2477,7 @@
                             Margin="{TemplateBinding Padding}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
-        <Border x:Name="MenuGestureContainer" Grid.Column="4" Margin="0,-1,0,0">
+        <Border x:Name="MenuGestureContainer" Grid.Column="4">
           <TextBlock Text="{TemplateBinding InputGestureText}"
                      Margin="{TemplateBinding Padding}"
                      VerticalAlignment="Center"/>
@@ -2531,9 +2532,6 @@
         <Setter TargetName="MenuHeaderContainer" Property="Margin" Value="0,-1,0,0"/>
         <Setter TargetName="MenuGestureContainer" Property="Margin" Value="0,-1,0,0"/>
       </DataTrigger>
-      <Trigger Property="IsSuspendingPopupAnimation" Value="True">
-        <Setter TargetName="PART_Popup" Property="PopupAnimation" Value="None"/>
-      </Trigger>
       <Trigger Property="Icon" Value="{x:Null}">
         <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
       </Trigger>
@@ -2547,27 +2545,34 @@
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.Hot.Border}"/>
       </Trigger>
-      <Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
-                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
-        <Setter TargetName="Glyph" Property="Fill"
-                Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
-        <Setter TargetName="RightArrow" Property="Fill"
-                Value="{StaticResource Menu.PopupSubmenu.Disabled.Foreground}"/>
-      </Trigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
-          <Condition Property="IsHighlighted" Value="True"/>
           <Condition Property="IsEnabled" Value="False"/>
+          <Condition Property="IsHighlighted" Value="True"/>
         </MultiTrigger.Conditions>
         <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Background}"/>
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{StaticResource Menu.PopupItem.DisabledHot.Border}"/>
       </MultiTrigger>
-      <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+      <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+        <Setter TargetName="PART_Popup" Property="PopupAnimation" Value="None"/>
+      </Trigger>
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter TargetName="TemplateRoot" Property="TextElement.Foreground"
+                Value="{StaticResource Menu.PopupItem.Disabled.Foreground}"/>
+        <Setter TargetName="Glyph" Property="Fill"
+                Value="{StaticResource Menu.PopupCheck.Disabled.Foreground}"/>
+        <Setter TargetName="GlyphBorder" Property="Background"
+                Value="{StaticResource Menu.PopupCheckBackground.Disabled.Background}"/>
+        <Setter TargetName="GlyphBorder" Property="BorderBrush"
+                Value="{StaticResource Menu.PopupCheckBackground.Disabled.Border}"/>
+        <Setter TargetName="RightArrow" Property="Fill"
+                Value="{StaticResource Menu.PopupSubmenu.Disabled.Foreground}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
