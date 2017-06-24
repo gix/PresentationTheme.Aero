@@ -947,18 +947,9 @@
                   BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                   Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                   BorderThickness="1">
-            <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="Canvas"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Height="0"
-                        Width="0">
-                  <Rectangle x:Name="OpaqueRect"
-                             Fill="{Binding Background, ElementName=DropDownBorder}"
-                             Height="{Binding ActualHeight, ElementName=DropDownBorder}"
-                             Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
-                </Canvas>
+            <ScrollViewer>
+              <Grid Background="{Binding Background, ElementName=DropDownBorder}"
+                    RenderOptions.ClearTypeHint="Enabled">
                 <ItemsPresenter x:Name="ItemsPresenter"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -1000,10 +991,6 @@
         </MultiTrigger.Conditions>
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
-      <Trigger SourceName="DropDownScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
-      </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
@@ -1022,18 +1009,9 @@
                   BorderBrush="{aero10:SystemAliasResource ComboBox.ListBox.Border.Hot}"
                   Background="{aero10:SystemAliasResource ComboBox.ListBox.Background.Hot}"
                   BorderThickness="1">
-            <ScrollViewer x:Name="DropDownScrollViewer">
-              <Grid x:Name="Grid" RenderOptions.ClearTypeHint="Enabled">
-                <Canvas x:Name="Canvas"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Width="0"
-                        Height="0">
-                  <Rectangle x:Name="OpaqueRect"
-                             Fill="{Binding Background, ElementName=DropDownBorder}"
-                             Height="{Binding ActualHeight, ElementName=DropDownBorder}"
-                             Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
-                </Canvas>
+            <ScrollViewer>
+              <Grid Background="{Binding Background, ElementName=DropDownBorder}"
+                    RenderOptions.ClearTypeHint="Enabled">
                 <ItemsPresenter x:Name="ItemsPresenter"
                                 KeyboardNavigation.DirectionalNavigation="Contained"
                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -1093,10 +1071,6 @@
         </MultiTrigger.Conditions>
         <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
       </MultiTrigger>
-      <Trigger Property="ScrollViewer.CanContentScroll" SourceName="DropDownScrollViewer" Value="False">
-        <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
-        <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
-      </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
 
@@ -1958,14 +1932,8 @@
                     Padding="2">
               <ScrollViewer x:Name="SubMenuScrollViewer"
                             Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
-                <Grid RenderOptions.ClearTypeHint="Enabled">
-                  <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Rectangle
-                      x:Name="OpaqueRect"
-                      Height="{Binding ActualHeight, ElementName=SubMenuBorder}"
-                      Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
-                      Fill="{Binding Background, ElementName=SubMenuBorder}"/>
-                  </Canvas>
+                <Grid Background="{Binding Background, ElementName=SubMenuBorder}"
+                      RenderOptions.ClearTypeHint="Enabled">
                   <Border x:Name="PopupGutter"
                           HorizontalAlignment="Left"
                           Width="28"
@@ -2036,12 +2004,6 @@
       <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
-      </Trigger>
-      <Trigger SourceName="SubMenuScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-        <Setter TargetName="OpaqueRect" Property="Canvas.Top"
-                Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
-        <Setter TargetName="OpaqueRect" Property="Canvas.Left"
-                Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -2236,15 +2198,9 @@
                     BorderThickness="1"
                     Padding="2">
               <ScrollViewer x:Name="SubMenuScrollViewer"
-                          Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
-                <Grid RenderOptions.ClearTypeHint="Enabled">
-                  <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Rectangle
-                      x:Name="OpaqueRect"
-                      Height="{Binding ActualHeight, ElementName=SubMenuBorder}"
-                      Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
-                      Fill="{Binding Background, ElementName=SubMenuBorder}"/>
-                  </Canvas>
+                            Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
+                <Grid Background="{Binding Background, ElementName=SubMenuBorder}"
+                      RenderOptions.ClearTypeHint="Enabled">
                   <Border x:Name="PopupGutter"
                           HorizontalAlignment="Left"
                           Width="28"
@@ -2310,12 +2266,6 @@
       <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
-      </Trigger>
-      <Trigger SourceName="SubMenuScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-        <Setter TargetName="OpaqueRect" Property="Canvas.Top"
-                Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
-        <Setter TargetName="OpaqueRect" Property="Canvas.Left"
-                Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
       </Trigger>
     </ControlTemplate.Triggers>
   </ControlTemplate>
@@ -2418,14 +2368,8 @@
               <ScrollViewer x:Name="ContextMenuScrollViewer"
                             Margin="0"
                             Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
-                <Grid RenderOptions.ClearTypeHint="Enabled">
-                  <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Rectangle
-                      x:Name="OpaqueRect"
-                      Height="{Binding ActualHeight, ElementName=ContextMenuBorder}"
-                      Width="{Binding ActualWidth, ElementName=ContextMenuBorder}"
-                      Fill="{Binding Background, ElementName=ContextMenuBorder}"/>
-                  </Canvas>
+                <Grid Background="{Binding Background, ElementName=ContextMenuBorder}"
+                      RenderOptions.ClearTypeHint="Enabled">
                   <Border x:Name="PopupGutter"
                           HorizontalAlignment="Left"
                           Width="28"
@@ -2445,16 +2389,6 @@
             <Trigger Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
-            </Trigger>
-            <Trigger SourceName="ContextMenuScrollViewer"
-                     Property="ScrollViewer.CanContentScroll"
-                     Value="False">
-              <Setter TargetName="OpaqueRect"
-                      Property="Canvas.Top"
-                      Value="{Binding VerticalOffset, ElementName=ContextMenuScrollViewer}"/>
-              <Setter TargetName="OpaqueRect"
-                      Property="Canvas.Left"
-                      Value="{Binding HorizontalOffset, ElementName=ContextMenuScrollViewer}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -5089,14 +5023,8 @@
                         BorderBrush="{aero10:SystemAliasResource Menu.Popup.Border}"
                         BorderThickness="1">
                   <ScrollViewer x:Name="DropDownScrollViewer">
-                    <Grid RenderOptions.ClearTypeHint="Enabled">
-                      <Canvas Width="0" Height="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <Rectangle
-                          x:Name="OpaqueRect"
-                          Width="{Binding ActualWidth, ElementName=DropDownBorder}"
-                          Height="{Binding ActualHeight, ElementName=DropDownBorder}"
-                          Fill="{Binding Background, ElementName=DropDownBorder}"/>
-                      </Canvas>
+                    <Grid Background="{Binding Background, ElementName=DropDownBorder}"
+                          RenderOptions.ClearTypeHint="Enabled">
                       <ItemsPresenter x:Name="ItemsPresenter"
                                       KeyboardNavigation.DirectionalNavigation="Contained"/>
                     </Grid>
@@ -5151,11 +5079,6 @@
             <Trigger Property="IsEditable" Value="True">
               <Setter Property="Padding" Value="2"/>
               <Setter Property="IsTabStop" Value="False"/>
-            </Trigger>
-            <Trigger SourceName="DropDownScrollViewer"
-                     Property="ScrollViewer.CanContentScroll" Value="False">
-              <Setter TargetName="OpaqueRect" Property="Canvas.Left" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
-              <Setter TargetName="OpaqueRect" Property="Canvas.Top" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
@@ -5362,14 +5285,8 @@
                         Padding="2">
                   <ScrollViewer x:Name="SubMenuScrollViewer"
                                 Style="{DynamicResource {ComponentResourceKey {x:Type FrameworkElement}, MenuScrollViewer}}">
-                    <Grid RenderOptions.ClearTypeHint="Enabled">
-                      <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <Rectangle
-                          x:Name="OpaqueRect"
-                          Height="{Binding ActualHeight, ElementName=SubMenuBorder}"
-                          Width="{Binding ActualWidth, ElementName=SubMenuBorder}"
-                          Fill="{Binding Background, ElementName=SubMenuBorder}"/>
-                      </Canvas>
+                    <Grid Background="{Binding Background, ElementName=SubMenuBorder}"
+                          RenderOptions.ClearTypeHint="Enabled">
                       <Border x:Name="PopupGutter"
                               HorizontalAlignment="Left"
                               Width="28"
@@ -5426,12 +5343,6 @@
           <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
             <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
             <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
-          </Trigger>
-          <Trigger SourceName="SubMenuScrollViewer" Property="ScrollViewer.CanContentScroll" Value="False">
-            <Setter TargetName="OpaqueRect" Property="Canvas.Top"
-                    Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
-            <Setter TargetName="OpaqueRect" Property="Canvas.Left"
-                    Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
           </Trigger>
         </ControlTemplate.Triggers>
       </ControlTemplate>
