@@ -43,7 +43,6 @@
             public List<TreeNode> Children { get; }
         }
 
-
         public static MenuNode GetMenu()
         {
             return new MenuNode("&Header",
@@ -65,6 +64,8 @@
                     new MenuNode("Gesture") { InputGestureText = "Ctrl+N" },
                     new MenuNode("Checked") { IsChecked = true },
                     new MenuNode("Radio") { IsChecked = true, IsRadio = true },
+                    new MenuNode("Overflowing",
+                        Enumerable.Range(0, 100).Select(x => new MenuNode("Item " + x)).ToArray()),
                     new MenuNode { IsSeparator = true },
                     new MenuNode("Disabled Header", new MenuNode("Item")) { IsEnabled = false },
                     new MenuNode("Disabled Item") { IsEnabled = false },
@@ -75,27 +76,29 @@
                 new MenuNode("&Item"),
                 new MenuNode("&Checked"),
                 new MenuNode("&Radio"),
+                new MenuNode("Overflowing",
+                    Enumerable.Range(0, 100).Select(x => new MenuNode("Item " + x)).ToArray()),
                 new MenuNode("&Disabled") { IsEnabled = false },
                 new MenuNode("C&hecked Disabled") { IsEnabled = false, IsChecked = true },
                 new MenuNode("R&adio Disabled") { IsEnabled = false, IsChecked = true, IsRadio = true }
                 );
         }
+    }
 
-        public class MenuNode
+    public class MenuNode
+    {
+        public MenuNode(string text = null, params MenuNode[] children)
         {
-            public MenuNode(string text = null, params MenuNode[] children)
-            {
-                Text = text;
-                Children = new List<MenuNode>(children);
-            }
-
-            public string Text { get; }
-            public bool IsEnabled { get; set; } = true;
-            public bool IsChecked { get; set; }
-            public bool IsRadio { get; set; }
-            public bool IsSeparator { get; set; }
-            public string InputGestureText { get; set; }
-            public List<MenuNode> Children { get; }
+            Text = text;
+            Children = new List<MenuNode>(children);
         }
+
+        public string Text { get; }
+        public bool IsEnabled { get; set; } = true;
+        public bool IsChecked { get; set; }
+        public bool IsRadio { get; set; }
+        public bool IsSeparator { get; set; }
+        public string InputGestureText { get; set; }
+        public List<MenuNode> Children { get; }
     }
 }

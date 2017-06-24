@@ -10,9 +10,13 @@
             menu.Items.Clear();
             foreach (var node in ItemGenerator.GetMenu().Children)
                 menu.Items.Add(BuildMenu(node));
+
+            contextMenu.Items.Clear();
+            foreach (var node in ItemGenerator.GetMenu().Children)
+                contextMenu.Items.Add(BuildMenu(node));
         }
 
-        private object BuildMenu(ItemGenerator.MenuNode node)
+        private object BuildMenu(MenuNode node)
         {
             if (node.IsSeparator)
                 return new Separator();
@@ -23,6 +27,7 @@
                 IsChecked = node.IsChecked,
                 InputGestureText = node.InputGestureText
             };
+            ScrollViewer.SetCanContentScroll(item, false);
             foreach (var childNode in node.Children)
                 item.Items.Add(BuildMenu(childNode));
             return item;

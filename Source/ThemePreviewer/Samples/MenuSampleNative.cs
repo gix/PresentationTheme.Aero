@@ -46,7 +46,7 @@
             return menu;
         }
 
-        private MenuItem BuildMenu(ItemGenerator.MenuNode node)
+        private MenuItem BuildMenu(MenuNode node)
         {
             var item = new MenuItem {
                 Text = node.IsSeparator ? "-" : node.Text,
