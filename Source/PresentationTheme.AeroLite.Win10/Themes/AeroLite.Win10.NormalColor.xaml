@@ -998,7 +998,7 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
-      <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -1078,7 +1078,7 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
-      <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -1202,10 +1202,10 @@
   <SolidColorBrush x:Key="ListBox.Border.Disabled" Color="#FFD9D9D9" po:Freeze="True"/>
 
   <Style TargetType="{x:Type ListBox}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Background" Value="{StaticResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{StaticResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1796,11 +1796,9 @@
               <RowDefinition Height="*"/>
               <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="1">
-              <ScrollContentPresenter
-                Margin="{TemplateBinding Padding}"
-                CanContentScroll="{TemplateBinding CanContentScroll}"/>
-            </Border>
+            <ScrollContentPresenter Grid.Row="1"
+                                    Margin="{TemplateBinding Padding}"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"/>
             <RepeatButton Style="{StaticResource MenuScrollButton}"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2081,7 +2079,7 @@
         <Setter TargetName="GlyphBorder" Property="Fill"
                 Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
       </Trigger>
-      <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -3218,8 +3216,8 @@
         <Border x:Name="InnerBd"
                 Padding="{TemplateBinding Padding}">
           <ContentPresenter x:Name="PART_Header"
-                          ContentSource="Header"
-                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            ContentSource="Header"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
       </Border>
       <ItemsPresenter x:Name="ItemsHost"
@@ -3534,13 +3532,13 @@
   <SolidColorBrush x:Key="TabItem.Border.Disabled" Color="#FF808080" po:Freeze="True"/>
 
   <Style TargetType="{x:Type TabControl}">
-    <Setter Property="Padding" Value="6,4,6,6"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
     <Setter Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+    <Setter Property="Padding" Value="6,4,6,6"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TabControl}">
@@ -4450,6 +4448,7 @@
                                    Grid.ColumnSpan="4"
                                    BorderBrush="{TemplateBinding BorderBrush}"
                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                   Margin="0,-1,0,0"
                                    CornerRadius="2"
                                    SnapsToDevicePixels="True">
               <aero10:GroupBoxBorder.OpacityMask>
@@ -4482,7 +4481,7 @@
   </Style>
 
 
-  <!-- Expander ============================================================== -->
+  <!-- Expander ============================================================ -->
 
   <SolidColorBrush x:Key="Expander.Glyph.Normal" Color="#80000000"/>
   <SolidColorBrush x:Key="Expander.Glyph.Hot" Color="#BF1CC4F7"/>
@@ -5204,7 +5203,7 @@
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource ToolBar.Button.Border.Pressed}"/>
             </Trigger>
-            <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
@@ -5491,7 +5490,7 @@
             <Setter TargetName="GlyphBorder" Property="Fill"
                     Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
           </Trigger>
-          <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+          <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
             <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
             <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
           </Trigger>
@@ -5703,8 +5702,7 @@
             <Trigger Property="ToolBarTray.IsLocked" Value="True">
               <Setter TargetName="ToolBarThumb" Property="Visibility" Value="Collapsed"/>
             </Trigger>
-            <Trigger SourceName="OverflowPopup"
-                     Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="OverflowPopup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>

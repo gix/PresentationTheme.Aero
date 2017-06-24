@@ -2024,11 +2024,9 @@
               <RowDefinition Height="*"/>
               <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="1">
-              <ScrollContentPresenter
-                Margin="{TemplateBinding Padding}"
-                CanContentScroll="{TemplateBinding CanContentScroll}"/>
-            </Border>
+            <ScrollContentPresenter Grid.Row="1"
+                                    Margin="{TemplateBinding Padding}"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"/>
             <RepeatButton Style="{StaticResource MenuScrollButton}"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2309,7 +2307,7 @@
         <Setter TargetName="GlyphBorder" Property="Fill"
                 Value="{StaticResource Menu.BarItem.Disabled.Foreground}"/>
       </Trigger>
-      <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -3785,8 +3783,8 @@
         <Border x:Name="InnerBd"
                 Padding="{TemplateBinding Padding}">
           <ContentPresenter x:Name="PART_Header"
-                          ContentSource="Header"
-                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            ContentSource="Header"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
       </Border>
       <ItemsPresenter x:Name="ItemsHost"
@@ -4974,9 +4972,9 @@
             <Border Grid.Row="1"
                     Grid.RowSpan="3"
                     Grid.ColumnSpan="4"
-                    BorderThickness="{TemplateBinding BorderThickness}"
                     BorderBrush="{TemplateBinding BorderBrush}"
-                    Margin="0,0,0,1">
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Margin="0,-1,0,1">
               <Border.OpacityMask>
                 <MultiBinding Converter="{StaticResource BorderGapMaskConverter}"
                               ConverterParameter="7">
@@ -5711,7 +5709,7 @@
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource ToolBar.Button.Border.Pressed}"/>
             </Trigger>
-            <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
@@ -6210,8 +6208,7 @@
             <Trigger Property="ToolBarTray.IsLocked" Value="True">
               <Setter TargetName="ToolBarThumb" Property="Visibility" Value="Collapsed"/>
             </Trigger>
-            <Trigger SourceName="OverflowPopup"
-                     Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="OverflowPopup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>

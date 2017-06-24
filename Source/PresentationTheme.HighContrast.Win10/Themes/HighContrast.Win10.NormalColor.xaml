@@ -8,8 +8,8 @@
 
   <aero:TreeViewItemLevelConverter x:Key="TreeViewItemLevelConverter"/>
   <aero10:TypeOfConverter x:Key="TypeOfConverter"/>
-  <aero10:InvertThicknessConverter x:Key="InvertThicknessConverter"/>
   <aero10:EqualsConverter x:Key="EqualsConverter"/>
+  <aero10:InvertThicknessConverter x:Key="InvertThicknessConverter"/>
   <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
@@ -977,7 +977,7 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
-      <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -1057,7 +1057,7 @@
       <Trigger Property="IsEnabled" Value="False">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
       </Trigger>
-      <Trigger Property="HasDropShadow" SourceName="PART_Popup" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shadow" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shadow" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -1076,9 +1076,9 @@
 
   <Style TargetType="{x:Type ComboBox}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBox.ReadOnly.FocusVisual}"/>
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource ComboBox.Button.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ComboBox.Button.Border.Normal}"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="3,2,2,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -1176,10 +1176,10 @@
   <!-- ListBox ============================================================= -->
 
   <Style TargetType="{x:Type ListBox}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource ListBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource ListBox.Border.Normal}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
     <Setter Property="Padding" Value="1"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
@@ -1716,11 +1716,9 @@
               <RowDefinition Height="*"/>
               <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="1">
-              <ScrollContentPresenter
-                Margin="{TemplateBinding Padding}"
-                CanContentScroll="{TemplateBinding CanContentScroll}"/>
-            </Border>
+            <ScrollContentPresenter Grid.Row="1"
+                                    Margin="{TemplateBinding Padding}"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}"/>
             <RepeatButton Style="{StaticResource MenuScrollButton}"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
@@ -2001,7 +1999,7 @@
         <Setter TargetName="GlyphBorder" Property="Fill"
                 Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
       </Trigger>
-      <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+      <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
         <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
         <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
       </Trigger>
@@ -4338,6 +4336,7 @@
                     Grid.ColumnSpan="4"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
+                    Margin="0,-1,0,0"
                     CornerRadius="2"
                     SnapsToDevicePixels="True">
               <Border.OpacityMask>
@@ -5058,7 +5057,7 @@
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
               <Setter TargetName="Border" Property="BorderBrush" Value="{aero10:SystemAliasResource ToolBar.TextBox.Border.Focused}"/>
             </Trigger>
-            <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
@@ -5345,7 +5344,7 @@
             <Setter TargetName="GlyphBorder" Property="Fill"
                     Value="{aero10:SystemAliasResource Menu.BarItem.Disabled.Foreground}"/>
           </Trigger>
-          <Trigger SourceName="PART_Popup" Property="Popup.HasDropShadow" Value="True">
+          <Trigger SourceName="PART_Popup" Property="HasDropShadow" Value="True">
             <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
             <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
           </Trigger>
@@ -5557,8 +5556,7 @@
             <Trigger Property="ToolBarTray.IsLocked" Value="True">
               <Setter TargetName="ToolBarThumb" Property="Visibility" Value="Collapsed"/>
             </Trigger>
-            <Trigger SourceName="OverflowPopup"
-                     Property="Popup.HasDropShadow" Value="True">
+            <Trigger SourceName="OverflowPopup" Property="HasDropShadow" Value="True">
               <Setter TargetName="Shdw" Property="Margin" Value="0,0,5,5"/>
               <Setter TargetName="Shdw" Property="SnapsToDevicePixels" Value="True"/>
               <Setter TargetName="Shdw" Property="Color" Value="#71000000"/>
