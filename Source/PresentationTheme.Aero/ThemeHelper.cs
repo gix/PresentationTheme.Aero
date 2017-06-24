@@ -348,6 +348,8 @@ namespace PresentationTheme.Aero
             if (resourceName == null)
                 throw new ArgumentNullException(nameof(resourceName));
 
+            // ResourceDictionaries.LoadDictionary expects an extension-less
+            // resource path since it appends ".baml".
             if (Path.GetExtension(resourceName).Equals(".xaml", StringComparison.OrdinalIgnoreCase))
                 resourceName = Path.ChangeExtension(resourceName, null);
 

@@ -65,7 +65,7 @@ namespace PresentationTheme.Aero
 
             var asmName = GetFullAssemblyNameFromPartialName(typeof(AeroTheme).Assembly, partialName);
             string themedResourceName =
-                "themes/" + resourceName.ToLowerInvariant() + "." + uxThemeColor.ToLowerInvariant();
+                "themes/" + resourceName.ToLowerInvariant() + "." + uxThemeColor.ToLowerInvariant() + ".xaml";
 
             return PackUriUtils.MakeContentPackUri(asmName, themedResourceName);
         }
