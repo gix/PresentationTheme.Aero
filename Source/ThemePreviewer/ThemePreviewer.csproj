@@ -75,6 +75,12 @@
     <Compile Include="AsyncDelegateCommand.cs" />
     <Compile Include="BuiltinThemes.cs" />
     <Compile Include="CacheTabsBehavior.cs" />
+    <Compile Include="Controls\FakeMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\FakeMenu.Designer.cs">
+      <DependentUpon>FakeMenu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Samples\CalendarSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -100,6 +106,15 @@
     <Compile Include="ImagingUtils.cs" />
     <Compile Include="ProgressInfo.cs" />
     <Compile Include="ControlComparisonViewModel.cs" />
+    <Compile Include="Samples\CombinedSampleNative.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Samples\CombinedSampleNative.Designer.cs">
+      <DependentUpon>CombinedSampleNative.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\CombinedSampleWpf.xaml.cs">
+      <DependentUpon>CombinedSampleWpf.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Samples\GroupBoxSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -295,6 +310,9 @@
     <EmbeddedResource Include="Samples\CalendarSampleNative.resx">
       <DependentUpon>CalendarSampleNative.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Samples\CombinedSampleNative.resx">
+      <DependentUpon>CombinedSampleNative.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Samples\GroupBoxSampleNative.resx">
       <DependentUpon>GroupBoxSampleNative.cs</DependentUpon>
     </EmbeddedResource>
@@ -355,6 +373,10 @@
     <Page Include="Samples\CalendarSampleWpf.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Samples\CombinedSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Samples\GroupBoxSampleWpf.xaml">
       <Generator>MSBuild:Compile</Generator>

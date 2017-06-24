@@ -1,6 +1,7 @@
 namespace ThemeCore.Native
 {
     using System;
+    using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms.VisualStyles;
@@ -72,11 +73,11 @@ namespace ThemeCore.Native
             int iStateId,
             [In] CRECT pContentRect);
 
-        [DllImport("uxtheme", CharSet = CharSet.Auto)]
+        [DllImport("uxtheme", CharSet = CharSet.Unicode)]
         public static extern int DrawThemeText(
-            HandleRef hTheme, HandleRef hdc, int iPartId, int iStateId,
-            [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount,
-            int dwTextFlags, int dwTextFlags2, [In] CRECT pRect);
+            SafeThemeHandle hTheme, HandleRef hdc, int iPartId, int iStateId,
+            string pszText, int iCharCount, int dwTextFlags, int dwTextFlags2,
+            [In] CRECT pRect);
 
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern int GetThemeRect(
@@ -115,7 +116,7 @@ namespace ThemeCore.Native
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern bool IsAppThemed();
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
-        public static extern bool IsThemeBackgroundPartiallyTransparent(HandleRef hTheme, int iPartId, int iStateId);
+        public static extern bool IsThemeBackgroundPartiallyTransparent(SafeThemeHandle hTheme, int iPartId, int iStateId);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern bool IsThemePartDefined(HandleRef hTheme, int iPartId, int iStateId);
 
@@ -147,7 +148,7 @@ namespace ThemeCore.Native
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern int GetThemeMargins(HandleRef hTheme, HandleRef hDC, int iPartId, int iStateId, int iPropId, ref MARGINS margins);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
-        public static extern int GetThemePartSize(HandleRef hTheme, HandleRef hdc, int iPartId, int iStateId, [In] CRECT prc, ThemeSizeType eSize, [Out] SIZE psz);
+        public static extern int GetThemePartSize(HandleRef hTheme, HandleRef hdc, int iPartId, int iStateId, [In] CRECT prc, ThemeSize eSize, [Out] SIZE psz);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern int GetThemePosition(HandleRef hTheme, int iPartId, int iStateId, int iPropId, [Out] out POINT pPoint);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
@@ -157,7 +158,7 @@ namespace ThemeCore.Native
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern int GetThemeSysInt(HandleRef hTheme, int iIntId, ref int piValue);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
-        public static extern int GetThemeTextExtent(HandleRef hTheme, HandleRef hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, int dwTextFlags, [In] CRECT pBoundingRect, [Out] CRECT pExtentRect);
+        public static extern int GetThemeTextExtent(SafeThemeHandle hTheme, HandleRef hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, int dwTextFlags, [In] CRECT pBoundingRect, [Out] out Rectangle pExtentRect);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern int GetThemeTextMetrics(HandleRef hTheme, HandleRef hdc, int iPartId, int iStateId, ref TextMetrics ptm);
 
@@ -200,6 +201,9 @@ namespace ThemeCore.Native
         public static extern HResult GetThemeString(SafeThemeHandle hTheme, int iPartId, int iStateId, int iPropId, StringBuilder pszBuff, int cchMaxBuffChars);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern HResult GetThemeSysString(SafeThemeHandle hTheme, int iStringID, StringBuilder pszStringBuff, int cchMaxStringChars);
+        [DllImport("uxtheme", CharSet = CharSet.Auto)]
+        public static extern HResult GetThemePartSize(
+            SafeThemeHandle hTheme, IntPtr hdc, int iPartId, int iStateId, CRECT prc, ThemeSize eSize, out Size psz);
         [DllImport("uxtheme", CharSet = CharSet.Auto)]
         public static extern HResult GetThemePartSize(
             SafeThemeHandle hTheme, IntPtr hdc, int iPartId, int iStateId, CRECT prc, ThemeSize eSize, out SIZE psz);

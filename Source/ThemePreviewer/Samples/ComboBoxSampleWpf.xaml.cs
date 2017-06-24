@@ -5,7 +5,6 @@ namespace ThemePreviewer.Samples
         public ComboBoxSampleWpf()
         {
             InitializeComponent();
-            DataContext = this;
         }
     }
 }

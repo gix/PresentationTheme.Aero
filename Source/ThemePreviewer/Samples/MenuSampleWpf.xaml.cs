@@ -27,7 +27,6 @@
                 IsChecked = node.IsChecked,
                 InputGestureText = node.InputGestureText
             };
-            ScrollViewer.SetCanContentScroll(item, false);
             foreach (var childNode in node.Children)
                 item.Items.Add(BuildMenu(childNode));
             return item;

@@ -24,7 +24,7 @@
         [DefaultValue(false)]
         public bool Tabs
         {
-            get { return tabs; }
+            get => tabs;
             set
             {
                 if (Tabs != value) {

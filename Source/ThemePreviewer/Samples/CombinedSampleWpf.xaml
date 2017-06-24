@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="ThemePreviewer.Samples.CombinedSampleWpf"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:samples="clr-namespace:ThemePreviewer.Samples"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="600">
+  <Grid>
+    <TabControl Width="220" Height="400" HorizontalAlignment="Left" VerticalAlignment="Top">
+      <TabItem Header="Tab">
+        <Grid>
+          <Button HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,3,0,0" Width="75" Height="23" Content="Button"/>
+          <TextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="84,3,0,0" Width="100" Height="23" Text="TextBox"/>
+          <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,32,0,0" IsChecked="True">RadioButton</RadioButton>
+          <CheckBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,57,0,0" IsChecked="True">CheckBox</CheckBox>
+          <GroupBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="109,32,0,0" Width="75" Height="45" Header="Group"/>
+          <Slider HorizontalAlignment="Left" VerticalAlignment="Top" Margin="109,82,0,0" Width="75" Height="45" TickPlacement="BottomRight"/>
+          <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,82,0,0" Width="100" Height="23" SelectedIndex="0">
+            <ComboBoxItem>ComboBox</ComboBoxItem>
+          </ComboBox>
+          <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,111,0,0" Width="100" Height="23" IsEditable="True" Text="ComboBox"/>
+          <ScrollBar HorizontalAlignment="Left" VerticalAlignment="Top" Margin="187,3,0,0" Height="131" Orientation="Vertical" ViewportSize="22" Maximum="100"/>
+          <ListView HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,140,0,0" Width="200" Height="75">
+            <ListView.View>
+              <GridView>
+                <GridView.Columns>
+                  <GridViewColumn Header="Header" Width="60" DisplayMemberBinding="{Binding [0]}"/>
+                  <GridViewColumn Header="Header 2" Width="60" DisplayMemberBinding="{Binding [1]}"/>
+                </GridView.Columns>
+              </GridView>
+            </ListView.View>
+            <x:Array Type="{x:Type system:String}">
+              <system:String>Red</system:String>
+              <system:String>10</system:String>
+            </x:Array>
+            <x:Array Type="{x:Type system:String}">
+              <system:String>Green</system:String>
+              <system:String>20</system:String>
+            </x:Array>
+          </ListView>
+          <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,221,0,0" Width="200" Height="131">
+            <Menu>
+              <samples:MenuItemEx Header="File" x:Name="fileMenuItem">
+                <samples:MenuItemEx Header="New" x:Name="newMenuItem">
+                  <MenuItem/>
+                </samples:MenuItemEx>
+                <MenuItem Header="Open" IsChecked="True">
+                  <MenuItem/>
+                </MenuItem>
+                <MenuItem Header="Recent files" IsChecked="True" IsEnabled="False">
+                  <MenuItem/>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Exit" InputGestureText="Alt+F4"/>
+              </samples:MenuItemEx>
+              <MenuItem Header="Edit">
+                <MenuItem/>
+              </MenuItem>
+            </Menu>
+            <Border x:Name="menuPopupContainer" Margin="0,-1,0,0"/>
+          </StackPanel>
+        </Grid>
+      </TabItem>
+      <TabItem Header="Tab 2"></TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>
+
+
+

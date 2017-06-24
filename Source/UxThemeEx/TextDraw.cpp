@@ -425,7 +425,6 @@ HRESULT CTextDraw::DrawTextW(
         } else {
             hr = 0;
         }
-
     }
 
 done:

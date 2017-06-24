@@ -1590,6 +1590,31 @@ THEMEEXAPI UxDrawThemeBackground(
     CDrawBase* partObj;
     ENSURE_HR(renderObj->GetPartObject(iPartId, iStateId, &partObj));
 
+#if 0
+    std::array<unsigned, 18> colors = {
+        0x0000FF,
+        0x00FF00,
+        0xFF0000,
+        0x00FFFF,
+        0xFFFF00,
+        0xFF00FF,
+        0x0000AA,
+        0x00AA00,
+        0xAA0000,
+        0x00AAAA,
+        0xAAAA00,
+        0xAA00AA,
+        0x000066,
+        0x006600,
+        0x660000,
+        0x006666,
+        0x666600,
+        0x660066,
+    };
+    FillRectClr(hdc, pRect, colors[(iPartId * 10 + iStateId) % colors.size()]);
+    return S_OK;
+#endif
+
     DTBGOPTS options = {};
     DTBGOPTS* pOptions = nullptr;
     if (pClipRect) {

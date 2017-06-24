@@ -11,6 +11,11 @@
         private int selectionStart;
         private int selectionEnd;
 
+        public TrackBarEx()
+        {
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+        }
+
         protected override CreateParams CreateParams
         {
             get
@@ -22,6 +27,13 @@
                     cp.Style |= NativeMethods.TBS_ENABLESELRANGE;
                 return cp;
             }
+        }
+
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            if (Parent != null)
+                BackColor = Parent.BackColor;
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -37,7 +49,7 @@
         [DefaultValue(false)]
         public bool HideThumb
         {
-            get { return hideThumb; }
+            get => hideThumb;
             set
             {
                 if (HideThumb != value) {

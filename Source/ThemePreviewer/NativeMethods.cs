@@ -18,8 +18,9 @@ namespace ThemePreviewer
         public const int WM_CREATE = 0x1;
         public const int WM_PAINT = 0x000F;
         public const int WM_NOTIFY = 0x004E;
-        public const int WM_USER = 0x400;
+        public const int WM_CTLCOLORSTATIC = 0x138;
         public const int WM_THEMECHANGED = 0x31A;
+        public const int WM_USER = 0x400;
 
         public const int WS_OVERLAPPED = 0x00000000;
         public const int WS_POPUP = unchecked((int)0x80000000);
@@ -325,10 +326,25 @@ namespace ThemePreviewer
         public static extern unsafe bool IntersectRect(
             out RECT lprcDst, RECT* lprcSrc1, RECT* lprcSrc2);
 
-        [DllImport("gdi")]
+        [DllImport("gdi32")]
         public static extern unsafe bool ExtTextOut(
             IntPtr hdc, int X, int Y, uint fuOptions, ref RECT lprc,
             string lpString, uint cbCount, int* lpDx);
+
+        [DllImport("gdi32")]
+        public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+
+        [DllImport("gdi32")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        [DllImport("user32", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern int GetSysColor(SysColor nIndex);
+
+        [DllImport("user32", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern IntPtr GetSysColorBrush(SysColor nIndex);
+
+        [DllImport("gdi32", SetLastError = true, ExactSpelling = true)]
+        public static extern IntPtr CreateSolidBrush(int crColor);
     }
 
     public enum ProgressBarState
@@ -338,9 +354,49 @@ namespace ThemePreviewer
         Paused = 3,
     }
 
-    enum BkMode
+    public enum BkMode
     {
         Opaque = 0,
         Transparent = 1,
+    }
+
+    public enum SysColor
+    {
+        COLOR_SCROLLBAR = 0,
+        COLOR_BACKGROUND = 1,
+        COLOR_ACTIVECAPTION = 2,
+        COLOR_INACTIVECAPTION = 3,
+        COLOR_MENU = 4,
+        COLOR_WINDOW = 5,
+        COLOR_WINDOWFRAME = 6,
+        COLOR_MENUTEXT = 7,
+        COLOR_WINDOWTEXT = 8,
+        COLOR_CAPTIONTEXT = 9,
+        COLOR_ACTIVEBORDER = 10,
+        COLOR_INACTIVEBORDER = 11,
+        COLOR_APPWORKSPACE = 12,
+        COLOR_HIGHLIGHT = 13,
+        COLOR_HIGHLIGHTTEXT = 14,
+        COLOR_BTNFACE = 15,
+        COLOR_BTNSHADOW = 16,
+        COLOR_GRAYTEXT = 17,
+        COLOR_BTNTEXT = 18,
+        COLOR_INACTIVECAPTIONTEXT = 19,
+        COLOR_BTNHIGHLIGHT = 20,
+        COLOR_3DDKSHADOW = 21,
+        COLOR_3DLIGHT = 22,
+        COLOR_INFOTEXT = 23,
+        COLOR_INFOBK = 24,
+        COLOR_HOTLIGHT = 26,
+        COLOR_GRADIENTACTIVECAPTION = 27,
+        COLOR_GRADIENTINACTIVECAPTION = 28,
+        COLOR_MENUHILIGHT = 29,
+        COLOR_MENUBAR = 30,
+        COLOR_DESKTOP = COLOR_BACKGROUND,
+        COLOR_THREEDFACE = COLOR_BTNFACE,
+        COLOR_3DSHADOW = COLOR_BTNSHADOW,
+        COLOR_3DHIGHLIGHT = COLOR_BTNHIGHLIGHT,
+        COLOR_3DHILIGHT = COLOR_BTNHIGHLIGHT,
+        COLOR_BTNHILIGHT = COLOR_BTNHIGHLIGHT,
     }
 }
