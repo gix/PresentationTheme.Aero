@@ -47,6 +47,7 @@
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="EqualsConverter.cs" />
     <Compile Include="LayoutHelper.cs" />
+    <Compile Include="MenuScrollingEnabledConverter.cs" />
     <Compile Include="ProgressBarChrome.cs" />
     <Compile Include="RoundingTabPanel.cs" />
     <Compile Include="ScrollBarChrome.cs" />

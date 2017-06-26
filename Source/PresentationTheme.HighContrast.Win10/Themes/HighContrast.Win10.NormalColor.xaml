@@ -1663,9 +1663,39 @@
 
   <!-- Menu ================================================================ -->
 
-  <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
-  <Geometry x:Key="Menu.DownArrowGlyph">M 0,0 3.5,4 7,0 z</Geometry>
-  <Geometry x:Key="Menu.UpArrowGlyph">M 0,4 3.5,0 7,4 z</Geometry>
+  <aero10:MenuScrollingEnabledConverter x:Key="MenuScrollingEnabledConverter"/>
+  <DrawingImage x:Key="Menu.UpArrowGlyph">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="Transparent" Geometry="M 0,0 10,0 10,6 0,6 z"/>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Geometry="M 0,5 4.5,0 9,5 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="Menu.UpArrowGlyphDisabled">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Geometry="M 1,6 5.5,1 10,6 z"/>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Geometry="M 0,5 4.5,0 9,5 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="Menu.DownArrowGlyph">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="Transparent" Geometry="M 0,0 10,0 10,6 0,6 z"/>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" Geometry="M 0,0 4.5,5 9,0 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+  <DrawingImage x:Key="Menu.DownArrowGlyphDisabled">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}" Geometry="M 1,1 5.5,6 10,1 z"/>
+        <GeometryDrawing Brush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" Geometry="M 0,0 4.5,5 9,0 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
   <Geometry x:Key="Menu.PopupSubmenu.Glyph">M 0,-0.5 3.5,3 0,6.5 -0.5,6 2.5,3 -0.5,0 z</Geometry>
   <Geometry x:Key="Menu.CheckmarkGlyph">F1 M 3.5,7 7.5,13 12.5,3 12,1.5 7.5,9 5.5,7 z</Geometry>
 
@@ -1681,20 +1711,57 @@
     </Border>
   </ControlTemplate>
 
-  <Style x:Key="MenuScrollButton" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
+  <Style x:Key="MenuScrollUpButton" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
     <Setter Property="ClickMode" Value="Hover"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type RepeatButton}">
-          <Border x:Name="TemplateRoot"
-                  SnapsToDevicePixels="True"
-                  Background="Transparent"
-                  BorderBrush="Transparent"
-                  BorderThickness="1">
-            <ContentPresenter Margin="6"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"/>
+          <Border SnapsToDevicePixels="True" Background="Transparent">
+            <!-- NB: The Windows kernel renders the scroll buttons using the
+                 Marlett font but using a geometry is easier. -->
+            <Image x:Name="Glyph"
+                   Source="{StaticResource Menu.UpArrowGlyph}"
+                   Width="10"
+                   Height="6"
+                   Margin="18,5,18,6"
+                   Stretch="None"
+                   RenderOptions.EdgeMode="Aliased"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"/>
           </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource Menu.UpArrowGlyphDisabled}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="MenuScrollDownButton" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
+    <Setter Property="ClickMode" Value="Hover"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type RepeatButton}">
+          <Border SnapsToDevicePixels="True" Background="Transparent">
+            <!-- NB: The Windows kernel renders the scroll buttons using the
+                 Marlett font but using a geometry is easier. -->
+            <Image x:Name="Glyph"
+                   Source="{StaticResource Menu.DownArrowGlyph}"
+                   Width="10"
+                   Height="6"
+                   Margin="18,7,18,4"
+                   Stretch="None"
+                   RenderOptions.EdgeMode="Aliased"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource Menu.DownArrowGlyphDisabled}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -1719,42 +1786,40 @@
             <ScrollContentPresenter Grid.Row="1"
                                     Margin="{TemplateBinding Padding}"
                                     CanContentScroll="{TemplateBinding CanContentScroll}"/>
-            <RepeatButton Style="{StaticResource MenuScrollButton}"
+            <RepeatButton Style="{StaticResource MenuScrollUpButton}"
                           Command="{x:Static ScrollBar.LineUpCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                          Focusable="False">
-              <RepeatButton.Visibility>
-                <MultiBinding ConverterParameter="0"
-                              Converter="{StaticResource MenuScrollingVisibilityConverter}"
-                              FallbackValue="Visibility.Collapsed">
-                  <Binding Path="ComputedVerticalScrollBarVisibility"
-                           RelativeSource="{RelativeSource TemplatedParent}"/>
+                          Focusable="False"
+                          Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
+              <RepeatButton.IsEnabled>
+                <MultiBinding Converter="{StaticResource MenuScrollingEnabledConverter}"
+                              ConverterParameter="0">
+                  <MultiBinding.FallbackValue>
+                    <system:Boolean>False</system:Boolean>
+                  </MultiBinding.FallbackValue>
                   <Binding Path="VerticalOffset" RelativeSource="{RelativeSource TemplatedParent}"/>
                   <Binding Path="ExtentHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                   <Binding Path="ViewportHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                 </MultiBinding>
-              </RepeatButton.Visibility>
-              <Path Data="{StaticResource Menu.UpArrowGlyph}"
-                    Fill="{aero10:SystemAliasResource Menu.PopupItem.Normal.Foreground}"/>
+              </RepeatButton.IsEnabled>
             </RepeatButton>
             <RepeatButton Grid.Row="2"
-                          Style="{StaticResource MenuScrollButton}"
+                          Style="{StaticResource MenuScrollDownButton}"
                           Command="{x:Static ScrollBar.LineDownCommand}"
                           CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                          Focusable="False">
-              <RepeatButton.Visibility>
-                <MultiBinding ConverterParameter="100"
-                              Converter="{StaticResource MenuScrollingVisibilityConverter}"
-                              FallbackValue="Visibility.Collapsed">
-                  <Binding Path="ComputedVerticalScrollBarVisibility"
-                           RelativeSource="{RelativeSource TemplatedParent}"/>
+                          Focusable="False"
+                          Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}">
+              <RepeatButton.IsEnabled>
+                <MultiBinding Converter="{StaticResource MenuScrollingEnabledConverter}"
+                              ConverterParameter="100">
+                  <MultiBinding.FallbackValue>
+                    <system:Boolean>False</system:Boolean>
+                  </MultiBinding.FallbackValue>
                   <Binding Path="VerticalOffset" RelativeSource="{RelativeSource TemplatedParent}"/>
                   <Binding Path="ExtentHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                   <Binding Path="ViewportHeight" RelativeSource="{RelativeSource TemplatedParent}"/>
                 </MultiBinding>
-              </RepeatButton.Visibility>
-              <Path Data="{StaticResource Menu.DownArrowGlyph}"
-                    Fill="{aero10:SystemAliasResource Menu.PopupItem.Normal.Foreground}"/>
+              </RepeatButton.IsEnabled>
             </RepeatButton>
           </Grid>
         </ControlTemplate>
@@ -2282,6 +2347,7 @@
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
     <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
     <Setter Property="Template"
             Value="{DynamicResource {ComponentResourceKey {x:Type MenuItem}, SubmenuItemTemplateKey}}"/>
