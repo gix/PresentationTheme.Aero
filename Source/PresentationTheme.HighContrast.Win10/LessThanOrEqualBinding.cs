@@ -9,6 +9,7 @@ namespace PresentationTheme.HighContrast.Win10
     ///   Creates a <see cref="Binding"/> that evaluates whether a specific property
     ///   is less than or equal to a specified <see cref="Threshold"/>.
     /// </summary>
+    [ValueConversion(typeof(double), typeof(bool))]
     public class LessThanOrEqualBinding : MarkupExtension, IValueConverter
     {
         /// <summary>

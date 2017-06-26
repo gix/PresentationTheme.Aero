@@ -6,6 +6,7 @@
     using System.Windows.Data;
 
     /// <summary>A converter that inverts a <see cref="Thickness"/> value.</summary>
+    [ValueConversion(typeof(Thickness), typeof(Thickness))]
     public sealed class InvertThicknessConverter : IValueConverter
     {
         /// <summary>Inverts a <see cref="Thickness"/> value.</summary>

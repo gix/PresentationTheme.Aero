@@ -10,6 +10,9 @@ namespace PresentationTheme.Aero.Win10
     ///   Converts a <see cref="DataGridGridLinesVisibility"/> to a
     ///   <see cref="Visibility"/>.
     /// </summary>
+    [ValueConversion(
+        typeof(DataGridGridLinesVisibility), typeof(Visibility),
+        ParameterType = typeof(DataGridGridLinesVisibility))]
     public sealed class DataGridLinesVisibilityConverter : IValueConverter
     {
         /// <summary>

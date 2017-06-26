@@ -10,6 +10,7 @@
     ///   Converts a <see cref="TreeViewItem"/> to its level in the hierarchy of
     ///   its <see cref="TreeView"/>.
     /// </summary>
+    [ValueConversion(typeof(TreeViewItem), typeof(int), ParameterType = typeof(int))]
     public class TreeViewItemLevelConverter : DependencyObject, IValueConverter
     {
         /// <summary>

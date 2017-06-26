@@ -5,6 +5,7 @@ namespace PresentationTheme.AeroLite.Win10
     using System.Windows.Data;
 
     /// <summary>Converts a value to its <see cref="Type"/>.</summary>
+    [ValueConversion(typeof(object), typeof(Type))]
     public sealed class TypeOfConverter : IValueConverter
     {
         /// <summary>Converts a value to its <see cref="Type"/>.</summary>
