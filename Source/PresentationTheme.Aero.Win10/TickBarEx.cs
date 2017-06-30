@@ -207,6 +207,8 @@
 
                 // Draw Selection Ticks
                 if (IsSelectionRangeEnabled) {
+                    var tickFill = SelectionTickBrush;
+
                     double y0 = (SelectionStart - Minimum) * logicalToPhysical + startPoint.Y;
                     Point pt0 = new Point(startPoint.X, y0);
                     Point pt1 = new Point(startPoint.X + tickLen2, y0);
@@ -218,7 +220,7 @@
                     };
                     PathGeometry geo = new PathGeometry(new[] { new PathFigure(pt1, segments, true) });
 
-                    dc.DrawGeometry(Fill, pen, geo);
+                    dc.DrawGeometry(tickFill, null, geo);
 
                     y0 = (SelectionEnd - Minimum) * logicalToPhysical + startPoint.Y;
                     pt0 = new Point(startPoint.X, y0);
@@ -230,7 +232,7 @@
                         new LineSegment(pt0, true),
                     };
                     geo = new PathGeometry(new[] { new PathFigure(pt1, segments, true) });
-                    dc.DrawGeometry(Fill, pen, geo);
+                    dc.DrawGeometry(tickFill, null, geo);
                 }
             } else {
                 // Placement == Top || Placement == Bottom
