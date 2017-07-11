@@ -276,6 +276,22 @@
   <Style TargetType="{x:Type TextBox}"
          BasedOn="{StaticResource {x:Type TextBoxBase}}"/>
 
+  <Style TargetType="{x:Type Hyperlink}">
+    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
+    <Setter Property="TextDecorations" Value="Underline"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="Red"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="True">
+        <Setter Property="Cursor" Value="Hand"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
   <Style TargetType="{x:Type RichTextBox}"
            BasedOn="{StaticResource {x:Type TextBoxBase}}">
     <Style.Resources>

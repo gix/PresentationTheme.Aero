@@ -54,6 +54,7 @@
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="PresentationFramework.Royale" />
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -114,6 +115,9 @@
     </Compile>
     <Compile Include="Samples\CombinedSampleWpf.xaml.cs">
       <DependentUpon>CombinedSampleWpf.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\DocumentSample.xaml.cs">
+      <DependentUpon>DocumentSample.xaml</DependentUpon>
     </Compile>
     <Compile Include="Samples\GroupBoxSampleNative.cs">
       <SubType>UserControl</SubType>
@@ -375,6 +379,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Samples\CombinedSampleWpf.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Samples\DocumentSample.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

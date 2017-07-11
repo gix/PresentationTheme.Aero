@@ -59,7 +59,23 @@
       <Setter Property="Padding" Value="2"/>
       <Setter Property="Margin" Value="0,0,0,2"/>
     </Style>
+    <Style x:Key="LinkButtonFocusStyle">
+      <Setter Property="Control.Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Border>
+              <Rectangle SnapsToDevicePixels="True"
+                         Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                         StrokeThickness="1"
+                         StrokeDashArray="1 1"
+                         StrokeDashOffset="1.5"/>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <Style x:Key="LinkButton" TargetType="{x:Type Button}">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource LinkButtonFocusStyle}"/>
       <Setter Property="Foreground" Value="#FF0066CC"/>
       <Setter Property="Template">
         <Setter.Value>
@@ -71,6 +87,7 @@
       </Setter>
     </Style>
     <Style x:Key="LinkToggleButton" TargetType="{x:Type ToggleButton}">
+      <Setter Property="FocusVisualStyle" Value="{StaticResource LinkButtonFocusStyle}"/>
       <Setter Property="Foreground" Value="#FF0066CC"/>
       <Setter Property="Template">
         <Setter.Value>

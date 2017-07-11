@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="ThemePreviewer.Samples.DocumentSample"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ThemePreviewer.Samples"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="300">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <DocumentViewer x:Name="documentViewer">
+      
+    </DocumentViewer>
+    <FlowDocumentReader Grid.Row="1">
+      <FlowDocument>
+        <Paragraph>
+          Paragraph
+          <Bold>Bold</Bold>
+          <Italic>Italic</Italic>
+          <Underline>Underline</Underline>
+          <Hyperlink>Hyperlink</Hyperlink>
+          <Floater>
+            <Paragraph>Floater</Paragraph>
+          </Floater>
+        </Paragraph>
+        <List>
+          <ListItem>
+            <Paragraph>First</Paragraph>
+          </ListItem>
+          <ListItem>
+            <Paragraph>Second</Paragraph>
+          </ListItem>
+          <ListItem>
+            <Paragraph>Third</Paragraph>
+          </ListItem>
+        </List>
+      </FlowDocument>
+    </FlowDocumentReader>
+  </Grid>
+</UserControl>

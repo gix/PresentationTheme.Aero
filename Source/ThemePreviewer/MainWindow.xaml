@@ -12,7 +12,7 @@
         Title="{Binding Title}"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
-        Width="1250"
+        Width="1300"
         Height="701"
         IsEnabled="{Binding IsEnabled}"
         x:Name="Root">

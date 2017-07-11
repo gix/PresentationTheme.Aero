@@ -93,9 +93,9 @@ namespace ThemePreviewer
         {
             await dispatcher.InvokeAsync(() => {
                 if (resourceUri != null)
-                    ThemeHelper.SetPresentationFrameworkTheme(resourceUri);
+                    ThemeManager.SetPresentationFrameworkTheme(resourceUri);
                 else
-                    ThemeHelper.ClearPresentationFrameworkTheme();
+                    ThemeManager.ClearPresentationFrameworkTheme();
                 UxThemeExNativeMethods.UxBroadcastThemeChange();
             }, DispatcherPriority.ContextIdle);
         }

@@ -29,9 +29,10 @@
             NativeThemeInfo nativeTheme;
             SelectThemes(opts, themeInfoProvider, out wpfTheme, out nativeTheme);
 
+            ThemeManager.Install();
             if (wpfTheme != null) {
                 var uri = wpfTheme.ResourceUri;
-                if (!ThemeHelper.SetPresentationFrameworkTheme(uri))
+                if (!ThemeManager.SetPresentationFrameworkTheme(uri))
                     MessageBox.Show($"Failed to load {uri}.");
             }
 

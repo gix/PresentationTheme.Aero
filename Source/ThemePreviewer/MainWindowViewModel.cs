@@ -69,6 +69,7 @@
             Pages.Add(ControlComparisonViewModel.Create<MiscSampleNative, MiscSampleWpf>("Misc"));
             Pages.Add(ControlComparisonViewModel.Create<System.Windows.Forms.UserControl, ExpanderSampleWpf>("Expander"));
             Pages.Add(ControlComparisonViewModel.Create<CombinedSampleNative, CombinedSampleWpf>("All"));
+            Pages.Add(ControlComparisonViewModel.Create<System.Windows.Forms.UserControl, DocumentSample>("Doc"));
             Pages.Add(new ColorList());
             CurrentPage = Pages[0];
 

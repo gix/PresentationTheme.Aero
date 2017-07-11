@@ -11,9 +11,9 @@ namespace PresentationTheme.Aero
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Use the policy by passing <see cref="GetCurrentThemeResourceUri"/>
-    ///     as delegate to
-    ///     <see cref="ThemeHelper.SetPresentationFrameworkTheme(Func{Uri})"/>.
+    ///     Use the policy by passing <see cref="GetCurrentThemeUri"/> it to
+    ///     <see cref="ThemeManager.SetPresentationFrameworkTheme(IThemePolicy)"/>
+    ///     or <see cref="ThemeManager.SetTheme(Assembly,IThemePolicy)"/>.
     ///   </para>
     ///   <para>
     ///     The policy chooses the following theme resource assemblies:
@@ -39,8 +39,10 @@ namespace PresentationTheme.Aero
     ///     </list>
     ///   </para>
     /// </remarks>
-    public class AeroThemePolicy
+    public class AeroThemePolicy : IThemePolicy
     {
+        bool IThemePolicy.MergeWithBaseResources => true;
+
         /// <summary>
         ///   Builds the pack <see cref="Uri"/> for the theme resources matching
         ///   the current system theme and Windows version.
@@ -50,7 +52,7 @@ namespace PresentationTheme.Aero
         ///   with the theme resources. Returns <see langword="null"/> if the
         ///   current system theme or Windows version are not supported.
         /// </returns>
-        public virtual Uri GetCurrentThemeResourceUri()
+        public virtual Uri GetCurrentThemeUri()
         {
             var osVersion = GetRealWindowsVersion();
             string uxThemeName = SystemParameters.UxThemeName;
@@ -137,7 +139,7 @@ namespace PresentationTheme.Aero
             public byte wReserved;
         }
 
-        private static Version GetRealWindowsVersion()
+        internal static Version GetRealWindowsVersion()
         {
             var version = new RTL_OSVERSIONINFOEXW {
                 dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(RTL_OSVERSIONINFOEXW))
