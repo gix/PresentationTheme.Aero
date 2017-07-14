@@ -90,6 +90,7 @@ namespace PresentationTheme.Aero.Win10
             }
         }
 
+        /// <inheritdoc/>
         protected override Size MeasureOverride(Size constraint)
         {
             Size contentSize = new Size();
@@ -169,6 +170,7 @@ namespace PresentationTheme.Aero.Win10
             return contentSize;
         }
 
+        /// <inheritdoc/>
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             switch (TabStripPlacement) {
@@ -208,11 +210,6 @@ namespace PresentationTheme.Aero.Win10
                 if (tabAlignment == Dock.Bottom && activeRow != 0)
                     childOffset.Y = (rowCount - activeRow) * rowHeight;
             }
-
-            bool useLayoutRounding = UseLayoutRounding;
-            double dpiScale = 1;
-            if (useLayoutRounding)
-                dpiScale = LayoutHelper.GetDpiX(this);
 
             int childIndex = 0;
             int separatorIndex = 0;
@@ -366,7 +363,7 @@ namespace PresentationTheme.Aero.Win10
             int numSeparators = rowCount - 1;
             double currentRowWidth = 0;
             int numberOfHeadersInCurrentRow = 0;
-            double currentAverageGap = 0;
+            double currentAverageGap;
             int[] currentSolution = new int[numSeparators];
             int[] bestSolution = new int[numSeparators];
             int[] rowHeaderCount = new int[rowCount];

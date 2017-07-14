@@ -50,7 +50,7 @@
         /// </param>
         /// <returns>
         ///   <see langword="true"/> if the <paramref name="values"/> indicate a
-        ///   scrolled percentage that equals the target <see cref="parameter"/>;
+        ///   scrolled percentage that equals the target <paramref name="parameter"/>;
         ///   otherwise <see langword="false"/>.
         /// </returns>
         public object Convert(
