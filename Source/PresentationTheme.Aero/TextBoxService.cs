@@ -93,51 +93,53 @@
 
         private static void Attach(TextBox textBox)
         {
-            TemplatePropertyDescriptor.AddValueChanged(
-                textBox, OnTextBoxTemplateChanged);
-            ApplyMargin(textBox);
+            textBox.Loaded += OnTextBoxLoaded;
+            textBox.Unloaded += OnTextBoxUnloaded;
+            if (textBox.IsLoaded)
+                ApplyMargin(textBox);
         }
 
         private static void Detach(TextBox textBox)
         {
-            TemplatePropertyDescriptor.RemoveValueChanged(
-                textBox, OnTextBoxTemplateChanged);
+            textBox.Unloaded -= OnTextBoxUnloaded;
             textBox.Loaded -= OnTextBoxLoaded;
-        }
-
-        private static void OnTextBoxTemplateChanged(object sender, EventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            ApplyMargin(textBox);
-        }
-
-        private static void ApplyMargin(TextBox textBox)
-        {
-            if (textBox.IsLoaded)
-                DoApplyMargin(textBox);
-            else
-                textBox.Loaded += OnTextBoxLoaded;
         }
 
         private static void OnTextBoxLoaded(object sender, RoutedEventArgs args)
         {
             var textBox = (TextBox)sender;
-            textBox.Loaded -= OnTextBoxLoaded;
-            DoApplyMargin(textBox);
+            TemplatePropertyDescriptor.AddValueChanged(
+                textBox, OnTextBoxTemplateChanged);
+            ApplyMargin(textBox);
         }
 
-        private static void DoApplyMargin(TextBox textBox, bool mayDefer = true)
+        private static void OnTextBoxUnloaded(object sender, RoutedEventArgs args)
+        {
+            var textBox = (TextBox)sender;
+            TemplatePropertyDescriptor.RemoveValueChanged(
+                textBox, OnTextBoxTemplateChanged);
+            ApplyMargin(textBox);
+        }
+
+        private static void OnTextBoxTemplateChanged(object sender, EventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (textBox.IsLoaded)
+                ApplyMargin(textBox);
+        }
+
+        private static void ApplyMargin(TextBox textBox, bool mayDefer = true)
         {
             var contentHost = textBox.Template.FindName("PART_ContentHost", textBox) as ScrollViewer;
             if (contentHost != null) {
                 if (contentHost.HasContent)
-                    DoApplyMargin(contentHost);
+                    ApplyMargin(contentHost);
                 else
                     ContentPropertyDescriptor.AddValueChanged(
                         contentHost, OnContentHostContentChanged);
             } else if (mayDefer) {
                 textBox.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => {
-                    DoApplyMargin(textBox, false);
+                    ApplyMargin(textBox, false);
                 }));
             }
         }
@@ -147,10 +149,10 @@
             var contentHost = (ScrollViewer)sender;
             ContentPropertyDescriptor.RemoveValueChanged(
                 contentHost, OnContentHostContentChanged);
-            DoApplyMargin(contentHost);
+            ApplyMargin(contentHost);
         }
 
-        private static void DoApplyMargin(ScrollViewer contentHost)
+        private static void ApplyMargin(ScrollViewer contentHost)
         {
             var textBox = contentHost.FindAncestor<TextBox>();
             var element = contentHost.Content as FrameworkElement;

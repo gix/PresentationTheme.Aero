@@ -21,5 +21,13 @@
     <TextBox Width="150" HorizontalAlignment="Left" Margin="3" BorderThickness="5" Text="Foo" IsReadOnly="True"/>
     <TextBox Width="150" HorizontalAlignment="Left" Margin="3" BorderThickness="5" Text="Foo" IsEnabled="False"/>
     <TextBox Width="150" HorizontalAlignment="Left" Margin="3" Padding="5,10" Text="Padded"/>
+    <TabControl Width="150" HorizontalAlignment="Left" Margin="3">
+      <TabItem Header="A">
+        <TextBox Text="Foo"/>
+      </TabItem>
+      <TabItem Header="B">
+        <TextBox Text="Bar"/>
+      </TabItem>
+    </TabControl>
   </StackPanel>
 </UserControl>
