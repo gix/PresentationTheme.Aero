@@ -459,14 +459,12 @@
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate>
-          <Border Margin="{Binding AdornedElement.Padding, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Adorner}}}">
-            <Rectangle Margin="15,1,1,2"
-                       SnapsToDevicePixels="True"
-                       Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                       StrokeThickness="1"
-                       StrokeDashArray="1 1"
-                       StrokeDashOffset="1.5"/>
-          </Border>
+          <Rectangle Margin="15,1,1,2"
+                     SnapsToDevicePixels="True"
+                     Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                     StrokeThickness="1"
+                     StrokeDashArray="1 1"
+                     StrokeDashOffset="1.5"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
@@ -481,11 +479,12 @@
   </Geometry>
 
   <Style TargetType="{x:Type CheckBox}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkEmptyFocusVisual}"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource CheckBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource CheckBox.Border.Normal}"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="3,2,2,3"/>
     <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -509,7 +508,7 @@
             <ContentPresenter x:Name="Content"
                               RecognizesAccessKey="True"
                               Grid.Column="1"
-                              Margin="0"
+                              Margin="{TemplateBinding Padding}"
                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -531,9 +530,9 @@
               <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource CheckBox.Background.Disabled}"/>
               <Setter TargetName="Mark" Property="Fill" Value="{aero10:SystemAliasResource CheckBox.Mark.Disabled}"/>
             </Trigger>
-            <Trigger Property="HasContent" Value="True">
-              <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
-              <Setter TargetName="Content" Property="Margin" Value="3,2,2,3"/>
+            <Trigger Property="HasContent" Value="False">
+              <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkEmptyFocusVisual}"/>
+              <Setter Property="Padding" Value="0"/>
             </Trigger>
             <Trigger Property="TextOptions.TextFormattingMode" Value="Display">
               <Setter TargetName="Border" Property="Margin" Value="0,-1,0,0"/>
@@ -560,11 +559,12 @@
   <!-- RadioButton ========================================================= -->
 
   <Style TargetType="{x:Type RadioButton}">
-    <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkEmptyFocusVisual}"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
     <Setter Property="Background" Value="{aero10:SystemAliasResource CheckBox.Background.Normal}"/>
     <Setter Property="BorderBrush" Value="{aero10:SystemAliasResource CheckBox.Border.Normal}"/>
     <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
     <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="3,2,2,3"/>
     <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -592,6 +592,7 @@
             <ContentPresenter x:Name="Content"
                               RecognizesAccessKey="True"
                               Grid.Column="1"
+                              Margin="{TemplateBinding Padding}"
                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -613,9 +614,9 @@
               <Setter TargetName="Border" Property="Background" Value="{aero10:SystemAliasResource CheckBox.Background.Disabled}"/>
               <Setter TargetName="OptionMark" Property="Fill" Value="{aero10:SystemAliasResource CheckBox.Mark.Disabled}"/>
             </Trigger>
-            <Trigger Property="HasContent" Value="True">
-              <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
-              <Setter TargetName="Content" Property="Margin" Value="3,2,2,3"/>
+            <Trigger Property="HasContent" Value="False">
+              <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkEmptyFocusVisual}"/>
+              <Setter Property="Padding" Value="0"/>
             </Trigger>
             <Trigger Property="TextOptions.TextFormattingMode" Value="Display">
               <Setter TargetName="Border" Property="Margin" Value="0,-1,1,1"/>
