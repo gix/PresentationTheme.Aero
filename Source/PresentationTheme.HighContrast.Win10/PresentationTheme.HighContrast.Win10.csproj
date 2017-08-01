@@ -70,6 +70,11 @@
     <Resource Include="Resources\Progress.PulseOverlay.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\PresentationTheme.Aero.VersionInfo.cs">
+      <Link>Properties\PresentationTheme.Aero.VersionInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
       <Project>{aef7f7b0-a3f0-482a-a0e0-4d8782cabaa6}</Project>
       <Name>PresentationTheme.Aero</Name>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win7", "PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj", "{8BB1D809-EA59-490F-9867-80E031CE691C}"
 EndProject
@@ -61,6 +61,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExtLib.HighContrast.Win10", "SampleExtLib.HighContrast.Win10\SampleExtLib.HighContrast.Win10.csproj", "{2C9BE265-93BD-4385-AA23-55660C3AD27C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExtLib.AeroLite.Win10", "SampleExtLib.AeroLite.Win10\SampleExtLib.AeroLite.Win10.csproj", "{45E8550F-5A25-473C-B3CB-E376633C4AE3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31C8CAF0-613E-42AE-9CEC-458A93C2623C}"
+	ProjectSection(SolutionItems) = preProject
+		PresentationTheme.Aero.CommonAssemblyInfo.cs = PresentationTheme.Aero.CommonAssemblyInfo.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

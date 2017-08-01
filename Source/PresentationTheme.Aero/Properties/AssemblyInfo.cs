@@ -2,12 +2,9 @@
 using System.Resources;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-
-[assembly: AssemblyProduct("PresentationTheme.Aero")]
+[assembly: AssemblyProduct("WPF PresentationFramework Aero Theme")]
 [assembly: AssemblyTitle("PresentationTheme.Aero")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("WPF PresentationFramework Aero Theme")]
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
