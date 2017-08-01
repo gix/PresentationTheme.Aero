@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.AeroLite.Win10
+namespace PresentationTheme.AeroLite.Win10
 {
     using System;
     using Aero;

@@ -1,4 +1,4 @@
-﻿namespace ThemeBrowser.Extensions
+namespace ThemeBrowser.Extensions
 {
     using System.Windows;
     using System.Windows.Media;

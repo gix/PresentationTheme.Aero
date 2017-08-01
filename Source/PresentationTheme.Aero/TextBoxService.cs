@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero
+namespace PresentationTheme.Aero
 {
     using System;
     using System.ComponentModel;

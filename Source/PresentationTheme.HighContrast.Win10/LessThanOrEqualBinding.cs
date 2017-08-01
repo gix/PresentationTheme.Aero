@@ -21,7 +21,7 @@ namespace PresentationTheme.HighContrast.Win10
         {
             Path = path;
         }
-        
+
         /// <summary>Gets or sets the threshold.</summary>
         public double Threshold { get; set; }
 

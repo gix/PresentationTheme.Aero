@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero.Win10
+namespace PresentationTheme.Aero.Win10
 {
     using System.Windows;
     using System.Windows.Controls;

@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.HighContrast.Win10
+namespace PresentationTheme.HighContrast.Win10
 {
     using System;
     using Aero;

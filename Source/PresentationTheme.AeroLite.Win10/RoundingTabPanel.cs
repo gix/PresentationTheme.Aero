@@ -314,7 +314,7 @@ namespace PresentationTheme.AeroLite.Win10
                 }
             }
 
-            // If the is no selected element and aligment is Top  - then the active row is the last row 
+            // If the is no selected element and aligment is Top  - then the active row is the last row
             if (TabStripPlacement == Dock.Top)
                 activeRow = rowCount - 1;
 
@@ -341,7 +341,7 @@ namespace PresentationTheme.AeroLite.Win10
             // bestSolution[0..numSeparators-1]    - keep the last Best Solution
             // bestSolutionRowAverageGap           - keep the last Best Solution Average Gap
             //
-            // Between all separators distribution the best solution have minimum Average Gap - 
+            // Between all separators distribution the best solution have minimum Average Gap -
             // this is the amount of pixels added to the header (to justify) in the row
             //
             // How does it work:
@@ -413,7 +413,7 @@ namespace PresentationTheme.AeroLite.Win10
             rowAverageGap.CopyTo(bestSolutionRowAverageGap, 0); // bestSolutionRowAverageGap is used in ArrangeOverride to calculate header sizes
 
             // Search for the best solution
-            // The exit condition if when we cannot move header to the next row 
+            // The exit condition if when we cannot move header to the next row
             while (true) {
                 // Find the row with maximum AverageGap
                 int worstRowIndex = 0; // Keep the row index with maximum AverageGap

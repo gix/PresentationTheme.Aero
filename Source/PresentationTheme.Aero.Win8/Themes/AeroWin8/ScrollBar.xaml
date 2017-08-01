@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <SolidColorBrush x:Key="ScrollBar.Static.Background" Color="#F0F0F0"/>
   <SolidColorBrush x:Key="ScrollBar.Static.Border" Color="#F0F0F0"/>

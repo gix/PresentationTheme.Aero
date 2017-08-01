@@ -1,4 +1,4 @@
-﻿namespace SampleLib
+namespace SampleLib
 {
     using System.Windows;
     using System.Windows.Controls;

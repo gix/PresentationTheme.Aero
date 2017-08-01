@@ -1,4 +1,4 @@
-﻿namespace ThemeBrowser
+namespace ThemeBrowser
 {
     using System;
     using System.ComponentModel;

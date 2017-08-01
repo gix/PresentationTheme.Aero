@@ -1,4 +1,4 @@
-﻿namespace PresentationTheme.Aero.Win8
+namespace PresentationTheme.Aero.Win8
 {
     using System;
 

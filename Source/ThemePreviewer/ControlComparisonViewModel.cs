@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer
+namespace ThemePreviewer
 {
     using System;
     using System.Windows;

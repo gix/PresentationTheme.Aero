@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer.Controls
+namespace ThemePreviewer.Controls
 {
     using System.Drawing;
     using System.Windows.Forms;

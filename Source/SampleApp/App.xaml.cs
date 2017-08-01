@@ -1,4 +1,4 @@
-﻿namespace SampleApp
+namespace SampleApp
 {
     using System;
     using System.Collections.ObjectModel;

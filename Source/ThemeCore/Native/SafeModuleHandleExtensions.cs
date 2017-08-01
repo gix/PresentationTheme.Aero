@@ -1,4 +1,4 @@
-﻿namespace ThemeCore.Native
+namespace ThemeCore.Native
 {
     using System;
     using System.ComponentModel;

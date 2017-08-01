@@ -1,4 +1,4 @@
-﻿namespace ThemeCore
+namespace ThemeCore
 {
     // AEROWIZARDSTYLE class parts and states
 

@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer
+namespace ThemePreviewer
 {
     using System.Windows;
     using System.Windows.Media;

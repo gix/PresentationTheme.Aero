@@ -1,4 +1,4 @@
-﻿namespace ThemeCore
+namespace ThemeCore
 {
     public enum BGTYPE
     {

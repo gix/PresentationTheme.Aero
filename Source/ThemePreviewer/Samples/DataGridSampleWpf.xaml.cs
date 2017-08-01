@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer.Samples
+namespace ThemePreviewer.Samples
 {
     using System.Collections.Generic;
     using System.Windows.Controls;
