@@ -11,6 +11,9 @@
     <releaseNotes></releaseNotes>
     <description>An accurate Aero theme for WPF supporting the Aero, AeroLite and High Contrast system themes of Windows 10.</description>
     <tags>wpf theme aero</tags>
+    <references>
+      <reference file="PresentationTheme.Aero.dll"/>
+    </references>
   </metadata>
   <files>
     <file src="build\any\bin\PresentationTheme.Aero.dll" target="lib\net45"/>
