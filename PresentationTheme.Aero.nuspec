@@ -9,7 +9,7 @@
     <projectUrl>http://github.com/gix/PresentationTheme.Aero</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes></releaseNotes>
-    <description>Core utility functions for web applications</description>
+    <description>An accurate Aero theme for WPF supporting the Aero, AeroLite and High Contrast system themes of Windows 10.</description>
     <tags>wpf theme aero</tags>
   </metadata>
   <files>
