@@ -221,14 +221,14 @@ namespace ThemePreviewer
         public static IntPtr GetWindowLong(HandleRef hWnd, int nIndex)
         {
             if (IntPtr.Size == 4)
-                return new IntPtr(GetWindowLongPtr32(hWnd, nIndex));
+                return (IntPtr)GetWindowLongPtr32(hWnd, nIndex);
             return GetWindowLongPtr64(hWnd, nIndex);
         }
 
         public static IntPtr SetWindowLong(HandleRef hWnd, int nIndex, IntPtr dwNewLong)
         {
             if (IntPtr.Size == 4)
-                return SetWindowLongPtr32(hWnd, nIndex, dwNewLong.ToInt32());
+                return (IntPtr)SetWindowLongPtr32(hWnd, nIndex, dwNewLong.ToInt32());
             return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
         }
 
@@ -239,7 +239,7 @@ namespace ThemePreviewer
         private static extern IntPtr GetWindowLongPtr64(HandleRef hWnd, int nIndex);
 
         [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "SetWindowLong")]
-        private static extern IntPtr SetWindowLongPtr32(HandleRef hWnd, int nIndex, int dwNewLong);
+        private static extern int SetWindowLongPtr32(HandleRef hWnd, int nIndex, int dwNewLong);
 
         [DllImport("user32", CharSet = CharSet.Auto, EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(HandleRef hWnd, int nIndex, IntPtr dwNewLong);
