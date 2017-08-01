@@ -29,5 +29,18 @@
         <TextBox Text="Bar"/>
       </TabItem>
     </TabControl>
+    <ToggleButton x:Name="PopupButton" HorizontalAlignment="Left" Margin="3" Padding="5,0" Content="Popup"/>
+    <Popup AllowsTransparency="True"
+           Placement="Right"
+           PlacementTarget="{Binding ElementName=PopupButton}"
+           IsOpen="{Binding IsChecked, ElementName=PopupButton}">
+      <Border Background="White" BorderBrush="LightGray" BorderThickness="1"
+              RenderOptions.ClearTypeHint="Enabled">
+        <StackPanel>
+          <TextBlock Width="150" Margin="3" Text="Popup"/>
+          <TextBox Width="150" Margin="3" Text="Popup"/>
+        </StackPanel>
+      </Border>
+    </Popup>
   </StackPanel>
 </UserControl>
