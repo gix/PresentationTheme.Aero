@@ -10,11 +10,22 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <PackageDir>$(MSBuildThisFileDirectory)dist</PackageDir>
+    <CommitInfo>dev</CommitInfo>
   </PropertyGroup>
 
-  <Target Name="Build">
+  <Target Name="GetCommitInfo">
+    <Exec Command="git describe --long --tags --always" ContinueOnError="true" ConsoleToMSBuild="true" UseCommandProcessor="false">
+      <Output TaskParameter="ConsoleOutput" PropertyName="CommitInfo"/>
+    </Exec>
+    <WriteLinesToFile File="Source\PresentationTheme.Aero.CommitInfo.cs"
+                      Lines="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(CommitInfo)&quot;)]"
+                      Overwrite="true"
+                      Encoding="UTF-8"/>
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="GetCommitInfo">
     <MSBuild Projects="@(Project)"
-             Properties="Configuration=$(Configuration);Platform=AnyCPU"
+             Properties="Configuration=$(Configuration);Platform=AnyCPU;IncludeCommitInfo=true"
              BuildInParallel="true"
              StopOnFirstFailure="true"
              Targets="Rebuild"/>

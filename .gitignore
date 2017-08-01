@@ -22,3 +22,5 @@ ipch/
 /Data/
 /Source/packages/
 obj/
+
+/Source/PresentationTheme.Aero.CommitInfo.cs
