@@ -52,6 +52,7 @@
     <Compile Include="TreeViewItemLevelConverter.cs" />
     <Compile Include="ThemeOptions.cs" />
     <Compile Include="TreeViewService.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\PresentationTheme.Aero.VersionInfo.cs">

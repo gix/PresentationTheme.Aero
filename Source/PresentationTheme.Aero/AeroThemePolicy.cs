@@ -11,7 +11,7 @@ namespace PresentationTheme.Aero
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Use the policy by passing <see cref="GetCurrentThemeUri"/> it to
+    ///     Use the policy by passing <see cref="GetCurrentThemeUri"/> to
     ///     <see cref="ThemeManager.SetPresentationFrameworkTheme(IThemePolicy)"/>
     ///     or <see cref="ThemeManager.SetTheme(Assembly,IThemePolicy)"/>.
     ///   </para>

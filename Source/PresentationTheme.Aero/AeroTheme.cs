@@ -1,18 +1,32 @@
 namespace PresentationTheme.Aero
 {
     using System;
-    using Microsoft.Win32;
 
-    /// <summary>Aero theme</summary>
+    /// <summary>
+    ///   Provides convenience helpers for the default <see cref="AeroThemePolicy"/>.
+    ///   The theme will update automatically if the system theme changes.
+    /// </summary>
+    /// <remarks>
+    ///   To use the theme, call <see cref="SetAsCurrentTheme"/> and revert it
+    ///   using <see cref="RemoveAsCurrentTheme"/>.
+    /// </remarks>
+    /// <seealso cref="AeroThemePolicy"/>
+    /// <seealso cref="SetAsCurrentTheme"/>
     public static class AeroTheme
     {
-        private static readonly AeroThemePolicy policy = new AeroThemePolicy();
-        private static Lazy<Uri> resourceUriCache = new Lazy<Uri>(policy.GetCurrentThemeUri);
+        private static readonly AeroThemePolicy Policy = new AeroThemePolicy();
+        private static Lazy<Uri> resourceUriCache = new Lazy<Uri>(new AeroThemePolicy().GetCurrentThemeUri);
 
         static AeroTheme()
         {
-            SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+            ThemeManager.ThemeChanged += OnThemeChanged;
         }
+
+        /// <summary>
+        ///   Occurs when the <see cref="ResourceUri"/> may have changed after a
+        ///   <see cref="ThemeManager.ThemeChanged"/> event.
+        /// </summary>
+        public static event EventHandler ResourceUriChanged;
 
         /// <summary>
         ///   Gets the Pack <see cref="Uri"/> for current theme resources. The
@@ -21,46 +35,34 @@ namespace PresentationTheme.Aero
         public static Uri ResourceUri => resourceUriCache.Value;
 
         /// <summary>
-        ///   Gets or sets a value determining whether animations are forcibly
-        ///   enabled or disabled.
-        /// </summary>
-        /// <value>
-        ///   <see langword="true"/> to forcibly enable animations.
-        ///   <see langword="false"/> to disable animations.
-        ///   Use <see langword="null"/> to automatically determine whether
-        ///   animations should be used.
-        /// </value>
-        /// <seealso cref="SystemVisualStateManager.UseAnimationsOverride"/>
-        public static bool? UseAnimationsOverride
-        {
-            get => SystemVisualStateManager.Instance.UseAnimationsOverride;
-            set => SystemVisualStateManager.Instance.UseAnimationsOverride = value;
-        }
-
-        /// <summary>
         ///   Sets the current theme to Aero using the default
         ///   <see cref="AeroThemePolicy"/>. The theme will update automatically
         ///   if the system theme changes.
         /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
         /// <seealso cref="AeroThemePolicy"/>
-        public static void SetAsCurrentTheme()
+        public static bool SetAsCurrentTheme()
         {
-            ThemeManager.SetPresentationFrameworkTheme(policy);
+            return ThemeManager.SetPresentationFrameworkTheme(Policy);
         }
 
         /// <summary>
         ///   Removes the Aero theme, falling back to the default theme.
         /// </summary>
+        /// <returns>
+        ///   <see langword="true"/> on success; otherwise <see langword="false"/>.
+        /// </returns>
         public static bool RemoveAsCurrentTheme()
         {
             return ThemeManager.ClearPresentationFrameworkTheme();
         }
 
-        private static void OnUserPreferenceChanged(
-            object sender, UserPreferenceChangedEventArgs args)
+        private static void OnThemeChanged(object sender, EventArgs args)
         {
-            if (args.Category == UserPreferenceCategory.VisualStyle)
-                resourceUriCache = new Lazy<Uri>(policy.GetCurrentThemeUri);
+            resourceUriCache = new Lazy<Uri>(Policy.GetCurrentThemeUri);
+            ResourceUriChanged?.Invoke(null, EventArgs.Empty);
         }
     }
 }
