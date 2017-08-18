@@ -325,7 +325,7 @@ namespace PresentationTheme.Aero
 
         /// <summary>
         ///   Gets a value indicating whether the <see cref="ThemeManager"/> can
-        ///   manipulate internal WPF data structures. When <see lang="false"/>
+        ///   manipulate internal WPF data structures. When <see langword="false"/>
         ///   <see cref="SetTheme(Assembly,IThemePolicy)"/> and similar functions
         ///   will always return <see langword="false"/>. This indicates that
         ///   internal framework types may have changed.
