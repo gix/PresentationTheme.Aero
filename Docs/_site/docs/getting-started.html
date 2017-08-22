@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Getting Started | PresentationTheme Aero </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Getting Started | PresentationTheme Aero ">
+    <meta name="generator" content="docfx 2.23.1.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="getting-started">Getting Started</h1>
+
+<h2 id="what-is-presentationthemeaero">What is PresentationTheme.Aero?</h2>
+<p>PresentationTheme.Aero is a highly polished Windows Aero theme for WPF. It
+provides faithful pixel-perfect recreation of the native Aero themes including
+proper animations depending on system settings, popup drop-shadows,
+Explorer-styles. Also includes AeroLite and High Contrast themes.</p>
+<h2 id="installation">Installation</h2>
+<p><a href="https://docs.microsoft.com/en-us/nuget/tools/package-manager-console#installing-a-package">Install the NuGet package</a>
+<code>PresentationTheme.Aero</code>. The package contains the following assemblies:</p>
+<table>
+<thead>
+<tr>
+<th>Assembly</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PresentationTheme.Aero.dll</td>
+<td>Shared assembly with utilities</td>
+</tr>
+<tr>
+<td>PresentationTheme.Aero.Win10.dll</td>
+<td>Windows 10 Aero theme</td>
+</tr>
+<tr>
+<td>PresentationTheme.AeroLite.Win10.dll</td>
+<td>Windows 10 AeroLite theme</td>
+</tr>
+<tr>
+<td>PresentationTheme.HighContrast.Win10.dll</td>
+<td>Windows 10 High Contrast theme</td>
+</tr>
+</tbody>
+</table>
+<p>Only the first assembly should be referenced. The other theme assemblies are
+loaded when necessary.</p>
+<div class="IMPORTANT"><h5>Important</h5><p>Because the theme assemblies are normally not referenced, they have to
+be copied manually to the build output directory.</p>
+</div>
+<h2 id="how-do-i-use-the-theme">How do I use the theme?</h2>
+<p>There are three different ways to use the theme. The differences are summarized
+in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align:center">Theme ResourceUri</th>
+<th style="text-align:center">Theme Policy</th>
+<th style="text-align:center">Theme Policy with custom resource loader</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dynamic Theme Changes</td>
+<td style="text-align:center">Manually</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td>Implicit Theme Styles</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+<td style="text-align:center">Yes</td>
+</tr>
+<tr>
+<td>On-demand Loading</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Yes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-using-theme-resourceuri">1. Using Theme ResourceUri</h3>
+<p>The simplest but also most limited way to use the theme is to include the
+theme resources directly. <a class="xref" href="../api/PresentationTheme.Aero.AeroTheme.html#PresentationTheme_Aero_AeroTheme_ResourceUri">AeroTheme.ResourceUri</a>
+returns the Pack URI for the theme resources matching the current system theme.
+To handle system theme changes subscribe to
+<a class="xref" href="../api/PresentationTheme.Aero.AeroTheme.html#PresentationTheme_Aero_AeroTheme_ResourceUriChanged">AeroTheme.ResourceUriChanged</a>
+and reload the resources.</p>
+<pre><code class="lang-cs">using PresentationTheme.Aero;
+
+public partial class App
+{
+    public App()
+    {
+        // Add theme resources to the application
+        Resources.MergedDictionaries.Add(new ResourceDictionary {
+            Source = AeroTheme.ResourceUri
+        });
+
+        // Optional: Handle theme changes.
+        AeroTheme.ResourceUriChanged += OnAeroThemeChanged;
+    }
+
+    private void OnAeroThemeChanged(object sender, EventArgs args)
+    {
+        // Reload theme resources
+        Resources.MergedDictionaries[0].Source = AeroTheme.ResourceUri;
+    }
+}
+</code></pre><p>The downside to this approach is that the resources are not treated as theme
+resources by WPF and will not be used as implicit theme styles. That means:</p>
+<ul>
+<li><p>Whenever you define custom styles for standard controls you have to explicitly
+add a <code>BasedOn</code> attribute and reference the previous style:</p>
+<pre><code class="lang-xaml">&lt;Style TargetType=&quot;{x:Type Button}&quot; BasedOn=&quot;{StaticResource {x:Type Button}}&quot;&gt;
+&lt;/Style&gt;
+</code></pre></li>
+<li><p>Even without a custom style, certain controls require an explicit style attribute.
+For example, a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.listview(v=vs.110).aspx">ListView</a> without
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.gridview(v=vs.110).aspx">GridView</a> normally inherits the
+<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.listbox(v=vs.110).aspx">ListBox</a> style automatically but now
+requires an explicit style attribute.</p>
+<pre><code class="lang-xaml">&lt;ListView Style=&quot;{StaticResource {x:Type ListBox}}&quot;/&gt;
+</code></pre></li>
+<li><p>Some elements like the context menu of a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.textbox(v=vs.110).aspx">TextBox</a>
+use the default theme style.</p>
+</li>
+</ul>
+<h3 id="2-using-a-theme-policy">2. Using a Theme Policy</h3>
+<p>The <a class="xref" href="../api/PresentationTheme.Aero.ThemeManager.html">ThemeManager</a> allows setting
+system theme resources on a per-assembly basis. Doing so uses reflection to set
+the internal resource dictionary before WPF gets a chance to load the default one.</p>
+<p>Replacing the system theme resources solves the downsides of the previous approach
+and the theme can be used as a drop-in replacement.</p>
+<pre><code class="lang-cs">using PresentationTheme.Aero;
+
+public partial class App
+{
+    public App()
+    {
+        // Set theme resources
+        AeroTheme.SetAsCurrentTheme();
+
+        // Shortcut for:
+        // ThemeManager.SetPresentationFrameworkTheme(new AeroThemePolicy());
+    }
+}
+</code></pre><p>These calls eventuelly invoke <a class="xref" href="../api/PresentationTheme.Aero.ThemeManager.html#PresentationTheme_Aero_ThemeManager_SetTheme_System_Reflection_Assembly_PresentationTheme_Aero_IThemePolicy_">SetTheme</a>
+to set the system theme resources. This must be done before WPF attempts to load
+the default resources. Otherwise you have to fake a <code>WM_THEMECHANGED</code> message to
+get WPF to reapply all system styles.</p>
+<p>Theme policies are automatically reapplied whenever the system theme changes.
+Using the provided <a class="xref" href="../api/PresentationTheme.Aero.AeroThemePolicy.html">AeroThemePolicy</a>
+takes care of choosing the appropriate theme resources matching the system theme.
+It chooses the following theme resource assemblies:</p>
+<table>
+<thead>
+<tr>
+<th>System Theme</th>
+<th>Theme Resource Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 10 with Aero theme</td>
+<td>PresentationTheme.Aero.Win10.dll</td>
+</tr>
+<tr>
+<td>Windows 10 with AeroLite theme</td>
+<td>PresentationTheme.AeroLite.Win10.dll</td>
+</tr>
+<tr>
+<td>Windows 10 in high contrast mode</td>
+<td>PresentationTheme.HighContrast.Win10.dll</td>
+</tr>
+</tbody>
+</table>
+<div class="WARNING"><h5>Warning</h5><p>It might be tempting to use a policy that always returns for example Aero
+regardless of system theme to avoid styling and testing all themes. This will
+not work reliably since all themes use system colors, mostly for text, and an
+inverted system theme like high contrast mode can still lead to unreadable
+text.</p>
+</div>
+<h3 id="3-using-a-theme-policy-with-custom-resource-loader">3. Using a Theme Policy with custom resource loader</h3>
+<p>The third and most invasive approach replaces the internal system resource loading
+mechanism via splicing (i.e., patching code at runtime). The custom resource loader
+enables on-demand usage of theme policies and allows control libraries to provide
+styles for specific Windows versions.</p>
+<pre><code class="lang-cs">using PresentationTheme.Aero;
+
+public partial class App
+{
+    public App()
+    {
+        if (ThemeManager.IsOperational)
+            ThemeManager.Install();
+        AeroTheme.SetAsCurrentTheme();
+    }
+}
+</code></pre><h2 id="what-about-external-resource-assemblies-or-third-party-libraries">What about external resource assemblies or third-party libraries?</h2>
+<p>With the custom resource loader, theme resources for an assembly are resolved as follows:</p>
+<ol>
+<li>If a theme policy is registered for the assembly, use the resource
+dictionary located using the pack URI returned by
+<a class="xref" href="../api/PresentationTheme.Aero.IThemePolicy.html#PresentationTheme_Aero_IThemePolicy_GetCurrentThemeUri">IThemePolicy.GetCurrentThemeUri</a>.</li>
+<li>If theme resources are internal, i.e. <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms602084(v=vs.110).aspx">ThemeDictionaryLocation</a>
+is <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.resourcedictionarylocation(v=vs.110).aspx">SourceAssembly</a>,
+use the resource dictionary in the same assembly located at
+<code>pack://application:,,,/{AssemblyName};v{Version};component/themes/{ThemeName}.{ThemeColor}.xaml</code>.</li>
+<li>Use the external resource assembly at
+<code>pack://application:,,,/{AssemblyName}.{ThemeName};v{Version};component/themes/{ThemeName}.{ThemeColor}.xaml</code>.</li>
+<li>Fall back to the default theme name and use <code>pack://application:,,,/{AssemblyName};v{Version};component/themes/{FallbackThemeName}.{ThemeColor}.xaml</code> (if resources are internal)</li>
+<li>Use the external resource assembly at <code>pack://application:,,,/{AssemblyName}.{FallbackThemeName};v{Version};component/themes/{FallbackThemeName}.{ThemeColor}.xaml</code></li>
+</ol>
+<p>with the following meaning for the placeholders:</p>
+<ul>
+<li><code>{AssemblyName}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/8yd480ef(v=vs.110).aspx">Assembly name</a> (<code>AcmeLibrary</code>)</li>
+<li><code>{Version}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/eyw13ks6(v=vs.110).aspx">Assembly version</a> (<code>1.0.0.0</code>)</li>
+<li><code>{ThemeName}</code>: Basename of the theme file path returned by
+              <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a>
+              with a Windows version suffix (<code>Win10</code>, <code>Win8</code>, <code>Win7</code>).
+              For the Windows 8 and 10 high contrast theme, <code>HighContrast</code> is
+              used even though the theme is based on AeroLite.</li>
+<li><code>{FallbackThemeName}</code>: Basename of the theme file path. <code>Aero</code> is replaced by <code>Aero2</code> if Windows 8 or later.</li>
+<li><code>{ThemeColor}</code>: Theme color name returned by <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a> (<code>NormalColor</code>)</li>
+</ul>
+<p>Steps 4 and 5 are equivalent to the default WPF behavior.</p>
+<p>For example, for an assembly <code>AcmeLibrary.dll</code> with version <code>1.0.0.0</code>, the
+following locations are used in order:</p>
+<ul>
+<li><p>On Windows 10 with the Aero theme:</p>
+<ol>
+<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero.Win10.NormalColor.xaml</code> (if the resources are internal)</li>
+<li><code>pack://application:,,,/AcmeLibrary.Aero.Win10;v1.0.0.0;component/themes/Aero.Win10.NormalColor.xaml</code></li>
+<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code> (if the resources are internal)</li>
+<li><code>pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code></li>
+</ol>
+</li>
+<li><p>On Windows 8 with the AeroLite theme:</p>
+<ol>
+<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml</code> (if theme resources are internal)</li>
+<li><code>pack://application:,,,/AcmeLibrary.AeroLite.Win8;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml</code></li>
+<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code> (if theme resources are internal)</li>
+<li><code>pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code></li>
+</ol>
+</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/gix/PresentationTheme.Aero/blob/master/Docs/docs/getting-started.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            Generated by <strong>DocFX</strong>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
