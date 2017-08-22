@@ -1,0 +1,128 @@
+figure.image-cmp {
+	border: 1px solid #DDD;
+}
+
+.image-cmp-tabs {
+	display: table;
+	margin-bottom: -1px;
+}
+
+.image-cmp-tab {
+	display: table-cell;
+	padding: 1px 5px;
+	cursor: pointer;
+	font-size: 85%;
+}
+
+.image-cmp-tab-active {
+	background: #EEE;
+	border: 1px solid #DDD;
+}
+
+.buttons-unit .button {
+	color: #000;
+	background: #9AB6CD;
+	background: rgba(255,255,255,0.75);
+}
+.buttons-unit .button:active {
+	background: #FFF;
+}
+
+.hero {
+	height: 250px;
+	margin-top: 50px;
+	padding-top: 25px;
+	font-weight: 300;
+	text-align: center;
+	color: #F7F7F7;
+	background-color: #90C8F6;
+	background-image: linear-gradient(20deg, #003866 0, #6098C6 100%);
+}
+.hero strong {
+	color: #EEE;
+	font-weight: 400;
+	font-family: Georgia, serif;
+}
+.hero .text {
+	font-size: 48px;
+	text-align: center;
+}
+.hero .minitext {
+	font-size: 20px;
+	text-align: center;
+	font-family: Candara;
+}
+
+.glyphicon {
+	margin-right: 10px;
+	font-size: 16px;
+}
+
+.key-section {
+	padding: 20px 0;
+	border-top: 2px solid #003866;
+	-webkit-border-image-source: -webkit-gradient(linear, left, right, color-stop(0%, rgba(0, 0, 0, 0)), color-stop(50%, #003866), color-stop(100%, rgba(0, 0, 0, 0)));
+	-webkit-border-image-source: -webkit-linear-gradient(90deg, rgba(0, 0, 0, 0), #003866 50%, rgba(0, 0, 0, 0));
+	-moz-border-image-source: -moz-linear-gradient(90deg, rgba(0, 0, 0, 0), #003866 50%, rgba(0, 0, 0, 0));
+	-ms-border-image-source: -ms-linear-gradient(90deg, rgba(0, 0, 0, 0), #003866 50%, rgba(0, 0, 0, 0));
+	-o-border-image-source: -o-linear-gradient(90deg, rgba(0, 0, 0, 0), #003866 50%, rgba(0, 0, 0, 0));
+	border-image-source: linear-gradient(90deg, rgba(0, 0, 0, 0), #003866 50%, rgba(0, 0, 0, 0));
+	border-image-slice: 1;
+}
+.key-section.first-key-section {
+	border-top: none;
+}
+
+.key-section h2::before {
+	height: auto;
+	margin: 0;
+}
+
+.key-section .glyphicon {
+	font-size: 4em;
+	display: table-cell;
+	vertical-align: top;
+	padding-top: 15px;
+}
+
+.key-section section {
+	display: table-cell;
+	padding-left: 20px;
+}
+
+.key-section section p {
+	text-align: initial;
+}
+
+.version-link, .github-link {
+	margin: 5px;
+}
+
+.buttons-unit {
+	margin-top: 40px;
+	text-align: center;
+}
+.buttons-unit-small {
+	font-size: 16px;
+}
+
+.hero .button {
+	border-radius: 4px;
+	padding: 8px 16px;
+	margin: 0 12px;
+	box-shadow: 1px 3px 3px rgba(0,0,0,0.3);
+}
+.buttons-unit .button {
+	font-size: 24px;
+}
+
+@media only screen and (max-width: 768px) {
+	.hero {
+		height: 500px;
+		margin-top: 0px;
+	}
+	.hero .button {
+		display: block;
+		margin: 12px;
+	}
+}
