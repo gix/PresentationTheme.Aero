@@ -1,10 +1,10 @@
 Getting Started
 ===============
 
-What is PresentationTheme.Aero?
+What is PresentationTheme Aero?
 -------------------------------
 
-PresentationTheme.Aero is a highly polished Windows Aero theme for WPF. It
+_PresentationTheme Aero_ is a highly polished Windows Aero theme for WPF. It
 provides faithful pixel-perfect recreation of the native Aero themes including
 proper animations depending on system settings, popup drop-shadows,
 Explorer-styles. Also includes AeroLite and High Contrast themes.

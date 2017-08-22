@@ -1,5 +1,5 @@
 ---
-title: PresentationTheme.Aero
+title: Home
 documentType: index
 ---
 
@@ -8,13 +8,13 @@ documentType: index
 <div class="hero">
   <div class="wrap">
     <div class="text">
-      <strong>PresentationTheme.Aero</strong>
+      <strong>PresentationTheme Aero</strong>
     </div>
     <!--
     <div class="buttons-unit-small">
       <a class="version-link" href="../RELEASENOTE.md">Version Notes</a>
       <span>|</span>
-      <a class="github-link" href="https://github.com/gix/PresentationTheme">View in Github</a>
+      <a class="github-link" href="https://github.com/gix/PresentationTheme.Aero">View in Github</a>
     </div>
     -->
     <div class="minitext">
