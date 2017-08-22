@@ -50,4 +50,31 @@
     <MakeDir Directories="$(PackageDir)"/>
     <Exec Command="nuget.exe pack $(PackArgs) PresentationTheme.Aero.nuspec"/>
   </Target>
+
+  <Target Name="BuildDocs">
+    <Exec Command="docfx.exe Docs/docfx.json -f"/>
+  </Target>
+
+  <Target Name="EnsureCleanWorkingDir">
+    <Exec Command="git diff --cached --exit-code &gt; NUL" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode"/>
+    </Exec>
+    <Error Text="Working directory has staged changes." Condition="'$(ErrorCode)' != '0'"/>
+  </Target>
+
+  <Target Name="UpdatePages" DependsOnTargets="EnsureCleanWorkingDir">
+    <Exec Command="git add -f Docs/_site"/>
+    <Exec Command="git commit -m &quot;Update gh-pages&quot;"/>
+    <Exec Command="git subtree push --prefix Docs/_site origin gh-pages"/>
+  </Target>
+
+  <Target Name="UpdateDocs" DependsOnTargets="BuildDocs;UpdatePages">
+
+  <Target Name="Publish" DependsOnTargets="Build;GetVersion">
+    <PropertyGroup>
+      <PushArgs>&quot;dist/PresentationTheme.Aero.$(PackageVersion).nupkg&quot;</PushArgs>
+      <PushArgs>$(PushArgs) -Source https://www.nuget.org/api/v2/package</PushArgs>
+    </PropertyGroup>
+    <Exec Command="nuget push $(PushArgs)"/>
+  </Target>
 </Project>
