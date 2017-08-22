@@ -41,7 +41,7 @@
               <system:String>20</system:String>
             </x:Array>
           </ListView>
-          <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,221,0,0" Width="200" Height="131">
+          <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,221,0,0" Width="200">
             <Menu>
               <samples:MenuItemEx Header="File" x:Name="fileMenuItem">
                 <samples:MenuItemEx Header="New" x:Name="newMenuItem">
