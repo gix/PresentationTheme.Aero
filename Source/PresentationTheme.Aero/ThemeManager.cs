@@ -687,10 +687,14 @@ namespace PresentationTheme.Aero
                 }
             }
 
-            if (!external)
+            // Avoid trying to load the non-fallback format for
+            // PresentationFramework since we are sure it does not exist.
+            bool isPresentationFramework = assembly == PresentationFramework;
+
+            if (!isPresentationFramework && !external)
                 yield return new ResourcesCandidate(assembly, assemblyName, themedResourceName, false);
 
-            if (ResourceDictionariesProxy.LoadExternalAssembly(
+            if (!isPresentationFramework && ResourceDictionariesProxy.LoadExternalAssembly(
                     assembly, assemblyName, ThemeResourcesKind.Default,
                     out externalAssembly, out externalAssemblyName))
                 yield return new ResourcesCandidate(externalAssembly, externalAssemblyName, themedResourceName, false);
