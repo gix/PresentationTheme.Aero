@@ -68,7 +68,7 @@
     <Exec Command="git subtree push --prefix Docs/_site origin gh-pages"/>
   </Target>
 
-  <Target Name="UpdateDocs" DependsOnTargets="BuildDocs;UpdatePages">
+  <Target Name="UpdateDocs" DependsOnTargets="BuildDocs;UpdatePages"/>
 
   <Target Name="Publish" DependsOnTargets="Build;GetVersion">
     <PropertyGroup>
