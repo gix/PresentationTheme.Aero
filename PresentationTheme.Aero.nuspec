@@ -28,6 +28,7 @@
     <file src="build\any\bin\PresentationTheme.HighContrast.Win10.dll" target="lib\net45"/>
     <file src="build\any\bin\PresentationTheme.HighContrast.Win10.pdb" target="lib\net45"/>
     <file src="build\any\bin\PresentationTheme.HighContrast.Win10.xml" target="lib\net45"/>
+    <file src="Source\PresentationTheme.Aero.targets" target="build"/>
     <file src="Source\PresentationTheme.Aero\**\*.cs" target="src\PresentationTheme.Aero"/>
     <file src="Source\PresentationTheme.Aero.Win10\**\*.cs" target="src\PresentationTheme.Aero.Win10"/>
     <file src="Source\PresentationTheme.AeroLite.Win10\**\*.cs" target="src\PresentationTheme.AeroLite.Win10"/>
