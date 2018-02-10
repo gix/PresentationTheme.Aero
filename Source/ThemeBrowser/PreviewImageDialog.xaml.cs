@@ -367,10 +367,8 @@ namespace ThemeBrowser
 
         private void HandleBottomRight(object sender, DragDeltaEventArgs args)
         {
-            var adornedElement = AdornedElement as FrameworkElement;
-            var hitThumb = sender as Thumb;
-
-            if (adornedElement == null || hitThumb == null) return;
+            if (!(AdornedElement is FrameworkElement adornedElement) ||
+                !(sender is Thumb hitThumb)) return;
 
             var parentElement = adornedElement.Parent as FrameworkElement;
 
@@ -385,10 +383,9 @@ namespace ThemeBrowser
 
         private void HandleTopRight(object sender, DragDeltaEventArgs args)
         {
-            var adornedElement = AdornedElement as FrameworkElement;
-            var hitThumb = sender as Thumb;
+            if (!(AdornedElement is FrameworkElement adornedElement) ||
+                !(sender is Thumb hitThumb)) return;
 
-            if (adornedElement == null || hitThumb == null) return;
             var parentElement = adornedElement.Parent as FrameworkElement;
 
             // Ensure that the Width and Height are properly initialized after the resize.
@@ -408,10 +405,8 @@ namespace ThemeBrowser
 
         private void HandleTopLeft(object sender, DragDeltaEventArgs args)
         {
-            var adornedElement = AdornedElement as FrameworkElement;
-            var hitThumb = sender as Thumb;
-
-            if (adornedElement == null || hitThumb == null) return;
+            if (!(AdornedElement is FrameworkElement adornedElement) ||
+                !(sender is Thumb hitThumb)) return;
 
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
@@ -436,10 +431,8 @@ namespace ThemeBrowser
 
         private void HandleBottomLeft(object sender, DragDeltaEventArgs args)
         {
-            var adornedElement = AdornedElement as FrameworkElement;
-            var hitThumb = sender as Thumb;
-
-            if (adornedElement == null || hitThumb == null) return;
+            if (!(AdornedElement is FrameworkElement adornedElement) ||
+                !(sender is Thumb hitThumb)) return;
 
             // Ensure that the Width and Height are properly initialized after the resize.
             EnforceSize(adornedElement);
@@ -505,8 +498,7 @@ namespace ThemeBrowser
             if (adornedElement.Height.Equals(Double.NaN))
                 adornedElement.Height = adornedElement.DesiredSize.Height;
 
-            var parent = adornedElement.Parent as FrameworkElement;
-            if (parent != null) {
+            if (adornedElement.Parent is FrameworkElement parent) {
                 adornedElement.MaxHeight = parent.ActualHeight;
                 adornedElement.MaxWidth = parent.ActualWidth;
             }

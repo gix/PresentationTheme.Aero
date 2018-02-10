@@ -79,8 +79,7 @@ namespace PresentationTheme.AeroLite.Win10
             //
 
             double target;
-            var str = parameter as string;
-            if (str != null)
+            if (parameter is string str)
                 target = double.Parse(str, NumberFormatInfo.InvariantInfo);
             else
                 target = (double)parameter;

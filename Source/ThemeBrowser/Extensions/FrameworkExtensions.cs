@@ -8,8 +8,7 @@ namespace ThemeBrowser.Extensions
         public static T FindVisualParent<T>(this Visual element) where T : Visual
         {
             for (Visual it = element; it != null; it = VisualTreeHelper.GetParent(it) as Visual) {
-                var result = it as T;
-                if (result != null)
+                if (it is T result)
                     return result;
             }
 

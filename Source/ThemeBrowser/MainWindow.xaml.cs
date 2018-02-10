@@ -13,8 +13,7 @@ namespace ThemeBrowser
         private void OnSelectedItemChanged(
             object sender, RoutedPropertyChangedEventArgs<object> args)
         {
-            var viewModel = DataContext as MainWindowViewModel;
-            if (viewModel != null)
+            if (DataContext is MainWindowViewModel viewModel)
                 viewModel.SelectedItem = args.NewValue;
         }
 

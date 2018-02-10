@@ -191,8 +191,7 @@ namespace ThemeBrowser
         {
             var statesCount = part.States.Count;
             var durationProp = part.Properties.FirstOrDefault(x => x.PropertyId == TMT.TRANSITIONDURATIONS);
-            var intList = durationProp?.Value as IntList;
-            if (intList == null)
+            if (!(durationProp?.Value is IntList intList))
                 return;
 
             if (intList.Count != statesCount * statesCount) {

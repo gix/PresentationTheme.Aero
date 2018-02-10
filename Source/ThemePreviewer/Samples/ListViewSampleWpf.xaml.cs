@@ -52,8 +52,7 @@ namespace ThemePreviewer.Samples
 
             for (obj = obj.GetAnyParent(); obj != null;
                  obj = obj.GetAnyParent()) {
-                var ancestor = obj as TAncestor;
-                if (ancestor != null)
+                if (obj is TAncestor ancestor)
                     return ancestor;
             }
 

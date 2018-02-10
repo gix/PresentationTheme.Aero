@@ -36,8 +36,7 @@ namespace PresentationTheme.Aero
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var item = value as TreeViewItem;
-            if (item == null)
+            if (!(value is TreeViewItem item))
                 return DependencyProperty.UnsetValue;
 
             int level = GetItemLevel(item);
@@ -71,8 +70,7 @@ namespace PresentationTheme.Aero
             DependencyObject obj = item;
             for (obj = obj.GetVisualOrLogicalParent(); obj != null;
                  obj = obj.GetVisualOrLogicalParent()) {
-                var parentItem = obj as TreeViewItem;
-                if (parentItem != null)
+                if (obj is TreeViewItem parentItem)
                     return parentItem;
                 if (obj is TreeView)
                     break;

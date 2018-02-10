@@ -23,8 +23,8 @@ namespace PresentationTheme.HighContrast.Win10
         /// <returns>The inverted <see cref="Thickness"/>.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Thickness)
-                return Invert((Thickness)value);
+            if (value is Thickness thickness)
+                return Invert(thickness);
             return value;
         }
 

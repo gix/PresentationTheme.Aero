@@ -110,16 +110,14 @@ namespace ThemePreviewer.Controls
 
         private void UpdateOptions(object oldValue, object newValue, bool insertAtEnd = true)
         {
-            var oldOptionControl = oldValue as IOptionControl;
-            if (oldOptionControl != null) {
+            if (oldValue is IOptionControl oldOptionControl) {
                 foreach (var option in oldOptionControl.Options) {
                     option.PropertyChanged -= OnOptionChanged;
                     Options.Remove(option);
                 }
             }
 
-            var newOptionControl = newValue as IOptionControl;
-            if (newOptionControl != null) {
+            if (newValue is IOptionControl newOptionControl) {
                 int idx = insertAtEnd ? Options.Count : 0;
 
                 if (Options.Count > 0 && newOptionControl.Options.Count > 0 && insertAtEnd)

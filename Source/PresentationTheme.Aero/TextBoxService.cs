@@ -81,8 +81,7 @@ namespace PresentationTheme.Aero
         private static void OnViewMarginChanged(
             DependencyObject d, DependencyPropertyChangedEventArgs args)
         {
-            var textBox = d as TextBox;
-            if (textBox != null) {
+            if (d is TextBox textBox) {
                 if (args.NewValue != null)
                     Attach(textBox);
                 else
@@ -130,8 +129,7 @@ namespace PresentationTheme.Aero
 
         private static void ApplyMargin(TextBox textBox, bool mayDefer = true)
         {
-            var contentHost = textBox.Template.FindName("PART_ContentHost", textBox) as ScrollViewer;
-            if (contentHost != null) {
+            if (textBox.Template.FindName("PART_ContentHost", textBox) is ScrollViewer contentHost) {
                 if (contentHost.HasContent)
                     ApplyMargin(contentHost);
                 else
@@ -155,8 +153,8 @@ namespace PresentationTheme.Aero
         private static void ApplyMargin(ScrollViewer contentHost)
         {
             var textBox = contentHost.FindAncestor<TextBox>();
-            var element = contentHost.Content as FrameworkElement;
-            if (textBox != null && element != null && element.GetType() == TextBoxViewType) {
+            if (textBox != null && contentHost.Content is FrameworkElement element
+                                && element.GetType() == TextBoxViewType) {
                 var margin = GetViewMargin(textBox);
                 if (margin != null)
                     element.Margin = margin.Value;
@@ -171,8 +169,7 @@ namespace PresentationTheme.Aero
 
             for (obj = obj.GetVisualOrLogicalParent(); obj != null;
                  obj = obj.GetVisualOrLogicalParent()) {
-                var ancestor = obj as TAncestor;
-                if (ancestor != null)
+                if (obj is TAncestor ancestor)
                     return ancestor;
             }
 

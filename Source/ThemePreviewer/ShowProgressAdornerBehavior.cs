@@ -41,8 +41,7 @@ namespace ThemePreviewer
 
         private void AddAdorner()
         {
-            var element = AssociatedObject.Content as UIElement;
-            if (element == null)
+            if (!(AssociatedObject.Content is UIElement element))
                 return;
 
             var content = new ContentControl();

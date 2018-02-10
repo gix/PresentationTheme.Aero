@@ -92,8 +92,7 @@ namespace ThemePreviewer
                     if (args.OldItems != null) {
                         var generator = AssociatedObject.ItemContainerGenerator;
                         foreach (var oldItem in args.OldItems) {
-                            var tabItem = oldItem as TabItem;
-                            if (tabItem == null)
+                            if (!(oldItem is TabItem tabItem))
                                 tabItem = generator.ContainerFromItem(oldItem) as TabItem;
                             var presenter = FindTabContentPresenter(tabItem);
                             if (presenter != null)
@@ -183,8 +182,7 @@ namespace ThemePreviewer
             if (selectedItem == null)
                 return null;
 
-            var tabItem = selectedItem as TabItem;
-            if (tabItem != null)
+            if (selectedItem is TabItem tabItem)
                 return tabItem;
 
             var generator = AssociatedObject.ItemContainerGenerator;

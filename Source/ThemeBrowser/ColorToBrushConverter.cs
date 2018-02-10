@@ -11,10 +11,9 @@ namespace ThemeBrowser
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is Color) || !targetType.IsAssignableFrom(typeof(SolidColorBrush)))
+            if (!(value is Color color) || !targetType.IsAssignableFrom(typeof(SolidColorBrush)))
                 return Binding.DoNothing;
 
-            var color = (Color)value;
             if (IgnoreAlpha)
                 color.A = 255;
             return new SolidColorBrush(color);
@@ -22,8 +21,7 @@ namespace ThemeBrowser
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var brush = value as SolidColorBrush;
-            if (brush == null || targetType != typeof(Color))
+            if (!(value is SolidColorBrush brush) || targetType != typeof(Color))
                 return Binding.DoNothing;
 
             return brush.Color;

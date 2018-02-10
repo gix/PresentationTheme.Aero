@@ -1823,15 +1823,11 @@ namespace ThemePreviewer.Samples
             this.id = id;
         }
 
-        public override Assembly Assembly
-        {
-            get { return null; }
-        }
+        public override Assembly Assembly => null;
 
         public override bool Equals(object other)
         {
-            var key = other as ThemeResourceKey;
-            return key != null && key.id == id;
+            return other is ThemeResourceKey key && key.id == id;
         }
 
         public override int GetHashCode()

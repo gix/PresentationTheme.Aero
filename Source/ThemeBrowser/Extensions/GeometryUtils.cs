@@ -19,18 +19,15 @@ namespace ThemeBrowser.Extensions
 
         public static PathSegment Round(this PathSegment segment, int digits)
         {
-            var lineSegment = segment as LineSegment;
-            if (lineSegment != null)
+            if (segment is LineSegment lineSegment)
                 return new LineSegment(lineSegment.Point.Round(digits), lineSegment.IsStroked);
 
-            var polyLineSegment = segment as PolyLineSegment;
-            if (polyLineSegment != null)
+            if (segment is PolyLineSegment polyLineSegment)
                 return new PolyLineSegment(
                     polyLineSegment.Points.Select(x => Round(x, digits)),
                     polyLineSegment.IsStroked);
 
-            var arcSegment = segment as ArcSegment;
-            if (arcSegment != null)
+            if (segment is ArcSegment arcSegment)
                 return new ArcSegment(
                     arcSegment.Point.Round(digits),
                     arcSegment.Size,

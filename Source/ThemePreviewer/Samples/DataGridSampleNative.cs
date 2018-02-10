@@ -57,8 +57,7 @@ namespace ThemePreviewer.Samples
                 sortDirection = direction;
                 comparer = CreateComparer(property.PropertyType);
 
-                List<T> list = Items as List<T>;
-                if (list == null)
+                if (!(Items is List<T> list))
                     return;
 
                 list.Sort(Compare);

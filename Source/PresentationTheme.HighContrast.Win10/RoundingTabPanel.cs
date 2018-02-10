@@ -83,8 +83,7 @@ namespace PresentationTheme.HighContrast.Win10
         {
             get
             {
-                var parent = TemplatedParent as TabControl;
-                if (parent != null)
+                if (TemplatedParent is TabControl parent)
                     return parent.TabStripPlacement;
                 return Dock.Top;
             }
