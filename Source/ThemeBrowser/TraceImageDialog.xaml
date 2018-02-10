@@ -147,7 +147,7 @@
 
     <GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Style="{StaticResource VertSplitter}"/>
 
-    <StackPanel Grid.Row="0" Grid.Column="4" Orientation="Horizontal">
+    <StackPanel Grid.Row="0" Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Top">
       <TextBlock Margin="3">
         <Run Text="{Binding DiffBitmap.PixelWidth, Mode=OneWay}"/>x<Run Text="{Binding DiffBitmap.PixelHeight, Mode=OneWay}"/>
       </TextBlock>
