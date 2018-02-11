@@ -24,6 +24,9 @@ namespace ThemePreviewer.Samples
             disabledButton.Click += (s, e) => status.Text = ((Button)s).Content as string;
             focusButton.Click += (s, e) => status.Text = ((Button)s).Content as string;
             unfocusButton.Click += (s, e) => status.Text = ((Button)s).Content as string;
+
+            hotChrome.SetForceIsMouseOver(true);
+            pressedChrome.SetForceIsPressed(true);
         }
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="Controls\FakeMenu.Designer.cs">
       <DependentUpon>FakeMenu.cs</DependentUpon>
     </Compile>
+    <Compile Include="ForcedStateProperties.cs" />
     <Compile Include="Samples\CalendarSampleNative.cs">
       <SubType>UserControl</SubType>
     </Compile>

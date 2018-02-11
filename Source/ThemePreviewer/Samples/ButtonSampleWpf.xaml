@@ -15,9 +15,22 @@
   </UserControl.Resources>
   <Grid Margin="3">
     <StackPanel>
-      <Button Content="Button" Margin="0,0,0,6" HorizontalAlignment="Left"/>
-      <Button x:Name="defaulted" Content="Default" IsDefault="True" Margin="0,0,0,6" HorizontalAlignment="Left"/>
-      <Button Content="Disabled" IsEnabled="False" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+      <StackPanel Orientation="Horizontal">
+        <StackPanel>
+          <Button Content="Button" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+          <Button x:Name="defaulted" Content="Default" IsDefault="True" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+          <Button Content="Disabled" IsEnabled="False" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+        </StackPanel>
+        <StackPanel Margin="22,0,0,0">
+          <Button x:Name="normalChrome" Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False"/>
+          <Button x:Name="hotChrome" Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False"/>
+          <Button x:Name="pressedChrome" Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False"/>
+          <Button x:Name="disabledChrome" IsEnabled="False" Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False"/>
+        </StackPanel>
+        <StackPanel Margin="22,0,0,0">
+          <Button Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False" Width="20" MinWidth="20" Height="200"/>
+        </StackPanel>
+      </StackPanel>
       <StackPanel Orientation="Horizontal" Margin="0,11,0,0">
         <StackPanel Orientation="Vertical" Margin="0,0,0,11" VerticalAlignment="Top">
           <CheckBox x:Name="useTransitionsFlag" IsChecked="True" Content="Transitions" Margin="0,0,0,2"/>

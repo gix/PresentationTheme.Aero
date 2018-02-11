@@ -26,6 +26,11 @@ namespace ThemePreviewer.Samples
                 var r = new VisualStyleRenderer(element);
                 r.DrawBackground(e.Graphics, new Rectangle(new Point(100, 3 + i * 29), new Size(75, 23)));
             }
+
+            {
+                var r = new VisualStyleRenderer(button);
+                r.DrawBackground(e.Graphics, new Rectangle(new Point(197, 3), new Size(20, 200)));
+            }
         }
 
         private void OnOpenButtonClicked(object sender, EventArgs eventArgs)
