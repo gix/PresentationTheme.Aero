@@ -397,7 +397,7 @@ void SendThemeChanged(HWND hwnd)
 void SendThemeChangedProcessLocal()
 {
     auto CThemeMenuMetrics_FlushAll = (void(*)())(
-        (uintptr_t)GetModuleHandleW(L"uxtheme") + 0x171B231A4 - 0x171B00000);
+        (uintptr_t)GetModuleHandleW(L"uxtheme") + 0x171B21764 - 0x171B00000);
     CThemeMenuMetrics_FlushAll();
 
     EnumProcessWindows(GetCurrentProcessId(), [](HWND hwnd, LPARAM param) -> BOOL {

@@ -90,6 +90,7 @@ struct CBaseRefObj
     virtual DWORD Release();
 };
 
+#if 0 // PRE 1709
 struct CThemeMenuMetrics : CBaseRefObj
 {
     HTHEME hTheme;
@@ -118,6 +119,31 @@ struct CThemeMenuMetrics : CBaseRefObj
     int iPopupBorderSize;
     int iPopupBgBorderSize;
 };
+#endif
+
+struct CThemeMenuMetrics : CBaseRefObj
+{
+    HTHEME hTheme;
+    HWND hwndTheme;
+    int dpi;
+    int iBarBorderSize;
+    MARGINS marBarItem;
+    MARGINS marPopupCheckBackground;
+    MARGINS marPopupItem;
+    MARGINS marPopupItems[4];
+    MARGINS marPopupSubmenu;
+    MARGINS marPopupOwnerDrawnItem;
+    SIZE sizePopupCheck;
+    SIZE sizePopupSubmenu;
+    SIZE sizePopupSeparator;
+    int iPopupBorderSize;
+    int iPopupBgBorderSize;
+};
+
+static bool IsSizeEmpty(SIZE const& size)
+{
+    return size.cx == 0 || size.cy == 0;
+}
 
 struct CThemeMenu : CBaseRefObj
 {
@@ -129,6 +155,59 @@ struct CThemeMenu : CBaseRefObj
 
 struct CThemeMenuBar : CThemeMenu
 {
+    struct DRAWITEMMETRICS
+    {
+        RECT rgrc[2];
+    };
+
+    BARITEMSTATES ToItemStateId(UINT uItemState)
+    {
+        BOOL const fIsHot = uItemState & ODS_HOTLIGHT;
+        BOOL const fIsPushed = uItemState & ODS_SELECTED;
+
+        if (uItemState & (ODS_INACTIVE | ODS_DISABLED)) {
+            if (fIsHot)
+                return MBI_DISABLEDHOT;
+            if (fIsPushed)
+                return MBI_DISABLEDPUSHED;
+            return MBI_DISABLED;
+        }
+
+        if (fIsHot)
+            return MBI_HOT;
+        if (fIsPushed)
+            return MBI_PUSHED;
+
+        return MBI_NORMAL;
+    }
+
+    void LayoutItem(RECT const* prcItem,
+                    SIZE const* prgSize, DRAWITEMMETRICS* dim)
+    {
+        int const cyItem = prcItem->bottom - prcItem->top;
+        int cx = prcItem->left + _spMetrics->marBarItem.cxLeftWidth;
+
+        bool fHasRect = false;
+        for (int i = 0; i < 2; ++i) {
+            if (!IsSizeEmpty(prgSize[i])) {
+                dim->rgrc[i].right = prgSize[i].cx;
+                dim->rgrc[i].bottom = prgSize[i].cy;
+
+                if (!fHasRect)
+                    fHasRect = true;
+                else
+                    cx += _spMetrics->iBarBorderSize;
+                auto cy = (cyItem - prgSize[i].cy) / 2 + prcItem->top;
+                OffsetRect(&dim->rgrc[i], cx, cy);
+                cx += prgSize[i].cx;
+            }
+        }
+
+        if (!fHasRect) {
+            dim->rgrc[1].bottom = cyItem;
+            dim->rgrc[1].right = prcItem->right - prcItem->left;
+        }
+    }
 };
 
 using namespace uxtheme;
@@ -908,50 +987,11 @@ static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd,
         return;
     }
 
-    RECT dstRects[2] = {};
-    {
-        bool hasBar = false;
-        long itemHeight = pudmi->dis.rcItem.bottom - pudmi->dis.rcItem.top;
-        int dx = pudmi->dis.rcItem.left + this_->_spMetrics->marBarItem.cxLeftWidth;
-        for (int i = 0; i < 2; ++i) {
-            SIZE const& barSize = pudmi->umi.umim.rgsizeBar[i];
-            RECT& rect = dstRects[i];
+    CThemeMenuBar::DRAWITEMMETRICS dim = {};
+    this_->LayoutItem(&pudmi->dis.rcItem, pudmi->umi.umim.rgsizeBar, &dim);
 
-            if (barSize.cx != 0 && barSize.cy != 0) {
-                rect.right = barSize.cx;
-                rect.bottom = barSize.cy;
-
-                if (!hasBar)
-                    hasBar = true;
-                else
-                    dx += this_->_spMetrics->iBarBorderSize;
-                auto dy = (itemHeight - barSize.cy) / 2 + pudmi->dis.rcItem.top;
-                OffsetRect(&rect, dx, dy);
-                dx += barSize.cx;
-            }
-        }
-
-        if (!hasBar) {
-            dstRects[1].bottom = itemHeight;
-            dstRects[1].right = pudmi->dis.rcItem.right - pudmi->dis.rcItem.left;
-        }
-    }
-
-    int iPartId = this_->_spMetrics->iBarItem;
-    int iStateId;
-    if (pudmi->dis.itemState & (ODS_INACTIVE | ODS_DISABLED)) {
-        if (pudmi->dis.itemState & ODS_HOTLIGHT)
-            iStateId = MBI_DISABLEDHOT;
-        else if (pudmi->dis.itemState & ODS_SELECTED)
-            iStateId = MBI_DISABLEDPUSHED;
-        else
-            iStateId = MBI_DISABLED;
-    } else if (pudmi->dis.itemState & ODS_HOTLIGHT)
-        iStateId = MBI_HOT;
-    else if (pudmi->dis.itemState & ODS_SELECTED)
-        iStateId = MBI_PUSHED;
-    else
-        iStateId = MBI_NORMAL;
+    MENUPARTS const iPartId = MENU_BARITEM;
+    BARITEMSTATES const iStateId = this_->ToItemStateId(pudmi->dis.itemState);
 
     if (IsThemeBackgroundPartiallyTransparent(this_->_spMetrics->hTheme, iPartId, iStateId)) {
         this_->DrawClientArea(hwnd, pudmi->um.hmenu,
@@ -974,7 +1014,7 @@ static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd,
             textFlags |= DT_HIDEPREFIX;
 
         DrawThemeText(this_->_spMetrics->hTheme, pudmi->dis.hDC, iPartId,
-                      iStateId, mii.dwTypeData, mii.cch, textFlags, 0, &dstRects[1]);
+                      iStateId, mii.dwTypeData, mii.cch, textFlags, 0, &dim.rgrc[1]);
     }
 }
 
@@ -1022,8 +1062,8 @@ THEMEEXAPI UxHook()
     ADD_HOOK(OpenThemeData);
     ADD_HOOK(OpenThemeDataEx);
     //ADD_HOOK(CloseThemeData);
-    ADD_HOOK2(OpenThemeDataExInternal, (void*)((uintptr_t)uxtheme + 0x171B16F34 - 0x171B00000));
-    ADD_HOOK2(CThemeMenuBar_DrawItem, (void*)((uintptr_t)uxtheme + 0x171B106D0 - 0x171B00000));
+    ADD_HOOK2(OpenThemeDataExInternal, (void*)((uintptr_t)uxtheme + 0x171B12BF8 - 0x171B00000));
+    ADD_HOOK2(CThemeMenuBar_DrawItem, (void*)((uintptr_t)uxtheme + 0x171B0C1F0 - 0x171B00000));
     ADD_HOOK(GetThemeAnimationProperty);
     ADD_HOOK(GetThemeAnimationTransform);
     ADD_HOOK(GetThemeBackgroundContentRect);
