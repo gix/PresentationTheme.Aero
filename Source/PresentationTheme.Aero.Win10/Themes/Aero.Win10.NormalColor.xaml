@@ -592,14 +592,6 @@
     </Setter>
   </Style>
 
-  <Geometry x:Key="Checkbox.CheckMark">
-    F1 M 1.3875,4.6875 3.8875,7.1875 9.6375,1.4375 10.5125,2.3125 3.7625,9.0625 0.3875,5.6875 z
-  </Geometry>
-
-  <Geometry x:Key="Checkbox.IndeterminateMark">
-    F1 M 0,0 7,0 7,7 0,7 z
-  </Geometry>
-
   <Style TargetType="{x:Type CheckBox}">
     <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
     <Setter Property="Background" Value="{StaticResource CheckBox.Background.Normal}"/>
@@ -1187,7 +1179,6 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-
             <Path x:Name="Glyph"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Center"
@@ -1197,7 +1188,6 @@
                   Height="19"
                   Margin="2,1,3,1"
                   Stretch="None"/>
-
           </Border>
         </ControlTemplate>
       </Setter.Value>
@@ -1585,7 +1575,6 @@
   <SolidColorBrush x:Key="Header.Border.Hot" Color="#FFD9EBF9" po:Freeze="True"/>
   <SolidColorBrush x:Key="Header.Border.Pressed" Color="#FFBCDCF4" po:Freeze="True"/>
 
-  <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Normal" Color="Transparent" po:Freeze="True"/>
   <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Hot" Color="#1A0089FF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Explorer.ListView.Item.Border.Hot" Color="#1A0089FF" po:Freeze="True"/>
   <SolidColorBrush x:Key="Explorer.ListView.Item.Background.Selected" Color="#32008AFF" po:Freeze="True"/>
@@ -2747,8 +2736,8 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ContextMenu}">
           <aero10:SystemDropShadowChrome x:Name="Shdw"
-                                        Color="Transparent"
-                                        SnapsToDevicePixels="True">
+                                         Color="Transparent"
+                                         SnapsToDevicePixels="True">
             <Border x:Name="ContextMenuBorder"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
@@ -3606,35 +3595,7 @@
 
   <!-- TreeView ============================================================ -->
 
-  <PathGeometry x:Key="TreeArrow">
-    <PathGeometry.Figures>
-      <PathFigureCollection>
-        <PathFigure IsFilled="True" StartPoint="0 0" IsClosed="True">
-          <PathFigure.Segments>
-            <PathSegmentCollection>
-              <LineSegment Point="0 6"/>
-              <LineSegment Point="6 0"/>
-            </PathSegmentCollection>
-          </PathFigure.Segments>
-        </PathFigure>
-      </PathFigureCollection>
-    </PathGeometry.Figures>
-  </PathGeometry>
-
-  <DrawingImage x:Key="TreeViewGlyphMinus">
-    <DrawingImage.Drawing>
-      <DrawingGroup>
-        <GeometryDrawing Brush="#FFBABBBC" Geometry="M0,0 1,0 1,1 0,1 z  M8,0 9,0 9,1 8,1 z  M8,8 9,8 9,9 8,9 z  M0,8 1,8 1,9 0,9 z"/>
-        <GeometryDrawing Brush="#FF919191" Geometry="M1,0 8,0 8,1 1,1 z  M9,1 9,8 8,8 8,1 z  M8,9 1,9 1,8 8,8 z  M0,8 0,1 1,1 1,8 z"/>
-        <GeometryDrawing Brush="#FFFAFBFB" Geometry="M1,1 8,1 8,4 1,4 z"/>
-        <GeometryDrawing Brush="#FFEDEDEC" Geometry="M1,4 8,4 8,6 1,6 z"/>
-        <GeometryDrawing Brush="#FFE3E3E3" Geometry="M1,6 8,6 8,8 1,8 z"/>
-        <GeometryDrawing Brush="#FF4B63A7" Geometry="M2,4 7,4 7,5 2,5 z"/>
-      </DrawingGroup>
-    </DrawingImage.Drawing>
-  </DrawingImage>
-
-  <DrawingImage x:Key="TreeViewGlyphPlus">
+  <DrawingImage x:Key="TreeView.Glyph.Plus">
     <DrawingImage.Drawing>
       <DrawingGroup>
         <GeometryDrawing Brush="#FFBABBBC" Geometry="M0,0 1,0 1,1 0,1 z  M8,0 9,0 9,1 8,1 z  M8,8 9,8 9,9 8,9 z  M0,8 1,8 1,9 0,9 z"/>
@@ -3648,6 +3609,19 @@
     </DrawingImage.Drawing>
   </DrawingImage>
 
+  <DrawingImage x:Key="TreeView.Glyph.Minus">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#FFBABBBC" Geometry="M0,0 1,0 1,1 0,1 z  M8,0 9,0 9,1 8,1 z  M8,8 9,8 9,9 8,9 z  M0,8 1,8 1,9 0,9 z"/>
+        <GeometryDrawing Brush="#FF919191" Geometry="M1,0 8,0 8,1 1,1 z  M9,1 9,8 8,8 8,1 z  M8,9 1,9 1,8 8,8 z  M0,8 0,1 1,1 1,8 z"/>
+        <GeometryDrawing Brush="#FFFAFBFB" Geometry="M1,1 8,1 8,4 1,4 z"/>
+        <GeometryDrawing Brush="#FFEDEDEC" Geometry="M1,4 8,4 8,6 1,6 z"/>
+        <GeometryDrawing Brush="#FFE3E3E3" Geometry="M1,6 8,6 8,8 1,8 z"/>
+        <GeometryDrawing Brush="#FF4B63A7" Geometry="M2,4 7,4 7,5 2,5 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
   <Style x:Key="TreeViewItem.ExpanderStyle" TargetType="{x:Type ToggleButton}">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Width" Value="19"/>
@@ -3656,12 +3630,12 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
           <Border Background="Transparent">
-            <Image x:Name="Glyph" Source="{StaticResource TreeViewGlyphPlus}"
+            <Image x:Name="Glyph" Source="{StaticResource TreeView.Glyph.Plus}"
                    Width="9" Height="9" Margin="5,4,5,3"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource TreeViewGlyphMinus}"/>
+              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource TreeView.Glyph.Minus}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

@@ -2917,37 +2917,22 @@
 
   <!-- TreeView ============================================================ -->
 
-  <PathGeometry x:Key="TreeArrow">
-    <PathGeometry.Figures>
-      <PathFigureCollection>
-        <PathFigure IsFilled="True" StartPoint="0 0" IsClosed="True">
-          <PathFigure.Segments>
-            <PathSegmentCollection>
-              <LineSegment Point="0 6"/>
-              <LineSegment Point="6 0"/>
-            </PathSegmentCollection>
-          </PathFigure.Segments>
-        </PathFigure>
-      </PathFigureCollection>
-    </PathGeometry.Figures>
-  </PathGeometry>
-
-  <DrawingImage x:Key="TreeViewGlyphMinus">
-    <DrawingImage.Drawing>
-      <DrawingGroup>
-        <GeometryDrawing Brush="#FFA3A3A3" Geometry="M0,0 9,0 9,9 0,9 z"/>
-        <GeometryDrawing Brush="#FFE2E2E2" Geometry="M1,1 8,1 8,8 1,8 z"/>
-        <GeometryDrawing Brush="#FF333333" Geometry="M2,4 7,4 7,5 2,5 z"/>
-      </DrawingGroup>
-    </DrawingImage.Drawing>
-  </DrawingImage>
-
-  <DrawingImage x:Key="TreeViewGlyphPlus">
+  <DrawingImage x:Key="TreeView.Glyph.Plus">
     <DrawingImage.Drawing>
       <DrawingGroup>
         <GeometryDrawing Brush="#FFA3A3A3" Geometry="M0,0 9,0 9,9 0,9 z"/>
         <GeometryDrawing Brush="#FFE2E2E2" Geometry="M1,1 8,1 8,8 1,8 z"/>
         <GeometryDrawing Brush="#FF333333" Geometry="M2,4 4,4 4,2 5,2 5,4 7,4 7,5 5,5 5,7 4,7 4,5 2,5 z"/>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <DrawingImage x:Key="TreeView.Glyph.Minus">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="#FFA3A3A3" Geometry="M0,0 9,0 9,9 0,9 z"/>
+        <GeometryDrawing Brush="#FFE2E2E2" Geometry="M1,1 8,1 8,8 1,8 z"/>
+        <GeometryDrawing Brush="#FF333333" Geometry="M2,4 7,4 7,5 2,5 z"/>
       </DrawingGroup>
     </DrawingImage.Drawing>
   </DrawingImage>
@@ -2960,12 +2945,12 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
           <Border Background="Transparent">
-            <Image x:Name="Glyph" Source="{StaticResource TreeViewGlyphPlus}"
+            <Image x:Name="Glyph" Source="{StaticResource TreeView.Glyph.Plus}"
                    Width="9" Height="9" Margin="0,3,0,0"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource TreeViewGlyphMinus}"/>
+              <Setter TargetName="Glyph" Property="Source" Value="{StaticResource TreeView.Glyph.Minus}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

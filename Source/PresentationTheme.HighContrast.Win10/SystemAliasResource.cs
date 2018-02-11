@@ -95,7 +95,6 @@ namespace PresentationTheme.HighContrast.Win10
 
                 case "DataGrid.GridLine.Normal": return SystemColors.ControlDarkBrushKey;
 
-                case "Explorer.ListView.Item.Background.Normal": return SystemColors.ControlBrushKey;
                 case "Explorer.ListView.Item.Background.Hot": return SystemColors.ControlBrushKey;
                 case "Explorer.ListView.Item.Background.Selected": return SystemColors.HighlightBrushKey;
                 case "Explorer.ListView.Item.Background.HotSelected": return SystemColors.HighlightBrushKey;
@@ -109,7 +108,6 @@ namespace PresentationTheme.HighContrast.Win10
                 case "Explorer.ListView.Item.Foreground.HotSelected": return SystemColors.WindowTextBrushKey;
                 case "Explorer.ListView.Item.Foreground.SelectedNotFocus": return SystemColors.WindowTextBrushKey;
 
-                case "Explorer.TreeViewItem.Background.Normal": return SystemColors.ControlBrushKey;
                 case "Explorer.TreeViewItem.Background.Hot": return SystemColors.ControlBrushKey;
                 case "Explorer.TreeViewItem.Background.Selected": return SystemColors.HighlightBrushKey;
                 case "Explorer.TreeViewItem.Background.HotSelected": return SystemColors.HighlightBrushKey;
