@@ -1,5 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win8.*"/>
     <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win10.*"/>
     <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win10.*"/>
     <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win10.*"/>

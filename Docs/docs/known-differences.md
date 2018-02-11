@@ -85,3 +85,9 @@ StatusBar
 StatusBar items with separators have a slighty different width if the same
 widths are specified because the native theme treats separators as part of an
 item while WPF uses [Separators](xref:System.Windows.Controls.Separator).
+
+
+Known Differences of the Windows 8/8.1 Aero Theme
+=================================================
+
+The differences are similar to those described for the Windows 10 theme.

@@ -19,6 +19,7 @@ Installation
 Assembly                                 | Description
 -----------------------------------------|-------------------------------
 PresentationTheme.Aero.dll               | Shared assembly with utilities
+PresentationTheme.Aero.Win8.dll          | Windows 8/8.1 Aero theme
 PresentationTheme.Aero.Win10.dll         | Windows 10 Aero theme
 PresentationTheme.AeroLite.Win10.dll     | Windows 10 AeroLite theme
 PresentationTheme.HighContrast.Win10.dll | Windows 10 High Contrast theme
@@ -27,8 +28,9 @@ Only the first assembly should be referenced. The other theme assemblies are
 loaded when necessary.
 
 > [!IMPORTANT]
-> Because the theme assemblies are normally not referenced, they have to
-> be copied manually to the build output directory.
+> Because the theme assemblies are not (and usually should not) be referenced by
+> projects using PresentationTheme.Aero.dll, they have to be included manually
+> in any packaging or setup.
 
 
 How do I use the theme?
@@ -139,8 +141,9 @@ It chooses the following theme resource assemblies:
 
 System Theme                     | Theme Resource Assembly
 ---------------------------------|-----------------------------------------
-Windows 10 with Aero theme       | PresentationTheme.Aero.Win10.dll        
-Windows 10 with AeroLite theme   | PresentationTheme.AeroLite.Win10.dll    
+Windows 8/8.1 with Aero theme    | PresentationTheme.Aero.Win8.dll
+Windows 10 with Aero theme       | PresentationTheme.Aero.Win10.dll
+Windows 10 with AeroLite theme   | PresentationTheme.AeroLite.Win10.dll
 Windows 10 in high contrast mode | PresentationTheme.HighContrast.Win10.dll
 
 > [!WARNING]

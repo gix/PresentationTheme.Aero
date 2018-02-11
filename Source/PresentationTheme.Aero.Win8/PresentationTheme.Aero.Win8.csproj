@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,8 +10,8 @@
     <RootNamespace>PresentationTheme.Aero.Win8</RootNamespace>
     <AssemblyName>PresentationTheme.Aero.Win8</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,50 +29,54 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\build\any\bin\PresentationTheme.Aero.Win8.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AeroWin8Theme.cs" />
-    <Compile Include="GridViewColumnHeaderChrome.cs" />
-    <Compile Include="ListViewItemChrome.cs" />
+    <Compile Include="AutoDropShadowPopup.cs" />
+    <Compile Include="ButtonChrome.cs" />
+    <Compile Include="DataGridLinesVisibilityConverter.cs" />
+    <Compile Include="DoubleUtil.cs" />
+    <Compile Include="EqualsConverter.cs" />
+    <Compile Include="HeaderChrome.cs" />
+    <Compile Include="LayoutHelper.cs" />
+    <Compile Include="MenuScrollingEnabledConverter.cs" />
+    <Compile Include="ProgressBarChrome.cs" />
+    <Compile Include="RoundingTabPanel.cs" />
+    <Compile Include="ScrollBarChrome.cs" />
+    <Compile Include="SystemDropShadowChrome.cs" />
+    <Compile Include="TextBoxChrome.cs" />
+    <Compile Include="ThicknessMaskConverter.cs" />
+    <Compile Include="TickBarEx.cs" />
     <Compile Include="TypeOfConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\AeroWin8\Common.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\AeroWin8\ListView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\AeroWin8\Menu.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\AeroWin8\ScrollBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Aero.Win8.NormalColor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Progress.MoveOverlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Progress.PulseOverlay.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\PresentationTheme.Aero.VersionInfo.cs">
+      <Link>Properties\PresentationTheme.Aero.VersionInfo.cs</Link>
+    </Compile>
+    <Compile Condition=" '$(IncludeCommitInfo)' == 'true' " Include="..\PresentationTheme.Aero.CommitInfo.cs">
+      <Link>Properties\PresentationTheme.Aero.CommitInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">

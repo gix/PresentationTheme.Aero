@@ -3,6 +3,7 @@
          ToolsVersion="15.0" DefaultTargets="Package">
   <ItemGroup>
     <Project Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
+    <Project Include="Source\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj"/>
     <Project Include="Source\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj"/>
     <Project Include="Source\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj"/>
     <Project Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>

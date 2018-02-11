@@ -19,6 +19,10 @@ namespace PresentationTheme.Aero
     ///     The policy chooses the following theme resource assemblies:
     ///     <list type="table">
     ///       <item>
+    ///         <term>Windows 8 with Aero theme</term>
+    ///         <description><c>PresentationTheme.Aero.Win8.dll</c></description>
+    ///       </item>
+    ///       <item>
     ///         <term>Windows 10 with Aero theme</term>
     ///         <description><c>PresentationTheme.Aero.Win10.dll</c></description>
     ///       </item>
@@ -97,21 +101,22 @@ namespace PresentationTheme.Aero
             var win8 = new Version(6, 2);
             var win10 = new Version(10, 0);
 
-            string resourceName = null;
             if (string.Equals(themeName, "Aero", StringComparison.OrdinalIgnoreCase)) {
                 if (osVersion >= win10)
-                    resourceName = "Aero.Win10";
+                    return "Aero.Win10";
+                if(osVersion >= win8)
+                    return "Aero.Win8";
             } else if (string.Equals(themeName, "AeroLite", StringComparison.OrdinalIgnoreCase)) {
                 if (highContrast) {
                     if (osVersion >= win10)
-                        resourceName = "HighContrast.Win10";
+                        return "HighContrast.Win10";
                 } else {
                     if (osVersion >= win10)
-                        resourceName = "AeroLite.Win10";
+                        return "AeroLite.Win10";
                 }
             }
 
-            return resourceName;
+            return null;
         }
 
         private static AssemblyName GetFullAssemblyNameFromPartialName(

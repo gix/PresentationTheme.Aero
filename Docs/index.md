@@ -68,5 +68,11 @@ documentType: index
 ![Windows 10 High Contrast #1](images/preview-hc1-win10.png)
       </div>
     </div>
+    <div class="row">
+      <div class="text-center">
+        <p class="lead">Includes Windows 8/8.1 Aero theme.</p>
+![Windows 10 Aero](images/preview-aero-win8.png)
+      </div>
+    </div>
   </div>
 </div>
