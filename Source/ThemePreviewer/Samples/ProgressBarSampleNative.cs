@@ -17,7 +17,7 @@ namespace ThemePreviewer.Samples
         private void CreateOptions()
         {
             options.Add(new IntControlOption<ProgressBar>(
-                new[] { progressBar7 },
+                new ProgressBar[] { progressBar7 },
                 "MarqueeSpeed",
                 c => c.MarqueeAnimationSpeed,
                 (c, v) => c.MarqueeAnimationSpeed = v));
