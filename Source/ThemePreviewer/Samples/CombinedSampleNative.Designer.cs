@@ -57,7 +57,7 @@
             // trackBarEx1
             // 
             this.trackBarEx1.BackColor = System.Drawing.SystemColors.Control;
-            this.trackBarEx1.Location = new System.Drawing.Point(116, 109);
+            this.trackBarEx1.Location = new System.Drawing.Point(112, 85);
             this.trackBarEx1.Name = "trackBarEx1";
             this.trackBarEx1.Size = new System.Drawing.Size(75, 45);
             this.trackBarEx1.TabIndex = 6;
@@ -84,6 +84,7 @@
             this.tabPage1.Controls.Add(this.checkBox1);
             this.tabPage1.Controls.Add(this.radioButton1);
             this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.trackBarEx1);
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -223,7 +224,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.trackBarEx1);
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "CombinedSampleNative";
