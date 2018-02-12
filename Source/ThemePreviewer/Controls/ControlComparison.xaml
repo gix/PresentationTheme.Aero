@@ -104,7 +104,8 @@
       </Style.Triggers>
     </Style>
   </UserControl.Resources>
-  <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+  <Grid Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
+        SizeChanged="OnGridSizeChanged">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition/>
@@ -112,11 +113,11 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="200"/>
       <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="200" x:Name="NativeCol"/>
       <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="200" x:Name="WpfCol"/>
       <ColumnDefinition Width="Auto"/>
-      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="*" x:Name="DiffCol"/>
     </Grid.ColumnDefinitions>
 
     <GridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Style="{StaticResource SplitterStyle}"/>

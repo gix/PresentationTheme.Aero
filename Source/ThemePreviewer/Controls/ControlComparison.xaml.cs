@@ -3,13 +3,15 @@ namespace ThemePreviewer.Controls
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Linq;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
-    using System.Windows.Forms;
     using System.Windows.Media;
     using System.Windows.Threading;
     using Binding = System.Windows.Data.Binding;
+    using Control = System.Windows.Forms.Control;
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
     public partial class ControlComparison
@@ -224,6 +226,18 @@ namespace ThemePreviewer.Controls
                 BindingOperations.ClearBinding(WpfHost, WidthProperty);
                 WpfHost.HorizontalAlignment = HorizontalAlignment.Stretch;
             }
+        }
+
+        private void OnGridSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var grid = (Grid)sender;
+
+            double available = grid.ActualWidth - grid.ColumnDefinitions
+                                   .Where(x => x != NativeCol && x != WpfCol && x != DiffCol)
+                                   .Sum(x => x.ActualWidth);
+            double colWidth = Math.Floor(available / 3);
+            NativeCol.Width = new GridLength(colWidth);
+            WpfCol.Width = new GridLength(colWidth);
         }
     }
 }
