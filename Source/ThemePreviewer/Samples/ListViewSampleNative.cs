@@ -18,11 +18,13 @@ namespace ThemePreviewer.Samples
             sysListView.Items.AddRange(CreateItems().ToArray());
             sysListView.FullRowSelect = true;
             sysListView.HideSelection = false;
+            sysListView.AllowColumnReorder = true;
             sysListView.ColumnClick += (s, e) => sysListView.ToggleSort(e.Column);
 
             explorerListView.Items.AddRange(CreateItems().ToArray());
             explorerListView.FullRowSelect = true;
             explorerListView.HideSelection = false;
+            sysListView.AllowColumnReorder = true;
             explorerListView.ColumnClick += (s, e) => explorerListView.ToggleSort(e.Column);
 
             sysListView.Sort(0, SortOrder.Ascending);
