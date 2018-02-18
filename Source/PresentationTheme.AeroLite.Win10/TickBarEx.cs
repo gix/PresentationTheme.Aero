@@ -41,7 +41,7 @@ namespace PresentationTheme.AeroLite.Win10
         ///         <description><see cref="SelectionTickBrushProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
         ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>

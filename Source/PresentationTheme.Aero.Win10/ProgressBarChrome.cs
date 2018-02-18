@@ -75,7 +75,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="IsIndeterminateProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>
@@ -119,7 +119,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="OrientationProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsMeasure"/>
         ///         </description>

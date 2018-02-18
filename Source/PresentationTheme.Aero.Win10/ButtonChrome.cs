@@ -54,7 +54,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderEnabledProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>
@@ -97,7 +97,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderHotProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>
@@ -140,7 +140,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderPressedProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>
@@ -183,7 +183,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderFocusedProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>
@@ -225,7 +225,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderDefaultedProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>None</description>
         ///       </item>
         ///     </list>

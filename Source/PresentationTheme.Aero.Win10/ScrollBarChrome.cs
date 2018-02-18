@@ -54,7 +54,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="OrientationProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsMeasure"/>
         ///         </description>
@@ -95,7 +95,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="BackgroundProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
         ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
@@ -140,7 +140,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="LightBorderBrushProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
         ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
@@ -185,7 +185,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="DarkBorderBrushProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>,
         ///           <see cref="FrameworkPropertyMetadata.SubPropertiesDoNotAffectRender"/>
@@ -230,7 +230,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="RenderHoverProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
         ///         </description>
@@ -269,7 +269,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="ParentElementProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
         ///         </description>

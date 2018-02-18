@@ -74,7 +74,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="ColorProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
         ///         </description>
@@ -103,7 +103,7 @@ namespace PresentationTheme.Aero.Win10
         ///         <description><see cref="CornerRadiusProperty"/></description>
         ///       </item>
         ///       <item>
-        ///         <term>Metadata properties set to <b>true</b></term>
+        ///         <term>Metadata properties set to <see langword="true"/></term>
         ///         <description>
         ///           <see cref="FrameworkPropertyMetadata.AffectsRender"/>
         ///         </description>
