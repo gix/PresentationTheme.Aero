@@ -6,9 +6,11 @@ namespace ThemeBrowser
     using System.IO;
     using System.Linq;
     using System.Windows.Media.Imaging;
+    using ThemeBrowser.Extensions;
     using ThemeCore;
     using ThemeCore.Native;
     using Color = ThemeCore.Color;
+    using ColorUtils = ThemeCore.ColorUtils;
 
     public abstract class ThemePropertyContainer
     {
@@ -233,14 +235,8 @@ namespace ThemeBrowser
 
         public BitmapImage LoadBitmap()
         {
-            using (var stream = OpenStream()) {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.StreamSource = stream;
-                image.EndInit();
-                image.Freeze();
-                return image;
-            }
+            using (var stream = OpenStream())
+                return ImagingUtils.LoadPremultipliedBitmapImageFromStream(stream);
         }
 
         public Bitmap LoadDrawingBitmap()

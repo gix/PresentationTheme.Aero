@@ -83,8 +83,6 @@
           </Border>
         </Border>
       </ScrollViewer>
-      <TextBlock Text="{Binding PixelColorPremultiplied, ElementName=srcImageColorPicker}"
-                 Style="{StaticResource ColorOverlayBox}"/>
     </Grid>
 
     <GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Style="{StaticResource VertSplitter}"/>
@@ -185,8 +183,6 @@
           </Border>
         </Border>
       </ScrollViewer>
-      <TextBlock Text="{Binding PixelColorPremultiplied, ElementName=diffImageColorPicker}"
-                 Style="{StaticResource ColorOverlayBox}"/>
     </Grid>
   </Grid>
 </Window>

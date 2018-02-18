@@ -8,6 +8,7 @@ namespace ThemeBrowser
     using System.Windows.Interactivity;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using ThemeBrowser.Extensions;
 
     public class ImageColorPickerBehavior : Behavior<Image>
     {
@@ -25,7 +26,7 @@ namespace ThemeBrowser
 
             public T Clear()
             {
-                T ret = Value;
+                var ret = Value;
                 Value = default(T);
                 HasValue = false;
                 return ret;
@@ -46,33 +47,6 @@ namespace ThemeBrowser
             }
         }
 
-        private static readonly DependencyPropertyKey PixelColorPremultipliedPropertyKey =
-            DependencyProperty.RegisterReadOnly(
-                nameof(PixelColorPremultiplied),
-                typeof(Color?),
-                typeof(ImageColorPickerBehavior),
-                new PropertyMetadata(null, OnPixelColorPremultipliedChanged));
-
-        public static readonly DependencyProperty PixelColorPremultipliedProperty =
-            PixelColorPremultipliedPropertyKey.DependencyProperty;
-
-        public Color? PixelColorPremultiplied
-        {
-            get => (Color?)GetValue(PixelColorPremultipliedProperty);
-            private set => SetValue(PixelColorPremultipliedPropertyKey, value);
-        }
-
-        private static void OnPixelColorPremultipliedChanged(
-            DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var source = (ImageColorPickerBehavior)d;
-            var newColor = (Color?)e.NewValue;
-            if (newColor != null)
-                source.PixelColor = Unpremultiply(newColor.Value);
-            else
-                source.PixelColor = null;
-        }
-
         private static readonly DependencyPropertyKey PixelColorPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(PixelColor),
@@ -87,6 +61,22 @@ namespace ThemeBrowser
         {
             get => (Color?)GetValue(PixelColorProperty);
             private set => SetValue(PixelColorPropertyKey, value);
+        }
+
+        private static readonly DependencyPropertyKey PixelColorPremultipliedPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(PixelColorPremultiplied),
+                typeof(Color?),
+                typeof(ImageColorPickerBehavior),
+                new PropertyMetadata(null));
+
+        public static readonly DependencyProperty PixelColorPremultipliedProperty =
+            PixelColorPremultipliedPropertyKey.DependencyProperty;
+
+        public Color? PixelColorPremultiplied
+        {
+            get => (Color?)GetValue(PixelColorPremultipliedProperty);
+            private set => SetValue(PixelColorPremultipliedPropertyKey, value);
         }
 
         protected override void OnAttached()
@@ -189,9 +179,15 @@ namespace ThemeBrowser
             if (!toolTip.IsOpen)
                 ShowPicker();
 
-            Point localPos = Mouse.GetPosition(AssociatedObject);
-            PixelColorPremultiplied = GetPixelColor(
-                AssociatedObject, localPos, out int x, out int y);
+            var localPos = Mouse.GetPosition(AssociatedObject);
+            var color = GetPixelColor(AssociatedObject, localPos, out int x, out int y);
+            if (color == null) {
+                PixelColor = null;
+                PixelColorPremultiplied = null;
+            } else {
+                PixelColor = color.Value;
+                PixelColorPremultiplied = color.Value.Premultiply();
+            }
 
             Point screenPos = AssociatedObject.PointToScreen(localPos);
             toolTip.HorizontalOffset = screenPos.X + 10;
@@ -256,35 +252,19 @@ namespace ThemeBrowser
             return GetPixelColor(bitmap, x, y);
         }
 
-        private static Color? GetPixelColor(BitmapSource bitmap, int x, int y)
+        private static unsafe Color? GetPixelColor(BitmapSource bitmap, int x, int y)
         {
             if (x >= bitmap.PixelWidth || y >= bitmap.PixelHeight)
                 return null;
 
-            var cropped = new CroppedBitmap(bitmap, new Int32Rect(x, y, 1, 1));
+            var pixels = stackalloc byte[4];
+            int stride = (bitmap.Format.BitsPerPixel + 7) / 8;
+            bitmap.CopyPixels(new Int32Rect(x, y, 1, 1), (IntPtr)pixels, 4, stride);
 
-            var pixels = new byte[4];
-            cropped.CopyPixels(pixels, 4, 0);
-
-            return Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
-        }
-
-        private static Color Unpremultiply(Color argb)
-        {
-            double a = argb.A / 255.0;
-            double r = argb.R / 255.0;
-            double g = argb.G / 255.0;
-            double b = argb.B / 255.0;
-
-            r /= a;
-            g /= a;
-            b /= a;
-
-            var ba = (byte)Math.Round(a * 255);
-            var br = (byte)Math.Round(r * 255);
-            var bg = (byte)Math.Round(g * 255);
-            var bb = (byte)Math.Round(b * 255);
-            return Color.FromArgb(ba, br, bg, bb);
+            var color = Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
+            if (bitmap.Format == PixelFormats.Pbgra32)
+                return color.Unpremultiply();
+            return color;
         }
     }
 }

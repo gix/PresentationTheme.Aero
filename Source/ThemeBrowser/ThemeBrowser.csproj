@@ -72,6 +72,7 @@
     <Compile Include="BitmapValue.cs" />
     <Compile Include="ColorToBrushConverter.cs" />
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="DisposableStreamWrapper.cs" />
     <Compile Include="Extensions\ColorUtils.cs" />
     <Compile Include="Extensions\FrameworkExtensions.cs" />
     <Compile Include="Extensions\GeometryUtils.cs" />

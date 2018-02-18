@@ -5,7 +5,6 @@ namespace ThemeBrowser
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -16,6 +15,7 @@ namespace ThemeBrowser
     using System.Windows.Interop;
     using System.Windows.Media.Imaging;
     using Microsoft.Win32;
+    using ThemeBrowser.Extensions;
     using ThemeCore;
     using ThemeCore.Native;
 
@@ -103,61 +103,13 @@ namespace ThemeBrowser
 
                     using (var output = saveDialog.OpenFile())
                     using (var input = themeBitmap.OpenStream())
-                        SaveUnpremultipliedImage(output, input);
+                        ImagingUtils.CopyUnpremultiplied(input, output);
                 }
             } catch (Exception ex) {
                 ShowError(ex, "Failed to save image");
             }
 
             return Task.CompletedTask;
-        }
-
-        private unsafe void SaveUnpremultipliedImage(Stream output, Stream input)
-        {
-            var source = new BitmapImage();
-            source.BeginInit();
-            source.StreamSource = input;
-            source.EndInit();
-
-            var image = new WriteableBitmap(source);
-
-            image.Lock();
-            try {
-                var ptr = (byte*)image.BackBuffer.ToPointer();
-                for (int h = 0; h < image.PixelHeight; ++h) {
-                    var pixel = (uint*)ptr;
-                    for (int w = 0; w < image.PixelWidth; ++w) {
-                        *pixel = Unpremultiply(*pixel);
-                        ++pixel;
-                    }
-
-                    ptr += image.BackBufferStride;
-                }
-            } finally {
-                image.Unlock();
-            }
-
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(image));
-            encoder.Save(output);
-        }
-
-        private uint Unpremultiply(uint argb)
-        {
-            double a = ((argb >> 24) & 0xFF) / 255.0;
-            double r = ((argb >> 16) & 0xFF) / 255.0;
-            double g = ((argb >> 8) & 0xFF) / 255.0;
-            double b = ((argb >> 0) & 0xFF) / 255.0;
-
-            r /= a;
-            g /= a;
-            b /= a;
-
-            var ba = (byte)Math.Round(a * 255);
-            var br = (byte)Math.Round(r * 255);
-            var bg = (byte)Math.Round(g * 255);
-            var bb = (byte)Math.Round(b * 255);
-            return bb | (uint)(bg << 8) | (uint)(br << 16) | (uint)(ba << 24);
         }
 
         private Task TraceImage(ThemeBitmapViewModel bitmap)
@@ -473,7 +425,7 @@ namespace ThemeBrowser
 
         public object SelectedItem
         {
-            get { return selectedItem; }
+            get => selectedItem;
             set
             {
                 if (SetProperty(ref selectedItem, value)) {
