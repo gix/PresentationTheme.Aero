@@ -7356,6 +7356,7 @@
           <ControlTemplate.Triggers>
             <Trigger Property="IsToday" Value="True">
               <Setter TargetName="TodayBorder" Property="Visibility" Value="Visible"/>
+              <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
             </Trigger>
             <Trigger Property="IsBlackedOut" Value="True">
               <Setter TargetName="Blackout" Property="Visibility" Value="Visible"/>
