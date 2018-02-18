@@ -10,7 +10,8 @@
         UseLayoutRounding="True"
         TextOptions.TextFormattingMode="Display"
         Width="500"
-        Height="400">
+        Height="400"
+        WindowStartupLocation="CenterOwner">
   <Window.Resources>
     <Style TargetType="{x:Type TextBlock}">
       <Setter Property="Margin" Value="3"/>

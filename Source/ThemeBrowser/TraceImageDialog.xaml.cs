@@ -1,6 +1,6 @@
 namespace ThemeBrowser
 {
-    using System;
+    using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Media;
@@ -18,8 +18,16 @@ namespace ThemeBrowser
             InitializeComponent();
             DataContext = this;
 
+            BackgroundPatterns.Add(new Pattern("Checkered", (Brush)FindResource("CheckeredBrush")));
+            BackgroundPatterns.Add(new Pattern("White", Brushes.White));
+            BackgroundPatterns.Add(new Pattern("Black", Brushes.Black));
+            BackgroundPatterns.Add(new Pattern("Magenta", Brushes.Magenta));
+            SelectedBackgroundPattern = BackgroundPatterns[0];
+
             Bitmap = bitmap;
             SourceRect = new Int32Rect(0, 0, bitmap.PixelWidth, bitmap.PixelHeight);
+
+            OnPathVisualChanged();
         }
 
         public static readonly DependencyProperty BitmapProperty =
@@ -42,12 +50,21 @@ namespace ThemeBrowser
                 typeof(TraceImageDialog),
                 new PropertyMetadata(
                     null,
-                    (d, e) => ((TraceImageDialog)d).OnSourceBitmapChanged()));
+                    (d, e) => ((TraceImageDialog)d).OnSourceBitmapChanged(),
+                    (d, b) => ((TraceImageDialog)d).CoerceSourceBitmap(b)));
 
         public BitmapSource SourceBitmap
         {
             get => (BitmapSource)GetValue(SourceBitmapProperty);
             set => SetValue(SourceBitmapProperty, value);
+        }
+
+        private object CoerceSourceBitmap(object baseValue)
+        {
+            if (Bitmap == null)
+                return null;
+
+            return new CroppedBitmap(Bitmap, SourceRect);
         }
 
         private static readonly DependencyPropertyKey DiffBitmapPropertyKey =
@@ -61,10 +78,7 @@ namespace ThemeBrowser
         public static readonly DependencyProperty DiffBitmapProperty =
             DiffBitmapPropertyKey.DependencyProperty;
 
-        public BitmapSource DiffBitmap
-        {
-            get => (BitmapSource)GetValue(DiffBitmapProperty);
-        }
+        public BitmapSource DiffBitmap => (BitmapSource)GetValue(DiffBitmapProperty);
 
         private static readonly DependencyPropertyKey TracedBitmapPropertyKey =
             DependencyProperty.RegisterReadOnly(
@@ -79,10 +93,7 @@ namespace ThemeBrowser
         public static readonly DependencyProperty TracedBitmapProperty =
             TracedBitmapPropertyKey.DependencyProperty;
 
-        public BitmapSource TracedBitmap
-        {
-            get => (BitmapSource)GetValue(TracedBitmapProperty);
-        }
+        public BitmapSource TracedBitmap => (BitmapSource)GetValue(TracedBitmapProperty);
 
         public static readonly DependencyProperty SourceRectProperty =
             DependencyProperty.Register(
@@ -100,19 +111,47 @@ namespace ThemeBrowser
             set => SetValue(SourceRectProperty, value);
         }
 
-        public static readonly DependencyProperty ShowTracedFlagProperty =
+        public sealed class Pattern
+        {
+            public Pattern(string name, Brush brush)
+            {
+                Name = name;
+                Brush = brush;
+            }
+
+            public string Name { get; }
+            public Brush Brush { get; }
+        }
+
+        public ObservableCollection<Pattern> BackgroundPatterns { get; } =
+            new ObservableCollection<Pattern>();
+
+        public static readonly DependencyProperty SelectedBackgroundPatternProperty =
             DependencyProperty.Register(
-                nameof(ShowTracedFlag),
+                nameof(SelectedBackgroundPattern),
+                typeof(Pattern),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(null));
+
+        public Pattern SelectedBackgroundPattern
+        {
+            get => (Pattern)GetValue(SelectedBackgroundPatternProperty);
+            set => SetValue(SelectedBackgroundPatternProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowDiffFlagProperty =
+            DependencyProperty.Register(
+                nameof(ShowDiffFlag),
                 typeof(bool),
                 typeof(TraceImageDialog),
                 new PropertyMetadata(
                     false,
-                    (d, e) => ((TraceImageDialog)d).OnShowTracedFlagChanged()));
+                    (d, e) => ((TraceImageDialog)d).OnShowDiffFlagChanged()));
 
-        public bool ShowTracedFlag
+        public bool ShowDiffFlag
         {
-            get => (bool)GetValue(ShowTracedFlagProperty);
-            set => SetValue(ShowTracedFlagProperty, value);
+            get => (bool)GetValue(ShowDiffFlagProperty);
+            set => SetValue(ShowDiffFlagProperty, value);
         }
 
         public static readonly DependencyProperty PathGeometryProperty =
@@ -172,6 +211,66 @@ namespace ThemeBrowser
         {
             get => (Brush)GetValue(PathFillProperty);
             set => SetValue(PathFillProperty, value);
+        }
+
+        public static readonly DependencyProperty PathStrokeProperty =
+            DependencyProperty.Register(
+                nameof(PathStroke),
+                typeof(Brush),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(
+                    null,
+                    (d, e) => ((TraceImageDialog)d).OnPathVisualChanged()));
+
+        public Brush PathStroke
+        {
+            get => (Brush)GetValue(PathStrokeProperty);
+            set => SetValue(PathStrokeProperty, value);
+        }
+
+        public static readonly DependencyProperty PathStrokeThicknessProperty =
+            DependencyProperty.Register(
+                nameof(PathStrokeThickness),
+                typeof(double),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(
+                    0.0,
+                    (d, e) => ((TraceImageDialog)d).OnPathVisualChanged()));
+
+        public double PathStrokeThickness
+        {
+            get => (double)GetValue(PathStrokeProperty);
+            set => SetValue(PathStrokeProperty, value);
+        }
+
+        public static readonly DependencyProperty PathStrokeLineJoinProperty =
+            DependencyProperty.Register(
+                nameof(PathStrokeLineJoin),
+                typeof(PenLineJoin),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(
+                    PenLineJoin.Miter,
+                    (d, e) => ((TraceImageDialog)d).OnPathVisualChanged()));
+
+        public PenLineJoin PathStrokeLineJoin
+        {
+            get => (PenLineJoin)GetValue(PathStrokeLineJoinProperty);
+            set => SetValue(PathStrokeLineJoinProperty, value);
+        }
+
+        public static readonly DependencyProperty PathStrokeLineCapProperty =
+            DependencyProperty.Register(
+                nameof(PathStrokeLineCap),
+                typeof(PenLineCap),
+                typeof(TraceImageDialog),
+                new PropertyMetadata(
+                    PenLineCap.Flat,
+                    (d, e) => ((TraceImageDialog)d).OnPathVisualChanged()));
+
+        public PenLineCap PathStrokeLineCap
+        {
+            get => (PenLineCap)GetValue(PathStrokeLineCapProperty);
+            set => SetValue(PathStrokeLineCapProperty, value);
         }
 
         public static readonly DependencyProperty PathRenderedDataProperty =
@@ -240,7 +339,7 @@ namespace ThemeBrowser
         {
             pathBorder.Width = SourceRect.Width;
             pathBorder.Height = SourceRect.Height;
-            SourceBitmap = Bitmap != null ? new CroppedBitmap(Bitmap, SourceRect) : null;
+            InvalidateProperty(SourceBitmapProperty);
         }
 
         private void OnPathDataChanged()
@@ -269,6 +368,7 @@ namespace ThemeBrowser
 
         private void OnSourceBitmapChanged()
         {
+            InvalidateProperty(TracedBitmapProperty);
             InvalidateProperty(DiffBitmapProperty);
         }
 
@@ -277,7 +377,7 @@ namespace ThemeBrowser
             InvalidateProperty(DiffBitmapProperty);
         }
 
-        private void OnShowTracedFlagChanged()
+        private void OnShowDiffFlagChanged()
         {
             InvalidateProperty(DiffBitmapProperty);
         }
@@ -289,7 +389,7 @@ namespace ThemeBrowser
 
         private object CoerceDiffBitmap(object baseValue)
         {
-            if (ShowTracedFlag)
+            if (!ShowDiffFlag)
                 return TracedBitmap;
             if (TracedBitmap != null)
                 return ImagingUtils.Difference(SourceBitmap, TracedBitmap, 0xFFFFFFFF);

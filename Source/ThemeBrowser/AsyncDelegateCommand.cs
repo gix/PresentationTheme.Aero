@@ -25,7 +25,7 @@ namespace ThemeBrowser
 
         private bool IsExecuting
         {
-            get { return isExecuting; }
+            get => isExecuting;
             set
             {
                 if (isExecuting != value) {
@@ -115,7 +115,7 @@ namespace ThemeBrowser
 
         private bool IsExecuting
         {
-            get { return isExecuting; }
+            get => isExecuting;
             set
             {
                 if (isExecuting != value) {

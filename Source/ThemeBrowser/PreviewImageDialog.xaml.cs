@@ -33,73 +33,6 @@ namespace ThemeBrowser
         }
     }
 
-    public static class DataPiping
-    {
-        public static readonly DependencyProperty DataPipesProperty =
-            DependencyProperty.RegisterAttached("DataPipes",
-            typeof(DataPipeCollection),
-            typeof(DataPiping),
-            new UIPropertyMetadata(null));
-
-        public static void SetDataPipes(DependencyObject o, DataPipeCollection value)
-        {
-            o.SetValue(DataPipesProperty, value);
-        }
-
-        public static DataPipeCollection GetDataPipes(DependencyObject o)
-        {
-            return (DataPipeCollection)o.GetValue(DataPipesProperty);
-        }
-    }
-
-    public class DataPipeCollection : FreezableCollection<DataPipe>
-    {
-    }
-
-    public class DataPipe : Freezable
-    {
-        #region Source (DependencyProperty)
-
-        public object Source
-        {
-            get => (object)GetValue(SourceProperty);
-            set => SetValue(SourceProperty, value);
-        }
-        public static readonly DependencyProperty SourceProperty =
-            DependencyProperty.Register("Source", typeof(object), typeof(DataPipe),
-            new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnSourceChanged)));
-
-        private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((DataPipe)d).OnSourceChanged(e);
-        }
-
-        protected virtual void OnSourceChanged(DependencyPropertyChangedEventArgs e)
-        {
-            Target = e.NewValue;
-        }
-
-        #endregion
-
-        #region Target (DependencyProperty)
-
-        public object Target
-        {
-            get => (object)GetValue(TargetProperty);
-            set => SetValue(TargetProperty, value);
-        }
-        public static readonly DependencyProperty TargetProperty =
-            DependencyProperty.Register("Target", typeof(object), typeof(DataPipe),
-            new FrameworkPropertyMetadata(null));
-
-        #endregion
-
-        protected override Freezable CreateInstanceCore()
-        {
-            return new DataPipe();
-        }
-    }
-
     public class PreviewImageDialogViewModel : ViewModel
     {
         private string message;
@@ -112,6 +45,7 @@ namespace ThemeBrowser
         private Int32Rect sourceRect;
         private Int32Rect destRect;
         private Int32Rect sizingMargins;
+        private Int32Rect? clippingRect;
         private int drawOption;
 
         public PreviewImageDialogViewModel(Bitmap sourceBitmap)
@@ -137,7 +71,7 @@ namespace ThemeBrowser
 
         public Int32Rect SourceRect
         {
-            get { return sourceRect; }
+            get => sourceRect;
             set
             {
                 if (SetProperty(ref sourceRect, value))
@@ -147,7 +81,7 @@ namespace ThemeBrowser
 
         public Int32Rect DestRect
         {
-            get { return destRect; }
+            get => destRect;
             set
             {
                 if (SetProperty(ref destRect, value))
@@ -157,7 +91,7 @@ namespace ThemeBrowser
 
         public Int32Rect SizingMargins
         {
-            get { return sizingMargins; }
+            get => sizingMargins;
             set
             {
                 if (SetProperty(ref sizingMargins, value))
@@ -165,11 +99,9 @@ namespace ThemeBrowser
             }
         }
 
-        private Int32Rect? clippingRect;
-
         public Int32Rect? ClippingRect
         {
-            get { return clippingRect; }
+            get => clippingRect;
             set
             {
                 if (SetProperty(ref clippingRect, value))
@@ -177,10 +109,9 @@ namespace ThemeBrowser
             }
         }
 
-
         public int DrawOption
         {
-            get { return drawOption; }
+            get => drawOption;
             set
             {
                 if (SetProperty(ref drawOption, value))
@@ -196,27 +127,27 @@ namespace ThemeBrowser
 
         public double ImageWidth
         {
-            get { return imageWidth; }
+            get => imageWidth;
             set
             {
-                if (SetProperty(ref imageWidth, value))
+                if (SetProperty(ref imageWidth, Math.Max(value, 10)))
                     RenderImage();
             }
         }
 
         public double ImageHeight
         {
-            get { return imageHeight; }
+            get => imageHeight;
             set
             {
-                if (SetProperty(ref imageHeight, value))
+                if (SetProperty(ref imageHeight, Math.Max(value, 10)))
                     RenderImage();
             }
         }
 
         private void RenderImage()
         {
-            message = null;
+            Message = null;
 
             var width = (int)ImageWidth;
             var height = (int)ImageHeight;
@@ -263,7 +194,7 @@ namespace ThemeBrowser
 
                     if (!success) {
                         var ec = Marshal.GetLastWin32Error();
-                        message = string.Format("Draw failed: ec={0} ({1})", ec, new Win32Exception(ec).Message);
+                        Message = string.Format("Draw failed: ec={0} ({1})", ec, new Win32Exception(ec).Message);
                         return;
                     }
                 }
@@ -493,9 +424,9 @@ namespace ThemeBrowser
         // need to be set first.  It also sets the maximum size of the adorned element.
         private void EnforceSize(FrameworkElement adornedElement)
         {
-            if (adornedElement.Width.Equals(Double.NaN))
+            if (adornedElement.Width.Equals(double.NaN))
                 adornedElement.Width = adornedElement.DesiredSize.Width;
-            if (adornedElement.Height.Equals(Double.NaN))
+            if (adornedElement.Height.Equals(double.NaN))
                 adornedElement.Height = adornedElement.DesiredSize.Height;
 
             if (adornedElement.Parent is FrameworkElement parent) {
