@@ -31,7 +31,7 @@ namespace ThemePreviewer
             highContrastDebugDark = new Lazy<UxColorScheme>(CreateHighContrastDebugDarkScheme);
 
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
-            wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8)", AeroWin8Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8.1)", AeroWin8Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 10)", AeroWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 10)", AeroLiteWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 10)", HighContrastWin10Theme.ResourceUri));

@@ -25,9 +25,7 @@ namespace ThemePreviewer
             var opts = ParseArgs(e.Args);
             var themeInfoProvider = new ThemeInfoProvider();
 
-            WpfThemeInfo wpfTheme;
-            NativeThemeInfo nativeTheme;
-            SelectThemes(opts, themeInfoProvider, out wpfTheme, out nativeTheme);
+            SelectThemes(opts, themeInfoProvider, out var wpfTheme, out var nativeTheme);
 
             ThemeManager.Install();
             if (wpfTheme != null) {
@@ -113,7 +111,7 @@ namespace ThemePreviewer
             switch (abbreviation) {
                 case "aero6": return "Aero (Windows Vista)";
                 case "aero7": return "Aero (Windows 7)";
-                case "aero8": return "Aero (Windows 8)";
+                case "aero8": return "Aero (Windows 8.1)";
                 case "aero10": return "Aero (Windows 10)";
                 case "aerolite6": return "Aero (Windows Vista)";
                 case "aerolite7": return "Aero Lite (Windows 7)";
