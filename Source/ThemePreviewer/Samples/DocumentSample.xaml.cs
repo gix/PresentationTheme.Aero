@@ -1,8 +1,6 @@
 namespace ThemePreviewer.Samples
 {
-    using System;
     using System.IO;
-    using System.IO.Packaging;
     using System.Windows;
     using System.Windows.Documents;
     using System.Windows.Markup;

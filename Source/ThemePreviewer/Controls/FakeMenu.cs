@@ -274,11 +274,14 @@ namespace ThemePreviewer.Controls
                 StyleNativeMethods.GetThemeColor(hTheme, iPopupItem, 0, (int)TMT.BORDERSIZE, out iPopupBorderSize);
                 StyleNativeMethods.GetThemeColor(hTheme, iPopupBackground, 0, (int)TMT.BORDERSIZE, out iPopupBgBorderSize);
                 StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iBarItem, 0, (int)TMT.CONTENTMARGINS, null, out marBarItem);
-                StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupCheck, 0, (int)TMT.CONTENTMARGINS, null, out marPopupItems[0]);
-                StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupCheck, 0, (int)TMT.CONTENTMARGINS, null, out marPopupItems[1]);
+                StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupCheck, 0, (int)TMT.CONTENTMARGINS, null, out var marPopupCheck);
                 StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupCheckBackground, 0, (int)TMT.CONTENTMARGINS, null, out marPopupCheckBackground);
                 StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupItem, 0, (int)TMT.CONTENTMARGINS, null, out marPopupItem);
                 StyleNativeMethods.GetThemeMargins(hTheme, IntPtr.Zero, iPopupSubmenu, 0, (int)TMT.CONTENTMARGINS, null, out marPopupSubmenu);
+
+                marPopupItems[0] = marPopupCheck;
+
+                marPopupItems[1] = marPopupCheck;
 
                 marPopupItems[2] = marPopupItem;
                 marPopupItems[2].cxLeftWidth = iPopupBgBorderSize;
@@ -574,43 +577,46 @@ namespace ThemePreviewer.Controls
 
                 for (int i = 0; i < 4; ++i) {
                     var w = pumi.umpm.rgcx[i];
-                    if (w != 0) {
-                        int h;
-                        switch (i) {
-                            case 0:
-                                left += marPopupCheckBackground.cxLeftWidth;
-                                goto case 1;
-                            case 1:
-                                int v24;
-                                left += w - pumi.umim.rgsizePopup[i].Width;
-                                w = pumi.umim.rgsizePopup[i].Width;
-                                v24 = pumi.umim.rgsizePopup[i].Height;
-                                h = v24 - (marPopupCheckBackground.cyTopHeight + marPopupCheckBackground.cyBottomHeight);
-                                break;
+                    if (w == 0)
+                        continue;
 
-                            case 3:
-                                left = prcItem.Right - metrics.sizePopupSubmenu.Width - marPopupItem.cxRightWidth - w;
-                                goto default;
+                    int h;
+                    switch (i) {
+                        case 0:
+                            left += marPopupCheckBackground.cxLeftWidth;
+                            goto case 1;
+                        case 1:
+                            left += w - pumi.umim.rgsizePopup[i].Width;
+                            w = pumi.umim.rgsizePopup[i].Width;
+                            h = pumi.umim.rgsizePopup[i].Height - (marPopupCheckBackground.cyTopHeight + marPopupCheckBackground.cyBottomHeight);
+                            break;
 
-                            default:
-                                h = pumi.umim.rgsizePopup[i].Height;
-                                break;
-                        }
+                        case 3:
+                            left = prcItem.Right - metrics.sizePopupSubmenu.Width - marPopupItem.cxRightWidth - w;
+                            goto default;
 
-                        var rc = Rectangle.FromLTRB(left, prcItem.Top, left + w, prcItem.Top + h);
-                        rc = Rectangle.FromLTRB(
-                            rc.Left + metrics.marPopupItems[i].cxLeftWidth,
-                            rc.Top + metrics.marPopupItems[i].cyTopHeight,
-                            rc.Right - metrics.marPopupItems[i].cxRightWidth,
-                            rc.Bottom - metrics.marPopupItems[i].cyBottomHeight);
-                        rc.Offset(0, (height - h) / 2);
-                        pdim.rgrc[i] = rc;
-
-                        if (i == 0 && pumi.umpm.rgcx[1] == 0 || i == 1)
-                            left += marPopupCheckBackground.cxRightWidth;
-
-                        left += w;
+                        default:
+                            h = pumi.umim.rgsizePopup[i].Height;
+                            break;
                     }
+
+                    var rc = Rectangle.FromLTRB(
+                        left,
+                        prcItem.Top,
+                        left + w,
+                        prcItem.Top + h);
+                    rc = Rectangle.FromLTRB(
+                        rc.Left + metrics.marPopupItems[i].cxLeftWidth,
+                        rc.Top + metrics.marPopupItems[i].cyTopHeight,
+                        rc.Right - metrics.marPopupItems[i].cxRightWidth,
+                        rc.Bottom - metrics.marPopupItems[i].cyBottomHeight);
+                    rc.Offset(0, (height - h) / 2);
+                    pdim.rgrc[i] = rc;
+
+                    if (i == 0 && pumi.umpm.rgcx[1] == 0 || i == 1)
+                        left += marPopupCheckBackground.cxRightWidth;
+
+                    left += w;
                 }
 
                 if (!isSeparator && hasSubMenu) {

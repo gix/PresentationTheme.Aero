@@ -290,7 +290,7 @@
     <Compile Include="Samples\ListViewSampleNative.Designer.cs">
       <DependentUpon>ListViewSampleNative.cs</DependentUpon>
     </Compile>
-    <Compile Include="BoolControlOption.cs" />
+    <Compile Include="Option.cs" />
     <Compile Include="Samples\ListViewSampleWpf.xaml.cs">
       <DependentUpon>ListViewSampleWpf.xaml</DependentUpon>
     </Compile>
