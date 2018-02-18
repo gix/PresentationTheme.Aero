@@ -4247,7 +4247,7 @@
                      Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
                      StrokeThickness="1"
                      StrokeDashArray="1 1"
-                     StrokeDashOffset="1.5"/>
+                     StrokeDashOffset="0.5"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>

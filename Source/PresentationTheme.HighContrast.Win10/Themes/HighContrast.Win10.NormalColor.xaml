@@ -3565,7 +3565,7 @@
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate>
-          <Rectangle Margin="3,3,3,2"
+          <Rectangle Margin="3,3,3,3"
                      SnapsToDevicePixels="True"
                      Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
                      StrokeThickness="1"
