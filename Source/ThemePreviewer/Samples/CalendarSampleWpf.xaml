@@ -7,13 +7,13 @@
              d:DesignHeight="300" d:DesignWidth="300">
   <StackPanel>
     <DatePicker Margin="3" SelectedDateFormat="Long" SelectedDate="04/01/2017"
-                DisplayDateStart="01/01/2017" DisplayDateEnd="12/31/2017"
+                DisplayDateStart="01/01/2017" DisplayDateEnd="12/31/2050"
                 FirstDayOfWeek="Monday"/>
     <DatePicker Margin="3" SelectedDateFormat="Long" SelectedDate="04/01/2017"
-                DisplayDateStart="01/01/2017" DisplayDateEnd="12/31/2017"
+                DisplayDateStart="01/01/2017" DisplayDateEnd="12/31/2050"
                 FirstDayOfWeek="Monday" IsEnabled="False"/>
     <Calendar x:Name="calendar1" Margin="3" HorizontalAlignment="Left"
-              DisplayDateStart="01/01/1900" DisplayDateEnd="12/31/2017"
+              DisplayDateStart="01/01/1900" DisplayDateEnd="12/31/2050"
               SelectionMode="SingleRange"/>
   </StackPanel>
 </UserControl>
