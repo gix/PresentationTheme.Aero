@@ -1197,11 +1197,6 @@ static HBITMAP CreateUnscaledBitmap(
     return hbmOut;
 }
 
-static void StreamInit(BYTE**, HDC, HBITMAP, RECTL*)
-{
-    
-}
-
 HRESULT CImageFile::DrawBackgroundDS(
     DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader, bool fStock,
     CRenderObj* pRender, HDC hdc, int iStateId, RECT* pRect,
