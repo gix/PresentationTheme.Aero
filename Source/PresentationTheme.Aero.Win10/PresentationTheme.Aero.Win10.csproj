@@ -54,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemDropShadowChrome.cs" />
     <Compile Include="TextBoxChrome.cs" />
+    <Compile Include="ThicknessMaskConverter.cs" />
     <Compile Include="TickBarEx.cs" />
     <Compile Include="TypeOfConverter.cs" />
   </ItemGroup>

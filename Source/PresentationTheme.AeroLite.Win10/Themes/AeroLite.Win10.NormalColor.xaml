@@ -9,6 +9,7 @@
   <aero:TreeViewItemLevelConverter x:Key="TreeViewItemLevelConverter"/>
   <aero10:TypeOfConverter x:Key="TypeOfConverter"/>
   <aero10:EqualsConverter x:Key="EqualsConverter"/>
+  <aero10:ThicknessMaskConverter x:Key="ThicknessMaskConverter"/>
   <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
@@ -5119,11 +5120,23 @@
                     Width="13"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
                     SnapsToDevicePixels="True">
+              <Border.BorderThickness>
+                <Binding Path="BorderThickness"
+                         RelativeSource="{RelativeSource TemplatedParent}"
+                         Converter="{StaticResource ThicknessMaskConverter}"
+                         ConverterParameter="{x:Static aero10:ThicknessMask.Left}"/>
+              </Border.BorderThickness>
+              <Border.Margin>
+                <Binding Path="BorderThickness"
+                         RelativeSource="{RelativeSource TemplatedParent}"
+                         Converter="{StaticResource ThicknessMaskConverter}"
+                         ConverterParameter="{x:Static aero10:ThicknessMask.NotLeft}"/>
+              </Border.Margin>
               <Path x:Name="ArrowDownPath"
-                    Data="M 2.5,0 8.5,0 5.5,3 Z"
+                    Data="M 0,0 6,0 3,3 z"
                     Fill="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>
             </Border>
           </Grid>
