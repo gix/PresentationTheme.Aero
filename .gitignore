@@ -1,3 +1,11 @@
+/build/
+/dist/
+
+/Data/
+/Source/packages/
+
+obj/
+
 # Visual Studio
 *.user
 *.suo
@@ -17,10 +25,3 @@ ipch/
 *.ilk
 *.log
 *.lib
-
-/build/
-/Data/
-/Source/packages/
-obj/
-
-/Source/PresentationTheme.Aero.CommitInfo.cs

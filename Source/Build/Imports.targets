@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HighEntropyVA>true</HighEntropyVA>
+    <Deterministic>true</Deterministic>
+
+    <IsWpfTempProject>false</IsWpfTempProject>
+    <IsWpfTempProject Condition="'$(MSBuildProjectExtension)' == '.tmp_proj'">true</IsWpfTempProject>
+
+    <DocumentationFile Condition="'$(IsWpfTempProject)' == 'true'"></DocumentationFile>
+    <DocumentationFile Condition="'$(IsWpfTempProject)' != 'true'">$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <Target Name="ValidateBuildNumber" BeforeTargets="Build">
+    <Error Condition="'$(BuildNumber)' == '' AND '$(OfficialBuild)' == 'true'"
+           Text="A build number must be specified for an official build."/>
+  </Target>
+
+  <Import Project="$(MSBuildThisFileDirectory)GenerateAssemblyInfo.targets" />
+</Project>

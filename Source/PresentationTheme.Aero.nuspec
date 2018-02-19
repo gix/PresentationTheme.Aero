@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>PresentationTheme.Aero</id>
+    <version>0.0.0.0</version>
+    <authors>Nico Rieck</authors>
+    <owners>nrieck</owners>
+    <licenseUrl>https://raw.github.com/gix/PresentationTheme.Aero/master/LICENSE.txt</licenseUrl>
+    <projectUrl>http://github.com/gix/PresentationTheme.Aero</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+    <description>An accurate Aero theme for WPF supporting the Aero, AeroLite and High Contrast system themes of Windows 8 and Windows 10.</description>
+    <tags>wpf theme aero</tags>
+    <references>
+      <reference file="PresentationTheme.Aero.dll"/>
+    </references>
+  </metadata>
+  <files>
+    <file src="..\build\any\bin\PresentationTheme.Aero.dll" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.pdb" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.xml" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win8.dll" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win8.pdb" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win8.xml" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win10.dll" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win10.pdb" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.Aero.Win10.xml" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.AeroLite.Win10.dll" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.AeroLite.Win10.pdb" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.AeroLite.Win10.xml" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.HighContrast.Win10.dll" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.HighContrast.Win10.pdb" target="lib\net45"/>
+    <file src="..\build\any\bin\PresentationTheme.HighContrast.Win10.xml" target="lib\net45"/>
+    <file src="PresentationTheme.Aero.targets" target="build"/>
+    <file src="PresentationTheme.Aero\**\*.cs" target="src\PresentationTheme.Aero"/>
+    <file src="PresentationTheme.Aero.Win8\**\*.cs" target="src\PresentationTheme.Aero.Win8"/>
+    <file src="PresentationTheme.Aero.Win10\**\*.cs" target="src\PresentationTheme.Aero.Win10"/>
+    <file src="PresentationTheme.AeroLite.Win10\**\*.cs" target="src\PresentationTheme.AeroLite.Win10"/>
+    <file src="PresentationTheme.HighContrast.Win10\**\*.cs" target="src\PresentationTheme.HighContrast.Win10"/>
+  </files>
+</package>

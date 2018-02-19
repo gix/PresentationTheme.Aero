@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
-         ToolsVersion="15.0" DefaultTargets="Package">
+         ToolsVersion="15.0" DefaultTargets="Pack">
   <ItemGroup>
-    <Project Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
-    <Project Include="Source\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj"/>
-    <Project Include="Source\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj"/>
-    <Project Include="Source\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj"/>
-    <Project Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>
+    <ProjectItem Include="Source\ThemeBrowser\ThemeBrowser.csproj"/>
+    <ProjectItem Include="Source\ThemePreviewer\ThemePreviewer.csproj"/>
   </ItemGroup>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <PackageDir>$(MSBuildThisFileDirectory)dist</PackageDir>
-    <CommitInfo>dev</CommitInfo>
+    <BuildQuality Condition="'$(BuildQuality)' == ''">PerBuildPreRelease</BuildQuality>
+
+    <BuildNumber Condition="'$(BuildNumber)' == ''">$(BUILD_BUILDNUMBER)</BuildNumber>
+    <BuildNumber Condition="'$(BuildNumber)' == '' AND '$(OfficialBuild)' != 'true'">$([System.DateTime]::UtcNow.ToString(`yyyyMMdd.HHmm`))</BuildNumber>
+
+    <BuildProperties>Configuration=$(Configuration);Platform=AnyCPU;BuildNumber=$(BuildNumber)</BuildProperties>
+    <PackProperties>$(BuildProperties);IncludeSource=true</PackProperties>
   </PropertyGroup>
 
-  <Target Name="GetCommitInfo">
-    <Exec Command="git describe --long --tags --always" ContinueOnError="true" ConsoleToMSBuild="true" UseCommandProcessor="false">
-      <Output TaskParameter="ConsoleOutput" PropertyName="CommitInfo"/>
-    </Exec>
-    <WriteLinesToFile File="Source\PresentationTheme.Aero.CommitInfo.cs"
-                      Lines="[assembly: System.Reflection.AssemblyInformationalVersion(&quot;$(CommitInfo)&quot;)]"
-                      Overwrite="true"
-                      Encoding="UTF-8"/>
-  </Target>
+  <Import Project="Source\Build\Settings.props" />
 
-  <Target Name="Build" DependsOnTargets="GetCommitInfo">
-    <MSBuild Projects="@(Project)"
-             Properties="Configuration=$(Configuration);Platform=AnyCPU;IncludeCommitInfo=true"
+  <Target Name="Clean">
+    <MSBuild Projects="@(ProjectItem)"
+             Properties="$(BuildProperties)"
+             Targets="Clean"
              BuildInParallel="true"
-             StopOnFirstFailure="true"
-             Targets="Rebuild"/>
+             StopOnFirstFailure="true"/>
+    <RemoveDir Directories="build\any" ContinueOnError="WarnAndContinue"/>
+    <RemoveDir Directories="build\any"/>
   </Target>
 
-  <Target Name="GetVersion" DependsOnTargets="Build">
-    <GetAssemblyIdentity AssemblyFiles="build\any\bin\PresentationTheme.Aero.dll">
-      <Output TaskParameter="Assemblies"
-              ItemName="_AssemblyIdentities"/>
-    </GetAssemblyIdentity>
-    <PropertyGroup>
-      <PackageVersion>%(_AssemblyIdentities.Version)</PackageVersion>
-    </PropertyGroup>
+  <Target Name="Restore">
+    <MSBuild Projects="@(ProjectItem)"
+             Properties="$(BuildProperties)"
+             Targets="Restore"
+             BuildInParallel="true"
+             StopOnFirstFailure="true"/>
   </Target>
 
-  <Target Name="Package" DependsOnTargets="Build;GetVersion">
+  <Target Name="Build" DependsOnTargets="Restore">
+    <MSBuild Projects="@(ProjectItem)"
+             Properties="$(BuildProperties)"
+             BuildInParallel="true"
+             StopOnFirstFailure="true"/>
+  </Target>
+
+  <Target Name="Pack" DependsOnTargets="Build">
     <PropertyGroup>
-      <PackArgs>-Version "$(PackageVersion)" -NoPackageAnalysis</PackArgs>
-      <PackArgs>$(PackArgs) -OutputDirectory "$(PackageDir)"</PackArgs>
-      <PackArgs>$(PackArgs) -Symbols</PackArgs>
+      <PackArgs>-Symbols -NoPackageAnalysis -OutputDirectory "$(PackageDir)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'Release'">$(PackArgs) -Version "$(NuGetReleaseVersion)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'PreRelease'">$(PackArgs) -Version "$(NuGetPreReleaseVersion)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'PerBuildPreRelease'">$(PackArgs) -Version "$(NuGetPerBuildPreReleaseVersion)"</PackArgs>
     </PropertyGroup>
     <MakeDir Directories="$(PackageDir)"/>
-    <Exec Command="nuget.exe pack $(PackArgs) PresentationTheme.Aero.nuspec"/>
+    <Exec Command="nuget.exe pack $(PackArgs) Source\PresentationTheme.Aero.nuspec"/>
   </Target>
 
   <Target Name="BuildDocs">
@@ -73,7 +81,7 @@
 
   <Target Name="Publish" DependsOnTargets="Build;GetVersion">
     <PropertyGroup>
-      <PushArgs>&quot;dist/PresentationTheme.Aero.$(PackageVersion).nupkg&quot;</PushArgs>
+      <PushArgs>&quot;dist/PresentationTheme.Aero.$(NuGetReleaseVersion).nupkg&quot;</PushArgs>
       <PushArgs>$(PushArgs) -Source https://www.nuget.org/api/v2/package</PushArgs>
     </PropertyGroup>
     <Exec Command="nuget push $(PushArgs)"/>

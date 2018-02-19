@@ -17,7 +17,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,11 +24,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -49,6 +46,7 @@
     <Compile Include="LayoutHelper.cs" />
     <Compile Include="MenuScrollingEnabledConverter.cs" />
     <Compile Include="ProgressBarChrome.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoundingTabPanel.cs" />
     <Compile Include="ScrollBarChrome.cs" />
     <Compile Include="SystemDropShadowChrome.cs" />
@@ -56,7 +54,6 @@
     <Compile Include="ThicknessMaskConverter.cs" />
     <Compile Include="TickBarEx.cs" />
     <Compile Include="TypeOfConverter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\Aero.Win8.NormalColor.xaml">
@@ -71,19 +68,10 @@
     <Resource Include="Resources\Progress.PulseOverlay.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\PresentationTheme.Aero.VersionInfo.cs">
-      <Link>Properties\PresentationTheme.Aero.VersionInfo.cs</Link>
-    </Compile>
-    <Compile Condition=" '$(IncludeCommitInfo)' == 'true' " Include="..\PresentationTheme.Aero.CommitInfo.cs">
-      <Link>Properties\PresentationTheme.Aero.CommitInfo.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
       <Project>{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}</Project>
       <Name>PresentationTheme.Aero</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\SharedPropertiesDotNet.props" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

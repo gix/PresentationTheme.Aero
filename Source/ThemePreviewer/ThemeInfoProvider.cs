@@ -309,14 +309,25 @@ namespace ThemePreviewer
 
 
             // Check in the development root directory.
-            string buildDir = Path.GetDirectoryName(exeDir);
-            string buildsDir = Path.GetDirectoryName(buildDir);
-            string rootDir = Path.GetDirectoryName(buildsDir);
+            string rootDir = FindDevelopmentRootDir(exeDir);
             if (rootDir != null && File.Exists(Path.Combine(rootDir, "Source", "PresentationTheme.Aero.sln"))) {
                 dir = new DirectoryInfo(Path.Combine(rootDir, "Data"));
                 if (dir.Exists)
                     yield return dir;
             }
+        }
+
+        private string FindDevelopmentRootDir(string currentDir)
+        {
+            while (currentDir != null) {
+                string name = Path.GetFileName(currentDir);
+                if (name == "PresentationTheme.Aero")
+                    return currentDir;
+
+                currentDir = Path.GetDirectoryName(currentDir);
+            }
+
+            return null;
         }
     }
 
