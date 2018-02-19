@@ -42,21 +42,21 @@
             </x:Array>
           </ListView>
           <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,221,0,0" Width="200">
-            <Menu>
-              <samples:MenuItemEx Header="File" x:Name="fileMenuItem">
-                <samples:MenuItemEx Header="New" x:Name="newMenuItem">
+            <Menu IsHitTestVisible="False">
+              <samples:MenuItemEx Header="File" x:Name="fileMenuItem" IsHitTestVisible="False">
+                <samples:MenuItemEx Header="New" x:Name="newMenuItem" IsHitTestVisible="False">
                   <MenuItem/>
                 </samples:MenuItemEx>
-                <MenuItem Header="Open" IsChecked="True">
+                <MenuItem Header="Open" IsChecked="True" IsHitTestVisible="False">
                   <MenuItem/>
                 </MenuItem>
-                <MenuItem Header="Recent files" IsChecked="True" IsEnabled="False">
+                <MenuItem Header="Recent files" IsChecked="True" IsEnabled="False" IsHitTestVisible="False">
                   <MenuItem/>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="Exit" InputGestureText="Alt+F4"/>
+                <MenuItem Header="Exit" InputGestureText="Alt+F4" IsHitTestVisible="False"/>
               </samples:MenuItemEx>
-              <MenuItem Header="Edit">
+              <MenuItem Header="Edit" IsHitTestVisible="False">
                 <MenuItem/>
               </MenuItem>
             </Menu>
