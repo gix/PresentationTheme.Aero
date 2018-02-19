@@ -246,7 +246,8 @@ namespace PresentationTheme.Aero.Win10
                 typeof(HeaderChrome),
                 new FrameworkPropertyMetadata(
                     Orientation.Vertical,
-                    FrameworkPropertyMetadataOptions.AffectsRender));
+                    FrameworkPropertyMetadataOptions.AffectsRender),
+                IsValidOrientation);
 
         /// <summary>
         ///   Gets or sets whether the header renders in the vertical direction,
@@ -278,6 +279,17 @@ namespace PresentationTheme.Aero.Win10
         {
             get => (Orientation)GetValue(OrientationProperty);
             set => SetValue(OrientationProperty, value);
+        }
+
+        private static bool IsValidOrientation(object value)
+        {
+            switch ((Orientation)value) {
+                case Orientation.Horizontal:
+                case Orientation.Vertical:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         /// <summary>
