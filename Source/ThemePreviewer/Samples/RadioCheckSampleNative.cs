@@ -1,4 +1,3 @@
-
 namespace ThemePreviewer.Samples
 {
     using System.Drawing;
