@@ -1,4 +1,4 @@
-﻿namespace Markdown.ImageComparison
+namespace Markdown.ImageComparison
 {
     using System.Collections.Generic;
     using System.Composition;
