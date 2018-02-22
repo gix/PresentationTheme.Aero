@@ -2,7 +2,7 @@ namespace PresentationTheme.Aero.Win8
 {
     using System;
 
-    /// <summary>Aero Windows 8 Theme</summary>
+    /// <summary>Windows 8 Aero Theme</summary>
     public static class AeroWin8Theme
     {
         /// <summary>

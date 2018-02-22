@@ -2,7 +2,7 @@ namespace PresentationTheme.Aero.Win10
 {
     using System;
 
-    /// <summary>Aero Windows 10 Theme</summary>
+    /// <summary>Windows 10 Aero Theme</summary>
     public static class AeroWin10Theme
     {
         /// <summary>

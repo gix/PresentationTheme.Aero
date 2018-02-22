@@ -3,7 +3,7 @@ namespace PresentationTheme.HighContrast.Win10
     using System;
     using Aero;
 
-    /// <summary>High Contrast Windows 10 Theme</summary>
+    /// <summary>Windows 10 High Contrast Theme</summary>
     public static class HighContrastWin10Theme
     {
         /// <summary>

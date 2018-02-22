@@ -3,7 +3,7 @@ namespace PresentationTheme.AeroLite.Win10
     using System;
     using Aero;
 
-    /// <summary>AeroLite Windows 10 Theme</summary>
+    /// <summary>Windows 10 AeroLite Theme</summary>
     public static class AeroLiteWin10Theme
     {
         /// <summary>
