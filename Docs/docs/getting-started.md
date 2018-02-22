@@ -29,6 +29,11 @@ loaded when necessary.
 > [!IMPORTANT]
 > Because the theme assemblies are normally not referenced, they have to
 > be copied manually to the build output directory.
+> 
+> A [Post-build event command line](https://docs.microsoft.com/en-us/visualstudio/ide/how-to-specify-build-events-csharp) in Visual Studio can be created to automate 
+> this process. The following command is an example of this: 
+>
+> `for /D %%i in ($(SolutionDir)packages\PresentationTheme.Aero.*) do xcopy /D /Y /R %%i\lib\net45\PresentationTheme.*.Win10.dll`
 
 
 How do I use the theme?
