@@ -23,6 +23,16 @@ namespace PresentationTheme.Aero
     ///         <description><c>PresentationTheme.Aero.Win8.dll</c></description>
     ///       </item>
     ///       <item>
+    ///         <term>Windows 8/8.1 with AeroLite theme</term>
+    ///         <description><c>PresentationTheme.AeroLite.Win8.dll</c></description>
+    ///       </item>
+    ///       <item>
+    ///         <term>Windows 8/8.1 in high contrast mode</term>
+    ///         <description>
+    ///           <c>PresentationTheme.HighContrast.Win8.dll</c>
+    ///         </description>
+    ///       </item>
+    ///       <item>
     ///         <term>Windows 10 with Aero theme</term>
     ///         <description><c>PresentationTheme.Aero.Win10.dll</c></description>
     ///       </item>
@@ -110,9 +120,13 @@ namespace PresentationTheme.Aero
                 if (highContrast) {
                     if (osVersion >= win10)
                         return "HighContrast.Win10";
+                    if (osVersion >= win8)
+                        return "HighContrast.Win8";
                 } else {
                     if (osVersion >= win10)
                         return "AeroLite.Win10";
+                    if (osVersion >= win8)
+                        return "AeroLite.Win8";
                 }
             }
 
