@@ -3,6 +3,7 @@ namespace ThemeBrowser
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Windows;
@@ -141,7 +142,7 @@ namespace ThemeBrowser
             return new ThemePropertyComparisonViewModel(oldProperty, newProperty);
         }
 
-        private int Compare(object oldValue, object newValue)
+        private static int Compare(object oldValue, object newValue)
         {
             if (oldValue == null && newValue == null)
                 return 0;
@@ -170,38 +171,65 @@ namespace ThemeBrowser
                 case System.Windows.Media.Color value: return CompareValue(value, (System.Windows.Media.Color)newValue);
                 case HighContrastColor value: return CompareValue(value, (HighContrastColor)newValue);
                 case ThemeBitmapViewModel value: return CompareValue(value, (ThemeBitmapViewModel)newValue);
+                case SimplifiedImageGroup value: return CompareValue(value, (SimplifiedImageGroup)newValue);
+                case HighContrastSimplifiedImageGroup value: return CompareValue(value, (HighContrastSimplifiedImageGroup)newValue);
 
                 default:
+                    Debug.Assert(false, $"Comparison missing for value of type '{oldValue?.GetType()}'");
                     return 1;
             }
         }
 
-        private int CompareValue(string oldValue, string newValue)
+        private static int CompareValue(string oldValue, string newValue)
         {
             return string.CompareOrdinal(oldValue, newValue);
         }
 
-        private int CompareValue(int oldValue, int newValue)
+        private static int CompareValue(int oldValue, int newValue)
         {
             return oldValue.CompareTo(newValue);
         }
 
-        private int CompareValue(bool oldValue, bool newValue)
+        private static int CompareValue(bool oldValue, bool newValue)
         {
             return oldValue.CompareTo(newValue);
         }
 
-        private int CompareValue(HIGHCONTRASTCOLOR oldValue, HIGHCONTRASTCOLOR newValue)
+        private static int CompareValue(HIGHCONTRASTCOLOR oldValue, HIGHCONTRASTCOLOR newValue)
         {
             return oldValue.CompareTo(newValue);
         }
 
-        private int CompareValue(HighContrastColor oldValue, HighContrastColor newValue)
+        private static int CompareValue(HighContrastColor oldValue, HighContrastColor newValue)
         {
             return oldValue.Index.CompareTo(newValue.Index);
         }
 
-        private int CompareValue(ThemeBitmap oldValue, ThemeBitmap newValue)
+        private static int CompareValue(SimplifiedImageGroup oldValue, SimplifiedImageGroup newValue)
+        {
+            return CompareSequence(oldValue.Images, newValue.Images, CompareValue);
+        }
+
+        private static int CompareValue(SimplifiedImage oldValue, SimplifiedImage newValue)
+        {
+            int cmp = CompareValue(oldValue.BackgroundColor, newValue.BackgroundColor);
+            if (cmp == 0) cmp = CompareValue(oldValue.BorderColor, newValue.BorderColor);
+            return cmp;
+        }
+
+        private static int CompareValue(HighContrastSimplifiedImageGroup oldValue, HighContrastSimplifiedImageGroup newValue)
+        {
+            return CompareSequence(oldValue.Images, newValue.Images, CompareValue);
+        }
+
+        private static int CompareValue(HighContrastSimplifiedImage oldValue, HighContrastSimplifiedImage newValue)
+        {
+            int cmp = CompareValue(oldValue.BackgroundColor, newValue.BackgroundColor);
+            if (cmp == 0) cmp = CompareValue(oldValue.BorderColor, newValue.BorderColor);
+            return cmp;
+        }
+
+        private static int CompareValue(ThemeBitmap oldValue, ThemeBitmap newValue)
         {
             BitmapImage oldImage = LoadImage(oldValue);
             BitmapImage newImage = LoadImage(newValue);
@@ -227,27 +255,21 @@ namespace ThemeBrowser
 
         private static BitmapImage LoadImage(ThemeBitmap oldValue)
         {
-            using (var stream = oldValue.OpenStream()) {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.StreamSource = stream;
-                image.EndInit();
-                image.Freeze();
-                return image;
-            }
+            using (var stream = oldValue.OpenStream())
+                return ImagingUtils.LoadBitmapImageFromStream(stream);
         }
 
-        private int CompareValue(ThemeBitmapViewModel oldValue, ThemeBitmapViewModel newValue)
+        private static int CompareValue(ThemeBitmapViewModel oldValue, ThemeBitmapViewModel newValue)
         {
             return CompareValue(oldValue.ThemeBitmap, newValue.ThemeBitmap);
         }
 
-        private int CompareValue(Color oldValue, Color newValue)
+        private static int CompareValue(Color oldValue, Color newValue)
         {
             return oldValue.ToArgb().CompareTo(newValue.ToArgb());
         }
 
-        private int CompareValue(FontInfo oldValue, FontInfo newValue)
+        private static int CompareValue(FontInfo oldValue, FontInfo newValue)
         {
             int cmp = oldValue.PointSize.CompareTo(newValue.PointSize);
             if (cmp == 0) cmp = string.Compare(oldValue.FontFamily, newValue.FontFamily, StringComparison.OrdinalIgnoreCase);
@@ -255,30 +277,36 @@ namespace ThemeBrowser
             return cmp;
         }
 
-        private int CompareValue(IntList oldValue, IntList newValue)
+        private static int CompareValue(IntList oldValue, IntList newValue)
         {
             return CompareSequence(oldValue, newValue);
         }
 
-        private int CompareValue(byte[] oldValue, byte[] newValue)
+        private static int CompareValue(byte[] oldValue, byte[] newValue)
         {
             return CompareSequence(oldValue, newValue);
         }
 
-        private int CompareValue(System.Windows.Media.Color oldValue, System.Windows.Media.Color newValue)
+        private static int CompareValue(System.Windows.Media.Color oldValue, System.Windows.Media.Color newValue)
         {
             return oldValue.ToArgb().CompareTo(newValue.ToArgb());
         }
 
-        private int CompareSequence<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs)
+        private static int CompareSequence<T>(IReadOnlyList<T> lhs, IReadOnlyList<T> rhs)
             where T : IComparable<T>
+        {
+            return CompareSequence(lhs, rhs, (l, r) => l.CompareTo(r));
+        }
+
+        private static int CompareSequence<T>(
+            IReadOnlyList<T> lhs, IReadOnlyList<T> rhs, Func<T, T, int> compare)
         {
             int cmp = lhs.Count.CompareTo(rhs.Count);
             if (cmp != 0)
                 return cmp;
 
             for (int i = 0; i < lhs.Count; ++i) {
-                cmp = lhs[i].CompareTo(rhs[i]);
+                cmp = compare(lhs[i], rhs[i]);
                 if (cmp != 0)
                     return cmp;
             }
@@ -286,7 +314,7 @@ namespace ThemeBrowser
             return 0;
         }
 
-        private int CompareValue(MARGINS oldValue, MARGINS newValue)
+        private static int CompareValue(MARGINS oldValue, MARGINS newValue)
         {
             int cmp = oldValue.cxLeftWidth.CompareTo(newValue.cxLeftWidth);
             if (cmp == 0) cmp = oldValue.cxRightWidth.CompareTo(newValue.cxRightWidth);
@@ -295,7 +323,7 @@ namespace ThemeBrowser
             return cmp;
         }
 
-        private int CompareValue(RECT oldValue, RECT newValue)
+        private static int CompareValue(RECT oldValue, RECT newValue)
         {
             int cmp = oldValue.left.CompareTo(newValue.left);
             if (cmp == 0) cmp = oldValue.top.CompareTo(newValue.top);
@@ -304,7 +332,7 @@ namespace ThemeBrowser
             return cmp;
         }
 
-        private int CompareValue(POINT oldValue, POINT newValue)
+        private static int CompareValue(POINT oldValue, POINT newValue)
         {
             int cmp = oldValue.x.CompareTo(newValue.x);
             if (cmp == 0) cmp = oldValue.y.CompareTo(newValue.y);
