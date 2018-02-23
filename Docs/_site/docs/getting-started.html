@@ -8,7 +8,7 @@
     <title>Getting Started | PresentationTheme Aero </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Getting Started | PresentationTheme Aero ">
-    <meta name="generator" content="docfx 2.23.1.0">
+    <meta name="generator" content="docfx 2.31.0.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     
     
   </head>
@@ -89,6 +90,10 @@ Explorer-styles. Also includes AeroLite and High Contrast themes.</p>
 <td>Shared assembly with utilities</td>
 </tr>
 <tr>
+<td>PresentationTheme.Aero.Win8.dll</td>
+<td>Windows 8/8.1 Aero theme</td>
+</tr>
+<tr>
 <td>PresentationTheme.Aero.Win10.dll</td>
 <td>Windows 10 Aero theme</td>
 </tr>
@@ -104,8 +109,9 @@ Explorer-styles. Also includes AeroLite and High Contrast themes.</p>
 </table>
 <p>Only the first assembly should be referenced. The other theme assemblies are
 loaded when necessary.</p>
-<div class="IMPORTANT"><h5>Important</h5><p>Because the theme assemblies are normally not referenced, they have to
-be copied manually to the build output directory.</p>
+<div class="IMPORTANT"><h5>Important</h5><p>Because the theme assemblies are not (and usually should not) be referenced by
+projects using PresentationTheme.Aero.dll, they have to be included manually
+in any packaging or setup.</p>
 </div>
 <h2 id="how-do-i-use-the-theme">How do I use the theme?</h2>
 <p>There are three different ways to use the theme. The differences are summarized
@@ -222,6 +228,10 @@ It chooses the following theme resource assemblies:</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Windows 8/8.1 with Aero theme</td>
+<td>PresentationTheme.Aero.Win8.dll</td>
+</tr>
 <tr>
 <td>Windows 10 with Aero theme</td>
 <td>PresentationTheme.Aero.Win10.dll</td>

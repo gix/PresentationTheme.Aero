@@ -1534,6 +1534,102 @@ references:
   commentId: F:PresentationTheme.Aero.Win10.TextBoxChrome.RenderReadOnlyProperty
   fullName: PresentationTheme.Aero.Win10.TextBoxChrome.RenderReadOnlyProperty
   nameWithType: TextBoxChrome.RenderReadOnlyProperty
+- uid: PresentationTheme.Aero.Win10.ThicknessMask
+  name: ThicknessMask
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html
+  commentId: T:PresentationTheme.Aero.Win10.ThicknessMask
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask
+  nameWithType: ThicknessMask
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.All
+  name: All
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_All
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.All
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.All
+  nameWithType: ThicknessMask.All
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.Bottom
+  name: Bottom
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_Bottom
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.Bottom
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.Bottom
+  nameWithType: ThicknessMask.Bottom
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.Left
+  name: Left
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_Left
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.Left
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.Left
+  nameWithType: ThicknessMask.Left
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.None
+  name: None
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_None
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.None
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.None
+  nameWithType: ThicknessMask.None
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.NotBottom
+  name: NotBottom
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_NotBottom
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.NotBottom
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.NotBottom
+  nameWithType: ThicknessMask.NotBottom
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.NotLeft
+  name: NotLeft
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_NotLeft
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.NotLeft
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.NotLeft
+  nameWithType: ThicknessMask.NotLeft
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.NotRight
+  name: NotRight
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_NotRight
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.NotRight
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.NotRight
+  nameWithType: ThicknessMask.NotRight
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.NotTop
+  name: NotTop
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_NotTop
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.NotTop
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.NotTop
+  nameWithType: ThicknessMask.NotTop
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.Right
+  name: Right
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_Right
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.Right
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.Right
+  nameWithType: ThicknessMask.Right
+- uid: PresentationTheme.Aero.Win10.ThicknessMask.Top
+  name: Top
+  href: api/PresentationTheme.Aero.Win10.ThicknessMask.html#PresentationTheme_Aero_Win10_ThicknessMask_Top
+  commentId: F:PresentationTheme.Aero.Win10.ThicknessMask.Top
+  fullName: PresentationTheme.Aero.Win10.ThicknessMask.Top
+  nameWithType: ThicknessMask.Top
+- uid: PresentationTheme.Aero.Win10.ThicknessMaskConverter
+  name: ThicknessMaskConverter
+  href: api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html
+  commentId: T:PresentationTheme.Aero.Win10.ThicknessMaskConverter
+  fullName: PresentationTheme.Aero.Win10.ThicknessMaskConverter
+  nameWithType: ThicknessMaskConverter
+- uid: PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: Convert(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html#PresentationTheme_Aero_Win10_ThicknessMaskConverter_Convert_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.Convert(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert*
+  name: Convert
+  href: api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html#PresentationTheme_Aero_Win10_ThicknessMaskConverter_Convert_
+  commentId: Overload:PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert
+  fullName: PresentationTheme.Aero.Win10.ThicknessMaskConverter.Convert
+  nameWithType: ThicknessMaskConverter.Convert
+- uid: PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: ConvertBack(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html#PresentationTheme_Aero_Win10_ThicknessMaskConverter_ConvertBack_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.ConvertBack(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack*
+  name: ConvertBack
+  href: api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html#PresentationTheme_Aero_Win10_ThicknessMaskConverter_ConvertBack_
+  commentId: Overload:PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack
+  fullName: PresentationTheme.Aero.Win10.ThicknessMaskConverter.ConvertBack
+  nameWithType: ThicknessMaskConverter.ConvertBack
 - uid: PresentationTheme.Aero.Win10.TickBarEx
   name: TickBarEx
   href: api/PresentationTheme.Aero.Win10.TickBarEx.html
@@ -2534,6 +2630,102 @@ references:
   commentId: F:PresentationTheme.AeroLite.Win10.TextBoxChrome.RenderReadOnlyProperty
   fullName: PresentationTheme.AeroLite.Win10.TextBoxChrome.RenderReadOnlyProperty
   nameWithType: TextBoxChrome.RenderReadOnlyProperty
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask
+  name: ThicknessMask
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html
+  commentId: T:PresentationTheme.AeroLite.Win10.ThicknessMask
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask
+  nameWithType: ThicknessMask
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.All
+  name: All
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_All
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.All
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.All
+  nameWithType: ThicknessMask.All
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.Bottom
+  name: Bottom
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_Bottom
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.Bottom
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.Bottom
+  nameWithType: ThicknessMask.Bottom
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.Left
+  name: Left
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_Left
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.Left
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.Left
+  nameWithType: ThicknessMask.Left
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.None
+  name: None
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_None
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.None
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.None
+  nameWithType: ThicknessMask.None
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.NotBottom
+  name: NotBottom
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_NotBottom
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.NotBottom
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.NotBottom
+  nameWithType: ThicknessMask.NotBottom
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.NotLeft
+  name: NotLeft
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_NotLeft
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.NotLeft
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.NotLeft
+  nameWithType: ThicknessMask.NotLeft
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.NotRight
+  name: NotRight
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_NotRight
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.NotRight
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.NotRight
+  nameWithType: ThicknessMask.NotRight
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.NotTop
+  name: NotTop
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_NotTop
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.NotTop
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.NotTop
+  nameWithType: ThicknessMask.NotTop
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.Right
+  name: Right
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_Right
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.Right
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.Right
+  nameWithType: ThicknessMask.Right
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMask.Top
+  name: Top
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMask.html#PresentationTheme_AeroLite_Win10_ThicknessMask_Top
+  commentId: F:PresentationTheme.AeroLite.Win10.ThicknessMask.Top
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMask.Top
+  nameWithType: ThicknessMask.Top
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter
+  name: ThicknessMaskConverter
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html
+  commentId: T:PresentationTheme.AeroLite.Win10.ThicknessMaskConverter
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter
+  nameWithType: ThicknessMaskConverter
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: Convert(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html#PresentationTheme_AeroLite_Win10_ThicknessMaskConverter_Convert_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.Convert(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert*
+  name: Convert
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html#PresentationTheme_AeroLite_Win10_ThicknessMaskConverter_Convert_
+  commentId: Overload:PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.Convert
+  nameWithType: ThicknessMaskConverter.Convert
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: ConvertBack(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html#PresentationTheme_AeroLite_Win10_ThicknessMaskConverter_ConvertBack_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.ConvertBack(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack*
+  name: ConvertBack
+  href: api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html#PresentationTheme_AeroLite_Win10_ThicknessMaskConverter_ConvertBack_
+  commentId: Overload:PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack
+  fullName: PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.ConvertBack
+  nameWithType: ThicknessMaskConverter.ConvertBack
 - uid: PresentationTheme.AeroLite.Win10.TickBarEx
   name: TickBarEx
   href: api/PresentationTheme.AeroLite.Win10.TickBarEx.html
@@ -3582,6 +3774,102 @@ references:
   commentId: F:PresentationTheme.HighContrast.Win10.TextBoxChrome.RenderReadOnlyProperty
   fullName: PresentationTheme.HighContrast.Win10.TextBoxChrome.RenderReadOnlyProperty
   nameWithType: TextBoxChrome.RenderReadOnlyProperty
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask
+  name: ThicknessMask
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html
+  commentId: T:PresentationTheme.HighContrast.Win10.ThicknessMask
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask
+  nameWithType: ThicknessMask
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.All
+  name: All
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_All
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.All
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.All
+  nameWithType: ThicknessMask.All
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.Bottom
+  name: Bottom
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_Bottom
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.Bottom
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.Bottom
+  nameWithType: ThicknessMask.Bottom
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.Left
+  name: Left
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_Left
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.Left
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.Left
+  nameWithType: ThicknessMask.Left
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.None
+  name: None
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_None
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.None
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.None
+  nameWithType: ThicknessMask.None
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.NotBottom
+  name: NotBottom
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_NotBottom
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.NotBottom
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.NotBottom
+  nameWithType: ThicknessMask.NotBottom
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.NotLeft
+  name: NotLeft
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_NotLeft
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.NotLeft
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.NotLeft
+  nameWithType: ThicknessMask.NotLeft
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.NotRight
+  name: NotRight
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_NotRight
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.NotRight
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.NotRight
+  nameWithType: ThicknessMask.NotRight
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.NotTop
+  name: NotTop
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_NotTop
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.NotTop
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.NotTop
+  nameWithType: ThicknessMask.NotTop
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.Right
+  name: Right
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_Right
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.Right
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.Right
+  nameWithType: ThicknessMask.Right
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMask.Top
+  name: Top
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMask.html#PresentationTheme_HighContrast_Win10_ThicknessMask_Top
+  commentId: F:PresentationTheme.HighContrast.Win10.ThicknessMask.Top
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMask.Top
+  nameWithType: ThicknessMask.Top
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter
+  name: ThicknessMaskConverter
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html
+  commentId: T:PresentationTheme.HighContrast.Win10.ThicknessMaskConverter
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter
+  nameWithType: ThicknessMaskConverter
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: Convert(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html#PresentationTheme_HighContrast_Win10_ThicknessMaskConverter_Convert_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.Convert(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert*
+  name: Convert
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html#PresentationTheme_HighContrast_Win10_ThicknessMaskConverter_Convert_
+  commentId: Overload:PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.Convert
+  nameWithType: ThicknessMaskConverter.Convert
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  name: ConvertBack(Object, Type, Object, CultureInfo)
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html#PresentationTheme_HighContrast_Win10_ThicknessMaskConverter_ConvertBack_System_Object_System_Type_System_Object_System_Globalization_CultureInfo_
+  commentId: M:PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack(System.Object, System.Type, System.Object, System.Globalization.CultureInfo)
+  nameWithType: ThicknessMaskConverter.ConvertBack(Object, Type, Object, CultureInfo)
+- uid: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack*
+  name: ConvertBack
+  href: api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html#PresentationTheme_HighContrast_Win10_ThicknessMaskConverter_ConvertBack_
+  commentId: Overload:PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack
+  fullName: PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.ConvertBack
+  nameWithType: ThicknessMaskConverter.ConvertBack
 - uid: PresentationTheme.HighContrast.Win10.TickBarEx
   name: TickBarEx
   href: api/PresentationTheme.HighContrast.Win10.TickBarEx.html
