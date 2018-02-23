@@ -2,6 +2,7 @@ namespace ThemePreviewer
 {
     using System;
     using System.IO.Packaging;
+    using System.Text.RegularExpressions;
     using System.Windows;
     using ThemeCore.Native;
 
@@ -18,8 +19,11 @@ namespace ThemePreviewer
             Name = name;
             ResourceUri = uri;
             CustomColors = customColors;
+
+            BaseName = Regex.Match(name, @"\A([^()]+?)(\(.*\))?\z").Groups[1].Value;
         }
 
+        public string BaseName { get; }
         public string Name { get; }
         public Uri ResourceUri { get; }
         public UxColorScheme CustomColors { get; }

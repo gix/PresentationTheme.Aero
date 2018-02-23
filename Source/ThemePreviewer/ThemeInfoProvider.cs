@@ -10,7 +10,9 @@ namespace ThemePreviewer
     using PresentationTheme.Aero.Win7;
     using PresentationTheme.Aero.Win8;
     using PresentationTheme.AeroLite.Win10;
+    using PresentationTheme.AeroLite.Win8;
     using PresentationTheme.HighContrast.Win10;
+    using PresentationTheme.HighContrast.Win8;
     using ThemeCore.Native;
 
     public class ThemeInfoProvider
@@ -32,6 +34,12 @@ namespace ThemePreviewer
 
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8.1)", AeroWin8Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 8.1)", AeroLiteWin8Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 8.1)", HighContrastWin8Theme.ResourceUri));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast #1 (Windows 8.1)", HighContrastWin8Theme.ResourceUri, highContrast1.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast White (Windows 8.1)", HighContrastWin8Theme.ResourceUri, highContrastWhite.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast Debug Light (Windows 8.1)", HighContrastWin8Theme.ResourceUri, highContrastDebugLight.Value));
+            wpfThemes.Add(new WpfThemeInfo("High Contrast Debug Dark (Windows 8.1)", HighContrastWin8Theme.ResourceUri, highContrastDebugDark.Value));
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 10)", AeroWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 10)", AeroLiteWin10Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 10)", HighContrastWin10Theme.ResourceUri));
@@ -45,7 +53,7 @@ namespace ThemePreviewer
             wpfThemes.Add(new WpfThemeInfo("Built-in AeroLite", BuiltinThemes.AeroLiteUri));
             wpfThemes.Add(new WpfThemeInfo("Built-in Royale", BuiltinThemes.RoyaleUri));
 
-            foreach (var nativeTheme in FindNativeThemes().OrderBy(x => x))
+            foreach (var nativeTheme in FindNativeThemes())
                 nativeThemes.Add(nativeTheme);
 
             foreach (var nativeTheme in nativeThemes) {
@@ -61,7 +69,8 @@ namespace ThemePreviewer
                 }
             }
 
-            foreach (var nativeTheme in nativeThemes) {
+            var latestNativeThemes = nativeThemes.GroupBy(x => x.Name).Select(x => x.Max());
+            foreach (var nativeTheme in latestNativeThemes) {
                 foreach (var wpfTheme in wpfThemes) {
                     if (nativeTheme.Name == wpfTheme.Name)
                         themes.Add(new ThemeInfoPair(nativeTheme.Name, nativeTheme, wpfTheme));
@@ -75,7 +84,7 @@ namespace ThemePreviewer
 
         private IEnumerable<NativeThemeInfo> FindNativeThemes()
         {
-            return FindAllNativeThemes().GroupBy(x => x.Name).Select(x => x.Max());
+            return FindAllNativeThemes().OrderBy(x => x);
         }
 
         private IEnumerable<NativeThemeInfo> FindAllNativeThemes()

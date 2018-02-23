@@ -224,13 +224,30 @@ namespace ThemePreviewer
                 });
                 subMenu.Items.Add(new Separator());
 
-                foreach (var theme in WpfThemes) {
-                    subMenu.Items.Add(new MenuItem {
-                        Header = theme.Name,
-                        IsChecked = CurrentWpfTheme == theme,
-                        Command = changeWpfThemeCommand,
-                        CommandParameter = theme
-                    });
+                foreach (var themeGroup in WpfThemes.GroupBy(x => x.BaseName)) {
+                    if (themeGroup.Count() == 1) {
+                        var theme = themeGroup.First();
+                        subMenu.Items.Add(new MenuItem {
+                            Header = theme.Name,
+                            IsChecked = CurrentWpfTheme == theme,
+                            Command = changeWpfThemeCommand,
+                            CommandParameter = theme
+                        });
+                        continue;
+                    }
+
+                    var groupItem = new MenuItem {
+                        Header = themeGroup.Key
+                    };
+                    subMenu.Items.Add(groupItem);
+                    foreach (var theme in themeGroup) {
+                        groupItem.Items.Add(new MenuItem {
+                            Header = theme.Name,
+                            IsChecked = CurrentWpfTheme == theme,
+                            Command = changeWpfThemeCommand,
+                            CommandParameter = theme
+                        });
+                    }
                 }
             }
 
@@ -247,13 +264,30 @@ namespace ThemePreviewer
                 });
                 subMenu.Items.Add(new Separator());
 
-                foreach (var theme in NativeThemes) {
-                    subMenu.Items.Add(new MenuItem {
-                        Header = theme.GetFullName(),
-                        IsChecked = theme == CurrentNativeTheme,
-                        Command = new AsyncDelegateCommand(
-                            async () => await OverrideNativeTheme(theme))
-                    });
+                foreach (var themeGroup in NativeThemes.GroupBy(x => x.BaseName)) {
+                    if (themeGroup.Count() == 1) {
+                        var theme = themeGroup.First();
+                        subMenu.Items.Add(new MenuItem {
+                            Header = theme.GetFullName(),
+                            IsChecked = theme == CurrentNativeTheme,
+                            Command = new AsyncDelegateCommand(
+                                async () => await OverrideNativeTheme(theme))
+                        });
+                        continue;
+                    }
+
+                    var groupItem = new MenuItem {
+                        Header = themeGroup.Key
+                    };
+                    subMenu.Items.Add(groupItem);
+                    foreach (var theme in themeGroup) {
+                        groupItem.Items.Add(new MenuItem {
+                            Header = theme.GetFullName(),
+                            IsChecked = theme == CurrentNativeTheme,
+                            Command = new AsyncDelegateCommand(
+                                async () => await OverrideNativeTheme(theme))
+                        });
+                    }
                 }
             }
 

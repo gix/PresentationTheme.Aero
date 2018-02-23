@@ -10,6 +10,7 @@ namespace ThemePreviewer
             string name, FileVersionInfo version, FileInfo path,
             UxThemeLoadParams loadParams = null)
         {
+            BaseName = name;
             Name = name + " (" + version.GetWindowsName() + ")";
             Version = version;
             Path = path;
@@ -26,6 +27,7 @@ namespace ThemePreviewer
             return new NativeThemeInfo(name, version, path, loadParams);
         }
 
+        public string BaseName { get; }
         public string Name { get; }
         public FileVersionInfo Version { get; }
         public FileInfo Path { get; }
@@ -42,7 +44,7 @@ namespace ThemePreviewer
         {
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
-            var cmp = String.Compare(Name, other.Name, StringComparison.Ordinal);
+            var cmp = CompareFileVersion(Version, other.Version);
             if (cmp != 0)
                 return cmp;
             cmp = (LoadParams?.IsHighContrast ?? false).CompareTo(other.LoadParams?.IsHighContrast ?? false);
@@ -51,7 +53,7 @@ namespace ThemePreviewer
             cmp = (LoadParams?.CustomColors != null).CompareTo(other.LoadParams?.CustomColors != null);
             if (cmp != 0)
                 return cmp;
-            return CompareFileVersion(Version, other.Version);
+            return 0;
         }
 
         private static int CompareFileVersion(FileVersionInfo lhs, FileVersionInfo rhs)
