@@ -19,10 +19,12 @@ Installation
 Assembly                                 | Description
 -----------------------------------------|-------------------------------
 PresentationTheme.Aero.dll               | Shared assembly with utilities
-PresentationTheme.Aero.Win8.dll          | Windows 8/8.1 Aero theme
 PresentationTheme.Aero.Win10.dll         | Windows 10 Aero theme
 PresentationTheme.AeroLite.Win10.dll     | Windows 10 AeroLite theme
 PresentationTheme.HighContrast.Win10.dll | Windows 10 High Contrast theme
+PresentationTheme.Aero.Win8.dll          | Windows 8/8.1 Aero theme
+PresentationTheme.AeroLite.Win8.dll      | Windows 8/8.1 AeroLite theme
+PresentationTheme.HighContrast.Win8.dll  | Windows 8/8.1 High Contrast theme
 
 Only the first assembly should be referenced. The other theme assemblies are
 loaded when necessary.
@@ -139,12 +141,14 @@ Using the provided [AeroThemePolicy](xref:PresentationTheme.Aero.AeroThemePolicy
 takes care of choosing the appropriate theme resources matching the system theme.
 It chooses the following theme resource assemblies:
 
-System Theme                     | Theme Resource Assembly
----------------------------------|-----------------------------------------
-Windows 8/8.1 with Aero theme    | PresentationTheme.Aero.Win8.dll
-Windows 10 with Aero theme       | PresentationTheme.Aero.Win10.dll
-Windows 10 with AeroLite theme   | PresentationTheme.AeroLite.Win10.dll
-Windows 10 in high contrast mode | PresentationTheme.HighContrast.Win10.dll
+System Theme                        | Theme Resource Assembly
+------------------------------------|-----------------------------------------
+Windows 10 with Aero theme          | PresentationTheme.Aero.Win10.dll
+Windows 10 with AeroLite theme      | PresentationTheme.AeroLite.Win10.dll
+Windows 10 in high contrast mode    | PresentationTheme.HighContrast.Win10.dll
+Windows 8/8.1 with Aero theme       | PresentationTheme.Aero.Win8.dll
+Windows 8/8.1 with AeroLite theme   | PresentationTheme.AeroLite.Win8.dll
+Windows 8/8.1 in high contrast mode | PresentationTheme.HighContrast.Win8.dll
 
 > [!WARNING]
 > It might be tempting to use a policy that always returns for example Aero

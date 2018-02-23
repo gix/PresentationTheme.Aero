@@ -5,7 +5,8 @@
         {
           "files": [
             "**/PresentationTheme.Aero.csproj",
-            "**/PresentationTheme.*.Win10.csproj"
+            "**/PresentationTheme.*.Win10.csproj",
+            "**/PresentationTheme.*.Win8.csproj"
           ],
           "exclude": [
             "**/obj/**",

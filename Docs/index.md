@@ -70,8 +70,11 @@ documentType: index
     </div>
     <div class="row">
       <div class="text-center">
-        <p class="lead">Includes Windows 8/8.1 Aero theme.</p>
-![Windows 10 Aero](images/preview-aero-win8.png)
+        <p class="lead">Includes Windows 8/8.1 Aero, AeroLite and High Contrast themes.</p>
+![Windows 8/8.1 Aero](images/preview-aero-win8.png)
+![Windows 8/8.1 AeroLite](images/preview-aerolite-win8.png)
+![Windows 8/8.1 High Contrast White](images/preview-hc-white-win8.png)
+![Windows 8/8.1 High Contrast #1](images/preview-hc1-win8.png)
       </div>
     </div>
   </div>
