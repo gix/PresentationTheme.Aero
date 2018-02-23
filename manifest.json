@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/getting-started.html",
-          "hash": "uabCDIN0JtbkJU3XmFYf3Q=="
+          "hash": "MpUeUFImJFSF67ieX95PUg=="
         }
       },
       "is_incremental": false,
@@ -306,6 +306,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "images/preview-aerolite-win8.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/preview-aerolite-win8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "images/preview-hc-white-win10.png",
       "output": {
         "resource": {
@@ -317,10 +328,32 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "images/preview-hc-white-win8.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/preview-hc-white-win8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "images/preview-hc1-win10.png",
       "output": {
         "resource": {
           "relative_path": "images/preview-hc1-win10.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/preview-hc1-win8.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/preview-hc1-win8.png"
         }
       },
       "is_incremental": false,
@@ -398,7 +431,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "qNlZkP38n4Xpx5OO6MkG3w=="
+          "hash": "edGcBK0NxYllbG25aAK2jQ=="
         }
       },
       "is_incremental": false,
@@ -742,6 +775,222 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.AeroWin8Theme.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.AeroWin8Theme.html",
+          "hash": "fTCTDqIaDF6uiRDn0JT5kA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.AutoDropShadowPopup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.AutoDropShadowPopup.html",
+          "hash": "WmcNtBg3Ea3E9slYo5DLXg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.ButtonChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.ButtonChrome.html",
+          "hash": "nUJo00Ls1gO/e5YYxULjFw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.DataGridLinesVisibilityConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.DataGridLinesVisibilityConverter.html",
+          "hash": "POt3apz4te4ZOSqfBp5Csg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.EqualsConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.EqualsConverter.html",
+          "hash": "TVwxgS4Lg2qNV/oY80mDMA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.HeaderChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.HeaderChrome.html",
+          "hash": "qIwBfioIUe/n3UpiTEKQDA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.MenuScrollingEnabledConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.MenuScrollingEnabledConverter.html",
+          "hash": "8AuMMUUlUXNhUgbRFIXviQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.ProgressBarChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.ProgressBarChrome.html",
+          "hash": "zIahF9i354MzzODIW2+IYg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.RoundingTabPanel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.RoundingTabPanel.html",
+          "hash": "iAj8ky1Wtecd3t2Yi4nCzg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.ScrollBarChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.ScrollBarChrome.html",
+          "hash": "Y15zzphkPISj9ae8mv5gBw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.SystemDropShadowChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.SystemDropShadowChrome.html",
+          "hash": "K6bXQgkglwIzwIT4/muZGQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.TabItemKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.TabItemKind.html",
+          "hash": "EI1BRuResioehZtsjdtabg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.TextBoxChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.TextBoxChrome.html",
+          "hash": "YrQEuomUX8dC2qwAv9G4Dw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.ThicknessMask.html",
+          "hash": "xHphIqftvb+Qe/6jXV284g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.ThicknessMaskConverter.html",
+          "hash": "LikIstfOE7JKwrjml/LFdg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.TickBarEx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.TickBarEx.html",
+          "hash": "vdy7OdXktNQFxG8UkLEaAg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.TypeOfConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.TypeOfConverter.html",
+          "hash": "ftiNHcaFuyLqJ+R62hgV1A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win8.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win8.html",
+          "hash": "es0CxW7JnYDTDLUgxr+rdA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "obj/api/PresentationTheme.Aero.yml",
       "output": {
         ".html": {
@@ -963,6 +1212,222 @@
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.html",
           "hash": "GiaKcFkNNpvTmijlDx6KJg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.AeroLiteWin8Theme.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.AeroLiteWin8Theme.html",
+          "hash": "qn4JVNO/OqW5jRFbYPznTA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.AutoDropShadowPopup.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.AutoDropShadowPopup.html",
+          "hash": "bekkYKMlCkrC8ddrBYs3qg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.ButtonChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.ButtonChrome.html",
+          "hash": "uCiw8dAKgYeo3IJAVCxx7g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.EqualsConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.EqualsConverter.html",
+          "hash": "UkoMY0jzu4UiEQ1cqWu9LQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.GroupBoxBorder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.GroupBoxBorder.html",
+          "hash": "2oBRdXZhdS5fgMXbAoZCpQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.HeaderChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.HeaderChrome.html",
+          "hash": "MTzJ52/VsPoFBIecexa0iA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.LessThanOrEqualBinding.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.LessThanOrEqualBinding.html",
+          "hash": "rEj1DVYgZwtrAcUXOmLbTw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.MenuScrollingEnabledConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.MenuScrollingEnabledConverter.html",
+          "hash": "zPkdV4qnU12icT2GYp0P+w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.ProgressBarChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.ProgressBarChrome.html",
+          "hash": "p4Lr77QqLmIVyTaMGhVYyQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.RoundingTabPanel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.RoundingTabPanel.html",
+          "hash": "cs1F2GhXEK2zfTsvk33cPQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.SystemDropShadowChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.SystemDropShadowChrome.html",
+          "hash": "+jXVjspyBSuo4JwJ97fIKw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.TabItemKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.TabItemKind.html",
+          "hash": "97jYFBBvyjAXYLs8JGpLgw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.TextBoxChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.TextBoxChrome.html",
+          "hash": "O3O4QkGsAmWUIQy4Fhz4sQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.ThicknessMask.html",
+          "hash": "ACy1gJO1s4US9DdOEBrPfg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.ThicknessMaskConverter.html",
+          "hash": "qGmhlu0QK2QeadH4pQ2E6A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.TickBarEx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.TickBarEx.html",
+          "hash": "8j4MyLDyGWzJSJACN8p/qA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.TypeOfConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.TypeOfConverter.html",
+          "hash": "B/8ForUKrVbOmYWWtqvJWw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win8.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win8.html",
+          "hash": "u0UmRtEroSqjWo5McArVsg=="
         }
       },
       "is_incremental": false,
@@ -1197,12 +1662,240 @@
       "version": ""
     },
     {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.ButtonChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.ButtonChrome.html",
+          "hash": "00oCSrHsj+T3w9Ia44SErQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.ColorizeByAlphaStreamSourceExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.ColorizeByAlphaStreamSourceExtension.html",
+          "hash": "4XSvek1EUIP4rYf70r2LHA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.EqualsConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.EqualsConverter.html",
+          "hash": "mVs2UvkNz26fcpL1Wx5BbQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.HeaderChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.HeaderChrome.html",
+          "hash": "7BLXmTSfphCjsdetMErwgw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.HighContrastWin8Theme.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.HighContrastWin8Theme.html",
+          "hash": "e71pvGxc4zgZ8gKVEyY9bw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.InvertThicknessConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.InvertThicknessConverter.html",
+          "hash": "TQVOroxglxD4kVcXNJfGgQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.LessThanOrEqualBinding.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.LessThanOrEqualBinding.html",
+          "hash": "BqUE4px+vQRKw+5QFDncmw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.MenuScrollingEnabledConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.MenuScrollingEnabledConverter.html",
+          "hash": "iSmz/LjajYUEMqxGPFk2ow=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.ProgressBarChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.ProgressBarChrome.html",
+          "hash": "GdlRIEGGZE/gwiafjwBziA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.RoundingTabPanel.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.RoundingTabPanel.html",
+          "hash": "aFWm04J1xlA6WlGHrG2JhQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.SystemAliasResourceExtension.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.SystemAliasResourceExtension.html",
+          "hash": "Ddk1j9kVKcmt72j8U3Xv3g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.SystemDropShadowChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.SystemDropShadowChrome.html",
+          "hash": "FehG4FAr0Mh0mkKOSi7RfA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.TabItemKind.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.TabItemKind.html",
+          "hash": "06ZHn+cRKjZ7CcDl6H1S0g=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.TextBoxChrome.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.TextBoxChrome.html",
+          "hash": "jTZXuKcF7mcGvtniFsbhwg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.ThicknessMask.html",
+          "hash": "/WHUc9somQ1DOXbs7HnwRQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.ThicknessMaskConverter.html",
+          "hash": "GYYxy+bKC5uaGlWe7FCfyA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.TickBarEx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.TickBarEx.html",
+          "hash": "1jR6/iWbgTpfsijY9SNqgQ=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.TypeOfConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.TypeOfConverter.html",
+          "hash": "M5gQgIFbh8L3fbHHQruzDA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win8.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win8.html",
+          "hash": "SmObG46wbb9VT6+dwqLBrw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Toc",
       "source_relative_path": "obj/api/toc.yml",
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "rNje8sBnwU1R1YhP+V3ROQ=="
+          "hash": "hQWUTa73/1ryOvACyb0P1w=="
         }
       },
       "is_incremental": false,
@@ -1229,14 +1922,14 @@
         "incrementalPhase": "build"
       },
       "processors": {
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build"
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
         "ConceptualDocumentProcessor": {
