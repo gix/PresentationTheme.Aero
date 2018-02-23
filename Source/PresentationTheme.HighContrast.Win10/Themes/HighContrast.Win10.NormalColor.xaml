@@ -3222,11 +3222,12 @@
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>
-        <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource Explorer.ListView.Item.Background.SelectedNotFocus}"/>
-        <Setter TargetName="Bd" Property="BorderBrush" Value="{aero10:SystemAliasResource Explorer.ListView.Item.Border.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="Background" Value="{aero10:SystemAliasResource Explorer.TreeViewItem.Background.SelectedNotFocus}"/>
+        <Setter TargetName="Bd" Property="BorderBrush" Value="{aero10:SystemAliasResource Explorer.TreeViewItem.Border.SelectedNotFocus}"/>
         <Setter Property="Foreground" Value="{aero10:SystemAliasResource Explorer.TreeViewItem.Foreground.SelectedNotFocus}"/>
       </MultiTrigger>
       <Trigger Property="IsEnabled" Value="False">
@@ -3327,6 +3328,7 @@
       </MultiTrigger>
       <MultiTrigger>
         <MultiTrigger.Conditions>
+          <Condition SourceName="Bd" Property="IsMouseOver" Value="False"/>
           <Condition Property="IsSelected" Value="True"/>
           <Condition Property="IsSelectionActive" Value="False"/>
         </MultiTrigger.Conditions>

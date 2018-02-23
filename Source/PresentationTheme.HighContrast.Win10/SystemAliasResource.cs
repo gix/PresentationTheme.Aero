@@ -2,6 +2,7 @@ namespace PresentationTheme.HighContrast.Win10
 {
     using System;
     using System.Windows;
+    using PresentationTheme.Aero;
 
     /// <summary>
     ///   Provides a way to create a <see cref="DynamicResourceExtension"/> using
@@ -18,6 +19,8 @@ namespace PresentationTheme.HighContrast.Win10
     /// </remarks>
     public class SystemAliasResourceExtension : DynamicResourceExtension
     {
+        private static readonly Version OsVersion = AeroThemePolicy.GetRealWindowsVersion();
+
         /// <summary>
         ///   Initializes a new instance of the
         ///   <see cref="SystemAliasResourceExtension"/> class.
@@ -115,7 +118,10 @@ namespace PresentationTheme.HighContrast.Win10
                 case "Explorer.TreeViewItem.Border.Hot": return SystemColors.ControlTextBrushKey;
                 case "Explorer.TreeViewItem.Border.Selected": return SystemColors.ControlTextBrushKey;
                 case "Explorer.TreeViewItem.Border.HotSelected": return SystemColors.ControlTextBrushKey;
-                case "Explorer.TreeViewItem.Border.SelectedNotFocus": return SystemColors.ControlTextBrushKey;
+                case "Explorer.TreeViewItem.Border.SelectedNotFocus":
+                    if (OsVersion >= new Version(10, 0, 16299, 0))
+                        return SystemColors.HighlightBrushKey;
+                    return SystemColors.ControlTextBrushKey;
                 case "Explorer.TreeViewItem.Foreground.Hot": return SystemColors.ControlTextBrushKey; // Inconsistent with ListView
                 case "Explorer.TreeViewItem.Foreground.Selected": return SystemColors.HighlightTextBrushKey;
                 case "Explorer.TreeViewItem.Foreground.HotSelected": return SystemColors.HighlightTextBrushKey;
