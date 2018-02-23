@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/getting-started.html",
-          "hash": "x32ZnqCxjAvm6fqy4v0zhw=="
+          "hash": "uabCDIN0JtbkJU3XmFYf3Q=="
         }
       },
       "is_incremental": false,
@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/known-differences.html",
-          "hash": "xfzJRWSTWnH6t7CMTatxVg=="
+          "hash": "0Aluow5ilpXZHfNT1wq2vQ=="
         }
       },
       "is_incremental": false,
@@ -33,7 +33,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/motivation.html",
-          "hash": "m8aAQVrej9xQLsUKPbLjSA=="
+          "hash": "h8MelyqH6+dqHGqzUpb1Ng=="
         }
       },
       "is_incremental": false,
@@ -45,7 +45,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/toc.html",
-          "hash": "VBvurs6rP9b36Kk9en4roA=="
+          "hash": "PM+I0xPFlCFTEaIJSTzX1Q=="
         }
       },
       "is_incremental": false,
@@ -284,6 +284,17 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "images/preview-aero-win8.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/preview-aero-win8.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "images/preview-aerolite-win10.png",
       "output": {
         "resource": {
@@ -387,7 +398,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "u3ild7QGAhkA+n2kI69LaA=="
+          "hash": "qNlZkP38n4Xpx5OO6MkG3w=="
         }
       },
       "is_incremental": false,
@@ -399,7 +410,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.AeroTheme.html",
-          "hash": "6uLXSr0gv0wkdBgt95CRsg=="
+          "hash": "/87aB3g/KpKs4DizYU6uwA=="
         }
       },
       "is_incremental": false,
@@ -411,7 +422,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.AeroThemePolicy.html",
-          "hash": "jCf+b7C7JbFW04Wey8kfCA=="
+          "hash": "70ZNokRiib3bk1NXvZTgMw=="
         }
       },
       "is_incremental": false,
@@ -423,7 +434,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.IThemePolicy.html",
-          "hash": "pZ5fS/S/JJTpCeS6ixFGug=="
+          "hash": "JItSkVxnW3ILJOEkowEYVQ=="
         }
       },
       "is_incremental": false,
@@ -435,7 +446,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.PackUriUtils.html",
-          "hash": "Zmet6kg7vhilKVXglf95vw=="
+          "hash": "/pNhVTulW7FVajzFpJ6PmA=="
         }
       },
       "is_incremental": false,
@@ -447,7 +458,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.SystemVisualStateManager.html",
-          "hash": "BUvA5t3oUD4Vnkt//73TXA=="
+          "hash": "tVlVaHoDXigqs0tW8UUivA=="
         }
       },
       "is_incremental": false,
@@ -459,7 +470,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.TextBoxService.html",
-          "hash": "MZTZZz706kqtt031EMKLPg=="
+          "hash": "lTQqCUomh/jPoWIWjfq0LA=="
         }
       },
       "is_incremental": false,
@@ -471,7 +482,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.ThemeManager.html",
-          "hash": "75HG4jP6wuurqIfHrhg2tw=="
+          "hash": "hw1mFI30jiEiRsNJHWe6WQ=="
         }
       },
       "is_incremental": false,
@@ -483,7 +494,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.ThemeOptions.html",
-          "hash": "885dtIhx8Phk7WnpQOgKLg=="
+          "hash": "ZCpEzJFvd6dtYImJ4jPwDQ=="
         }
       },
       "is_incremental": false,
@@ -495,7 +506,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.TreeViewItemLevelConverter.html",
-          "hash": "aJlD8fYdhCgSyy/LkzBSLw=="
+          "hash": "AAH7w9cRIbdCeP6x3gBBhg=="
         }
       },
       "is_incremental": false,
@@ -507,7 +518,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.TreeViewService.html",
-          "hash": "XOIjkUBU0Kgz3e4zJ5HmuQ=="
+          "hash": "m7umyJUSQpQAHx4nH0deQw=="
         }
       },
       "is_incremental": false,
@@ -519,7 +530,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.AeroWin10Theme.html",
-          "hash": "ZcekVOSbbSofaveqXeqmIQ=="
+          "hash": "7adJGaIqGrp/KVEKefJKww=="
         }
       },
       "is_incremental": false,
@@ -531,7 +542,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.AutoDropShadowPopup.html",
-          "hash": "eEiFfYv0MyRAgtDsn2PJyQ=="
+          "hash": "JoqfHVQT1k1fVLe1t4D+HA=="
         }
       },
       "is_incremental": false,
@@ -543,7 +554,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.ButtonChrome.html",
-          "hash": "hPCVAzpZZxbmjZPD4gZX9Q=="
+          "hash": "cNe+uuyXkx4Qs9bLtt0x1g=="
         }
       },
       "is_incremental": false,
@@ -555,7 +566,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.DataGridLinesVisibilityConverter.html",
-          "hash": "Y9iLtWvaisB2t77lTr33Vw=="
+          "hash": "fg+B/tjJ81Oy3Jfd8xARqw=="
         }
       },
       "is_incremental": false,
@@ -567,7 +578,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.EqualsConverter.html",
-          "hash": "T6C0qzkMN3HjK4tU+AOejA=="
+          "hash": "OZ3Y0Lr3Xhz0yWin4mAMfg=="
         }
       },
       "is_incremental": false,
@@ -579,7 +590,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.HeaderChrome.html",
-          "hash": "dtxI0rW/C8BZjmEFn5v+yw=="
+          "hash": "gVK31RD9oQYfl1v87bj3dg=="
         }
       },
       "is_incremental": false,
@@ -591,7 +602,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.MenuScrollingEnabledConverter.html",
-          "hash": "Zc/HAwmO/MV31KdRjEr04w=="
+          "hash": "rBeY32cYLjGaWoa5N77M4A=="
         }
       },
       "is_incremental": false,
@@ -603,7 +614,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.ProgressBarChrome.html",
-          "hash": "aFEn27Do77H6L3tDHORYuw=="
+          "hash": "+1ta+j504jLlhFwNrczuuQ=="
         }
       },
       "is_incremental": false,
@@ -615,7 +626,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.RoundingTabPanel.html",
-          "hash": "/pQ5KQ2HnJEGSKvz2AQHqw=="
+          "hash": "x3hFJKmmkVXXcDwMRQmqBA=="
         }
       },
       "is_incremental": false,
@@ -627,7 +638,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.ScrollBarChrome.html",
-          "hash": "W72k7XuzQPHSxHv1jk0AXg=="
+          "hash": "5qAhqJvaQ4DAMR6RFmIatQ=="
         }
       },
       "is_incremental": false,
@@ -639,7 +650,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.SystemDropShadowChrome.html",
-          "hash": "p5mei94ncZ8mrz718ui9dQ=="
+          "hash": "eLh4c5VnS9D9ot4OZ9EuZQ=="
         }
       },
       "is_incremental": false,
@@ -651,7 +662,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.TabItemKind.html",
-          "hash": "DuPAfNbG2G5cyXwrkXT+qg=="
+          "hash": "u54l8RtYMKunQRg9UUOzoA=="
         }
       },
       "is_incremental": false,
@@ -663,7 +674,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.TextBoxChrome.html",
-          "hash": "vwMgupnGNo5ttJm4px0/GA=="
+          "hash": "dg/mHFX4Lq+hXYDvpksx6Q=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win10.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win10.ThicknessMask.html",
+          "hash": "zKHAJRiJ9MoDTLum5tqO3A=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.Aero.Win10.ThicknessMaskConverter.html",
+          "hash": "JEF8opWNAxBITMcP71np5g=="
         }
       },
       "is_incremental": false,
@@ -675,7 +710,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.TickBarEx.html",
-          "hash": "8u2QoQhlNP3gU5FFmLzvOQ=="
+          "hash": "SWHftDn2wvUAg2n42SP1EA=="
         }
       },
       "is_incremental": false,
@@ -687,7 +722,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.TypeOfConverter.html",
-          "hash": "Ux0S2pGmOX57EHzrLykWkw=="
+          "hash": "PVLieW16DYa/3xtdm7skbA=="
         }
       },
       "is_incremental": false,
@@ -699,7 +734,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.Win10.html",
-          "hash": "Kxt5o151F24t2kYgLThDiA=="
+          "hash": "fDEfAHWVJouxbGI0/Xc/1w=="
         }
       },
       "is_incremental": false,
@@ -711,7 +746,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.Aero.html",
-          "hash": "OWfY19Txy4ifjFLXcWlJcA=="
+          "hash": "njVZNrthHn8lamUOgiWIHQ=="
         }
       },
       "is_incremental": false,
@@ -723,7 +758,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.AeroLiteWin10Theme.html",
-          "hash": "N96UXI/c9kur9nW46zPRHw=="
+          "hash": "0g6YEzv3QqDL2mT12umwpg=="
         }
       },
       "is_incremental": false,
@@ -735,7 +770,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.AutoDropShadowPopup.html",
-          "hash": "SZYknsZtPE/iwK3DlPewWw=="
+          "hash": "me9GXqYirnZy64gVVRoMkw=="
         }
       },
       "is_incremental": false,
@@ -747,7 +782,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.ButtonChrome.html",
-          "hash": "NZnT2PeQFvfQbWspyoOG5g=="
+          "hash": "PKZ5XCtOhHe7cQY/Dp9DKg=="
         }
       },
       "is_incremental": false,
@@ -759,7 +794,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.EqualsConverter.html",
-          "hash": "2RLcxlzjdrJiunoHYl5g0Q=="
+          "hash": "FBwPeb9r34KoHVJBQJxXVQ=="
         }
       },
       "is_incremental": false,
@@ -771,7 +806,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.GroupBoxBorder.html",
-          "hash": "F5o8ZjQfW7X2v2u4AfdPqg=="
+          "hash": "HaJdvyMiK5UxER/jWAkjzQ=="
         }
       },
       "is_incremental": false,
@@ -783,7 +818,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.HeaderChrome.html",
-          "hash": "Ore2M5xcFQtQLTuSfxX0yw=="
+          "hash": "1OPtti1jCCEmyb17Bv8U1w=="
         }
       },
       "is_incremental": false,
@@ -795,7 +830,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.LessThanOrEqualBinding.html",
-          "hash": "RIIqii60HN89RQ9mOKxt4w=="
+          "hash": "Zm9KLLeUgQAHulQGD7CY3Q=="
         }
       },
       "is_incremental": false,
@@ -807,7 +842,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.MenuScrollingEnabledConverter.html",
-          "hash": "6XOczD/0iPuMMUCfn7fLlw=="
+          "hash": "bD9ODroNcF9xVMS2TTgv6g=="
         }
       },
       "is_incremental": false,
@@ -819,7 +854,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.ProgressBarChrome.html",
-          "hash": "O1tjaTRKngPiPDxSfUGFxA=="
+          "hash": "gjlKbxTdjxmYitTX4b1vNg=="
         }
       },
       "is_incremental": false,
@@ -831,7 +866,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.RoundingTabPanel.html",
-          "hash": "KIxzeurgGmy3BO+n4lJZiQ=="
+          "hash": "tZ42eyJB/9xtC9AZL/0mjA=="
         }
       },
       "is_incremental": false,
@@ -843,7 +878,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.SystemDropShadowChrome.html",
-          "hash": "LkHeFzdY/+bP26HQeLJjGA=="
+          "hash": "vjrUr17nBLjdTAm6ohJC6w=="
         }
       },
       "is_incremental": false,
@@ -855,7 +890,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.TabItemKind.html",
-          "hash": "1KlYWHVheMBGSoZAR6GFjg=="
+          "hash": "zxDvtO8JD9UCTUpXfOzOYg=="
         }
       },
       "is_incremental": false,
@@ -867,7 +902,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.TextBoxChrome.html",
-          "hash": "M8/ybN50YOoSVCTdOzSZGw=="
+          "hash": "BG4iQ4Ni0NVpDxOPbgNWCg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win10.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win10.ThicknessMask.html",
+          "hash": "y0H6kBlB9Op69fiUCjHV6w=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.AeroLite.Win10.ThicknessMaskConverter.html",
+          "hash": "t/3UUn2vAh6uVmKeZMKbzw=="
         }
       },
       "is_incremental": false,
@@ -879,7 +938,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.TickBarEx.html",
-          "hash": "rsQ7xuR8ih9s0+RDY+dsqA=="
+          "hash": "2rJuVosD1mtLY7KAoH2O7Q=="
         }
       },
       "is_incremental": false,
@@ -891,7 +950,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.TypeOfConverter.html",
-          "hash": "nXkXInCEXOqWMkDbvqSGvQ=="
+          "hash": "VTod+DJjZ7B0WNheJQwQkw=="
         }
       },
       "is_incremental": false,
@@ -903,7 +962,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.AeroLite.Win10.html",
-          "hash": "iT9R08Hw4w/tyzmWRPMIew=="
+          "hash": "GiaKcFkNNpvTmijlDx6KJg=="
         }
       },
       "is_incremental": false,
@@ -915,7 +974,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.ButtonChrome.html",
-          "hash": "aPt0JJxc6o4GeEPRtVyDRA=="
+          "hash": "mZ6IagO/r7Wuxc8Y88QcdQ=="
         }
       },
       "is_incremental": false,
@@ -927,7 +986,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.ColorizeByAlphaStreamSourceExtension.html",
-          "hash": "fNR2E0+Kk9s8zo6lKBgCKw=="
+          "hash": "yjU4SqC5ZZrun5be7qOTHg=="
         }
       },
       "is_incremental": false,
@@ -939,7 +998,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.EqualsConverter.html",
-          "hash": "3V5eD3l6AivV1rAIIKrLQg=="
+          "hash": "u7fzHIEqWEYJzarZTgNoew=="
         }
       },
       "is_incremental": false,
@@ -951,7 +1010,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.HeaderChrome.html",
-          "hash": "FAclGLz64od2BdB4fv6cEA=="
+          "hash": "KREnm885/4nbkgecQj0Qiw=="
         }
       },
       "is_incremental": false,
@@ -963,7 +1022,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.HighContrastWin10Theme.html",
-          "hash": "Y3ePk6BcpjzsH0JbsMsReg=="
+          "hash": "DCL12XB57CkyVsiz7Q4Q7Q=="
         }
       },
       "is_incremental": false,
@@ -975,7 +1034,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.InvertThicknessConverter.html",
-          "hash": "7uWu5/GBJ8edZB4f5LLZZA=="
+          "hash": "VowPc8l/EdAOD9b5kH8zvA=="
         }
       },
       "is_incremental": false,
@@ -987,7 +1046,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.LessThanOrEqualBinding.html",
-          "hash": "sB7U0ImswR4pvvAvqMXR0w=="
+          "hash": "IDOx8fHQ2mn/QRRhYaHGfw=="
         }
       },
       "is_incremental": false,
@@ -999,7 +1058,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.MenuScrollingEnabledConverter.html",
-          "hash": "kut1uKi2jQtfvSvCi1l62Q=="
+          "hash": "AVGa9vh30G2Z3JJjntJ/aQ=="
         }
       },
       "is_incremental": false,
@@ -1011,7 +1070,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.ProgressBarChrome.html",
-          "hash": "Is6q85+NqTuFQmqqOlYBAw=="
+          "hash": "cPDkA2f0hBPeZ+T9oIwj1w=="
         }
       },
       "is_incremental": false,
@@ -1023,7 +1082,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.RoundingTabPanel.html",
-          "hash": "BNs+Bsi4YcD3K1eHoNthZw=="
+          "hash": "88fc3BQKTTiFwsKbm0rphg=="
         }
       },
       "is_incremental": false,
@@ -1035,7 +1094,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.SystemAliasResourceExtension.html",
-          "hash": "XROo6P5OtRpwRh90HwzE8Q=="
+          "hash": "cH4PpLO2iWWI6OqFuwjLkw=="
         }
       },
       "is_incremental": false,
@@ -1047,7 +1106,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.SystemDropShadowChrome.html",
-          "hash": "p+kTgPbZneOlEGgNHKIRTA=="
+          "hash": "mMg6p0NWWU94eCc7SEbUKw=="
         }
       },
       "is_incremental": false,
@@ -1059,7 +1118,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.TabItemKind.html",
-          "hash": "hJwlAkDMP96T9HPpWjQQBw=="
+          "hash": "ksaeeK4WaLwn2F+niAghBg=="
         }
       },
       "is_incremental": false,
@@ -1071,7 +1130,31 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.TextBoxChrome.html",
-          "hash": "FXtdKjAaOqzErPFtzZsD0g=="
+          "hash": "8FnXy1LnBA4DhXxHulLZkw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win10.ThicknessMask.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win10.ThicknessMask.html",
+          "hash": "cw3xRWqHh31SMeXOeyc/tw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PresentationTheme.HighContrast.Win10.ThicknessMaskConverter.html",
+          "hash": "fzHRzxson9tO7gockxB7/Q=="
         }
       },
       "is_incremental": false,
@@ -1083,7 +1166,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.TickBarEx.html",
-          "hash": "BPIotCnFaOXiFoD5TSNJcA=="
+          "hash": "wnwougpUg+y0thEym0vB2g=="
         }
       },
       "is_incremental": false,
@@ -1095,7 +1178,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.TypeOfConverter.html",
-          "hash": "za/zj/SrqMjwBHFeMefG1Q=="
+          "hash": "hMMBxHvxpOpbpBHksEpY6Q=="
         }
       },
       "is_incremental": false,
@@ -1107,7 +1190,7 @@
       "output": {
         ".html": {
           "relative_path": "api/PresentationTheme.HighContrast.Win10.html",
-          "hash": "WK78Vh17dR8SHwt28IAyBQ=="
+          "hash": "/nRYqh30Y+bjiQMAdCzHyw=="
         }
       },
       "is_incremental": false,
@@ -1119,7 +1202,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "8daT+TdEWSJYpXXxZ4klnQ=="
+          "hash": "rNje8sBnwU1R1YhP+V3ROQ=="
         }
       },
       "is_incremental": false,
@@ -1131,7 +1214,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "ZPbpmTrnSv1JGYHOWc+12A=="
+          "hash": "UehcDG1ZVvdGMp2sTDdnpg=="
         }
       },
       "is_incremental": false,
@@ -1151,22 +1234,17 @@
           "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
-        "ManagedReferenceDocumentProcessor": {
+        "TocDocumentProcessor": {
           "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build"
         },
-        "RestApiDocumentProcessor": {
+        "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
-          "details": "Processor RestApiDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         }
       }
@@ -1180,5 +1258,10 @@
       "processors": {}
     }
   ],
-  "version_info": {}
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
 }
