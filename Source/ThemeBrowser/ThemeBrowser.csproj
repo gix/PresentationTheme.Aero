@@ -75,19 +75,23 @@
     <Compile Include="Extensions\FrameworkExtensions.cs" />
     <Compile Include="Extensions\GeometryUtils.cs" />
     <Compile Include="FrameworkElementAdorner.cs" />
+    <Compile Include="Native\GdiNativeMethods.cs" />
     <Compile Include="HighContrastColor.cs" />
     <Compile Include="ImageColorPickerBehavior.cs" />
     <Compile Include="Extensions\ImagingUtils.cs" />
     <Compile Include="IThemeData.cs" />
     <Compile Include="NamedItemContainer.cs" />
-    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="PreviewImageDialog.xaml.cs">
       <DependentUpon>PreviewImageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PreviewImageDialogViewModel.cs" />
     <Compile Include="ProgressInfo.cs" />
     <Compile Include="PropertyGrid.xaml.cs">
       <DependentUpon>PropertyGrid.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Native\SafeBitmapHandle.cs" />
+    <Compile Include="ResizingAdorner.cs" />
     <Compile Include="SelectableTextBlock.cs" />
     <Compile Include="ShowProgressAdornerBehavior.cs" />
     <Compile Include="ThemeClassViewModel.cs" />

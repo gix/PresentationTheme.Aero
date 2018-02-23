@@ -368,8 +368,10 @@ namespace ThemeBrowser
 
         private void OnSourceBitmapChanged()
         {
-            InvalidateProperty(TracedBitmapProperty);
             InvalidateProperty(DiffBitmapProperty);
+            Dispatcher.InvokeAsync(
+                () => InvalidateProperty(TracedBitmapProperty),
+                DispatcherPriority.ContextIdle);
         }
 
         private void OnTracedBitmapChanged()

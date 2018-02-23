@@ -1,5 +1,6 @@
 namespace ThemeBrowser
 {
+    using ThemeBrowser.Native;
     using ThemeCore;
     using Color = System.Windows.Media.Color;
 
