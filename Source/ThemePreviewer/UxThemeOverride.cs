@@ -52,12 +52,11 @@ namespace ThemePreviewer
         public static SafeThemeFileHandle LoadTheme(
             string path, UxThemeLoadParams loadParams = null)
         {
-            SafeThemeFileHandle themeFile;
             UxThemeExNativeMethods.UxOpenThemeFileEx(
                 path,
                 loadParams?.IsHighContrast ?? false,
                 loadParams?.CustomColors,
-                out themeFile).ThrowIfFailed();
+                out var themeFile).ThrowIfFailed();
 
             return themeFile;
         }

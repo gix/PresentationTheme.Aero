@@ -12,7 +12,7 @@ namespace ThemeBrowser.Extensions
                     return result;
             }
 
-            return default(T);
+            return default;
         }
 
         public static T EnsureFrozen<T>(this T freezable) where T : Freezable

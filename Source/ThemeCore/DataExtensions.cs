@@ -11,8 +11,7 @@ namespace ThemeCore
             this UnmanagedMemoryAccessor accessor, ref long position)
             where T : struct
         {
-            T value;
-            accessor.Read(position, out value);
+            accessor.Read(position, out T value);
             position += Marshal.SizeOf<T>();
             return value;
         }
@@ -20,8 +19,7 @@ namespace ThemeCore
         public static T Read<T>(this UnmanagedMemoryAccessor accessor, long position)
             where T : struct
         {
-            T value;
-            accessor.Read(position, out value);
+            accessor.Read(position, out T value);
             return value;
         }
 

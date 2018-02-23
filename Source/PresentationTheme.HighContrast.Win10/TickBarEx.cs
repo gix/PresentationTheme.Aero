@@ -119,7 +119,7 @@ namespace PresentationTheme.HighContrast.Win10
                     logicalToPhysical = size.Height / range * -1;
                     progression = -1;
                     break;
-            };
+            }
 
             tickLen2 = tickLen * 0.75;
 

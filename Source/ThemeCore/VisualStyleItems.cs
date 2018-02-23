@@ -49,6 +49,12 @@ namespace ThemeCore
         CommandLink = 6,
         [VisualStates(typeof(COMMANDLINKGLYPHSTATES))]
         CommandLinkGlyph = 7,
+        [VisualStates(typeof(RADIOBUTTONSTATES))]
+        RadioButtonHcDisabled = 8,
+        [VisualStates(typeof(CHECKBOXSTATES))]
+        CheckBoxHcDisabled = 9,
+        [VisualStates(typeof(GROUPBOXSTATES))]
+        GroupBoxHcDisabled = 10,
     }
 
     public enum PUSHBUTTONSTATES

@@ -130,7 +130,7 @@ namespace ThemePreviewer
 
         public WpfThemeInfo CurrentWpfTheme
         {
-            get { return currentWpfTheme; }
+            get => currentWpfTheme;
             set
             {
                 if (SetProperty(ref currentWpfTheme, value)) {
@@ -142,7 +142,7 @@ namespace ThemePreviewer
 
         public NativeThemeInfo CurrentNativeTheme
         {
-            get { return currentNativeTheme; }
+            get => currentNativeTheme;
             private set
             {
                 if (SetProperty(ref currentNativeTheme, value)) {

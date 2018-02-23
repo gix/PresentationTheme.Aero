@@ -39,9 +39,7 @@ namespace ThemePreviewer
             TControl control,
             Expression<Func<TControl, int>> propertyExpression)
         {
-            Func<TControl, int> getter;
-            Action<TControl, int> setter;
-            if (!propertyExpression.CreateDelegates(out getter, out setter))
+            if (!propertyExpression.CreateDelegates(out var getter, out var setter))
                 throw new ArgumentException(nameof(propertyExpression));
 
             var option = new IntControlOption<TControl>(new[] { control }, name, getter, setter);
@@ -56,9 +54,7 @@ namespace ThemePreviewer
             TControl control2,
             Expression<Func<TControl, int>> propertyExpression)
         {
-            Func<TControl, int> getter;
-            Action<TControl, int> setter;
-            if (!propertyExpression.CreateDelegates(out getter, out setter))
+            if (!propertyExpression.CreateDelegates(out var getter, out var setter))
                 throw new ArgumentException(nameof(propertyExpression));
 
             var option = new IntControlOption<TControl>(new[] { control1, control2 }, name, getter, setter);

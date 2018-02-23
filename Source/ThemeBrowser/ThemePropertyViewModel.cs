@@ -26,7 +26,7 @@ namespace ThemeBrowser
         {
             var entry = Properties.FirstOrDefault(x => x.PropertyId == propertyId);
             if (entry == null) {
-                value = default(T);
+                value = default;
                 return false;
             }
 
@@ -36,8 +36,7 @@ namespace ThemeBrowser
 
         public T EnsurePropertyValue<T>(TMT propertyId, TMT primitiveType, T defaultValue)
         {
-            T value;
-            if (Find(propertyId, out value))
+            if (Find(propertyId, out T value))
                 return value;
 
             AddDefaultProperty(propertyId, primitiveType, defaultValue);

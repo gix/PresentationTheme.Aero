@@ -27,7 +27,7 @@ namespace ThemeBrowser
             public T Clear()
             {
                 var ret = Value;
-                Value = default(T);
+                Value = default;
                 HasValue = false;
                 return ret;
             }

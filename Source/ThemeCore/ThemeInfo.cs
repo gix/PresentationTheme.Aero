@@ -38,8 +38,7 @@ namespace ThemeCore
 
             public Tuple<int, string>[] GetStates(int partId)
             {
-                Tuple<int, string>[] entries;
-                if (!statesMap.TryGetValue(partId, out entries))
+                if (!statesMap.TryGetValue(partId, out var entries))
                     statesMap[partId] = entries = EmptyArray;
                 return entries;
             }
@@ -72,8 +71,7 @@ namespace ThemeCore
 
         private static ClassCache GetClass(string className)
         {
-            ClassCache entry;
-            if (!PartMap.TryGetValue(className, out entry))
+            if (!PartMap.TryGetValue(className, out var entry))
                 PartMap[className] = entry = EmptyClass;
             return entry;
         }

@@ -179,7 +179,7 @@ namespace ThemePreviewer
         {
             var converter = new RectConverter();
             try {
-                rect = (Rect)converter.ConvertFromInvariantString(value);
+                rect = (Rect?)converter.ConvertFromInvariantString(value) ?? new Rect();
                 return true;
             } catch {
                 rect = new Rect();

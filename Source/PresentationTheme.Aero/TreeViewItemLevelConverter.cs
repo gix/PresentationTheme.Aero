@@ -42,11 +42,11 @@ namespace PresentationTheme.Aero
             int level = GetItemLevel(item);
             TreeViewService.SetItemLevel(item, level);
 
-            if (parameter is int)
-                return level * (int)parameter;
+            if (parameter is int i)
+                return level * i;
 
-            if (parameter is double)
-                return level * (double)parameter;
+            if (parameter is double d)
+                return level * d;
 
             return level;
         }

@@ -363,7 +363,7 @@ namespace PresentationTheme.Aero.Win7
                 dc.PushTransform(transform);
 
                 bool ascending = SortDirection == ListSortDirection.Ascending;
-                var geometry = (@ascending ? ArrowUpGeometry : ArrowDownGeometry).Value;
+                var geometry = (ascending ? ArrowUpGeometry : ArrowDownGeometry).Value;
 
                 dc.DrawGeometry(ArrowBorderBrush.Value, null, geometry);
                 dc.PushTransform(ArrowFillScale.Value);

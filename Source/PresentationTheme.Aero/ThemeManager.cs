@@ -606,7 +606,6 @@ namespace PresentationTheme.Aero
 
             const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
-            var PresentationFramework = typeof(ResourceDictionary).Assembly;
             var SystemResources_Type = PresentationFramework.GetType("System.Windows.SystemResources", true);
             var paramTypes = new[] {
                 typeof(object),

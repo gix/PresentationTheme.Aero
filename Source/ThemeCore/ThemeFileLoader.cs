@@ -193,8 +193,7 @@ namespace ThemeCore
                     currClass = record.Class;
                 }
 
-                object value;
-                if (LoadRecordValue(themeFile, record, data, offset, out value)) {
+                if (LoadRecordValue(themeFile, record, data, offset, out var value)) {
                 }
 
                 var prop = cls.AddProperty(

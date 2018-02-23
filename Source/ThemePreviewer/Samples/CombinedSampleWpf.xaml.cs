@@ -1,5 +1,6 @@
 namespace ThemePreviewer.Samples
 {
+    using System;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
@@ -47,7 +48,7 @@ namespace ThemePreviewer.Samples
         {
             IsMouseOverPropertyKey = (DependencyPropertyKey)typeof(UIElement).GetField(
                 "IsMouseOverPropertyKey", BindingFlags.Static | BindingFlags.NonPublic)
-                .GetValue(null);
+                ?.GetValue(null) ?? throw new Exception("UIElement.IsMouseOverPropertyKey property not found");
         }
 
         public static readonly DependencyProperty ForceIsMouseOverProperty =

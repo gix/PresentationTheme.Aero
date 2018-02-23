@@ -2,7 +2,6 @@ namespace PresentationTheme.HighContrast.Win10
 {
     using System.Windows;
     using System.Windows.Controls;
-    using System.Windows.Media;
 
     /// <summary>
     ///   Creates a theme-specific look for <see cref="Button"/> elements.

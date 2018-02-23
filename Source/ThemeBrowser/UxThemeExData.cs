@@ -34,28 +34,24 @@ namespace ThemeBrowser
 
         public bool? GetThemeBool(int partId, int stateId, int propertyId)
         {
-            bool value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeBool(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out var value);
             return Found(hr) ? value : (bool?)null;
         }
 
         public Color? GetThemeColor(int partId, int stateId, int propertyId)
         {
-            int value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeColor(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out int value);
             return Found(hr) ? ThemeExtensions.ColorFromArgb(value) : (Color?)null;
         }
 
         public unsafe Stream GetThemeStream(
             int partId, int stateId, int propertyId, SafeModuleHandle instance)
         {
-            IntPtr stream;
-            uint length;
             HResult hr = UxThemeExNativeMethods.UxGetThemeStream(
-                themeFile, theme, partId, stateId, propertyId, out stream,
-                out length, instance);
+                themeFile, theme, partId, stateId, propertyId, out IntPtr stream,
+                out uint length, instance);
 
             if (!Found(hr) || stream == IntPtr.Zero)
                 return null;
@@ -69,9 +65,8 @@ namespace ThemeBrowser
 
         public int? GetThemeEnumValue(int partId, int stateId, int propertyId)
         {
-            int value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeEnumValue(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out int value);
             return Found(hr) ? value : (int?)null;
         }
 
@@ -93,25 +88,22 @@ namespace ThemeBrowser
 
         public IntPtr? GetThemeBitmap(int partId, int stateId, int propertyId)
         {
-            IntPtr value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeBitmap(
-                themeFile, theme, partId, stateId, propertyId, GBF.GBF_DIRECT, out value);
+                themeFile, theme, partId, stateId, propertyId, GBF.GBF_DIRECT, out IntPtr value);
             return hr.Succeeded() ? value : (IntPtr?)null;
         }
 
         public int? GetThemeInt(int partId, int stateId, int propertyId)
         {
-            int value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeInt(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out int value);
             return Found(hr) ? value : (int?)null;
         }
 
         public int? GetThemeMetric(int partId, int stateId, int propertyId)
         {
-            int value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeMetric(
-                themeFile, theme, IntPtr.Zero, partId, stateId, propertyId, out value);
+                themeFile, theme, IntPtr.Zero, partId, stateId, propertyId, out int value);
             return Found(hr) ? value : (int?)null;
         }
 
@@ -125,33 +117,29 @@ namespace ThemeBrowser
 
         public MARGINS? GetThemeMargins(int partId, int stateId, int propertyId)
         {
-            MARGINS value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeMargins(
-                themeFile, theme, IntPtr.Zero, partId, stateId, propertyId, null, out value);
+                themeFile, theme, IntPtr.Zero, partId, stateId, propertyId, null, out MARGINS value);
             return Found(hr) ? value : (MARGINS?)null;
         }
 
         public POINT? GetThemePosition(int partId, int stateId, int propertyId)
         {
-            POINT value;
             HResult hr = UxThemeExNativeMethods.UxGetThemePosition(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out POINT value);
             return Found(hr) ? value : (POINT?)null;
         }
 
         public RECT? GetThemeRect(int partId, int stateId, int propertyId)
         {
-            RECT value;
             HResult hr = UxThemeExNativeMethods.UxGetThemeRect(
-                themeFile, theme, partId, stateId, propertyId, out value);
+                themeFile, theme, partId, stateId, propertyId, out RECT value);
             return Found(hr) ? value : (RECT?)null;
         }
 
         public SIZE? GetThemePartSize(int partId, int stateId, ThemeSize themeSize)
         {
-            SIZE value;
             HResult hr = UxThemeExNativeMethods.UxGetThemePartSize(
-                themeFile, theme, IntPtr.Zero, partId, stateId, null, themeSize, out value);
+                themeFile, theme, IntPtr.Zero, partId, stateId, null, themeSize, out SIZE value);
             return Found(hr) ? value : (SIZE?)null;
         }
 
@@ -173,9 +161,8 @@ namespace ThemeBrowser
         public PropertyOrigin GetThemePropertyOrigin(
             int partId, int stateId, int propertyId)
         {
-            PropertyOrigin origin;
             HResult hr = UxThemeExNativeMethods.UxGetThemePropertyOrigin(
-                themeFile, theme, partId, stateId, propertyId, out origin);
+                themeFile, theme, partId, stateId, propertyId, out PropertyOrigin origin);
             return hr.Succeeded() ? origin : PropertyOrigin.NotFound;
         }
 
@@ -199,9 +186,8 @@ namespace ThemeBrowser
 
         public int? GetThemeSysInt(int propertyId)
         {
-            int value;
             HResult hr = UxThemeExNativeMethods.GetThemeSysInt(
-                theme, propertyId, out value);
+                theme, propertyId, out int value);
             return Found(hr) ? value : (int?)null;
         }
 

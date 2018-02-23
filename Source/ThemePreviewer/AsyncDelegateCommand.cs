@@ -151,10 +151,10 @@ namespace ThemePreviewer
         {
             if (IsExecuting)
                 return false;
-            if (parameter is T)
-                return canExecute((T)parameter);
+            if (parameter is T value)
+                return canExecute(value);
             if (parameter == null && default(T) == null)
-                return canExecute(default(T));
+                return canExecute(default);
             return false;
         }
 
