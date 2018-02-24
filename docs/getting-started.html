@@ -241,7 +241,7 @@ It chooses the following theme resource assemblies:</p>
 <td>PresentationTheme.Aero.Win10.dll</td>
 </tr>
 <tr>
-<td>Windows 10 with AeroLite theme</td>
+<td>Windows 10 with Aero Lite theme</td>
 <td>PresentationTheme.AeroLite.Win10.dll</td>
 </tr>
 <tr>
@@ -253,7 +253,7 @@ It chooses the following theme resource assemblies:</p>
 <td>PresentationTheme.Aero.Win8.dll</td>
 </tr>
 <tr>
-<td>Windows 8/8.1 with AeroLite theme</td>
+<td>Windows 8/8.1 with Aero Lite theme</td>
 <td>PresentationTheme.AeroLite.Win8.dll</td>
 </tr>
 <tr>
@@ -272,7 +272,8 @@ text.</p>
 <p>The third and most invasive approach replaces the internal system resource loading
 mechanism via splicing (i.e., patching code at runtime). The custom resource loader
 enables on-demand usage of theme policies and allows control libraries to provide
-styles for specific Windows versions.</p>
+styles for specific Windows versions. To enable the resource loader call
+<a class="xref" href="../api/PresentationTheme.Aero.ThemeManager.html#PresentationTheme_Aero_ThemeManager_Install">ThemeManager.Install</a>.</p>
 <pre><code class="lang-cs">using PresentationTheme.Aero;
 
 public partial class App
@@ -304,10 +305,11 @@ use the resource dictionary in the same assembly located at
 <li><code>{AssemblyName}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/8yd480ef(v=vs.110).aspx">Assembly name</a> (<code>AcmeLibrary</code>)</li>
 <li><code>{Version}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/eyw13ks6(v=vs.110).aspx">Assembly version</a> (<code>1.0.0.0</code>)</li>
 <li><code>{ThemeName}</code>: Basename of the theme file path returned by
-              <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a>
-              with a Windows version suffix (<code>Win10</code>, <code>Win8</code>, <code>Win7</code>).
-              For the Windows 8 and 10 high contrast theme, <code>HighContrast</code> is
-              used even though the theme is based on AeroLite.</li>
+               <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a>
+               with a Windows version suffix (<code>Win10</code>, <code>Win8</code>, <code>Win7</code>).
+               For the Windows 8 and 10 high contrast theme, <code>HighContrast</code> is
+               used even though the theme is based on Aero Lite.
+               (<code>Aero.Win10</code>, <code>AeroLite.Win8</code>, <code>HighContrast.Win10</code>)</li>
 <li><code>{FallbackThemeName}</code>: Basename of the theme file path. <code>Aero</code> is replaced by <code>Aero2</code> if Windows 8 or later.</li>
 <li><code>{ThemeColor}</code>: Theme color name returned by <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a> (<code>NormalColor</code>)</li>
 </ul>
@@ -323,12 +325,12 @@ following locations are used in order:</p>
 <li><code>pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code></li>
 </ol>
 </li>
-<li><p>On Windows 8 with the AeroLite theme:</p>
+<li><p>On Windows 8 with the Aero Lite theme:</p>
 <ol>
 <li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml</code> (if theme resources are internal)</li>
 <li><code>pack://application:,,,/AcmeLibrary.AeroLite.Win8;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml</code></li>
-<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code> (if theme resources are internal)</li>
-<li><code>pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml</code></li>
+<li><code>pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/AeroLite.NormalColor.xaml</code> (if theme resources are internal)</li>
+<li><code>pack://application:,,,/AcmeLibrary.AeroLite;v1.0.0.0;component/themes/AeroLite.NormalColor.xaml</code></li>
 </ol>
 </li>
 </ul>
