@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/known-differences.html",
-          "hash": "0Aluow5ilpXZHfNT1wq2vQ=="
+          "hash": "lKv/oYgU0gHOriV++39C8Q=="
         }
       },
       "is_incremental": false,
@@ -33,7 +33,7 @@
       "output": {
         ".html": {
           "relative_path": "docs/motivation.html",
-          "hash": "I2dPbSapgi1HFnIr1mSq3w=="
+          "hash": "9gCe6ba5Cq2GAR392IqgQA=="
         }
       },
       "is_incremental": false,
@@ -1922,11 +1922,6 @@
         "incrementalPhase": "build"
       },
       "processors": {
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build"
-        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
@@ -1938,6 +1933,11 @@
         },
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
+          "incrementalPhase": "build"
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot suppport incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
           "incrementalPhase": "build"
         }
       }
