@@ -48,7 +48,7 @@ ListView
 --------
 
 Explorer-style ListView has no vertical gridlines compared to the native theme.
-Also header items lack ellipsis for long text and have to sort indicator because
+Also header items lack ellipsis for long text and have no sort indicator because
 the control does not support it.
 
 [!cmp[Native](../images/diff-listview-native.png)[WPF](../images/diff-listview-wpf.png)]

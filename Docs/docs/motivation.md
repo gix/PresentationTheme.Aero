@@ -43,11 +43,11 @@ on the name of the native theme did not work anymore (because it is still called
 Aero!). But instead of properly solving this problem they chose a bandaid which
 replaces `Aero` with `Aero2` if the Windows version is 8 or later.
 
-Windows 8 also replaced the basic theme with AeroLite. While a lot simpler,
-the WPF AeroLite still looks cheap in comparison.
+Windows 8 also replaced the basic theme with Aero Lite. While a lot simpler,
+the WPF Aero Lite still looks cheap in comparison.
 
-Native Windows 8 AeroLite | WPF AeroLite
------------------|-----------------------
+Native Windows 8 Aero Lite | WPF Aero Lite
+---------------------------|--------------
 ![Native](../images/native-aerolite-win8.png) | ![WPF](../images/wpf-aerolite-win8.png)
 
 
@@ -56,11 +56,11 @@ With Windows 10 Aero received its next overhaul and with WPF apparently on
 life support there were no changes for WPF.
 
 Native Windows 10 Aero | WPF Aero2
-------------------|-----------------------
+-----------------------|----------
 ![Native](../images/native-aero-win10.png) | ![WPF](../images/wpf-aero-win10.png)
 
-Native Windows 10 AeroLite | WPF AeroLite
-------------------|-----------------------
+Native Windows 10 Aero Lite | WPF AeroLite
+----------------------------|-------------
 ![Native](../images/native-aerolite-win10.png) | ![WPF](../images/wpf-aerolite-win10.png)
 
 
