@@ -191,13 +191,13 @@ add a <code>BasedOn</code> attribute and reference the previous style:</p>
 &lt;/Style&gt;
 </code></pre></li>
 <li><p>Even without a custom style, certain controls require an explicit style attribute.
-For example, a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.listview(v=vs.110).aspx">ListView</a> without
-<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.gridview(v=vs.110).aspx">GridView</a> normally inherits the
-<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.listbox(v=vs.110).aspx">ListBox</a> style automatically but now
+For example, a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.controls.listview">ListView</a> without
+<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.controls.gridview">GridView</a> normally inherits the
+<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.controls.listbox">ListBox</a> style automatically but now
 requires an explicit style attribute.</p>
 <pre><code class="lang-xaml">&lt;ListView Style=&quot;{StaticResource {x:Type ListBox}}&quot;/&gt;
 </code></pre></li>
-<li><p>Some elements like the context menu of a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.textbox(v=vs.110).aspx">TextBox</a>
+<li><p>Some elements like the context menu of a <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.controls.textbox">TextBox</a>
 use the default theme style.</p>
 </li>
 </ul>
@@ -291,8 +291,8 @@ public partial class App
 <li>If a theme policy is registered for the assembly, use the resource
 dictionary located using the pack URI returned by
 <a class="xref" href="../api/PresentationTheme.Aero.IThemePolicy.html#PresentationTheme_Aero_IThemePolicy_GetCurrentThemeUri">IThemePolicy.GetCurrentThemeUri</a>.</li>
-<li>If theme resources are internal, i.e. <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms602084(v=vs.110).aspx">ThemeDictionaryLocation</a>
-is <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.resourcedictionarylocation(v=vs.110).aspx">SourceAssembly</a>,
+<li>If theme resources are internal, i.e. <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.themeinfoattribute.themedictionarylocation#System_Windows_ThemeInfoAttribute_ThemeDictionaryLocation">ThemeDictionaryLocation</a>
+is <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.resourcedictionarylocation#System_Windows_ResourceDictionaryLocation_SourceAssembly">SourceAssembly</a>,
 use the resource dictionary in the same assembly located at
 <code>pack://application:,,,/{AssemblyName};v{Version};component/themes/{ThemeName}.{ThemeColor}.xaml</code>.</li>
 <li>Use the external resource assembly at
@@ -302,8 +302,8 @@ use the resource dictionary in the same assembly located at
 </ol>
 <p>with the following meaning for the placeholders:</p>
 <ul>
-<li><code>{AssemblyName}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/8yd480ef(v=vs.110).aspx">Assembly name</a> (<code>AcmeLibrary</code>)</li>
-<li><code>{Version}</code>: <a class="xref" href="https://msdn.microsoft.com/en-us/library/eyw13ks6(v=vs.110).aspx">Assembly version</a> (<code>1.0.0.0</code>)</li>
+<li><code>{AssemblyName}</code>: <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.assemblyname.name#System_Reflection_AssemblyName_Name">Assembly name</a> (<code>AcmeLibrary</code>)</li>
+<li><code>{Version}</code>: <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.assemblyname.version#System_Reflection_AssemblyName_Version">Assembly version</a> (<code>1.0.0.0</code>)</li>
 <li><code>{ThemeName}</code>: Basename of the theme file path returned by
                <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx">GetCurrentThemeName</a>
                with a Windows version suffix (<code>Win10</code>, <code>Win8</code>, <code>Win7</code>).
