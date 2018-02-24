@@ -7,12 +7,12 @@ WPF Has No Proper System Theme
 
 Ever since the inception of WPF the provided system theme for Aero was lacking
 in polish and features, and Microsoft does not seem to care. Over the years this
-only has gotten worse.
+has only gotten worse.
 
-When WPF was released with Windows Vista the provided Aero theme looked most
-closely like the native theme. This had to the case because being praised as the
-successor to Windows Forms and good support for interop with native (and WinForms)
-controls.
+When WPF was released with Windows Vista the provided Aero theme looked closest
+to the native Aero theme. This had to be the case because it was being praised
+as the successor to Windows Forms, with good support for interop with native
+(and WinForms) controls.
 
 Native Windows Vista | WPF Aero
 ---------------------|-----------------------
