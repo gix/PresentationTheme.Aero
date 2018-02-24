@@ -163,7 +163,8 @@ Windows 8/8.1 in high contrast mode | PresentationTheme.HighContrast.Win8.dll
 The third and most invasive approach replaces the internal system resource loading
 mechanism via splicing (i.e., patching code at runtime). The custom resource loader
 enables on-demand usage of theme policies and allows control libraries to provide
-styles for specific Windows versions.
+styles for specific Windows versions. To enable the resource loader call
+[ThemeManager.Install](xref:PresentationTheme.Aero.ThemeManager.Install).
 
 ```cs
 using PresentationTheme.Aero;
@@ -202,10 +203,11 @@ with the following meaning for the placeholders:
 - `{AssemblyName}`: [Assembly name](xref:System.Reflection.AssemblyName.Name) (`AcmeLibrary`)
 - `{Version}`: [Assembly version](xref:System.Reflection.AssemblyName.Version) (`1.0.0.0`)
 - `{ThemeName}`: Basename of the theme file path returned by
-                [GetCurrentThemeName](https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx)
-                with a Windows version suffix (`Win10`, `Win8`, `Win7`).
-                For the Windows 8 and 10 high contrast theme, `HighContrast` is
-                used even though the theme is based on AeroLite.
+                 [GetCurrentThemeName](https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx)
+                 with a Windows version suffix (`Win10`, `Win8`, `Win7`).
+                 For the Windows 8 and 10 high contrast theme, `HighContrast` is
+                 used even though the theme is based on Aero Lite.
+                 (`Aero.Win10`, `AeroLite.Win8`, `HighContrast.Win10`)
 - `{FallbackThemeName}`: Basename of the theme file path. `Aero` is replaced by `Aero2` if Windows 8 or later.
 - `{ThemeColor}`: Theme color name returned by [GetCurrentThemeName](https://msdn.microsoft.com/en-us/library/windows/desktop/bb773365.aspx) (`NormalColor`)
 
