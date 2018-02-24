@@ -144,10 +144,10 @@ It chooses the following theme resource assemblies:
 System Theme                        | Theme Resource Assembly
 ------------------------------------|-----------------------------------------
 Windows 10 with Aero theme          | PresentationTheme.Aero.Win10.dll
-Windows 10 with AeroLite theme      | PresentationTheme.AeroLite.Win10.dll
+Windows 10 with Aero Lite theme     | PresentationTheme.AeroLite.Win10.dll
 Windows 10 in high contrast mode    | PresentationTheme.HighContrast.Win10.dll
 Windows 8/8.1 with Aero theme       | PresentationTheme.Aero.Win8.dll
-Windows 8/8.1 with AeroLite theme   | PresentationTheme.AeroLite.Win8.dll
+Windows 8/8.1 with Aero Lite theme  | PresentationTheme.AeroLite.Win8.dll
 Windows 8/8.1 in high contrast mode | PresentationTheme.HighContrast.Win8.dll
 
 > [!WARNING]
@@ -222,8 +222,8 @@ following locations are used in order:
   3. `pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero2.NormalColor.xaml` (if the resources are internal)
   4. `pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml`
 
-- On Windows 8 with the AeroLite theme:
+- On Windows 8 with the Aero Lite theme:
   1. `pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml` (if theme resources are internal)
   2. `pack://application:,,,/AcmeLibrary.AeroLite.Win8;v1.0.0.0;component/themes/AeroLite.Win8.NormalColor.xaml`
-  3. `pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/Aero2.NormalColor.xaml` (if theme resources are internal)
-  4. `pack://application:,,,/AcmeLibrary.Aero2;v1.0.0.0;component/themes/Aero2.NormalColor.xaml`
+  3. `pack://application:,,,/AcmeLibrary;v1.0.0.0;component/themes/AeroLite.NormalColor.xaml` (if theme resources are internal)
+  4. `pack://application:,,,/AcmeLibrary.AeroLite;v1.0.0.0;component/themes/AeroLite.NormalColor.xaml`
