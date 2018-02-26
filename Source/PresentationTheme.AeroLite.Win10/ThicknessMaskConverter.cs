@@ -81,7 +81,7 @@ namespace PresentationTheme.AeroLite.Win10
         Bottom = 8,
 
         /// <summary>
-        ///   Use all of values of the source <see cref="Thickness"/>.
+        ///   Use all values of the source <see cref="Thickness"/>.
         /// </summary>
         All = Left | Top | Right | Bottom,
 
