@@ -8,7 +8,7 @@
     <title>Known Differences of the Windows 10 Aero Theme | PresentationTheme Aero </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Known Differences of the Windows 10 Aero Theme | PresentationTheme Aero ">
-    <meta name="generator" content="docfx 2.31.0.0">
+    <meta name="generator" content="docfx 2.36.2.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -20,7 +20,7 @@
     
     
   </head>
-  <body data-spy="scroll" data-target="#affix">
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
         
@@ -80,7 +80,7 @@ inconsistencies and flaws of the native theme.</p>
 <figure class="image-cmp"><div class="image-cmp-l"><img src="../images/diff-combo-native.png" alt="Native"></div><div class="image-cmp-r"><img src="../images/diff-combo-wpf.png" alt="WPF"></div></figure><p>Disabled comboboxes have a smaller inner white border.</p>
 <figure class="image-cmp"><div class="image-cmp-l"><img src="../images/diff-combo-disabled-native.png" alt="Native"></div><div class="image-cmp-r"><img src="../images/diff-combo-disabled-wpf.png" alt="WPF"></div></figure><h2 id="menus">Menus</h2>
 <p>Native disabled menu items have a mouseover state. In WPF such menu items have
-their <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms588701(v=vs.110).aspx">IsEnabled</a> property set to false
+their <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.uielement.isenabled#System_Windows_UIElement_IsEnabled">IsEnabled</a> property set to false
 and do not receive input events.</p>
 <h2 id="tabcontrol">TabControl</h2>
 <p>The native TabControl has the last tab cut short and a 2px shadow-like right
@@ -103,7 +103,7 @@ since themes do not have different values for these colors.</p>
 <figure class="image-cmp"><div class="image-cmp-l"><img src="../images/diff-trackbar-native.png" alt="Native"></div><div class="image-cmp-r"><img src="../images/diff-trackbar-wpf.png" alt="WPF"></div></figure><h2 id="statusbar">StatusBar</h2>
 <p>StatusBar items with separators have a slighty different width if the same
 widths are specified because the native theme treats separators as part of an
-item while WPF uses <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.windows.controls.separator(v=vs.110).aspx">Separators</a>.</p>
+item while WPF uses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.windows.controls.separator">Separators</a>.</p>
 <h1 id="known-differences-of-the-windows-881-aero-theme">Known Differences of the Windows 8/8.1 Aero Theme</h1>
 <p>The differences are similar to those described for the Windows 10 theme.</p>
 </article>

@@ -24,6 +24,9 @@ figure.image-cmp {
 	background: #9AB6CD;
 	background: rgba(255,255,255,0.75);
 }
+.buttons-unit .button:hover, .buttons-unit .button:active {
+	color: #000;
+}
 .buttons-unit .button:active {
 	background: #FFF;
 }
@@ -125,4 +128,12 @@ figure.image-cmp {
 		display: block;
 		margin: 12px;
 	}
+}
+
+.hero a {
+	color: #b3daf7;
+}
+
+.hero a:hover, .hero a:active {
+	color: #fff;
 }
