@@ -9,6 +9,10 @@ provides faithful pixel-perfect recreation of the native Aero themes including
 proper animations depending on system settings, popup drop-shadows,
 Explorer-styles. Also includes AeroLite and High Contrast themes.
 
+_PresentationTheme Aero_ is open-source software, licensed under the
+[MIT license](https://github.com/gix/PresentationTheme.Aero/blob/master/LICENSE.txt).
+The source code is available on its [project page on GitHub](https://github.com/gix/PresentationTheme.Aero).
+
 
 Installation
 ------------

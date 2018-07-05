@@ -36,6 +36,10 @@
           "obj/**",
           "_site/**"
         ]
+      },
+      {
+        "files": "CHANGELOG.md",
+        "src": ".."
       }
     ],
     "resource": [

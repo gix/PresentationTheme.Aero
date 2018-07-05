@@ -10,13 +10,11 @@ documentType: index
     <div class="text">
       <strong>PresentationTheme Aero</strong>
     </div>
-    <!--
     <div class="buttons-unit-small">
-      <a class="version-link" href="../RELEASENOTE.md">Version Notes</a>
+      <a class="version-link" href="../CHANGELOG.md">Version Notes</a>
       <span>|</span>
-      <a class="github-link" href="https://github.com/gix/PresentationTheme.Aero">View in Github</a>
+      <a class="github-link" href="https://github.com/gix/PresentationTheme.Aero">View on Github</a>
     </div>
-    -->
     <div class="minitext">
     A highly polished Windows Aero theme for WPF
     </div>
