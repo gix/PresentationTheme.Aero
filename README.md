@@ -29,12 +29,12 @@ This repository also contains several tools for Windows Visual Style files (.mss
 2. ThemeBrowser: Allows viewing and comparing .msstyles files. It also provides
    helpful utilities to inspect images and recreate those with WPF paths.
 
-   ![Theme Browser](docs/images/theme-browser.png)
+   ![Theme Browser](Docs/images/theme-browser.png)
 
 3. ThemePreviewer: Provides previews and comparisons of built-in controls using
    Windows and WPF themes.
 
-   ![Theme Browser](docs/images/theme-previewer.png)
+   ![Theme Previewer](Docs/images/theme-previewer.png)
 
 
 ## Building
