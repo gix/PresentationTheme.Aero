@@ -26,9 +26,15 @@ This repository also contains several tools for Windows Visual Style files (.mss
    from uxtheme.dll with the ability to draw native controls using a specific
    .msstyles file. Not intended for general use as it is quite fragile and may
    break if certain Windows components are updated.
-2. ThemeBrowser: Allows viewing and comparing .msstyles files.
+2. ThemeBrowser: Allows viewing and comparing .msstyles files. It also provides
+   helpful utilities to inspect images and recreate those with WPF paths.
+
+   ![Theme Browser](docs/images/theme-browser.png)
+
 3. ThemePreviewer: Provides previews and comparisons of built-in controls using
    Windows and WPF themes.
+
+   ![Theme Browser](docs/images/theme-previewer.png)
 
 
 ## Building
