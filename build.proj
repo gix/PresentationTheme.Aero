@@ -12,7 +12,8 @@
   </ItemGroup>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <PackageDir>$(MSBuildThisFileDirectory)dist</PackageDir>
+    <PackageDir>$(MSBuildThisFileDirectory)dist\</PackageDir>
+    <ToolsOutputPath>$(MSBuildThisFileDirectory)build\any\bin\</ToolsOutputPath>
     <BuildQuality Condition="'$(BuildQuality)' == ''">PerBuildPreRelease</BuildQuality>
 
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(BUILD_BUILDNUMBER)</BuildNumber>
@@ -24,7 +25,51 @@
     <GitHubPagesDir>Docs\_site\</GitHubPagesDir>
   </PropertyGroup>
 
-  <Import Project="Source\Build\Settings.props" />
+  <Import Project="Source\Build\Settings.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)Tools\MSBuildTasks.1.5.0.235\MSBuild.Community.Tasks.Targets"/>
+
+  <UsingTask TaskName="ConcatFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <OutputFilename ParameterType="System.String" Required="true"/>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true"/>
+      <Separator ParameterType="System.Boolean" Required="false"/>
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+      <![CDATA[
+        try {
+          var sepString = new string('-', 80);
+          var trimChars = new char[] { ' ', '\r', '\n', '\t' };
+          const string LF = "\n";
+          const string CRLF = "\r\n";
+
+          string outputFile = Path.GetFullPath(OutputFilename);
+          Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
+
+          using (var output = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
+          using (var writer = new StreamWriter(output)) {
+              int idx = 0;
+              foreach (ITaskItem fileItem in Files) {
+                  if (idx++ != 0 && Separator) {
+                      writer.Write(LF);
+                      writer.Write(sepString);
+                      writer.Write(LF);
+                      writer.Write(LF);
+                  }
+                  string text = File.ReadAllText(fileItem.ItemSpec);
+                  writer.Write(text.Trim(trimChars).Replace(CRLF, LF));
+                  writer.Write(LF);
+              }
+          }
+          return true;
+        } catch (Exception ex) {
+          Log.LogErrorFromException(ex);
+          return false;
+        }
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
 
   <Target Name="Clean">
     <MSBuild Projects="@(ProjectItem)"
@@ -53,7 +98,7 @@
 
   <Target Name="Pack" DependsOnTargets="Build">
     <PropertyGroup>
-      <PackArgs>-Symbols -NoPackageAnalysis -OutputDirectory "$(PackageDir)"</PackArgs>
+      <PackArgs>-Symbols -NoPackageAnalysis -OutputDirectory "$(PackageDir)\"</PackArgs>
       <PackArgs Condition="'$(BuildQuality)' == 'Release'">$(PackArgs) -Version "$(NuGetReleaseVersion)"</PackArgs>
       <PackArgs Condition="'$(BuildQuality)' == 'PreRelease'">$(PackArgs) -Version "$(NuGetPreReleaseVersion)"</PackArgs>
       <PackArgs Condition="'$(BuildQuality)' == 'PerBuildPreRelease'">$(PackArgs) -Version "$(NuGetPerBuildPreReleaseVersion)"</PackArgs>
@@ -69,6 +114,38 @@
   <Target Name="UpdateDocs" DependsOnTargets="BuildDocs">
     <Exec WorkingDirectory="$(GitHubPagesDir)" Command="git add ."/>
     <Exec WorkingDirectory="$(GitHubPagesDir)" Command="git commit -m &quot;Update gh-pages&quot;"/>
+  </Target>
+
+  <Target Name="PrepareToolsLicense">
+    <ItemGroup>
+      <LicenseFile Include="LICENSE.txt"/>
+      <LicenseFile Include="ThirdParty\EasyHook\LICENSE.txt"/>
+    </ItemGroup>
+    <ConcatFiles OutputFilename="$(ToolsOutputPath)LICENSE.txt" Files="@(LicenseFile)" Separator="true"/>
+  </Target>
+
+  <Target Name="PackTools" DependsOnTargets="PrepareToolsLicense">
+    <ItemGroup>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.AeroLite.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.AeroLite.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)System.Windows.Interactivity.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe.config"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeCore.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe.config"/>
+      <ToolItem Include="$(ToolsOutputPath)EasyHook64.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)UxThemeEx.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)LICENSE.txt"/>
+      </ItemGroup>
+    <Zip ZipFileName="$(PackageDir)ThemeTools-$(Version).zip"
+         WorkingDirectory="$(ToolsOutputPath)"
+         Files="@(ToolItem)"/>
   </Target>
 
   <Target Name="Publish" DependsOnTargets="Build;GetVersion">
