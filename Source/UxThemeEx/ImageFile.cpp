@@ -1,20 +1,13 @@
 #include "ImageFile.h"
 
 #include "DpiInfo.h"
+#include "DrawHelp.h"
+#include "GdiHandles.h"
+#include "Handle.h"
 #include "RenderObj.h"
 #include "Utils.h"
-#include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
 #include "gdiex.h"
-
-#define min(x, y) (((x) < (y)) ? (x) : (y))
-#define max(x, y) (((x) > (y)) ? (x) : (y))
-#include <atlimage.h>
-#include "Handle.h"
-#include "GdiHandles.h"
-#include "DrawHelp.h"
-#undef min
-#undef max
 
 namespace uxtheme
 {

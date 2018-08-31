@@ -25,6 +25,7 @@
     <ClCompile Include="ThemeUtils.cpp" />
     <ClCompile Include="SymbolContext.cpp" />
     <ClCompile Include="UxThemeDllHelper.cpp" />
+    <ClCompile Include="Precompiled.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UxThemeEx.def" />
@@ -60,5 +61,6 @@
     <ClInclude Include="ThemeUtils.h" />
     <ClInclude Include="UxThemeDllHelper.h" />
     <ClInclude Include="SymbolContext.h" />
+    <ClInclude Include="Precompiled.h" />
   </ItemGroup>
 </Project>
