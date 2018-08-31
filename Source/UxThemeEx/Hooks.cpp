@@ -2,6 +2,7 @@
 
 #include "Global.h"
 #include "Utils.h"
+#include "UxThemeDllHelper.h"
 
 #include <array>
 #include <unordered_map>
@@ -1054,16 +1055,18 @@ THEMEEXAPI UxHook()
 
     LhWaitForPendingRemovals();
 
-    HMODULE uxtheme = GetModuleHandleW(L"uxtheme");
-    HMODULE user32 = GetModuleHandleW(L"user32");
+    HMODULE const uxtheme = GetModuleHandleW(L"uxtheme");
+    HMODULE const user32 = GetModuleHandleW(L"user32");
 
     NTSTATUS st;
 
     ADD_HOOK(OpenThemeData);
     ADD_HOOK(OpenThemeDataEx);
     //ADD_HOOK(CloseThemeData);
-    ADD_HOOK2(OpenThemeDataExInternal, (void*)((uintptr_t)uxtheme + 0x171B12BF8 - 0x171B00000));
-    ADD_HOOK2(CThemeMenuBar_DrawItem, (void*)((uintptr_t)uxtheme + 0x171B0C1F0 - 0x171B00000));
+    if (auto const addr = UxThemeDllHelper::Get().OpenThemeDataExInternal_address())
+        ADD_HOOK2(OpenThemeDataExInternal, addr);
+    if (auto const addr = UxThemeDllHelper::Get().CThemeMenuBar_DrawItem_address())
+        ADD_HOOK2(CThemeMenuBar_DrawItem, addr);
     ADD_HOOK(GetThemeAnimationProperty);
     ADD_HOOK(GetThemeAnimationTransform);
     ADD_HOOK(GetThemeBackgroundContentRect);

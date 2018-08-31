@@ -63,7 +63,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>UxThemeEx.def</ModuleDefinitionFile>
-      <AdditionalDependencies>ntdll.lib;uxtheme.lib;shlwapi.lib;windowscodecs.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;uxtheme.lib;shlwapi.lib;windowscodecs.lib;comctl32.lib;version.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,7 +80,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>UxThemeEx.def</ModuleDefinitionFile>
-      <AdditionalDependencies>ntdll.lib;uxtheme.lib;shlwapi.lib;windowscodecs.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;uxtheme.lib;shlwapi.lib;windowscodecs.lib;comctl32.lib;version.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -98,12 +98,14 @@
     <ClCompile Include="RenderObj.cpp" />
     <ClCompile Include="ScalingUtil.cpp" />
     <ClCompile Include="Sections.cpp" />
+    <ClCompile Include="SymbolContext.cpp" />
     <ClCompile Include="TextDraw.cpp" />
     <ClCompile Include="ThemeLoader.cpp" />
     <ClCompile Include="ThemeMemStream.cpp" />
     <ClCompile Include="ThemePNGDecoder.cpp" />
     <ClCompile Include="ThemeUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="UxThemeDllHelper.cpp" />
     <ClCompile Include="UxThemeFile.cpp" />
     <ClCompile Include="VSUnpack.cpp" />
   </ItemGroup>
@@ -128,12 +130,14 @@
     <ClInclude Include="RenderObj.h" />
     <ClInclude Include="ScalingUtil.h" />
     <ClInclude Include="Sections.h" />
+    <ClInclude Include="SymbolContext.h" />
     <ClInclude Include="TextDraw.h" />
     <ClInclude Include="ThemeLoader.h" />
     <ClInclude Include="ThemeMemStream.h" />
     <ClInclude Include="ThemePNGDecoder.h" />
     <ClInclude Include="ThemeUtils.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="UxThemeDllHelper.h" />
     <ClInclude Include="UxThemeEx.h" />
     <ClInclude Include="UxThemeFile.h" />
     <ClInclude Include="UxThemeHelpers.h" />

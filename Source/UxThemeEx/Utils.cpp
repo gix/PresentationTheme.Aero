@@ -1,12 +1,14 @@
 ﻿#include "Utils.h"
 
+#include "UxThemeDllHelper.h"
+#include "UxThemeEx.h"
 #include "UxThemeFile.h"
+
+#include <atomic>
 #include <cassert>
 #include <strsafe.h>
 #include <tlhelp32.h>
 #include <windows.h>
-#include "UxThemeEx.h"
-#include <atomic>
 
 namespace uxtheme
 {
@@ -396,9 +398,7 @@ void SendThemeChanged(HWND hwnd)
 
 void SendThemeChangedProcessLocal()
 {
-    auto CThemeMenuMetrics_FlushAll = (void(*)())(
-        (uintptr_t)GetModuleHandleW(L"uxtheme") + 0x171B21764 - 0x171B00000);
-    CThemeMenuMetrics_FlushAll();
+    UxThemeDllHelper::Get().CThemeMenuMetrics_FlushAll();
 
     EnumProcessWindows(GetCurrentProcessId(), [](HWND hwnd, LPARAM param) -> BOOL {
         SendThemeChanged(hwnd);
@@ -408,6 +408,53 @@ void SendThemeChangedProcessLocal()
         }, 0);
         return TRUE;
     }, 0);
+}
+
+HRESULT GetModuleFileNameW(HMODULE module, std::wstring& path)
+{
+    constexpr DWORD max = std::numeric_limits<DWORD>::max() / 2;
+
+    for (DWORD size = MAX_PATH; size < max; size *= 2) {
+        path.resize(size);
+        DWORD const length = GetModuleFileNameW(module, path.data(), size + 1);
+        if (length < size)
+            return S_OK;
+    }
+
+    return GetLastErrorAsHResult();
+}
+
+HRESULT GetModuleFileVersion(HMODULE module, VersionInfo& version)
+{
+    std::wstring path;
+    ENSURE_HR(GetModuleFileNameW(module, path));
+
+    DWORD verHandle = 0;
+    DWORD const versionInfoSize =
+        GetFileVersionInfoSizeW(path.c_str(), &verHandle);
+    if (versionInfoSize == 0)
+        return HRESULT_FROM_WIN32(GetLastError());
+
+    std::vector<char> verData(versionInfoSize);
+    if (!GetFileVersionInfoW(path.c_str(), verHandle, versionInfoSize,
+                             verData.data()))
+        return HRESULT_FROM_WIN32(GetLastError());
+
+    void* buffer = nullptr;
+    unsigned size = 0;
+    if (!VerQueryValueW(verData.data(), L"\\", &buffer, &size) ||
+        size < sizeof(VS_FIXEDFILEINFO))
+        return HRESULT_FROM_WIN32(GetLastError());
+
+    auto const verInfo = static_cast<VS_FIXEDFILEINFO const*>(buffer);
+    if (verInfo->dwSignature != 0xFEEF04BD)
+        return E_FAIL;
+
+    version.Major = (verInfo->dwFileVersionMS >> 16) & 0xFFFFu;
+    version.Minor = (verInfo->dwFileVersionMS >> 0) & 0xFFFFu;
+    version.Build = (verInfo->dwFileVersionLS >> 16) & 0xFFFFu;
+    version.Revision = (verInfo->dwFileVersionLS >> 0) & 0xFFFFu;
+    return S_OK;
 }
 
 } // namespace uxtheme

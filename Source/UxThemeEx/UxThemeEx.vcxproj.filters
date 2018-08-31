@@ -23,6 +23,8 @@
     <ClCompile Include="ScalingUtil.cpp" />
     <ClCompile Include="AnimationLoader.cpp" />
     <ClCompile Include="ThemeUtils.cpp" />
+    <ClCompile Include="SymbolContext.cpp" />
+    <ClCompile Include="UxThemeDllHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UxThemeEx.def" />
@@ -56,5 +58,7 @@
     <ClInclude Include="ScalingUtil.h" />
     <ClInclude Include="AnimationLoader.h" />
     <ClInclude Include="ThemeUtils.h" />
+    <ClInclude Include="UxThemeDllHelper.h" />
+    <ClInclude Include="SymbolContext.h" />
   </ItemGroup>
 </Project>
