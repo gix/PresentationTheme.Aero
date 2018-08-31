@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2018-09-01
+### Fixed
+- All themes: TreeView Background now properly extends to its Border. Previously
+  a non-zero Padding on a TreeView would leave a gap.
+- ThemePreviewer: Do not crash when using unknown/newer versions of uxtheme.dll.
+  Attempt to load internal addresses using debug symbols.
+
 ## [0.2.0] - 2018-02-23
 ### Added
 - Windows 8/8.1 Aero, Aero Lite and High Contrast themes

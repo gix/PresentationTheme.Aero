@@ -3,8 +3,8 @@
   <Import Project="GitHead.props" />
 
   <PropertyGroup>
-    <AssemblyVersionBase Condition="'$(AssemblyVersion)' == ''">0.2.0</AssemblyVersionBase>
-    <FileVersionBase Condition="'$(FileVersionBase)' == ''">0.2.0</FileVersionBase>
+    <AssemblyVersionBase Condition="'$(AssemblyVersion)' == ''">0.3.0</AssemblyVersionBase>
+    <FileVersionBase Condition="'$(FileVersionBase)' == ''">0.3.0</FileVersionBase>
 
     <NuGetMoniker Condition="'$(NuGetMoniker)' == '' AND '$(OfficialBuild)' == 'true'">beta1</NuGetMoniker>
     <NuGetMoniker Condition="'$(NuGetMoniker)' == ''">dev</NuGetMoniker>
