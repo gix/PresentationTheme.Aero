@@ -1,4 +1,4 @@
-﻿#include "ThemeLoader.h"
+#include "ThemeLoader.h"
 
 #include "DpiInfo.h"
 #include "BorderFill.h"

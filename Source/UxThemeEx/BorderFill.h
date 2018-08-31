@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "DrawBase.h"
 #include <windows.h>
 #include <uxtheme.h>

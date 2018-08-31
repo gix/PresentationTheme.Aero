@@ -1,4 +1,4 @@
-﻿#include "AnimationLoader.h"
+#include "AnimationLoader.h"
 #include "UxThemeEx.h"
 #include "Utils.h"
 

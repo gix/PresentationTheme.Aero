@@ -1,4 +1,4 @@
-﻿#include "DpiInfo.h"
+#include "DpiInfo.h"
 
 namespace uxtheme
 {

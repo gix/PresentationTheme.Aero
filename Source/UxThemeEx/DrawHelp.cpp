@@ -1,4 +1,4 @@
-﻿#include "DrawHelp.h"
+#include "DrawHelp.h"
 
 namespace uxtheme
 {

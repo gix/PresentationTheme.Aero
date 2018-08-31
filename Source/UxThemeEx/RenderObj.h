@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ImageFile.h"
 #include "Primitives.h"
 #include "Utils.h"

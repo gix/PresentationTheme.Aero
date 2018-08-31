@@ -1,4 +1,4 @@
-﻿#include "Utils.h"
+#include "Utils.h"
 
 #include "UxThemeDllHelper.h"
 #include "UxThemeEx.h"

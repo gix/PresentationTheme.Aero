@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ThemeMemStream.h"
 #include "UxThemeHelpers.h"
 #include <wincodec.h>

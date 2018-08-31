@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Primitives.h"
 #include "TextDraw.h"
 #include "DrawBase.h"

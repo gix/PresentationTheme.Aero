@@ -1,4 +1,4 @@
-﻿#include "UxThemeDllHelper.h"
+#include "UxThemeDllHelper.h"
 
 #include "SymbolContext.h"
 #include "Utils.h"

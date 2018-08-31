@@ -1,4 +1,4 @@
-﻿#include "VSUnpack.h"
+#include "VSUnpack.h"
 
 #include "DpiInfo.h"
 #include "ThemePNGDecoder.h"

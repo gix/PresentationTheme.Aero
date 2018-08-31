@@ -1,4 +1,4 @@
-﻿#include "ThemeUtils.h"
+#include "ThemeUtils.h"
 #include <intsafe.h>
 
 namespace uxtheme

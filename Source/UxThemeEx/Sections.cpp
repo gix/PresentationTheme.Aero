@@ -1,4 +1,4 @@
-﻿#include "Sections.h"
+#include "Sections.h"
 #include "Utils.h"
 
 #include <ntstatus.h>

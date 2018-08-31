@@ -1,4 +1,4 @@
-﻿#include "Debug.h"
+#include "Debug.h"
 
 #include "AnimationLoader.h"
 #include "BorderFill.h"

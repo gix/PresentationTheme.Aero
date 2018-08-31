@@ -1,4 +1,4 @@
-﻿#include "ScalingUtil.h"
+#include "ScalingUtil.h"
 
 #include "DpiInfo.h"
 #include "RenderObj.h"

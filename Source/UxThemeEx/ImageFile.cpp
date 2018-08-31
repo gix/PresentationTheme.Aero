@@ -1,4 +1,4 @@
-﻿#include "ImageFile.h"
+#include "ImageFile.h"
 
 #include "DpiInfo.h"
 #include "RenderObj.h"

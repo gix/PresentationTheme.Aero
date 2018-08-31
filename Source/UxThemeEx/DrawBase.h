@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <vssym32.h>
 
 namespace uxtheme

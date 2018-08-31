@@ -1,4 +1,4 @@
-﻿#include "TextDraw.h"
+#include "TextDraw.h"
 
 #include "RenderObj.h"
 #include "ScalingUtil.h"
@@ -446,4 +446,3 @@ done:
 }
 
 } // namespace uxtheme
-

@@ -1,4 +1,4 @@
-﻿#include "RenderList.h"
+#include "RenderList.h"
 #include "RenderObj.h"
 #include "Utils.h"
 #include "DpiInfo.h"

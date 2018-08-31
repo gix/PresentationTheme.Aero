@@ -40,6 +40,8 @@
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!-- Use UTF-8 for all files -->
+      <AdditionalOptions>-utf-8 %(AdditionalOptions)</AdditionalOptions>
       <!-- CoreCRT options -->
       <PreprocessorDefinitions>__STDC_WANT_LIB_EXT1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions>_CRT_STDIO_ISO_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>

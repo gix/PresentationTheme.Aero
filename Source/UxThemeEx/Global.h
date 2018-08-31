@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Handle.h"
 #include "RenderList.h"
 #include "UxThemeFile.h"

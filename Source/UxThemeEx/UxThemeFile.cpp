@@ -1,4 +1,4 @@
-﻿#include "UxThemeFile.h"
+#include "UxThemeFile.h"
 
 #include "Sections.h"
 #include "Utils.h"

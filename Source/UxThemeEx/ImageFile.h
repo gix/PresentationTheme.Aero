@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "DrawBase.h"
 #include "Primitives.h"
 #include "VSUnpack.h"

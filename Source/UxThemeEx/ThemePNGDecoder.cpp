@@ -1,4 +1,4 @@
-﻿#include "ThemePNGDecoder.h"
+#include "ThemePNGDecoder.h"
 #include "Utils.h"
 
 namespace uxtheme

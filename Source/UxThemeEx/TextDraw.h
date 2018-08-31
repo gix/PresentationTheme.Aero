@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "UxThemeEx.h"
 
 #include <vssym32.h>

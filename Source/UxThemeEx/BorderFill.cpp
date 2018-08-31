@@ -1,4 +1,4 @@
-﻿#include "BorderFill.h"
+#include "BorderFill.h"
 #include "RenderObj.h"
 #include "DrawHelp.h"
 #include <algorithm>

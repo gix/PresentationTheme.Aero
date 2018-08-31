@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "DpiInfo.h"
 #include "Utils.h"
 #include <array>

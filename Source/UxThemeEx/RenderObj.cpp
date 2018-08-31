@@ -1,4 +1,4 @@
-﻿#include "RenderObj.h"
+#include "RenderObj.h"
 
 #include "AnimationLoader.h"
 #include "Debug.h"

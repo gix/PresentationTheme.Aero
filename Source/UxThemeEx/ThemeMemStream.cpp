@@ -1,4 +1,4 @@
-﻿#include "ThemeMemStream.h"
+#include "ThemeMemStream.h"
 #include "Utils.h"
 
 namespace uxtheme
