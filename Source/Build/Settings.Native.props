@@ -32,16 +32,32 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
+      <!-- Diagnostics -->
       <WarningLevel>Level4</WarningLevel>
+      <DiagnosticsFormat>Caret</DiagnosticsFormat>
       <DisableSpecificWarnings>4200;4251;4275;4324;4351;4458;4481;4505;4512;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatSpecificWarningsAsErrors>4013;4099;4150;4172;4477;4715;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- Enforce unique output paths -->
       <ProgramDataBaseFileName Condition=" '$(ConfigurationType)' == 'StaticLibrary' ">$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)</AssemblerListingLocation>
+      <!-- Debugging -->
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!-- Individual COMDAT sections for functions/global data to enable linker optimizations -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalOptions>-Gw %(AdditionalOptions)</AdditionalOptions>
+      <!-- Faster PDB generation -->
+      <AdditionalOptions>-Zf %(AdditionalOptions)</AdditionalOptions>
       <!-- Use UTF-8 for all files -->
       <AdditionalOptions>-utf-8 %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Standard Conformance -->
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>-Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:externConstexpr -Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+
       <!-- CoreCRT options -->
       <PreprocessorDefinitions>__STDC_WANT_LIB_EXT1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions>_CRT_STDIO_ISO_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -50,14 +66,6 @@
       <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Windows SDK -->
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <!-- Enable C++ standard library features removed in C++17 for boost compat. -->
-      <PreprocessorDefinitions>_HAS_AUTO_PTR_ETC=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>-Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:externConstexpr -Gw %(AdditionalOptions)</AdditionalOptions>
-      <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <FxCompile>
       <ObjectFileOutput>$(IntDir)%(RelativeDir)%(Filename).cso</ObjectFileOutput>
