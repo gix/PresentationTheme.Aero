@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2018-09-02
+### Added
+- All themes: Proper TabControl rendering for non-standard TabStripPlacement.
+
+### Fixed
+- Aero10: A lone TabItem's height would be 1px smaller than with adjacent tabs.
+
 ## [0.3.0] - 2018-09-01
 ### Fixed
 - All themes: TreeView Background now properly extends to its Border. Previously
