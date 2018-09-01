@@ -50,7 +50,8 @@ namespace ThemePreviewer
         {
             var width = (int)element.ActualWidth;
             var height = (int)element.ActualHeight;
-            var bitmap = new System.Drawing.Bitmap(width, height);
+            var bitmap = new System.Drawing.Bitmap(
+                Math.Max(width, 1), Math.Max(height, 1));
 
             var screenPoint = element.PointToScreen(new Point());
 
