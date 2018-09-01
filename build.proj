@@ -9,6 +9,7 @@
     <ProjectItem Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>
     <ProjectItem Include="Source\ThemeBrowser\ThemeBrowser.csproj"/>
     <ProjectItem Include="Source\ThemePreviewer\ThemePreviewer.csproj"/>
+    <NativeProjectItem Include="Source\UxThemeEx\UxThemeEx.vcxproj"/>
   </ItemGroup>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -20,6 +21,7 @@
     <BuildNumber Condition="'$(BuildNumber)' == '' AND '$(OfficialBuild)' != 'true'">$([System.DateTime]::UtcNow.ToString(`yyyyMMdd.HHmm`))</BuildNumber>
 
     <BuildProperties>Configuration=$(Configuration);Platform=AnyCPU;BuildNumber=$(BuildNumber)</BuildProperties>
+    <NativeBuildProperties>Configuration=$(Configuration);Platform=x64;BuildNumber=$(BuildNumber)</NativeBuildProperties>
     <PackProperties>$(BuildProperties);IncludeSource=true</PackProperties>
 
     <GitHubPagesDir>Docs\_site\</GitHubPagesDir>
@@ -92,6 +94,10 @@
   <Target Name="Build" DependsOnTargets="Restore">
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties)"
+             BuildInParallel="true"
+             StopOnFirstFailure="true"/>
+    <MSBuild Projects="@(NativeProjectItem)"
+             Properties="$(NativeBuildProperties)"
              BuildInParallel="true"
              StopOnFirstFailure="true"/>
   </Target>
