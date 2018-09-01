@@ -6,6 +6,7 @@ namespace ThemePreviewer.Samples
     public partial class TabControlSampleNative : UserControl, IOptionControl
     {
         private readonly OptionList options = new OptionList();
+        private bool singleTab;
 
         public TabControlSampleNative()
         {
@@ -41,6 +42,24 @@ namespace ThemePreviewer.Samples
 
             //options.AddOption(tabControl1, "TCS_EX_FLATSEPARATORS", x => x.); // 0x00000001
             //options.AddOption(tabControl1, "TCS_EX_REGISTERDROP", x => x.); // 0x00000002
+            options.Add(new GenericBoolOption("Single Tab", GetSingleTab, SetSingleTab));
+        }
+
+        private bool GetSingleTab()
+        {
+            return singleTab;
+        }
+
+        private void SetSingleTab(bool value)
+        {
+            singleTab = value;
+            if (value) {
+                while (tabControl1.TabPages.Count > 1)
+                    tabControl1.TabPages.RemoveAt(tabControl1.TabPages.Count - 1);
+            } else {
+                tabControl1.TabPages.Add(new TabPage { Text = "Hardware" });
+                tabControl1.TabPages.Add(new TabPage { Text = "Advanced" });
+            }
         }
     }
 }

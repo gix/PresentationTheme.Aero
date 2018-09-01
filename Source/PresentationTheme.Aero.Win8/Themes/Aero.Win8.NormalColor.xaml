@@ -4337,15 +4337,16 @@
           <Border x:Name="Border"
                   BorderThickness="1,1,1,0"
                   Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  Padding="{TemplateBinding Padding}">
-            <ContentPresenter x:Name="Content"
-                              ContentSource="Header"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                              Focusable="False"
-                              RecognizesAccessKey="True"/>
+                  BorderBrush="{TemplateBinding BorderBrush}">
+            <Border Padding="{TemplateBinding Padding}">
+              <ContentPresenter x:Name="Content"
+                                ContentSource="Header"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"/>
+            </Border>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -4360,9 +4361,17 @@
             <Trigger Property="IsSelected" Value="True">
               <Setter Property="Panel.ZIndex" Value="1"/>
               <Setter Property="Margin" Value="-2,-2,-2,-1"/>
-              <Setter Property="Padding" Value="7,0,3,3"/>
+              <Setter Property="Padding" Value="7,0,3,4"/>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
+            </Trigger>
+            <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Leading">
+              <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,0"/>
+              <Setter Property="Padding" Value="5,2,6,2"/>
+            </Trigger>
+            <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Trailing">
+              <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,0"/>
+              <Setter Property="Padding" Value="6,2,5,2"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -4373,164 +4382,152 @@
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="{x:Type TabItem}">
-              <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
-                <Border x:Name="Border"
-                        BorderThickness="1,1,1,0"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}">
+              <Border x:Name="Border"
+                  BorderThickness="1,0,1,1"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}">
+                <Border Padding="{TemplateBinding Padding}">
                   <ContentPresenter x:Name="Content"
-                                    ContentSource="Header"
-                                    HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                    VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                    Focusable="False"
-                                    Margin="{TemplateBinding Padding}"
-                                    RecognizesAccessKey="True"/>
+                                ContentSource="Header"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"/>
                 </Border>
-              </Grid>
+              </Border>
               <ControlTemplate.Triggers>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
-                  </MultiDataTrigger.Conditions>
+                <Trigger Property="IsMouseOver" Value="True">
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,0,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
-                  </MultiDataTrigger.Conditions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
                   <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
                   <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
                   <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,0,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
-                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Left"/>
-                  </MultiDataTrigger.Conditions>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
                   <Setter Property="Panel.ZIndex" Value="1"/>
-                  <Setter Property="Margin" Value="-2,-2,0,-2"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,0,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Bottom"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter Property="Panel.ZIndex" Value="1"/>
-                  <Setter Property="Margin" Value="-2,0,-2,-2"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,0,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Right"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter Property="Panel.ZIndex" Value="1"/>
-                  <Setter Property="Margin" Value="0,-2,-2,-2"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,1"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True"/>
-                    <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top"/>
-                  </MultiDataTrigger.Conditions>
-                  <Setter Property="Panel.ZIndex" Value="1"/>
-                  <Setter Property="Margin" Value="-2,-2,-2,0"/>
-                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,1,0"/>
-                </MultiDataTrigger>
+                  <Setter Property="Margin" Value="-2,-1,-2,-2"/>
+                  <Setter Property="Padding" Value="7,3,3,1"/>
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Leading">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="1,0,0,1"/>
+                  <Setter Property="Padding" Value="5,2,6,2"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Trailing">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="0,0,1,1"/>
+                  <Setter Property="Padding" Value="6,2,5,2"/>
+                </Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      <Trigger Property="TabStripPlacement" Value="Left">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type TabItem}">
+              <Border x:Name="Border"
+                  BorderThickness="1,1,1,0"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}">
+                <Border Padding="{TemplateBinding Padding}">
+                  <ContentPresenter x:Name="Content"
+                                ContentSource="Header"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"/>
+                </Border>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                  <Setter Property="Panel.ZIndex" Value="1"/>
+                  <Setter Property="Margin" Value="-2,-2,-2,-1"/>
+                  <Setter Property="Padding" Value="3,0,7,4"/>
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Leading">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,0"/>
+                  <Setter Property="Padding" Value="6,2,5,2"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Trailing">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,0"/>
+                  <Setter Property="Padding" Value="5,2,6,2"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Setter Property="LayoutTransform">
+          <Setter.Value>
+            <RotateTransform Angle="-90"/>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      <Trigger Property="TabStripPlacement" Value="Right">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type TabItem}">
+              <Border x:Name="Border"
+                      BorderThickness="1,1,1,0"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}">
+                <ContentPresenter x:Name="Content"
+                                  ContentSource="Header"
+                                  HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                  VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                  Focusable="False"
+                                  Margin="{TemplateBinding Padding}"
+                                  RecognizesAccessKey="True"/>
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Hot}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Hot}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter TargetName="Content" Property="Opacity" Value="0.56"/>
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Disabled}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Disabled}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                  <Setter Property="Panel.ZIndex" Value="1"/>
+                  <Setter Property="Margin" Value="-2,-2,-2,-1"/>
+                  <Setter Property="Padding" Value="5,0,5,4"/>
+                  <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
+                  <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Leading">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="1,1,0,0"/>
+                  <Setter Property="Padding" Value="5,2,6,2"/>
+                </Trigger>
+                <Trigger Property="aero8:RoundingTabPanel.TabItemKind" Value="Trailing">
+                  <Setter TargetName="Border" Property="BorderThickness" Value="0,1,1,0"/>
+                  <Setter Property="Padding" Value="6,2,5,2"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Setter Property="LayoutTransform">
+          <Setter.Value>
+            <RotateTransform Angle="90"/>
           </Setter.Value>
         </Setter>
       </Trigger>

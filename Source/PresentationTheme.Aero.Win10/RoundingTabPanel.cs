@@ -92,15 +92,15 @@ namespace PresentationTheme.Aero.Win10
         /// <inheritdoc/>
         protected override Size MeasureOverride(Size constraint)
         {
-            Size contentSize = new Size();
+            var contentSize = new Size();
             Dock tabAlignment = TabStripPlacement;
 
             rowCount = 1;
             headerCount = 0;
             rowHeight = 0;
 
-            // For top and bottom placement the panel flow its children to calculate the number of rows and
-            // desired vertical size
+            // For top and bottom placement the panel flows its children to
+            // calculate the number of rows and desired vertical size
             if (tabAlignment == Dock.Top || tabAlignment == Dock.Bottom) {
                 int numInCurrentRow = 0;
                 double currentRowWidth = 0;
@@ -137,7 +137,8 @@ namespace PresentationTheme.Aero.Win10
 
                 contentSize.Height = rowHeight * rowCount;
 
-                // If we don't have constraint or content wisth is smaller than constraint width then size to content
+                // If we don't have a constraint or content smaller than the
+                // constraint width then size to content
                 if (double.IsInfinity(contentSize.Width)
                     || double.IsNaN(contentSize.Width)
                     || maxRowWidth < constraint.Width)
@@ -150,7 +151,7 @@ namespace PresentationTheme.Aero.Win10
                     if (child.Visibility == Visibility.Collapsed)
                         continue;
 
-                    headerCount++;
+                    ++headerCount;
 
                     // Helper measures child, and deals with Min, Max, and base Width & Height properties.
                     // Helper returns the size a child needs to take up (DesiredSize or property specified size).
@@ -176,13 +177,14 @@ namespace PresentationTheme.Aero.Win10
                 case Dock.Top:
                 case Dock.Bottom:
                     ArrangeHorizontal(arrangeSize);
-                    return arrangeSize;
+                    break;
 
                 case Dock.Left:
                 case Dock.Right:
-                    base.ArrangeOverride(arrangeSize);
+                    ArrangeVertical(arrangeSize);
                     break;
             }
+
             return arrangeSize;
         }
 
@@ -192,7 +194,7 @@ namespace PresentationTheme.Aero.Win10
             bool isMultiRow = rowCount > 1;
             int activeRow = 0;
             int[] solution = new int[0];
-            Vector childOffset = new Vector();
+            var childOffset = new Vector();
             double[] headerSize = GetHeadersSize();
 
             // If we have multirows, then calculate the best header distribution
@@ -217,7 +219,7 @@ namespace PresentationTheme.Aero.Win10
                 if (child.Visibility == Visibility.Collapsed)
                     continue;
 
-                Thickness margin = (Thickness)child.GetValue(MarginProperty);
+                var margin = (Thickness)child.GetValue(MarginProperty);
                 double leftOffset = margin.Left;
                 double rightOffset = margin.Right;
                 double topOffset = margin.Top;
@@ -225,7 +227,7 @@ namespace PresentationTheme.Aero.Win10
 
                 bool lastHeaderInRow = isMultiRow && (separatorIndex < solution.Length && solution[separatorIndex] == childIndex || childIndex == headerCount - 1);
 
-                Size cellSize = new Size(headerSize[childIndex], rowHeight);
+                var cellSize = new Size(headerSize[childIndex], rowHeight);
 
                 // Align the last header in the row; If headers are not aligned
                 // directional nav would not work correctly
@@ -264,6 +266,27 @@ namespace PresentationTheme.Aero.Win10
                 }
 
                 ++childIndex;
+            }
+        }
+
+        private void ArrangeVertical(Size arrangeSize)
+        {
+            double y = 0.0;
+            TabItemKind kind = TabItemKind.Leading;
+            foreach (UIElement child in InternalChildren) {
+                if (child.Visibility == Visibility.Collapsed)
+                    continue;
+
+                if ((bool)child.GetValue(TabItem.IsSelectedProperty)) {
+                    child.SetValue(TabItemKindProperty, TabItemKind.Reference);
+                    kind = TabItemKind.Trailing;
+                } else {
+                    child.SetValue(TabItemKindProperty, kind);
+                }
+
+                Size childSize = GetDesiredSizeWithoutMargin(child);
+                child.Arrange(new Rect(0.0, y, arrangeSize.Width, childSize.Height));
+                y += childSize.Height;
             }
         }
 
