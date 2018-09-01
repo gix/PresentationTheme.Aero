@@ -4270,15 +4270,16 @@
           <Border x:Name="Border"
                   BorderThickness="1,1,1,0"
                   Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  Padding="{TemplateBinding Padding}">
-            <ContentPresenter x:Name="Content"
-                              ContentSource="Header"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Center"
-                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                              Focusable="False"
-                              RecognizesAccessKey="True"/>
+                  BorderBrush="{TemplateBinding BorderBrush}">
+            <Border Padding="{TemplateBinding Padding}">
+              <ContentPresenter x:Name="Content"
+                                ContentSource="Header"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"/>
+            </Border>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -4293,7 +4294,7 @@
             <Trigger Property="IsSelected" Value="True">
               <Setter Property="Panel.ZIndex" Value="1"/>
               <Setter Property="Margin" Value="-2,-2,-2,-1"/>
-              <Setter Property="Padding" Value="7,0,3,3"/>
+              <Setter Property="Padding" Value="7,0,3,4"/>
               <Setter TargetName="Border" Property="Background" Value="{StaticResource TabItem.Background.Selected}"/>
               <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource TabItem.Border.Selected}"/>
             </Trigger>
