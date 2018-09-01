@@ -89,6 +89,7 @@
              Targets="Restore"
              BuildInParallel="true"
              StopOnFirstFailure="true"/>
+    <Exec Command="nuget restore -PackagesDirectory &quot;$(MSBuildThisFileDirectory)Source\packages&quot; &quot;@(NativeProjectItem)&quot;"/>
   </Target>
 
   <Target Name="Build" DependsOnTargets="Restore">
