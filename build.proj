@@ -148,7 +148,8 @@
       <ToolItem Include="$(ToolsOutputPath)EasyHook64.dll"/>
       <ToolItem Include="$(ToolsOutputPath)UxThemeEx.dll"/>
       <ToolItem Include="$(ToolsOutputPath)LICENSE.txt"/>
-      </ItemGroup>
+    </ItemGroup>
+    <Error Condition="!Exists(@(ToolItem))" Text="Missing file: %(ToolItem.Identity)"/>
     <Zip ZipFileName="$(PackageDir)ThemeTools-$(Version).zip"
          WorkingDirectory="$(ToolsOutputPath)"
          Files="@(ToolItem)"/>
