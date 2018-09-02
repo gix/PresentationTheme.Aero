@@ -7,7 +7,6 @@ namespace ThemePreviewer
     using System.Linq;
     using System.Reflection;
     using PresentationTheme.Aero.Win10;
-    using PresentationTheme.Aero.Win7;
     using PresentationTheme.Aero.Win8;
     using PresentationTheme.AeroLite.Win10;
     using PresentationTheme.AeroLite.Win8;
@@ -32,7 +31,14 @@ namespace ThemePreviewer
             highContrastDebugLight = new Lazy<UxColorScheme>(CreateHighContrastDebugLightScheme);
             highContrastDebugDark = new Lazy<UxColorScheme>(CreateHighContrastDebugDarkScheme);
 
-            wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", AeroWin7Theme.ResourceUri));
+            try {
+                var aero7 = Assembly.Load("PresentationTheme.Aero.Win7");
+                var themeType = aero7.GetType("PresentationTheme.Aero.Win7.AeroWin7Theme");
+                var resourceUri = (Uri)themeType.GetProperty("ResourceUri").GetValue(null);
+                wpfThemes.Add(new WpfThemeInfo("Aero (Windows 7)", resourceUri));
+            } catch (Exception) {
+            }
+
             wpfThemes.Add(new WpfThemeInfo("Aero (Windows 8.1)", AeroWin8Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("Aero Lite (Windows 8.1)", AeroLiteWin8Theme.ResourceUri));
             wpfThemes.Add(new WpfThemeInfo("High Contrast (Windows 8.1)", HighContrastWin8Theme.ResourceUri));

@@ -1,6 +1,7 @@
 namespace ThemePreviewer
 {
     using System;
+    using System.IO;
     using System.IO.Packaging;
     using System.Text.RegularExpressions;
     using System.Windows;
@@ -30,8 +31,14 @@ namespace ThemePreviewer
 
         public ResourceDictionary CreateResources()
         {
-            if (ResourceUri != null)
-                return LoadComponentFromAssembly(ResourceUri) as ResourceDictionary;
+            try {
+                if (ResourceUri != null)
+                    return LoadComponentFromAssembly(ResourceUri) as ResourceDictionary;
+            } catch (FileNotFoundException) {
+            } catch (FileLoadException) {
+            } catch (BadImageFormatException) {
+            }
+
             return null;
         }
 

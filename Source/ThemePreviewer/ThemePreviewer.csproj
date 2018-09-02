@@ -513,10 +513,6 @@
       <Project>{a6e7c65f-98f7-4297-89ea-cad879719fd6}</Project>
       <Name>PresentationTheme.Aero.Win10</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj">
-      <Project>{8bb1d809-ea59-490f-9867-80e031ce691c}</Project>
-      <Name>PresentationTheme.Aero.Win7</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="ThemePreviewer.ico" />
