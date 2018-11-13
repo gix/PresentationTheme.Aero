@@ -5,7 +5,7 @@ namespace uxtheme
 {
 
 HRESULT BitmapPixels::OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                                 unsigned** pPixels, int* piWidth,
+                                 DWORD** pPixels, int* piWidth,
                                  int* piHeight, int* piBytesPerPixel,
                                  int* piBytesPerRow,
                                  int* piPreviousBytesPerPixel,
@@ -51,7 +51,7 @@ HRESULT BitmapPixels::OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
                    reinterpret_cast<LPBITMAPINFO>(_hdrBitmap), DIB_RGB_COLORS))
         return E_FAIL;
 
-    *pPixels = reinterpret_cast<unsigned*>(GetBitmapBits(_hdrBitmap));
+    *pPixels = reinterpret_cast<DWORD*>(GetBitmapBits(_hdrBitmap));
 
     if (piWidth)
         *piWidth = _iWidth;

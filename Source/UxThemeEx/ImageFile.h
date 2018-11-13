@@ -41,7 +41,7 @@ public:
                               POINT ptTest, WORD* pwHitCode);
     HRESULT GetBackgroundExtent(CRenderObj* pRender, HDC hdc, RECT const* pContentRect, RECT* pExtentRect);
     void GetOffsets(int iStateId, DIBINFO const* pdi, int* piXOffset, int* piYOffset) const;
-    HRESULT BuildRgnData(unsigned* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi, CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen);
+    HRESULT BuildRgnData(DWORD* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi, CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen);
     HRESULT PackProperties(CRenderObj* pRender, int iPartId, int iStateId);
     HRESULT GetBitmap(CRenderObj* pRender, int iPropId, unsigned dwFlags, HBITMAP* phBitmap);
     HRESULT GetPartSize(CRenderObj* pRender, HDC hdc, RECT const* prc, THEMESIZE eSize, SIZE* psz);

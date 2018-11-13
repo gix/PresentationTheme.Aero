@@ -718,7 +718,7 @@ static HRESULT DumpBitmap(LogFile& log, TMBITMAPHEADER const& tmhdr, HBITMAP hbm
         return S_OK;
 
     if (hbmp) {
-        unsigned* pixels;
+        DWORD* pixels;
         int width;
         int height;
         int bytesPerPixel;
@@ -741,7 +741,7 @@ static HRESULT DumpBitmap(LogFile& log, TMBITMAPHEADER const& tmhdr, HBITMAP hbm
             for (int w = 0, we = bytesPerRow / 4; w < we; ++w) {
                 if (w != 0)
                     log.LogNoIndent(" ");
-                log.LogNoIndent("%08X", *pixels++);
+                log.LogNoIndent("%08lX", *pixels++);
             }
             log.LogNoIndent("\n");
         }

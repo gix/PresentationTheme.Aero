@@ -9,7 +9,7 @@ class BitmapPixels
 {
 public:
     HRESULT OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                       unsigned** pPixels, int* piWidth, int* piHeight,
+                       DWORD** pPixels, int* piWidth, int* piHeight,
                        int* piBytesPerPixel, int* piBytesPerRow,
                        int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
     void CloseBitmap(HDC hdc, HBITMAP hBitmap);

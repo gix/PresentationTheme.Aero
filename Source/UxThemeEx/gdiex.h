@@ -45,3 +45,14 @@ private:
 };
 
 __declspec(selectany) GdiDrawStreamImport GdiDrawStream;
+
+template<typename Function>
+Function ResolveProc(wchar_t const* moduleName, char const* procName)
+{
+    HMODULE const module = GetModuleHandleW(moduleName);
+    return reinterpret_cast<Function>(GetProcAddress(module, procName));
+}
+
+// WINGDIAPI HBITMAP WINAPI SetBitmapAttributes(_In_ HBITMAP hbm, DWORD dwFlags);
+inline HBITMAP(WINAPI* SetBitmapAttributes)(_In_ HBITMAP hbm, DWORD dwFlags) =
+    ResolveProc<decltype(SetBitmapAttributes)>(L"gdi32", "SetBitmapAttributes");

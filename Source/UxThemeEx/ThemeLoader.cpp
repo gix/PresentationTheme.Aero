@@ -1,8 +1,8 @@
 #include "ThemeLoader.h"
 
-#include "DpiInfo.h"
 #include "BorderFill.h"
 #include "Debug.h"
+#include "DpiInfo.h"
 #include "Handle.h"
 #include "RenderObj.h"
 #include "TextDraw.h"
@@ -10,6 +10,7 @@
 #include "Utils.h"
 #include "UxThemeFile.h"
 #include "UxThemeHelpers.h"
+#include "gdiex.h"
 
 #include <algorithm>
 #include <array>
@@ -348,7 +349,7 @@ int CThemeLoader::AddToDIBDataArray(void* pDIBBits, short width, short height)
 
 HRESULT CThemeLoader::AddDataInternal(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen)
 {
-    if (dwLen + 16 < dwLen || dwLen + 16 > 0x7FFFFFFF - _iLocalLen)
+    if (dwLen + 16 < dwLen || dwLen + 16 + _iLocalLen > static_cast<DWORD>(INT_MAX))
         return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
 
     MIXEDPTRS u;
@@ -1010,7 +1011,7 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
     HRESULT hr = CRenderObj::Create(
         &_LoadingThemeFile,
         0,
-        (int)v26 - (uintptr_t)(_LoadingThemeFile.ThemeHeader()),
+        (uintptr_t)v26 - (uintptr_t)(_LoadingThemeFile.ThemeHeader()),
         0,
         pacl->AppClassInfo.iClassNameIndex,
         0,
@@ -1204,17 +1205,13 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
     if (!hbmp)
         return S_FALSE;
 
-    HRESULT v4;
-    HBITMAP v10;
-    v4 = 1;
-    //LODWORD(v10) = SetBitmapAttributes(hbmp, (unsigned)v4);
-    //if (v10) {
-    pRender->SetBitmapHandle(hdr->iBitmapIndex, hbmp);
-    //    return S_OK;
-    //} else {
-    //    DeleteObject(hbmp);
-    //    return E_FAIL;
-    //}
+    HBITMAP hbmp2 = SetBitmapAttributes(hbmp, 1);
+    if (!hbmp2) {
+        DeleteObject(hbmp);
+        return E_FAIL;
+    }
+
+    pRender->SetBitmapHandle(hdr->iBitmapIndex, hbmp2);
     return S_OK;
 }
 
@@ -1260,7 +1257,7 @@ HRESULT CThemeLoader::PackImageFileInfo(
     HBITMAP hBitmap;
     hr = pRender->ExternalGetBitmap(nullptr, pdi->iDibOffset, GBF_DIRECT, &hBitmap);
     if (hr >= 0) {
-        unsigned* prgdwPixels;
+        DWORD* prgdwPixels;
         int cHeight;
         int cWidth;
         BitmapPixels pixels;
