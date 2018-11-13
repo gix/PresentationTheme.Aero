@@ -2,6 +2,7 @@ namespace PresentationTheme.Aero
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -96,15 +97,13 @@ namespace PresentationTheme.Aero
             }
         }
 
-        public static MemoryPatch HookMethod(MethodInfo source, MethodInfo target)
+        public static MemoryPatch HookMethod(MethodInfo original, MethodInfo replacement)
         {
-            if (!EqualSignatures(source, target))
-                throw new ArgumentException("The method signatures are not the same.", nameof(source));
+            if (!EqualSignatures(original, replacement))
+                throw new ArgumentException("The method signatures are not the same.", nameof(original));
 
-            RuntimeHelpers.PrepareMethod(source.MethodHandle);
-            RuntimeHelpers.PrepareMethod(target.MethodHandle);
-            IntPtr srcAddr = source.MethodHandle.GetFunctionPointer();
-            IntPtr tgtAddr = target.MethodHandle.GetFunctionPointer();
+            IntPtr orgAddr = PrepareMethod(original);
+            IntPtr repAddr = PrepareMethod(replacement);
 
             var arch = GetProcessorArchitecture();
 
@@ -112,8 +111,8 @@ namespace PresentationTheme.Aero
             byte[] jumpInst;
             switch (arch) {
                 case ProcessorArchitecture.Amd64:
-                    offset = tgtAddr.ToInt64() - srcAddr.ToInt64() - 5;
-                    if (offset >= Int32.MinValue && offset <= Int32.MaxValue) {
+                    offset = repAddr.ToInt64() - orgAddr.ToInt64() - 5;
+                    if (offset >= int.MinValue && offset <= int.MaxValue) {
                         jumpInst = new byte[] {
                             0xE9, // JMP rel32
                             (byte)(offset & 0xFF),
@@ -122,7 +121,7 @@ namespace PresentationTheme.Aero
                             (byte)((offset >> 24) & 0xFF)
                         };
                     } else {
-                        offset = tgtAddr.ToInt64();
+                        offset = repAddr.ToInt64();
                         jumpInst = new byte[] {
                             0x48, 0xB8, // MOV moffs64,rax
                             (byte)(offset & 0xFF),
@@ -139,7 +138,7 @@ namespace PresentationTheme.Aero
                     break;
 
                 case ProcessorArchitecture.X86:
-                    offset = tgtAddr.ToInt32() - srcAddr.ToInt32() - 5;
+                    offset = repAddr.ToInt32() - orgAddr.ToInt32() - 5;
                     jumpInst = new byte[] {
                         0xE9, // JMP rel32
                         (byte)(offset & 0xFF),
@@ -154,7 +153,14 @@ namespace PresentationTheme.Aero
                         $"Processor architecture {arch} is not supported.");
             }
 
-            return PatchMemory(srcAddr, jumpInst);
+            return PatchMemory(orgAddr, jumpInst);
+        }
+
+        private static IntPtr PrepareMethod(MethodBase method)
+        {
+            var methodHandle = method.MethodHandle;
+            RuntimeHelpers.PrepareMethod(methodHandle);
+            return methodHandle.GetFunctionPointer();
         }
 
         public sealed class MemoryPatch : IDisposable

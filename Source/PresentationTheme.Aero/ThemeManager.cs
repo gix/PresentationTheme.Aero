@@ -641,8 +641,8 @@ namespace PresentationTheme.Aero
                 nameof(FindDictionaryResource), nonPublicStatic, null, paramTypes, null);
 
             findDictionaryResourceHook = Utils.HookMethod(
-                SystemResources_FindDictionaryResource,
-                This_FindDictionaryResource);
+                    SystemResources_FindDictionaryResource,
+                    This_FindDictionaryResource);
         }
 
         private void UninstallHook()

@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win7", "PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj", "{8BB1D809-EA59-490F-9867-80E031CE691C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero.Win7", "PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj", "{8BB1D809-EA59-490F-9867-80E031CE691C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win8", "PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj", "{D82A4175-763E-4591-8AA3-4BED74B57E32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero.Win8", "PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj", "{D82A4175-763E-4591-8AA3-4BED74B57E32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero.Win10", "PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj", "{A6E7C65F-98F7-4297-89EA-CAD879719FD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero.Win10", "PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj", "{A6E7C65F-98F7-4297-89EA-CAD879719FD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeCore", "ThemeCore\ThemeCore.csproj", "{839BCDAF-C880-4F9E-B3B6-388C2AE77156}"
 EndProject
@@ -25,11 +25,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeBrowser", "ThemeBrowse
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{21C94CC2-624A-4F52-8CD0-E94FCDFD5582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.AeroLite.Win10", "PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj", "{8C248E14-62ED-4061-B0FB-89A8696C7103}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.AeroLite.Win10", "PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj", "{8C248E14-62ED-4061-B0FB-89A8696C7103}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.Aero", "PresentationTheme.Aero\PresentationTheme.Aero.csproj", "{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero", "PresentationTheme.Aero\PresentationTheme.Aero.csproj", "{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.HighContrast.Win10", "PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj", "{55EF96DC-F991-42D9-B4D5-AE299AA380DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.HighContrast.Win10", "PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj", "{55EF96DC-F991-42D9-B4D5-AE299AA380DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{AA7DE4E1-73DD-4C98-9D0D-B1259B35A920}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -62,9 +62,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExtLib.HighContrast.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleExtLib.AeroLite.Win10", "SampleExtLib.AeroLite.Win10\SampleExtLib.AeroLite.Win10.csproj", "{45E8550F-5A25-473C-B3CB-E376633C4AE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.AeroLite.Win8", "PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj", "{09BBDC8E-6DB2-4191-A101-62C3F8F0781A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.AeroLite.Win8", "PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj", "{09BBDC8E-6DB2-4191-A101-62C3F8F0781A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationTheme.HighContrast.Win8", "PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj", "{9583BAC9-D42A-4868-B566-19FF161EAF47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.HighContrast.Win8", "PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj", "{9583BAC9-D42A-4868-B566-19FF161EAF47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
