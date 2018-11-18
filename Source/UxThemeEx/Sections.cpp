@@ -1,14 +1,17 @@
 #include "Sections.h"
 #include "Utils.h"
 
+#undef WIN32_NO_STATUS
 #include <ntstatus.h>
+#define WIN32_NO_STATUS
+
 #include <strsafe.h>
 #include <winternl.h>
 
 NTSYSAPI NTSTATUS NTAPI NtOpenSection(
     _Out_ PHANDLE            SectionHandle,
-          _In_  ACCESS_MASK        DesiredAccess,
-          _In_  POBJECT_ATTRIBUTES ObjectAttributes);
+    _In_  ACCESS_MASK        DesiredAccess,
+    _In_  POBJECT_ATTRIBUTES ObjectAttributes);
 
 namespace uxtheme
 {

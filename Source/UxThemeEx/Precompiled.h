@@ -20,7 +20,6 @@
 #include <ImageHlp.h>
 #include <intsafe.h>
 #include <memoryapi.h>
-#include <ntstatus.h>
 #include <objidl.h>
 #include <shlwapi.h>
 #include <strsafe.h>
@@ -31,3 +30,7 @@
 #include <winnt.h>
 #include <winternl.h>
 #include <wtypes.h>
+
+#undef WIN32_NO_STATUS
+#include <ntstatus.h>
+#define WIN32_NO_STATUS
