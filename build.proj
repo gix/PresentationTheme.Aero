@@ -143,11 +143,13 @@
       <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win8.dll"/>
       <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win10.dll"/>
       <ToolItem Include="$(ToolsOutputPath)System.Windows.Interactivity.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe.config"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.runtimeconfig.json"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeCore.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe.config"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.runtimeconfig.json"/>
       <ToolItem Include="$(ToolsOutputPath)EasyHook64.dll"/>
       <ToolItem Include="$(ToolsOutputPath)UxThemeEx.dll"/>
       <ToolItem Include="$(ToolsOutputPath)LICENSE.txt"/>

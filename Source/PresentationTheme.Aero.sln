@@ -9,16 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero.Win8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTheme.Aero.Win10", "PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj", "{A6E7C65F-98F7-4297-89EA-CAD879719FD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeCore", "ThemeCore\ThemeCore.csproj", "{839BCDAF-C880-4F9E-B3B6-388C2AE77156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThemeCore", "ThemeCore\ThemeCore.csproj", "{839BCDAF-C880-4F9E-B3B6-388C2AE77156}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemePreviewer", "ThemePreviewer\ThemePreviewer.csproj", "{4B44ACC1-0177-4A8A-AB35-D4B3F3986382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThemePreviewer", "ThemePreviewer\ThemePreviewer.csproj", "{4B44ACC1-0177-4A8A-AB35-D4B3F3986382}"
 	ProjectSection(ProjectDependencies) = postProject
 		{15931DA8-731F-4159-97A7-DDC9D1617883} = {15931DA8-731F-4159-97A7-DDC9D1617883}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UxThemeEx", "UxThemeEx\UxThemeEx.vcxproj", "{15931DA8-731F-4159-97A7-DDC9D1617883}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeBrowser", "ThemeBrowser\ThemeBrowser.csproj", "{ED93DFE6-C48D-41ED-991A-90505F8DDA19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThemeBrowser", "ThemeBrowser\ThemeBrowser.csproj", "{ED93DFE6-C48D-41ED-991A-90505F8DDA19}"
 	ProjectSection(ProjectDependencies) = postProject
 		{15931DA8-731F-4159-97A7-DDC9D1617883} = {15931DA8-731F-4159-97A7-DDC9D1617883}
 	EndProjectSection

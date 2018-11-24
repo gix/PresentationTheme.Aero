@@ -3,6 +3,7 @@ namespace ThemePreviewer
     using System;
     using System.IO;
     using System.IO.Packaging;
+    using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Windows;
     using ThemeCore.Native;
@@ -44,7 +45,17 @@ namespace ThemePreviewer
 
         private static object LoadComponentFromAssembly(Uri uri)
         {
+#if NETCOREAPP3_0
+            var method = typeof(PackUriHelper).GetMethod("ValidateAndGetPackUriComponents",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            var args = new object[3];
+            args[0] = uri;
+            method.Invoke(null, args);
+            var partUri = (Uri)args[2];
+            return partUri;
+#else
             return Application.LoadComponent(PackUriHelper.GetPartUri(uri));
+#endif
         }
 
         private static Uri GetUri(string themeAssembly, string themePath)

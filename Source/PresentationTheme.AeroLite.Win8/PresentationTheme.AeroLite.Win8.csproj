@@ -1,17 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>netcoreapp3.0;net45</TargetFrameworks>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj" />
@@ -21,5 +13,4 @@
     <Resource Include="Resources\Progress.MoveOverlay.png" />
     <Resource Include="Resources\Progress.PulseOverlay.png" />
   </ItemGroup>
-
 </Project>

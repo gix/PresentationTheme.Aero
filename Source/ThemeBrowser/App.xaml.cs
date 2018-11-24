@@ -8,6 +8,7 @@ namespace ThemeBrowser
     {
         public App()
         {
+            ThemeManager.Install();
             AeroTheme.SetAsCurrentTheme();
         }
 

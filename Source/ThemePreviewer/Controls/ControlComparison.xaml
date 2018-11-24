@@ -5,6 +5,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:local="clr-namespace:ThemePreviewer"
+  xmlns:integration="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
   mc:Ignorable="d"
   d:DesignHeight="300"
   d:DesignWidth="300"
@@ -163,7 +164,7 @@
       </ScrollViewer>
     </Grid>
 
-    <WindowsFormsHost Grid.Row="1" Grid.Column="2" x:Name="WinFormsHost"/>
+    <integration:WindowsFormsHost Grid.Row="1" Grid.Column="2" x:Name="WinFormsHost"/>
     <ContentPresenter Grid.Row="1" Grid.Column="4" x:Name="WpfHost"
                       Content="{Binding WpfSample, ElementName=root}"/>
     <Border Grid.Row="1" Grid.Column="6">
