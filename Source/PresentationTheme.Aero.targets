@@ -1,11 +1,11 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win8.*"/>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win8.*"/>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win8.*"/>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win10.*"/>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win10.*"/>
-    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win10.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.Aero.Win8.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.AeroLite.Win8.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.HighContrast.Win8.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.Aero.Win10.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.AeroLite.Win10.*"/>
+    <PresentationThemeAeroThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\PresentationTheme.HighContrast.Win10.*"/>
     <None Include="@(PresentationThemeAeroThemeAssembly)">
       <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
