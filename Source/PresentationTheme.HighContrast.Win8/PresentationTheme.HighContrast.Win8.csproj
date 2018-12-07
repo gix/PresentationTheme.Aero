@@ -1,78 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9583BAC9-D42A-4868-B566-19FF161EAF47}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PresentationTheme.HighContrast.Win8</RootNamespace>
-    <AssemblyName>PresentationTheme.HighContrast.Win8</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <FileAlignment>512</FileAlignment>
+    <TargetFrameworks>netcoreapp3.0;net45</TargetFrameworks>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj" />
+    <Resource Include="Resources\*.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ButtonChrome.cs" />
-    <Compile Include="ColorizeByAlphaStreamSourceExtension.cs" />
-    <Compile Include="DoubleUtil.cs" />
-    <Compile Include="EqualsConverter.cs" />
-    <Compile Include="HighContrastWin8Theme.cs" />
-    <Compile Include="HeaderChrome.cs" />
-    <Compile Include="InvertThicknessConverter.cs" />
-    <Compile Include="LayoutHelper.cs" />
-    <Compile Include="LessThanOrEqualBinding.cs" />
-    <Compile Include="MenuScrollingEnabledConverter.cs" />
-    <Compile Include="ProgressBarChrome.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoundingTabPanel.cs" />
-    <Compile Include="SystemDropShadowChrome.cs" />
-    <Compile Include="TextBoxChrome.cs" />
-    <Compile Include="SystemAliasResource.cs" />
-    <Compile Include="ThicknessMaskConverter.cs" />
-    <Compile Include="TickBarEx.cs" />
-    <Compile Include="TypeOfConverter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\HighContrast.Win8.NormalColor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Progress.MoveOverlay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Progress.PulseOverlay.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
-      <Project>{AEF7F7B0-A3F0-482A-A0E0-4D8782CABAA6}</Project>
-      <Name>PresentationTheme.Aero</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
