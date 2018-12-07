@@ -16,6 +16,7 @@ obj/
 *.aps
 *.cso
 ipch/
+.vs/
 
 # VC
 *.pch
