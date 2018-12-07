@@ -5,7 +5,9 @@
     <ProjectItem Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
     <ProjectItem Include="Source\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj"/>
     <ProjectItem Include="Source\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj"/>
     <ProjectItem Include="Source\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj"/>
+    <ProjectItem Include="Source\PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj"/>
     <ProjectItem Include="Source\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj"/>
     <ProjectItem Include="Source\ThemeBrowser\ThemeBrowser.csproj"/>
     <ProjectItem Include="Source\ThemePreviewer\ThemePreviewer.csproj"/>
