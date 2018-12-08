@@ -481,12 +481,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj">
+      <Project>{a6e7c65f-98f7-4297-89ea-cad879719fd6}</Project>
+      <Name>PresentationTheme.Aero.Win10</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj">
+      <Project>{d82a4175-763e-4591-8aa3-4bed74b57e32}</Project>
+      <Name>PresentationTheme.Aero.Win8</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj">
       <Project>{8c248e14-62ed-4061-b0fb-89a8696c7103}</Project>
       <Name>PresentationTheme.AeroLite.Win10</Name>
     </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj">
-      <Project>{09BBDC8E-6DB2-4191-A101-62C3F8F0781A}</Project>
+      <Project>{09bbdc8e-6db2-4191-a101-62c3f8f0781a}</Project>
       <Name>PresentationTheme.AeroLite.Win8</Name>
     </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj">
@@ -494,24 +502,16 @@
       <Name>PresentationTheme.Aero</Name>
     </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj">
-      <Project>{55EF96DC-F991-42D9-B4D5-AE299AA380DC}</Project>
+      <Project>{55ef96dc-f991-42d9-b4d5-ae299aa380dc}</Project>
       <Name>PresentationTheme.HighContrast.Win10</Name>
     </ProjectReference>
     <ProjectReference Include="..\PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj">
-      <Project>{9583BAC9-D42A-4868-B566-19FF161EAF47}</Project>
+      <Project>{9583bac9-d42a-4868-b566-19ff161eaf47}</Project>
       <Name>PresentationTheme.HighContrast.Win8</Name>
     </ProjectReference>
     <ProjectReference Include="..\ThemeCore\ThemeCore.csproj">
       <Project>{839bcdaf-c880-4f9e-b3b6-388c2ae77156}</Project>
       <Name>ThemeCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj">
-      <Project>{d82a4175-763e-4591-8aa3-4bed74b57e32}</Project>
-      <Name>PresentationTheme.Aero.Win8</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj">
-      <Project>{a6e7c65f-98f7-4297-89ea-cad879719fd6}</Project>
-      <Name>PresentationTheme.Aero.Win10</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
