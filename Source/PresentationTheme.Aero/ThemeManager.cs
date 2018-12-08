@@ -601,6 +601,9 @@ namespace PresentationTheme.Aero
 
         private void InstallHook()
         {
+#if NETCOREAPP
+            throw new InvalidOperationException("ThemeManager hooking is not supported on .NET Core.");
+#else
             if (findDictionaryResourceHook != null)
                 return;
 
@@ -624,6 +627,7 @@ namespace PresentationTheme.Aero
             findDictionaryResourceHook = Utils.HookMethod(
                 SystemResources_FindDictionaryResource,
                 This_FindDictionaryResource);
+#endif
         }
 
         private void UninstallHook()

@@ -3,4 +3,8 @@
     <TargetFrameworks>netcoreapp3.0;net45;net472</TargetFrameworks>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <DefineConstants>NETCOREAPP;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
 </Project>
