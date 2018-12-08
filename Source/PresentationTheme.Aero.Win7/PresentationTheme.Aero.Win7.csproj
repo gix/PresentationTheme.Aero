@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;net45</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net45;net472</TargetFrameworks>
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
