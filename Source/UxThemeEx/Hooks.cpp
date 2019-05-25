@@ -225,6 +225,7 @@ union HookHandles
         DECLARE_HOOK_INFO(OpenThemeData);
         DECLARE_HOOK_INFO(OpenThemeDataForDpi);
         DECLARE_HOOK_INFO(OpenThemeDataEx);
+        DECLARE_HOOK_INFO(CloseThemeData);
         DECLARE_HOOK_INFO(GetThemeAnimationProperty);
         DECLARE_HOOK_INFO(GetThemeAnimationTransform);
         DECLARE_HOOK_INFO(GetThemeBackgroundContentRect);
@@ -264,11 +265,11 @@ union HookHandles
         DECLARE_HOOK_INFO(DrawThemeBackgroundEx);
         DECLARE_HOOK_INFO(DrawThemeText);
         DECLARE_HOOK_INFO(DrawThemeTextEx);
+        DECLARE_HOOK_INFO(GetSysColor);
         HookTraceInfo<HTHEME(HWND hwnd, wchar_t const* pszClassIdList,
                              unsigned dwFlags, wchar_t const* pszApiName,
                              int iForDPI)> PFnOpenThemeDataExInternal;
         HookTraceInfo<void(CThemeMenuBar*, HWND hwnd, UAHDRAWMENUITEM* pudmi)> PFnCThemeMenuBar_DrawItem;
-        DECLARE_HOOK_INFO(GetSysColor);
     } t;
     HOOK_TRACE_INFO handles[sizeof(TypedHooks) / sizeof(HOOK_TRACE_INFO)];
 } g_hookHandles;
@@ -304,7 +305,7 @@ static HTHEME WINAPI OpenThemeDataHook(
     _In_opt_ HWND hwnd,
     _In_ LPCWSTR pszClassList)
 {
-    if (hwnd && g_OverrideTheme) {
+    if (g_OverrideTheme) {
         HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
         HTHEME hTheme = UxOpenThemeData(g_OverrideTheme, hwnd, pszClassList);
         if (hTheme) {
@@ -321,7 +322,7 @@ static HTHEME WINAPI OpenThemeDataExHook(
     _In_ LPCWSTR pszClassList,
     _In_ DWORD dwFlags)
 {
-    if (hwnd && g_OverrideTheme) {
+    if (g_OverrideTheme) {
         HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
         HTHEME hTheme = UxOpenThemeDataEx(g_OverrideTheme, hwnd, pszClassList, dwFlags);
         if (hTheme) {
@@ -353,8 +354,12 @@ static HTHEME WINAPI OpenThemeDataForDpiHook(
 static HRESULT WINAPI CloseThemeDataHook(
     _In_ HTHEME hTheme)
 {
-    if (g_OverrideTheme)
-        return UxCloseThemeData(g_OverrideTheme, hTheme);
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride) {
+        TRACE_HR(UxCloseThemeData(g_OverrideTheme, hThemeOverride));
+        g_ThemeHandleMap.erase(hTheme);
+    }
+
     return CloseThemeData(hTheme);
 }
 
@@ -1080,8 +1085,8 @@ THEMEEXAPI UxHook()
 
     ADD_HOOK(OpenThemeData);
     ADD_HOOK(OpenThemeDataEx);
-    //ADD_HOOK(CloseThemeData);
     ADD_HOOK(OpenThemeDataForDpi);
+    ADD_HOOK(CloseThemeData);
     if (auto const addr = UxThemeDllHelper::Get().OpenThemeDataExInternal_address())
         ADD_HOOK2(OpenThemeDataExInternal, addr);
     if (auto const addr = UxThemeDllHelper::Get().CThemeMenuBar_DrawItem_address())
