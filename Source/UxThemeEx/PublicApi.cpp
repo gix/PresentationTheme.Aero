@@ -11,8 +11,6 @@
 #include "ThemeLoader.h"
 #include "Utils.h"
 
-#include <map>
-#include <mutex>
 #include <CommCtrl.h>
 #include <CommonControls.h>
 #include <strsafe.h>
@@ -394,7 +392,7 @@ HTHEME OpenThemeDataExInternal(
     }
 
     if (!pszClassIdList) {
-        SetLastError((DWORD)E_POINTER);
+        SetLastError(static_cast<DWORD>(E_POINTER));
         return nullptr;
     }
 

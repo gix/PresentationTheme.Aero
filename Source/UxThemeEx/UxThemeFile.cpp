@@ -54,8 +54,9 @@ HRESULT CUxThemeFile::CreateFileW(
 void CUxThemeFile::CloseFile()
 {
     if (_hSharableSection && _hNonSharableSection && _pbNonSharableData) {
-        if (*_pbNonSharableData & 4 && (!_pbNonSharableData || !(*_pbNonSharableData & 2)))
-            ; // ClearStockObjects(_hNonSharableSection, 0);
+        if (*_pbNonSharableData & 4 && (!_pbNonSharableData || !(*_pbNonSharableData & 2))) {
+            // ClearStockObjects(_hNonSharableSection, 0);
+        }
     }
 
     if (_pbSharableData)

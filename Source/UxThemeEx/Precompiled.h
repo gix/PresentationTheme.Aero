@@ -13,7 +13,11 @@
 #include <utility>
 #include <vector>
 
+// windows.h and ntstatus.h both define common status macros. Prevent the former
+// from doing so.
+#define WIN32_NO_STATUS
 #include <windows.h>
+#undef WIN32_NO_STATUS
 
 #include <CommCtrl.h>
 #include <CommonControls.h>

@@ -887,8 +887,8 @@ HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc,
             }
         }
 
-        wchar_t text = static_cast<wchar_t>(_iGlyphIndex);
-        if (!DrawTextExW(hdc, &text, 1, prc, format, nullptr))
+        wchar_t text[1] = {narrow_cast<wchar_t>(_iGlyphIndex)};
+        if (!DrawTextExW(hdc, text, 1, prc, format, nullptr))
             hr = MakeErrorLast();
     }
 
