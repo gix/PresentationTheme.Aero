@@ -1,8 +1,10 @@
 namespace PresentationTheme.Aero
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
@@ -127,7 +129,7 @@ namespace PresentationTheme.Aero
                     nonPublicInstance, null, new[] { ResourceDictionaryInfo_Type }, null) : null;
 
             var SystemResources_Type = PresentationFramework?.GetType(
-                "System.Windows.SystemResources", true);
+                "System.Windows.SystemResources");
             var SystemResources__hwndNotify = SystemResources_Type?.GetField(
                 "_hwndNotify", nonPublicStatic);
             var SystemResources_ThemedDictionaryLoaded = SystemResources_Type?.GetField(
@@ -178,13 +180,22 @@ namespace PresentationTheme.Aero
             var SystemResources_EnsureResourceChangeListener = SystemResources_Type?.GetMethod(
                 "EnsureResourceChangeListener", nonPublicStatic, null, Type.EmptyTypes, null);
 
-            var SecurityCriticalDataClass_Value = SystemResources__hwndNotify?.FieldType.GetProperty(
-                "Value", nonPublicInstance);
-
-            var HwndWrapperHook_Type = WindowsBase.GetType("MS.Win32.HwndWrapperHook", true);
-            var HwndWrapper_Type = WindowsBase.GetType("MS.Win32.HwndWrapper", true);
+            var HwndWrapperHook_Type = WindowsBase.GetType("MS.Win32.HwndWrapperHook");
+            var HwndWrapper_Type = WindowsBase.GetType("MS.Win32.HwndWrapper");
             var HwndWrapper_AddHookLast = HwndWrapperHook_Type != null ? HwndWrapper_Type?.GetMethod(
                 "AddHookLast", nonPublicInstance, null, new[] { HwndWrapperHook_Type }, null) : null;
+
+            var hwndNotifyType = SystemResources__hwndNotify?.FieldType;
+            bool perWindowDpi =
+                hwndNotifyType != null && hwndNotifyType.IsGenericType &&
+                hwndNotifyType.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+
+            var SecurityCriticalDataClass_Type = HwndWrapper_Type != null
+                ? WindowsBase.GetType("MS.Internal.SecurityCriticalDataClass`1")
+                    ?.MakeGenericType(HwndWrapper_Type)
+                : null;
+            var SecurityCriticalDataClass_Value = SecurityCriticalDataClass_Type?.GetProperty(
+                "Value", nonPublicInstance);
 
             var ResourceDictionaries_Type = SystemResources_Type?.GetNestedType(
                 "ResourceDictionaries", BindingFlags.NonPublic);
@@ -207,18 +218,18 @@ namespace PresentationTheme.Aero
             ResourceDictionaries_Type?.GetField("_themedLocation", nonPublicInstance)
                 ?.CreateDelegate(
                     out ResourceDictionaries__themedLocation_Get,
-                    out var _);
+                    out _);
             ResourceDictionaries_Type?.GetField("_themedDictionary", nonPublicInstance)
                 ?.CreateDelegate(
                     out ResourceDictionaries__themedDictionary_Get,
                     out ResourceDictionaries__themedDictionary_Set);
             ResourceDictionaries_Type?.GetField("_themedDictionaryAssembly", nonPublicInstance)
                 ?.CreateDelegate(
-                    out var _,
+                    out _,
                     out ResourceDictionaries__themedDictionaryAssembly_Set);
             ResourceDictionaries_Type?.GetField("_themedDictionarySourceUri", nonPublicInstance)
                 ?.CreateDelegate(
-                    out var _,
+                    out _,
                     out ResourceDictionaries__themedDictionarySourceUri_Set);
             ResourceDictionaries_Type?.GetField("_themedResourceName", nonPublicStatic)
                 ?.CreateDelegate(
@@ -303,8 +314,16 @@ namespace PresentationTheme.Aero
                         HwndWrapperHook_Type, this, nameof(SystemThemeFilterMessage));
 
                     SystemResources_EnsureResourceChangeListener.Invoke(null, null);
-                    var hwndNotify = SystemResources__hwndNotify.GetValue(null);
-                    var hwndWrapper = SecurityCriticalDataClass_Value.GetValue(hwndNotify);
+
+                    object scdcHwndWrapper;
+                    if (perWindowDpi) {
+                        var wrapperDict = (IDictionary)SystemResources__hwndNotify.GetValue(null);
+                        scdcHwndWrapper = wrapperDict.Values.OfType<object>().FirstOrDefault();
+                    } else {
+                        scdcHwndWrapper = SystemResources__hwndNotify.GetValue(null);
+                    }
+
+                    var hwndWrapper = SecurityCriticalDataClass_Value.GetValue(scdcHwndWrapper);
                     HwndWrapper_AddHookLast.Invoke(hwndWrapper, new object[] { hwndWrapperHook });
                 } catch {
                     valid = false;
@@ -606,7 +625,7 @@ namespace PresentationTheme.Aero
 
             const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
-            var SystemResources_Type = PresentationFramework.GetType("System.Windows.SystemResources", true);
+            var SystemResources_Type = PresentationFramework.GetType("System.Windows.SystemResources");
             var paramTypes = new[] {
                 typeof(object),
                 typeof(Type),
