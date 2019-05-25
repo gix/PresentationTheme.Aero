@@ -46,7 +46,8 @@ namespace ThemePreviewer.Controls
             if (RootNode == null)
                 return;
 
-            CreateRenderer(args.Graphics, args.ClipRectangle).Render();
+            using (var r = CreateRenderer(args.Graphics, args.ClipRectangle))
+                r.Render();
         }
 
         public override Size GetPreferredSize(Size proposedSize)
@@ -54,8 +55,9 @@ namespace ThemePreviewer.Controls
             if (RootNode == null)
                 return base.GetPreferredSize(proposedSize);
 
-            using (var g = CreateGraphics()) {
-                var size = CreateRenderer(g, new Rectangle(0, 0, Width, Height)).Measure();
+            using (var g = CreateGraphics())
+            using (var r = CreateRenderer(g, new Rectangle(0, 0, Width, Height))) {
+                var size = r.Measure();
                 return new Size(Width, size.Height);
             }
         }
@@ -92,7 +94,7 @@ namespace ThemePreviewer.Controls
         }
     }
 
-    public class MenuRenderer
+    public class MenuRenderer : IDisposable
     {
         private readonly ThemeMenuMetrics menuMetrics = new ThemeMenuMetrics();
         private readonly Graphics g;
@@ -224,7 +226,7 @@ namespace ThemePreviewer.Controls
             return new VisualStyleRenderer(className, (int)(object)part, (int)(object)state);
         }
 
-        private class ThemeMenuMetrics
+        private sealed class ThemeMenuMetrics : IDisposable
         {
             public SafeThemeHandle hTheme;
             public int iBarBackground;
@@ -293,6 +295,11 @@ namespace ThemePreviewer.Controls
                 sizePopupSubmenu.Width += marPopupSubmenu.cxLeftWidth + marPopupSubmenu.cxRightWidth;
                 sizePopupSubmenu.Height += marPopupSubmenu.cyTopHeight + marPopupSubmenu.cyBottomHeight;
                 marPopupOwnerDrawnItem.cxRightWidth = iPopupBorderSize;
+            }
+
+            public void Dispose()
+            {
+                hTheme.Dispose();
             }
         }
 
@@ -473,7 +480,7 @@ namespace ThemePreviewer.Controls
             }
         }
 
-        private class ThemeMenuPopup
+        private sealed class ThemeMenuPopup
         {
             private readonly ThemeMenuMetrics metrics;
 
@@ -799,6 +806,11 @@ namespace ThemePreviewer.Controls
                     metrics.hTheme, new HandleRef(this, hdc),
                     metrics.iPopupBackground, 0, new CRECT(clientRect), null);
             }
+        }
+
+        public void Dispose()
+        {
+            menuMetrics.Dispose();
         }
     }
 
