@@ -2,14 +2,18 @@ AccessModifierOffset: -4
 AlignEscapedNewlinesLeft: false
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Inline
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
+BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: false
 BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: true
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: false
@@ -20,8 +24,10 @@ BraceWrapping:
   AfterUnion: true
   BeforeCatch: false
   BeforeElse: false
+  SplitEmptyRecord: false
 BreakConstructorInitializersBeforeComma: true
-ColumnLimit: 80
+BreakStringLiterals: false
+ColumnLimit: 90
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
 Cpp11BracedListStyle: true
@@ -37,7 +43,11 @@ PointerBindsToType: true
 SpacesBeforeTrailingComments: 1
 Standard: Cpp11
 UseTab: false
+SpaceAfterTemplateKeyword: false
 SpacesInParentheses: false
 SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpaceAfterControlStatementKeyword: true
+
+# Prevent breaking doxygen, as clang-format doesn't support reflowing of doxygen comments yet (as of 7.0.0).
+CommentPragmas: '^\*|^/|^!'
