@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <OutputPath>$(OutputPath)Samples\NetCore\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.Aero.Win7\PresentationTheme.Aero.Win7.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.Aero\PresentationTheme.Aero.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj" />
+    <ProjectReference Include="..\..\PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.Aero.Win10\NetCoreExtLib.Aero.Win10.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.Aero2\NetCoreExtLib.Aero2.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.AeroLite.Win10\NetCoreExtLib.AeroLite.Win10.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.AeroLite\NetCoreExtLib.AeroLite.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.Aero\NetCoreExtLib.Aero.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.Classic\NetCoreExtLib.Classic.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib.HighContrast.Win10\NetCoreExtLib.HighContrast.Win10.csproj" />
+    <ProjectReference Include="..\NetCoreExtLib\NetCoreExtLib.csproj" />
+    <ProjectReference Include="..\NetCoreLib\NetCoreLib.csproj" />
+  </ItemGroup>
+</Project>
