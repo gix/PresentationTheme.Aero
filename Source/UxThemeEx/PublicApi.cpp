@@ -554,7 +554,20 @@ UxOpenThemeData(
     _In_opt_ HWND hwnd,
     _In_ LPCWSTR pszClassList)
 {
-    return OpenThemeDataExInternal(hThemeFile, hwnd, pszClassList, 0, nullptr, FALSE);
+    return OpenThemeDataExInternal(hThemeFile, hwnd, pszClassList, 0, nullptr, 0);
+}
+
+THEMEEXAPI_(HTHEME)
+UxOpenThemeDataForDpi(
+    _In_ HTHEMEFILE hThemeFile,
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList,
+    _In_ UINT dpi)
+{
+    if (dpi > 480)
+        SetLastError(ERROR_INVALID_PARAMETER);
+
+    return OpenThemeDataExInternal(hThemeFile, hwnd, pszClassList, 0, nullptr, dpi);
 }
 
 THEMEEXAPI_(HTHEME)
@@ -564,7 +577,7 @@ UxOpenThemeDataEx(
     _In_ LPCWSTR pszClassList,
     _In_ DWORD dwFlags)
 {
-    return OpenThemeDataExInternal(hThemeFile, hwnd, pszClassList, dwFlags, nullptr, FALSE);
+    return OpenThemeDataExInternal(hThemeFile, hwnd, pszClassList, dwFlags, nullptr, 0);
 }
 
 THEMEEXAPI UxCloseThemeData(

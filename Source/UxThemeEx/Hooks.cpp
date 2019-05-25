@@ -223,6 +223,7 @@ union HookHandles
     struct TypedHooks
     {
         DECLARE_HOOK_INFO(OpenThemeData);
+        DECLARE_HOOK_INFO(OpenThemeDataForDpi);
         DECLARE_HOOK_INFO(OpenThemeDataEx);
         DECLARE_HOOK_INFO(GetThemeAnimationProperty);
         DECLARE_HOOK_INFO(GetThemeAnimationTransform);
@@ -330,6 +331,23 @@ static HTHEME WINAPI OpenThemeDataExHook(
     }
 
     return OpenThemeDataEx(hwnd, pszClassList, dwFlags);
+}
+
+static HTHEME WINAPI OpenThemeDataForDpiHook(
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList,
+    _In_ UINT dpi)
+{
+    if (g_OverrideTheme) {
+        HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
+        HTHEME hTheme = UxOpenThemeDataForDpi(g_OverrideTheme, hwnd, pszClassList, dpi);
+        if (hTheme) {
+            g_ThemeHandleMap[hOrigTheme] = hTheme;
+            return hOrigTheme;
+        }
+    }
+
+    return OpenThemeDataForDpi(hwnd, pszClassList, dpi);
 }
 
 static HRESULT WINAPI CloseThemeDataHook(
@@ -1063,6 +1081,7 @@ THEMEEXAPI UxHook()
     ADD_HOOK(OpenThemeData);
     ADD_HOOK(OpenThemeDataEx);
     //ADD_HOOK(CloseThemeData);
+    ADD_HOOK(OpenThemeDataForDpi);
     if (auto const addr = UxThemeDllHelper::Get().OpenThemeDataExInternal_address())
         ADD_HOOK2(OpenThemeDataExInternal, addr);
     if (auto const addr = UxThemeDllHelper::Get().CThemeMenuBar_DrawItem_address())

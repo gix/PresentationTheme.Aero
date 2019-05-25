@@ -96,6 +96,12 @@ THEMEEXAPI_(HTHEME) UxOpenThemeData(
     _In_opt_ HWND hwnd,
     _In_ LPCWSTR pszClassList);
 
+THEMEEXAPI_(HTHEME) UxOpenThemeDataForDpi(
+    _In_ HTHEMEFILE hThemeFile,
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList,
+    _In_ UINT dpi);
+
 THEMEEXAPI_(HTHEME) UxOpenThemeDataEx(
     _In_ HTHEMEFILE hThemeFile,
     _In_opt_ HWND hwnd,
