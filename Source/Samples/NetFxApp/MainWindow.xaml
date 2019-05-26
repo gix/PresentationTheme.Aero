@@ -9,25 +9,48 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type sampleApp:MainWindow}}"
         TextOptions.TextFormattingMode="Display"
+        WindowStartupLocation="CenterScreen"
         Title="MainWindow" Height="350" Width="900">
+  <Window.Resources>
+    <DataTemplate x:Key="AssemblyTemplate" DataType="{x:Type sampleApp:AssemblyInfo}">
+      <Expander Header="{Binding Name.Name}">
+        <StackPanel>
+          <TextBlock Text="{Binding Name.Version}"/>
+          <TextBlock Text="{Binding Name.CultureName}"/>
+          <TextBlock Text="{Binding Name.CodeBase}"/>
+        </StackPanel>
+      </Expander>
+    </DataTemplate>
+  </Window.Resources>
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
         <MenuItem Header="E_xit" Click="OnExitMenuItemClicked"/>
       </MenuItem>
+      <MenuItem Header="Use ThemeManager" IsChecked="{Binding App.UseThemeManager}" Click="OnUseThemeManagerClicked"/>
+      <MenuItem Header="Use Aero Theme" IsChecked="{Binding App.UseAeroTheme}" Click="OnUseAeroThemeClicked"/>
     </Menu>
     <Grid Margin="5">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="600"/>
         <ColumnDefinition/>
+        <ColumnDefinition Width="300"/>
       </Grid.ColumnDefinitions>
       <ListView ItemsSource="{Binding ThemedDictionaryLoads}">
         <ListView.View>
           <GridView>
             <GridView.Columns>
-              <GridViewColumn Header="Assembly" DisplayMemberBinding="{Binding Assembly}"/>
-              <GridViewColumn Header="ResourceDictionaryAssembly" DisplayMemberBinding="{Binding ResourceDictionaryAssembly}"/>
-              <GridViewColumn Header="SourceUri" DisplayMemberBinding="{Binding SourceUri}"/>
+              <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time, StringFormat=HH:mm:ss.fff}"/>
+              <GridViewColumn Header="Assembly">
+                <GridViewColumn.CellTemplate>
+                  <DataTemplate DataType="{x:Type sampleApp:ResourceDictionaryLoad}">
+                    <StackPanel>
+                      <TextBlock Text="{Binding Assembly}"/>
+                      <TextBlock Text="{Binding ResourceDictionaryAssembly, StringFormat='Resources: {0}'}"/>
+                      <TextBlock Text="{Binding SourceUri, StringFormat='Source: {0}'}"/>
+                    </StackPanel>
+                  </DataTemplate>
+                </GridViewColumn.CellTemplate>
+              </GridViewColumn>
             </GridView.Columns>
           </GridView>
         </ListView.View>
@@ -36,7 +59,7 @@
         <Button Content="Button" Margin="5" HorizontalAlignment="Left"/>
         <sampleLib:SampleControl Margin="5" HorizontalAlignment="Left"/>
         <sampleExtLib:SampleExtControl Margin="5" HorizontalAlignment="Left"/>
-        <TextBox/>
+        <TextBox Margin="5"/>
       </StackPanel>
     </Grid>
   </DockPanel>

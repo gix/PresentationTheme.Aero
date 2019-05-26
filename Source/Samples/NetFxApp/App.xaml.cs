@@ -2,6 +2,9 @@ namespace NetFxApp
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Windows;
     using System.Windows.Diagnostics;
@@ -9,49 +12,90 @@ namespace NetFxApp
 
     public partial class App
     {
-        private FieldInfo SystemResources_ThemedDictionaryLoaded;
-        private FieldInfo SystemResources_ThemedDictionaryUnloaded;
+        public bool UseThemeManager { get; set; }
+        public bool UseAeroTheme { get; set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            const BindingFlags nonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
+            UseThemeManager = !e.Args.Contains("-tm:0");
+            UseAeroTheme = !e.Args.Contains("-aero:0");
 
-            var PresentationFramework = typeof(ResourceDictionary).Assembly;
+            var isEnableProperty = typeof(ResourceDictionaryDiagnostics).GetProperty(
+                                       "IsEnabled", BindingFlags.NonPublic | BindingFlags.Static)
+                                   ?? throw new InvalidOperationException("ResourceDictionaryDiagnostics.IsEnabled missing");
 
-            var SystemResources_Type = PresentationFramework.GetType("System.Windows.SystemResources", true);
-            SystemResources_ThemedDictionaryLoaded = SystemResources_Type?.GetField(
-                "ThemedDictionaryLoaded", nonPublicStatic);
-            SystemResources_ThemedDictionaryUnloaded = SystemResources_Type?.GetField(
-                "ThemedDictionaryUnloaded", nonPublicStatic);
+            isEnableProperty.SetValue(null, true);
+            ResourceDictionaryDiagnostics.ThemedResourceDictionaryLoaded += OnThemedDictionaryLoaded;
 
-            ThemedDictionaryLoaded += OnThemedDictionaryLoaded;
-            AeroTheme.SetAsCurrentTheme();
+            if (UseThemeManager)
+                ThemeManager.Install();
+            if (UseAeroTheme)
+                AeroTheme.SetAsCurrentTheme();
         }
 
-        public event EventHandler<ResourceDictionaryLoadedEventArgs> ThemedDictionaryLoaded
-        {
-            add
-            {
-                var handler = (EventHandler<ResourceDictionaryLoadedEventArgs>)SystemResources_ThemedDictionaryLoaded.GetValue(null);
-                handler = (EventHandler<ResourceDictionaryLoadedEventArgs>)Delegate.Combine(handler, value);
-                SystemResources_ThemedDictionaryLoaded.SetValue(null, handler);
-            }
-            remove
-            {
-                var handler = (EventHandler<ResourceDictionaryLoadedEventArgs>)SystemResources_ThemedDictionaryLoaded.GetValue(null);
-                handler = (EventHandler<ResourceDictionaryLoadedEventArgs>)Delegate.Remove(handler, value);
-                SystemResources_ThemedDictionaryLoaded.SetValue(null, handler);
-            }
-        }
-
-        public ObservableCollection<ResourceDictionaryInfo> ThemedDictionaryLoads { get; } =
-            new ObservableCollection<ResourceDictionaryInfo>();
+        public ObservableCollection<ResourceDictionaryLoad> ThemedDictionaryLoads { get; } =
+            new ObservableCollection<ResourceDictionaryLoad>();
 
         private void OnThemedDictionaryLoaded(object sender, ResourceDictionaryLoadedEventArgs args)
         {
-            ThemedDictionaryLoads.Add(args.ResourceDictionaryInfo);
+            ThemedDictionaryLoads.Add(new ResourceDictionaryLoad(args.ResourceDictionaryInfo));
         }
+
+        public void Restart()
+        {
+            string exePath = GetExePath();
+
+            var process = new Process();
+            process.StartInfo.FileName = exePath;
+            process.StartInfo.Arguments = $"-tm:{(UseThemeManager ? 1 : 0)} -aero:{(UseAeroTheme ? 1 : 0)}";
+            process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+            process.Start();
+            Shutdown();
+        }
+
+        private static string GetExePath()
+        {
+            var exePath = Assembly.GetExecutingAssembly().Location;
+            if (Path.GetExtension(exePath) == ".dll")
+                exePath = Path.Combine(Path.GetDirectoryName(exePath), Path.ChangeExtension(exePath, ".exe"));
+            return exePath;
+        }
+    }
+
+    public class AssemblyInfo
+    {
+        public AssemblyInfo(Assembly assembly)
+        {
+            Name = assembly.GetName();
+            Location = assembly.Location;
+            FileName = Path.GetFileName(assembly.Location);
+        }
+
+        public AssemblyName Name { get; }
+        public string FileName { get; }
+        public string Location { get; }
+
+        public override string ToString()
+        {
+            return $"{Name.Name} ({Name.Version}, {FileName})";
+        }
+    }
+
+    public class ResourceDictionaryLoad
+    {
+        public ResourceDictionaryLoad(ResourceDictionaryInfo info)
+        {
+            Time = DateTime.Now;
+            Assembly = new AssemblyInfo(info.Assembly);
+            ResourceDictionaryAssembly = new AssemblyInfo(info.ResourceDictionaryAssembly);
+            SourceUri = info.SourceUri;
+        }
+
+        public DateTime Time { get; }
+        public AssemblyInfo Assembly { get; }
+        public AssemblyInfo ResourceDictionaryAssembly { get; }
+        public Uri SourceUri { get; }
     }
 }

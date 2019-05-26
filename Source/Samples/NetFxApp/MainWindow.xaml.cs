@@ -2,7 +2,6 @@ namespace NetFxApp
 {
     using System.Collections.ObjectModel;
     using System.Windows;
-    using System.Windows.Diagnostics;
 
     public partial class MainWindow
     {
@@ -12,12 +11,26 @@ namespace NetFxApp
             DataContext = this;
         }
 
-        public ObservableCollection<ResourceDictionaryInfo> ThemedDictionaryLoads =>
-            ((App)Application.Current).ThemedDictionaryLoads;
+        public ObservableCollection<ResourceDictionaryLoad> ThemedDictionaryLoads =>
+           App.ThemedDictionaryLoads;
+
+        public App App => (App)Application.Current;
 
         private void OnExitMenuItemClicked(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            App.Shutdown();
+        }
+
+        private void OnUseThemeManagerClicked(object sender, RoutedEventArgs e)
+        {
+            App.UseThemeManager = !App.UseThemeManager;
+            App.Restart();
+        }
+
+        private void OnUseAeroThemeClicked(object sender, RoutedEventArgs e)
+        {
+            App.UseAeroTheme = !App.UseAeroTheme;
+            App.Restart();
         }
     }
 }
