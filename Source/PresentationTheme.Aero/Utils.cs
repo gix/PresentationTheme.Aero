@@ -3,11 +3,13 @@ namespace PresentationTheme.Aero
     using System;
     using System.ComponentModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using System.Runtime.Versioning;
 
     internal static class Utils
     {
@@ -97,10 +99,31 @@ namespace PresentationTheme.Aero
             }
         }
 
+        private static bool HasTieredCompilation()
+        {
+            var frameworkDescriptionProperty = Type.GetType(
+                    "System.Runtime.InteropServices.RuntimeInformation, System.Runtime.InteropServices.RuntimeInformation")
+                ?.GetProperty("FrameworkDescription");
+
+            if (frameworkDescriptionProperty == null)
+                return false; // < .NET 4.7.1
+
+            var frameworkDescription = (string)frameworkDescriptionProperty.GetValue(null);
+            bool isNetCore = frameworkDescription.StartsWith(
+                ".NET Core", StringComparison.OrdinalIgnoreCase);
+            if (!isNetCore)
+                return false;
+
+            return true;
+        }
+
         public static MemoryPatch HookMethod(MethodInfo original, MethodInfo replacement)
         {
             if (!EqualSignatures(original, replacement))
                 throw new ArgumentException("The method signatures are not the same.", nameof(original));
+
+            if (HasTieredCompilation())
+                original.DisableTieredCompilation();
 
             IntPtr orgAddr = PrepareMethod(original);
             IntPtr repAddr = PrepareMethod(replacement);
@@ -156,10 +179,131 @@ namespace PresentationTheme.Aero
             return PatchMemory(orgAddr, jumpInst);
         }
 
+        [StructLayout(LayoutKind.Explicit)]
+        private struct FixupPrecode
+        {
+            [FieldOffset(0)]
+            public byte m_op;
+            [FieldOffset(1)]
+            public int m_rel32;
+            [FieldOffset(5)]
+            public byte m_type;
+            [FieldOffset(6)]
+            public byte m_MethodDescChunkIndex;
+            [FieldOffset(7)]
+            public byte m_PrecodeChunkIndex;
+
+            public const byte TypePrestub = 0x5E;
+            public const byte Type = 0x5F;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct MethodDesc
+        {
+            [FieldOffset(0)]
+            public ushort m_wFlags3AndTokenRemainder;
+            [FieldOffset(2)]
+            public byte m_chunkIndex;
+            [FieldOffset(3)]
+            public byte m_bFlags2;
+            [FieldOffset(4)]
+            public ushort m_wSlotNumber;
+            [FieldOffset(6)]
+            public ushort m_wFlags;
+
+            public bool IsEligibleForTieredCompilation()
+            {
+                return (m_bFlags2 & (byte)MethodDescFlags2.IsEligibleForTieredCompilation) != 0;
+            }
+
+            public void SetEligibleForTieredCompilation(bool value)
+            {
+                if (value)
+                    m_bFlags2 |= (byte)MethodDescFlags2.IsEligibleForTieredCompilation;
+                else
+                    m_bFlags2 &= unchecked((byte)~MethodDescFlags2.IsEligibleForTieredCompilation);
+            }
+        }
+
+        [Flags]
+        private enum MethodDescFlags2 : ushort
+        {
+            IsEligibleForTieredCompilation = 0x20
+        }
+
+        private static unsafe MethodDesc* GetMethodDesc(this RuntimeMethodHandle handle)
+        {
+            IntPtr addr = handle.GetFunctionPointer();
+            var precode = (FixupPrecode*)addr;
+
+            const byte callRel32 = 0xE8;
+            const byte jmpRel32 = 0xE9;
+
+            bool validOp = precode->m_op == jmpRel32 || precode->m_op == callRel32;
+            bool validType = precode->m_type == FixupPrecode.TypePrestub || precode->m_type == FixupPrecode.Type;
+
+            if (!validOp || !validType)
+                return null;
+
+            byte methodDescChunkIndex = precode->m_MethodDescChunkIndex;
+            byte precodeChunkIndex = precode->m_PrecodeChunkIndex;
+
+            // coreclr/src/vm/i368/stublinkerx86.h: FixupPrecode::GetBase
+            // coreclr/src/vm/i368/stublinkerx86.cpp: FixupPrecode::GetMethodDesc
+            IntPtr methodDescChunkBase = *(IntPtr*)(addr + (precodeChunkIndex + 1) * sizeof(FixupPrecode));
+            IntPtr methodDescAddr = methodDescChunkBase + methodDescChunkIndex * sizeof(void*);
+
+            return (MethodDesc*)methodDescAddr;
+        }
+
+        private static unsafe void DisableTieredCompilation(this MethodBase method)
+        {
+            var methodDesc = method.MethodHandle.GetMethodDesc();
+            if (methodDesc == null)
+                return;
+            methodDesc->SetEligibleForTieredCompilation(false);
+
+            Debug.WriteLine(
+                "Disabled tiered compilation for method {0}.{1}",
+                method.DeclaringType?.FullName, method.Name);
+        }
+
+        [Conditional("DEBUG")]
+        private static unsafe void DumpMethodHandle(MethodBase method)
+        {
+            var methodHandle = method.MethodHandle;
+            var methodDesc = methodHandle.GetMethodDesc();
+            var precode = (FixupPrecode*)methodHandle.GetFunctionPointer();
+
+            var data = new byte[8];
+            Marshal.Copy(methodHandle.GetFunctionPointer(), data, 0, data.Length);
+
+            Debug.WriteLine(
+                $"Dump of {method.DeclaringType.FullName}.{method.Name}" +
+                $"\n  Address: {methodHandle.GetFunctionPointer()}" +
+                $"\n  Bytes: {data[0]:X2} {data[1]:X2} {data[2]:X2} {data[3]:X2} {data[4]:X2} {data[5]:X2} {data[6]:X2} {data[7]:X2}" +
+                $"\n  PreCode: {(long)precode:X8}" +
+                $"\n    m_op:    {precode->m_op:X2}" +
+                $"\n    m_rel32: {precode->m_rel32:X4}" +
+                $"\n    m_type:  {precode->m_type:X2}" +
+                $"\n    m_MDCI:  {precode->m_MethodDescChunkIndex:X2}" +
+                $"\n    m_PCCI:  {precode->m_PrecodeChunkIndex:X2}" +
+                (methodDesc != null ?
+                    $"\n  MethodDesc: {(long)methodDesc:X8}" +
+                    $"\n    m_chunkIndex: {methodDesc->m_chunkIndex:X2}" +
+                    $"\n    m_bFlags2: {methodDesc->m_bFlags2:X2} (Tiered: {methodDesc->IsEligibleForTieredCompilation()})"
+                    : "\n  MethodDesc: ???")
+               );
+
+            Debug.Flush();
+        }
+
         private static IntPtr PrepareMethod(MethodBase method)
         {
             var methodHandle = method.MethodHandle;
+            DumpMethodHandle(method);
             RuntimeHelpers.PrepareMethod(methodHandle);
+            DumpMethodHandle(method);
             return methodHandle.GetFunctionPointer();
         }
 
@@ -176,6 +320,14 @@ namespace PresentationTheme.Aero
 
             public void Dispose()
             {
+                var current = new byte[backupInstructions.Length];
+                Marshal.Copy(address, current, 0, current.Length);
+                if (!current.SequenceEqual(backupInstructions)) {
+                    Debug.WriteLine(
+                        "Refusing to revert patch because the patched instructions have been modified.");
+                    return;
+                }
+
                 WriteMemory(address, backupInstructions);
             }
         }
