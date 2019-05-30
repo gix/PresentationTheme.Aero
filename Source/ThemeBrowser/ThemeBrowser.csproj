@@ -9,6 +9,8 @@
     <WarningLevel>4</WarningLevel>
     <ApplicationIcon>ThemeBrowser.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64</Platforms>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Interactivity">

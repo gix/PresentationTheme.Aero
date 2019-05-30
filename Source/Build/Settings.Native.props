@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ConfigSuffix Condition="'$(UseDebugLibraries)'=='true'">-dbg</ConfigSuffix>
-    <ConfigSuffix Condition="'$(UseDebugLibraries)'!='true'"></ConfigSuffix>
+    <ConfigSuffix Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', 'Debug'))">-dbg</ConfigSuffix>
     <LinkageSuffix Condition="'$(ConfigurationType)'=='StaticLibrary'">-static</LinkageSuffix>
     <LinkageSuffix Condition="'$(ConfigurationType)'!='StaticLibrary'"></LinkageSuffix>
     <OutputPlatform Condition="'$(Platform)' == 'Win32'">x86</OutputPlatform>

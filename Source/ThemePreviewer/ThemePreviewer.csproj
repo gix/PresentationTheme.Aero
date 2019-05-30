@@ -5,11 +5,12 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>latest</LangVersion>
     <WarningLevel>4</WarningLevel>
     <ApplicationIcon>ThemePreviewer.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64</Platforms>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Interactivity">
@@ -28,7 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj" />
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win8\PresentationTheme.AeroLite.Win8.csproj" />
-    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
+    <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj" />
     <ProjectReference Include="..\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj" />
     <ProjectReference Include="..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj" />
     <ProjectReference Include="..\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj" />

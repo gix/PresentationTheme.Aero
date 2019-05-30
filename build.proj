@@ -16,7 +16,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <PackageDir>$(MSBuildThisFileDirectory)dist\</PackageDir>
-    <ToolsOutputPath>$(MSBuildThisFileDirectory)build\any\bin\</ToolsOutputPath>
+    <ToolsOutputPath>$(MSBuildThisFileDirectory)build\x64\bin\</ToolsOutputPath>
     <BuildQuality Condition="'$(BuildQuality)' == ''">PerBuildPreRelease</BuildQuality>
 
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(BUILD_BUILDNUMBER)</BuildNumber>
