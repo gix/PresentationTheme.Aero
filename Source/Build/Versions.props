@@ -8,6 +8,7 @@
 
     <NuGetMoniker Condition="'$(NuGetMoniker)' == '' AND '$(OfficialBuild)' == 'true'">beta1</NuGetMoniker>
     <NuGetMoniker Condition="'$(NuGetMoniker)' == ''">dev</NuGetMoniker>
+    <SourceRevisionId>$(GitHeadSha)</SourceRevisionId>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -75,7 +75,7 @@
     </Task>
   </UsingTask>
 
-  <Target Name="Clean">
+  <Target Name="Clean" Condition="'$(Clean)'!='false'">
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties)"
              Targets="Clean"
@@ -85,7 +85,7 @@
     <RemoveDir Directories="build\any"/>
   </Target>
 
-  <Target Name="Restore">
+  <Target Name="Restore" Condition="'$(Restore)'!='false'">
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties)"
              Targets="Restore"
@@ -94,7 +94,7 @@
     <Exec Command="nuget restore -PackagesDirectory &quot;$(MSBuildThisFileDirectory)Source\packages&quot; &quot;@(NativeProjectItem)&quot;"/>
   </Target>
 
-  <Target Name="Build" DependsOnTargets="Restore">
+  <Target Name="Build" DependsOnTargets="Restore" Condition="'$(Build)'!='false'">
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties)"
              BuildInParallel="true"
@@ -105,12 +105,13 @@
              StopOnFirstFailure="true"/>
   </Target>
 
-  <Target Name="Pack" DependsOnTargets="Build">
+  <Target Name="Pack" DependsOnTargets="Build" Condition="'$(Pack)'!='false'">
     <PropertyGroup>
-      <PackArgs>-Symbols -NoPackageAnalysis -OutputDirectory "$(PackageDir)\"</PackArgs>
-      <PackArgs Condition="'$(BuildQuality)' == 'Release'">$(PackArgs) -Version "$(NuGetReleaseVersion)"</PackArgs>
-      <PackArgs Condition="'$(BuildQuality)' == 'PreRelease'">$(PackArgs) -Version "$(NuGetPreReleaseVersion)"</PackArgs>
-      <PackArgs Condition="'$(BuildQuality)' == 'PerBuildPreRelease'">$(PackArgs) -Version "$(NuGetPerBuildPreReleaseVersion)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'Release'">-Version "$(NuGetReleaseVersion)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'PreRelease'">-Version "$(NuGetPreReleaseVersion)"</PackArgs>
+      <PackArgs Condition="'$(BuildQuality)' == 'PerBuildPreRelease'">-Version "$(NuGetPerBuildPreReleaseVersion)"</PackArgs>
+      <PackArgs>$(PackArgs) -Symbols -SymbolPackageFormat snupkg -NoPackageAnalysis -OutputDirectory "$(PackageDir)\"</PackArgs>
+      <PackArgs>$(PackArgs) -Properties "RepositoryCommit=$(SourceRevisionId)"</PackArgs>
     </PropertyGroup>
     <MakeDir Directories="$(PackageDir)"/>
     <Exec Command="nuget.exe pack $(PackArgs) Source\PresentationTheme.Aero.nuspec"/>
