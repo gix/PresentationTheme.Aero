@@ -6,5 +6,6 @@
     <ProjectGuid>{839BCDAF-C880-4F9E-B3B6-388C2AE77156}</ProjectGuid>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 </Project>

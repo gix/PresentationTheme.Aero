@@ -7,6 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>$(NoWarn);1591</NoWarn>
     <ApplicationIcon>ThemeBrowser.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64</Platforms>
