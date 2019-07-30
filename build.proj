@@ -143,7 +143,7 @@
       <ToolItem Include="$(ToolsOutputPath)PresentationTheme.AeroLite.Win10.dll"/>
       <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win8.dll"/>
       <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win10.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)System.Windows.Interactivity.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)Microsoft.Xaml.Behaviors.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.runtimeconfig.json"/>

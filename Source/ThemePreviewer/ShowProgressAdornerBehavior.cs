@@ -4,7 +4,7 @@ namespace ThemePreviewer
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Documents;
-    using System.Windows.Interactivity;
+    using Microsoft.Xaml.Behaviors;
 
     public class ShowProgressAdornerBehavior : Behavior<Window>
     {

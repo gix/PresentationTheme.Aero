@@ -5,9 +5,9 @@ namespace ThemeBrowser
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Input;
-    using System.Windows.Interactivity;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using Microsoft.Xaml.Behaviors;
     using ThemeBrowser.Extensions;
 
     public class ImageColorPickerBehavior : Behavior<Image>
