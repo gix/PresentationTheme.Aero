@@ -51,24 +51,31 @@
     <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.dll" target="lib\netcoreapp3.0"/>
     <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.pdb" target="lib\netcoreapp3.0"/>
     <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.xml" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.dll" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.pdb" target="lib\netcoreapp3.0"/>
-    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.xml" target="lib\netcoreapp3.0"/>
+    <!-- When present, a matching runtimes folder is used *instead* of the normal
+         lib directory. Since PresentationTheme.Aero.dll is a dependency of all
+         theme assemblies, it must be duplicated here. The entry in the lib
+         folder must be present though for package references to work. -->
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win8.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win8.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win8.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.Aero.Win10.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.AeroLite.Win10.xml" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.dll" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.pdb" target="runtimes\win\lib\netcoreapp3.0"/>
+    <file src="..\build\any\bin\netcoreapp3.0\PresentationTheme.HighContrast.Win10.xml" target="runtimes\win\lib\netcoreapp3.0"/>
     <file src="PresentationTheme.Aero\**\*.cs" target="src\PresentationTheme.Aero"/>
     <file src="PresentationTheme.Aero.Win8\**\*.cs" target="src\PresentationTheme.Aero.Win8"/>
     <file src="PresentationTheme.AeroLite.Win8\**\*.cs" target="src\PresentationTheme.AeroLite.Win8"/>
