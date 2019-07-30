@@ -40,7 +40,7 @@ PropertyFieldTable const s_rgPropertyFieldTbl[] = {
     PFT_ENTRY(TAP_TUNINGLEVEL,        dwTuningLevel),
     PFT_ENTRY(TAP_PERSPECTIVE,        rPerspective),
 };
-#undef ENTRY
+#undef PFT_ENTRY
 
 static HRESULT LoadThemeLibrary(wchar_t const* pszThemePath, HMODULE* phInst, int* pnVersion)
 {
