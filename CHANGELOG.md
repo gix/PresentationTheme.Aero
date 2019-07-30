@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2019-08-12
+### Fixed
+- Themes: ThemeManager support for .NET 4.8
+
+### Added
+- Themes: Support for .NET Core (3.0 preview 7)
+- Source Link for PDB symbols
+- UxThemeEx: New UxOpenThemeDataForDpi function
+
+### Changed
+- Tools are built with .NET Core
+
 ## [0.4.0] - 2018-09-02
 ### Added
 - All themes: Proper TabControl rendering for non-standard TabStripPlacement.
