@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <OutputPath>$(OutputPath)Samples\NetCore\</OutputPath>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj" />
