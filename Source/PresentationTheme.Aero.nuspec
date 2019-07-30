@@ -5,10 +5,10 @@
     <version>0.0.0.0</version>
     <authors>Nico Rieck</authors>
     <owners>nrieck</owners>
-    <licenseUrl>https://raw.github.com/gix/PresentationTheme.Aero/master/LICENSE.txt</licenseUrl>
-    <projectUrl>http://github.com/gix/PresentationTheme.Aero</projectUrl>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/gix/PresentationTheme.Aero</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>https://github.com/gix/PresentationTheme.Aero/blob/$RepositoryCommit$/CHANGELOG.md</releaseNotes>
     <description>An accurate Aero theme for WPF supporting the Aero, AeroLite and High Contrast system themes of Windows 8 and Windows 10.</description>
     <tags>wpf theme aero</tags>
     <repository type="git" url="https://github.com/gix/PresentationTheme.Aero" commit="$RepositoryCommit$"/>
