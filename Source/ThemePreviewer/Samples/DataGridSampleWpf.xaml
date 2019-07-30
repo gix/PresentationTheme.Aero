@@ -13,7 +13,8 @@
     <DataGrid x:Name="dataGrid"
               ItemsSource="{Binding Items}"
               AutoGenerateColumns="False"
-              RowDetailsVisibilityMode="Collapsed">
+              RowDetailsVisibilityMode="Collapsed"
+              SelectionUnit="CellOrRowHeader">
       <DataGrid.Columns>
         <DataGridCheckBoxColumn Binding="{Binding Enabled}" Width="20"/>
         <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="75"/>
