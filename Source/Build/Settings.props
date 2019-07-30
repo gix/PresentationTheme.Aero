@@ -18,6 +18,7 @@
 
   <PropertyGroup>
     <EnableSourceLink Condition="'$(DeveloperBuild)' != 'true'">true</EnableSourceLink>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 
     <!-- Disable XML doc warnings in debug builds. -->
     <!-- CS1573: Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' -->
