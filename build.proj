@@ -146,13 +146,17 @@
       <ToolItem Include="$(ToolsOutputPath)Microsoft.Xaml.Behaviors.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.pdb"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.runtimeconfig.json"/>
       <ToolItem Include="$(ToolsOutputPath)ThemeCore.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeCore.pdb"/>
       <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.dll"/>
       <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.pdb"/>
       <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.runtimeconfig.json"/>
       <ToolItem Include="$(ToolsOutputPath)EasyHook64.dll"/>
       <ToolItem Include="$(ToolsOutputPath)UxThemeEx.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)UxThemeEx.pdb"/>
       <ToolItem Include="$(ToolsOutputPath)LICENSE.txt"/>
     </ItemGroup>
     <Error Condition="!Exists(@(ToolItem))" Text="Missing file: %(ToolItem.Identity)"/>
