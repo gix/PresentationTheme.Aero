@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <HighEntropyVA>true</HighEntropyVA>
     <Deterministic>true</Deterministic>
 
@@ -15,6 +19,4 @@
     <Error Condition="'$(BuildNumber)' == '' AND '$(OfficialBuild)' == 'true'"
            Text="A build number must be specified for an official build."/>
   </Target>
-
-  <Import Project="$(MSBuildThisFileDirectory)GenerateAssemblyInfo.targets" />
 </Project>
