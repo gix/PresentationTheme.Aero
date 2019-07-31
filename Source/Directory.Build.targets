@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Condition="'$(MSBuildProjectExtension)' != '.vcxproj'" Project="Build\Imports.targets" />
+  <Import Condition="'$(MSBuildProjectExtension)' == '.vcxproj'" Project="Build\Imports.Native.targets" />
 </Project>

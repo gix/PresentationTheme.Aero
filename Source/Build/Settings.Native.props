@@ -2,7 +2,22 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
+    <DeveloperBuild>false</DeveloperBuild>
+    <DeveloperBuild Condition="'$(OfficialBuild)' != 'true' AND '$(JenkinsBuild)' != 'true'">true</DeveloperBuild>
     <UseSharedOutputPath>true</UseSharedOutputPath>
+  </PropertyGroup>
+
+  <Import Project="Versions.props" />
+
+  <PropertyGroup>
+    <Company></Company>
+    <Copyright></Copyright>
+    <Authors>Nico Rieck</Authors>
+    <Product></Product>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnableSourceLink Condition="'$(DeveloperBuild)' != 'true'">true</EnableSourceLink>
   </PropertyGroup>
 
   <PropertyGroup>
