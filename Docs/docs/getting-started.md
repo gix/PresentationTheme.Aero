@@ -13,12 +13,15 @@ _PresentationTheme Aero_ is open-source software, licensed under the
 [MIT license](https://github.com/gix/PresentationTheme.Aero/blob/master/LICENSE.txt).
 The source code is available on its [project page on GitHub](https://github.com/gix/PresentationTheme.Aero).
 
+Supports .NET Framework 4.5 or later, .NET Core 3.0 Preview 7 or later.
+
 
 Installation
 ------------
 
-[Install the NuGet package](https://docs.microsoft.com/en-us/nuget/tools/package-manager-console#installing-a-package)
-`PresentationTheme.Aero`. The package contains the following assemblies:
+Install the NuGet package [`PresentationTheme.Aero`](https://www.nuget.org/packages/PresentationTheme.Aero).
+
+The package contains the following assemblies:
 
 Assembly                                 | Description
 -----------------------------------------|-------------------------------
@@ -34,7 +37,7 @@ Only the first assembly should be referenced. The other theme assemblies are
 loaded when necessary.
 
 > [!IMPORTANT]
-> Because the theme assemblies are not (and usually should not) be referenced by
+> Because the theme assemblies are not (and usually should not be) referenced by
 > projects using PresentationTheme.Aero.dll, they have to be included manually
 > in any packaging or setup.
 
@@ -45,11 +48,12 @@ How do I use the theme?
 There are three different ways to use the theme. The differences are summarized
 in the following table:
 
-Feature               | Theme ResourceUri | Theme Policy               | Theme Policy with custom resource loader
-----------------------|:-----------------:|:--------------------------:|:----------------------------------------:
-Dynamic Theme Changes | Manually          | Yes                        | Yes
-Implicit Theme Styles | No                | Yes                        | Yes
-On-demand Loading     | No                | No                         | Yes
+Feature                                  | Theme ResourceUri | Theme Policy               | Theme Policy with custom resource loader
+-----------------------------------------|:-----------------:|:--------------------------:|:----------------------------------------:
+Automatic reload if system theme changes | Manually          | Yes (depends on policy)    | Yes (depends on policy)
+Implicit Theme Styles (see next section) | No                | Yes                        | Yes
+On-Demand Loading of Themes              | No                | No                         | Yes
+Safety                                   | Safe              | Uses Reflection            | Uses Reflection and runtime patching
 
 
 ### 1. Using Theme ResourceUri
@@ -126,6 +130,12 @@ public partial class App
 {
     public App()
     {
+        // Optional: Check if we can use the ThemeManager.
+        if (!ThemeManager.IsOperational) {
+            // There's no fallback available here and the default theme will be
+            // used. You may want to show a warning to the user or exit.
+        }
+
         // Set theme resources
         AeroTheme.SetAsCurrentTheme();
 
@@ -177,8 +187,13 @@ public partial class App
 {
     public App()
     {
-        if (ThemeManager.IsOperational)
-            ThemeManager.Install();
+        // Check if it's safe to install the theme manager.
+        if (!ThemeManager.IsOperational) {
+            // There's no fallback available here and the default theme will be
+            // used. You may want to show a warning to the user or exit.
+        }
+
+        ThemeManager.Install(); // May throw
         AeroTheme.SetAsCurrentTheme();
     }
 }
