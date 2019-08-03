@@ -2,10 +2,6 @@
 <Project>
   <!-- Defines $(GitHeadSha) with the HEAD commit hash in the repository
        specified by $(RepoRoot) -->
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
-
   <Choose>
     <When Condition="'$(BUILD_SOURCEVERSION)' != ''">
       <PropertyGroup>

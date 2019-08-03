@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(OfficialBuild)' == 'true' or '$(UseShippingVersions)' == 'true'">
+    <_BuildNumber>$(OfficialBuildId)</_BuildNumber>
+    <_BuildNumber Condition="'$(OfficialBuildId)' == ''">$([System.DateTime]::Now.ToString(yyyyMMdd)).1</_BuildNumber>
+
+    <!--
+      OfficialBuildId is assumed to have the format "20yymmdd.r".
+    -->
+    <_BuildNumberYY>$(_BuildNumber.Substring(2, 2))</_BuildNumberYY>
+    <_BuildNumberMM>$(_BuildNumber.Substring(4, 2))</_BuildNumberMM>
+    <_BuildNumberDD>$(_BuildNumber.Substring(6, 2))</_BuildNumberDD>
+    <_BuildNumberR>$(_BuildNumber.Substring(9))</_BuildNumberR>
+
+    <!-- SHORT_DATE := yy * 1000 + mm * 50 + dd -->
+    <VersionSuffixDateStamp>$([MSBuild]::Add($([MSBuild]::Add($([MSBuild]::Multiply($(_BuildNumberYY), 1000)), $([MSBuild]::Multiply($(_BuildNumberMM), 50)))), $(_BuildNumberDD)))</VersionSuffixDateStamp>
+
+    <!-- REVISION := r -->
+    <VersionSuffixBuildOfTheDay>$(_BuildNumberR)</VersionSuffixBuildOfTheDay>
+    <VersionSuffixBuildOfTheDayPadded>$(VersionSuffixBuildOfTheDay.PadLeft(2, $([System.Convert]::ToChar(`0`))))</VersionSuffixBuildOfTheDayPadded>
+  
+    <!-- PATCH_NUMBER := (SHORT_DATE - VersionBaseShortDate) * 100 + r -->
+    <_PatchNumber>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Subtract($(VersionSuffixDateStamp), $([MSBuild]::ValueOrDefault($(VersionBaseShortDate), 19000)))), 100)), $(_BuildNumberR)))</_PatchNumber>
+  </PropertyGroup>
+
+  <!--
+    Calculate VersionSuffix.
+  -->
+  <PropertyGroup Condition="'$(PreReleaseVersionLabel)' != '' or '$(UseShippingVersions)' == 'true'">
+    <_PreReleaseLabel>$(PreReleaseVersionLabel)</_PreReleaseLabel>
+    <_PreReleaseLabel Condition="'$(ContinuousIntegrationBuild)' == 'true' and '$(OfficialBuild)' != 'true'">ci</_PreReleaseLabel>
+    <_PreReleaseLabel Condition="'$(ContinuousIntegrationBuild)' != 'true'">dev</_PreReleaseLabel>
+    <FinalVersionKind Condition="'$(FinalVersionKind)' == '' and '$(_PreReleaseLabel)' == ''">release</FinalVersionKind>
+
+    <_BuildNumberLabels Condition="'$(VersionSuffixDateStamp)' != ''">.$(VersionSuffixDateStamp).$(VersionSuffixBuildOfTheDay)</_BuildNumberLabels>
+    
+    <!--
+      If FinalVersionKind is specified, overrides the package version produced by the build like so:
+        ""           1.2.3-beta.12345.67
+        "prerelease" 1.2.3-beta
+        "release"    1.2.3
+    -->
+    <VersionSuffix Condition="'$(FinalVersionKind)' == 'release'"/>
+    <VersionSuffix Condition="'$(FinalVersionKind)' == 'prerelease'">$(_PreReleaseLabel).final</VersionSuffix>
+    <VersionSuffix Condition="'$(FinalVersionKind)' == ''">$(_PreReleaseLabel)$(_BuildNumberLabels)</VersionSuffix>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(VersionSuffixDateStamp)' != ''">
+    <_VersionPrefixMajor>$(VersionPrefix.Split('.')[0])</_VersionPrefixMajor>
+    <_VersionPrefixMinor>$(VersionPrefix.Split('.')[1])</_VersionPrefixMinor>
+    <_VersionPrefixPatch>$(VersionPrefix.Split('.')[2])</_VersionPrefixPatch>
+
+    <!-- FILE_MINOR := MAJOR -->
+    <FileMajor>$(_VersionPrefixMajor)</FileMajor>
+
+    <!-- FILE_MINOR := MINOR * 100 + PATCH / 100 -->
+    <FileMinor>$([MSBuild]::Add($([MSBuild]::Multiply($(_VersionPrefixMinor), 100)), $([System.Math]::Truncate($([MSBuild]::Divide($(_VersionPrefixPatch), 100))))))</FileMinor>
+
+    <!-- FILE_PATCH := (PATCH % 100) * 100 + yy -->
+    <FilePatch>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Modulo($(_VersionPrefixPatch), 100)), 100)), $(_BuildNumberYY)))</FilePatch>
+
+    <!-- FILE_REVISION := (50 * mm + dd) * 100 + r -->
+    <FileRevision>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Add($([MSBuild]::Multiply(50, $(_BuildNumberMM))), $(_BuildNumberDD))),100)), $(_BuildNumberR)))</FileRevision>
+
+    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+    <FileVersion>$(FileMajor).$(FileMinor).$(FilePatch).$(FileRevision)</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>$(VersionPrefix)</Version>
+    <Version Condition="'$(VersionSuffix)' != ''">$(Version)-$(VersionSuffix)</Version>
+  </PropertyGroup>
+</Project>

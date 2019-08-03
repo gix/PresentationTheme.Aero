@@ -1,15 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
-    <DeveloperBuild>false</DeveloperBuild>
-    <DeveloperBuild Condition="'$(OfficialBuild)' != 'true' AND '$(JenkinsBuild)' != 'true'">true</DeveloperBuild>
-    <UseSharedOutputPath>true</UseSharedOutputPath>
-  </PropertyGroup>
-
-  <Import Project="Versions.props" />
-
-  <PropertyGroup>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.5.0</VersionPrefix>
     <Company></Company>
     <Copyright></Copyright>
     <Authors>Nico Rieck</Authors>
@@ -17,60 +9,131 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <EnableSourceLink Condition="'$(DeveloperBuild)' != 'true'">true</EnableSourceLink>
+    <UseSharedOutputPath>true</UseSharedOutputPath>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <ConfigSuffix Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', 'Debug'))">-dbg</ConfigSuffix>
-    <LinkageSuffix Condition="'$(ConfigurationType)'=='StaticLibrary'">-static</LinkageSuffix>
-    <LinkageSuffix Condition="'$(ConfigurationType)'!='StaticLibrary'"></LinkageSuffix>
-    <OutputPlatform Condition="'$(Platform)' == 'Win32'">x86</OutputPlatform>
-    <OutputPlatform Condition="'$(Platform)' == 'x86'">x86</OutputPlatform>
-    <OutputPlatform Condition="'$(Platform)' == 'x64'">x64</OutputPlatform>
-    <OutputPlatform Condition="'$(Platform)' == 'ia64'">ia64</OutputPlatform>
-    <Toolset>$(PlatformToolset)</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v90'">vc90</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v100'">vc100</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'Windows7.1SDK'">vc101</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v110'">vc110</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v120'">vc120</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v140'">vc140</Toolset>
-    <Toolset Condition="'$(PlatformToolset)' == 'v141'">vc141</Toolset>
-    <OutputBaseName Condition="'$(OutputBaseName)' == ''">$(OutputPlatform)$(ConfigSuffix)</OutputBaseName>
-
-    <BuildRoot Condition="'$(BuildRoot)' == ''">$(RepoRoot)build\</BuildRoot>
-    <OutDir Condition="'$(UseSharedOutputPath)' != 'true'">$(BuildRoot)$(OutputBaseName)\bin\$(MSBuildProjectName)\</OutDir>
-    <OutDir Condition="'$(UseSharedOutputPath)' == 'true'">$(BuildRoot)$(OutputBaseName)\bin\</OutDir>
-    <IntDir>$(BuildRoot)$(OutputBaseName)\obj\$(MSBuildProjectName)\</IntDir>
-  </PropertyGroup>
+  <Import Project="Version.props"/>
+  <Import Project="RepoLayout.props"/>
+  <Import Project="ProjectLayout.props"/>
 
   <ItemDefinitionGroup>
     <ClCompile>
       <!-- Diagnostics -->
       <WarningLevel>Level4</WarningLevel>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
-      <DisableSpecificWarnings>4200;4251;4275;4324;4351;4458;4481;4505;4512;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <TreatSpecificWarningsAsErrors>4013;4099;4150;4172;4477;4715;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4200: nonstandard extension used : zero-sized array in struct/union -->
+      <DisableSpecificWarnings>4200;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2' -->
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4275: non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2' -->
+      <DisableSpecificWarnings>4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4324: 'struct_name' : structure was padded due to __declspec(align())
+           This warning can be safely ignored. It is just a note that the type
+           is smaller than its alignment. -->
+      <DisableSpecificWarnings>4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4456: declaration of 'identifier' hides previous local declaration -->
+      <!-- C4457: declaration of 'identifier' hides function parameter -->
+      <!-- C4458: declaration of 'identifier' hides class member -->
+      <!-- C4459: declaration of 'identifier' hides global declaration -->
+      <DisableSpecificWarnings>4456;4457;4458;4459;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4505: 'function' : unreferenced local function has been removed -->
+      <DisableSpecificWarnings>4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4512 'class' : assignment operator could not be generated -->
+      <DisableSpecificWarnings>4512;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+
+      <!-- C4013: 'function' undefined; assuming extern returning int -->
+      <TreatSpecificWarningsAsErrors>4013;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4099: 'identifier' : type name first seen using 'objecttype1' now seen using 'objecttype2' -->
+      <TreatSpecificWarningsAsErrors>4099;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4130: 'operator' : logical operation on address of string constant -->
+      <TreatSpecificWarningsAsErrors>4130;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4150: deletion of pointer to incomplete type 'type'; no destructor called
+           While allowed, this is dangerous. The standard says:
+             If the object being deleted has incomplete class type at the point
+             of deletion and the complete class has a non-trivial destructor or
+             a deallocation function, the behavior is undefined.
+           In other words, if and only if the destructor turns out to be trivial,
+           it is legal. But the compiler does not have enough information when
+           this warning is emitted. -->
+      <TreatSpecificWarningsAsErrors>4150;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4172: returning address of local variable or temporary -->
+      <TreatSpecificWarningsAsErrors>4172;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4471: 'enumeration': a forward declaration of an unscoped enumeration must have an underlying type (int assumed)
+           The standard forbids forward declarations of enums without explicit
+           underlying type. MSVC is lenient enough and assumes int for such enums
+           which might be wrong (too small or too large). -->
+      <TreatSpecificWarningsAsErrors>4471;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4477: 'function' : format string 'string' requires an argument of type 'type', but variadic argument number has type 'type' -->
+      <TreatSpecificWarningsAsErrors>4477;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4715: 'function' : not all control paths return a value -->
+      <TreatSpecificWarningsAsErrors>4715;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
+      <!-- C4840: non-portable use of class 'type' as an argument to a variadic function
+           This warning usually crops up by using strings classes as argument
+           to formatting functions. Enforce explicit conversion to a compatible
+           type, e.g. to a C string using a cast, '.c_str()' or similar. -->
+      <TreatSpecificWarningsAsErrors>4840;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+
       <!-- Enforce unique output paths -->
       <ProgramDataBaseFileName Condition=" '$(ConfigurationType)' == 'StaticLibrary' ">$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)</AssemblerListingLocation>
-      <!-- Debugging -->
+
+      <!-- Unconditionally enable debugging for debug and release configurations. -->
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <!-- Individual COMDAT sections for functions/global data to enable linker optimizations -->
+
+      <!-- Make the compiler emit individual COMDAT sections for functions and
+           global data to enable linker optimizations. -->
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalOptions>-Gw %(AdditionalOptions)</AdditionalOptions>
-      <!-- Faster PDB generation -->
-      <AdditionalOptions>-Zf %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Gw %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Enable faster PDB generation. -->
+      <AdditionalOptions>/Zf %(AdditionalOptions)</AdditionalOptions>
+
       <!-- Use UTF-8 for all files -->
-      <AdditionalOptions>-utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
 
       <!-- Standard Conformance -->
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>-Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:externConstexpr -Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Conformance: Enforce the C++11 requirement that all functions declared
+           inline must have a definition available in the same translation unit
+           if they are used. -->
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+
+      <!-- Conformance: Use external linkage for constexpr variables. -->
+      <AdditionalOptions>/Zc:externConstexpr %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Conformance: Assume that operator new throws std::bad_alloc instead
+           of returning a null pointer. Avoids unnecessary null checks for
+           allocation. -->
+      <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Conformance: Enables the __cplusplus preprocessor macro to report an
+           updated value for recent C++ language standards support. -->
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+
+      <!-- Enable deterministic build. -->
+      <AdditionalOptions>/experimental:deterministic %(AdditionalOptions)</AdditionalOptions>
 
       <!-- CoreCRT options -->
       <PreprocessorDefinitions>__STDC_WANT_LIB_EXT1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -81,14 +144,44 @@
       <!-- Windows SDK -->
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <FxCompile>
-      <ObjectFileOutput>$(IntDir)%(RelativeDir)%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <Link>
-      <ImageHasSafeExceptionHandlers Condition="'$(Platform)'=='Win32' and '$(UseDebugLibraries)'!='true'">true</ImageHasSafeExceptionHandlers>
+
+    <ClCompile Condition="'$(IsDebugBuild)'=='false'">
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+
+    <Lib Condition="'$(IsDebugBuild)'=='false'">
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+
+    <Link Condition="'$(IsDebugBuild)'!='false'">
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
+    <Link Condition="'$(IsDebugBuild)'=='false'">
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImageHasSafeExceptionHandlers Condition="'$(Platform)'=='Win32'">true</ImageHasSafeExceptionHandlers>
+      <SetChecksum>true</SetChecksum>
+    </Link>
+
     <ResourceCompile>
       <ResourceOutputFileName>$(IntDir)%(RelativeDir)%(Filename).res</ResourceOutputFileName>
     </ResourceCompile>
+
+    <FxCompile>
+      <ObjectFileOutput>$(IntDir)%(RelativeDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
+
+  <Target Name="FixupBuildProperties" BeforeTargets="Build;ClCompile">
+    <ItemGroup>
+      <ClCompile>
+        <!-- Unconditionally enable debugging for debug and release configurations.
+             We do this here because the platform props files unconditionally
+             set $(DebugInformationFormat) after this file has been processed. -->
+        <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
 </Project>
