@@ -23,7 +23,9 @@
     <None Include="ThemePreviewer.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1">
+      <NoWarn>NU1701</NoWarn>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj" />
