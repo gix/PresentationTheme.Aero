@@ -79,7 +79,7 @@
       <!-- Target Windows 8 -->
       <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- Windows SDK -->
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32_NO_STATUS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <FxCompile>
       <ObjectFileOutput>$(IntDir)%(RelativeDir)%(Filename).cso</ObjectFileOutput>

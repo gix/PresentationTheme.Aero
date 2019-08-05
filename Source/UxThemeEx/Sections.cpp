@@ -1,9 +1,10 @@
 #include "Sections.h"
 #include "Utils.h"
 
+#pragma push_macro("WIN32_NO_STATUS")
 #undef WIN32_NO_STATUS
 #include <ntstatus.h>
-#define WIN32_NO_STATUS
+#pragma pop_macro("WIN32_NO_STATUS")
 
 #include <strsafe.h>
 #include <winternl.h>
