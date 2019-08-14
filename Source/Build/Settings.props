@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.5.0</VersionPrefix>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.5.1</VersionPrefix>
     <Company></Company>
     <Copyright></Copyright>
     <Authors>Nico Rieck</Authors>
@@ -15,10 +15,15 @@
     <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
   </PropertyGroup>
 
+  <Import Project="GitHead.props"/>
   <Import Project="Version.props"/>
   <Import Project="RepoLayout.props"/>
   <Import Project="ProjectLayout.props"/>
   <Import Project="Workarounds.props"/>
+
+  <PropertyGroup>
+    <BuildCommit>$(GitHeadSha)</BuildCommit>
+  </PropertyGroup>
 
   <PropertyGroup>
     <!-- Disable XML doc warnings in debug builds. -->

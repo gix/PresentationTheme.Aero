@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2019-08-14
+### Fixed
+- NuGet package metadata references proper source revision.
+
 ## [0.5.0] - 2019-08-12
 ### Fixed
 - Themes: ThemeManager support for .NET 4.8

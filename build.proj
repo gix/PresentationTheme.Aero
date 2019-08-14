@@ -133,6 +133,7 @@
   </Target>
 
   <Target Name="Pack" DependsOnTargets="Build" Condition="'$(Pack)'!='false'">
+    <Error Condition="'$(BuildCommit)' == ''" Text="BuildCommit is empty."/>
     <PropertyGroup>
       <PackArgs>-Version "$(Version)" -Symbols -SymbolPackageFormat snupkg</PackArgs>
       <PackArgs>$(PackArgs) -NoPackageAnalysis -OutputDirectory "$(PackageDir)\"</PackArgs>
