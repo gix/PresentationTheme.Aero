@@ -27,7 +27,6 @@
     </frameworkReferences>
   </metadata>
   <files>
-    <file src="PresentationTheme.Aero.targets" target="build"/>
     <file src="..\build\any\bin\net45\PresentationTheme.Aero.dll" target="lib\net45"/>
     <file src="..\build\any\bin\net45\PresentationTheme.Aero.pdb" target="lib\net45"/>
     <file src="..\build\any\bin\net45\PresentationTheme.Aero.xml" target="lib\net45"/>
