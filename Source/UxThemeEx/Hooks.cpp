@@ -6,7 +6,7 @@
 
 #include <array>
 #include <unordered_map>
-#include <easyhook.h>
+#include <easyhook/easyhook.h>
 
 typedef struct _HOOK_ACL_
 {
