@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer.Samples
+namespace ThemePreviewer.Samples
 {
     partial class MenuSampleNative
     {
@@ -27,13 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuItem84 = new System.Windows.Forms.MenuItem();
             this.SuspendLayout();
-            // 
-            // menuItem84
-            // 
-            this.menuItem84.Index = -1;
-            this.menuItem84.Text = "";
             // 
             // MenuSampleNative
             // 
@@ -48,6 +42,5 @@
         }
 
         #endregion
-        private System.Windows.Forms.MenuItem menuItem84;
     }
 }

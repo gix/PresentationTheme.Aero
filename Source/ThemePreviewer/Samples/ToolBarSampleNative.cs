@@ -10,7 +10,9 @@ namespace ThemePreviewer.Samples
         public ToolBarSampleNative()
         {
             InitializeComponent();
+#if !NETCOREAPP
             options.AddOption("Enabled", toolBar1, x => x.Enabled);
+#endif
         }
 
         public IReadOnlyList<Option> Options => options;

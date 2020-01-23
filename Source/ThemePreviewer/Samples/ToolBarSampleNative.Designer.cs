@@ -1,4 +1,4 @@
-﻿namespace ThemePreviewer.Samples
+namespace ThemePreviewer.Samples
 {
     partial class ToolBarSampleNative
     {
@@ -19,6 +19,7 @@
             base.Dispose(disposing);
         }
 
+#if !NETCOREAPP
         #region Component Designer generated code
 
         /// <summary> 
@@ -125,5 +126,10 @@
         private System.Windows.Forms.MenuItem menuItem3;
         private System.Windows.Forms.ToolBarButton toolBarButton3;
         private System.Windows.Forms.ToolBarButton toolBarButton4;
-    }
+#else
+        private void InitializeComponent()
+        {
+        }
+#endif
+        }
 }

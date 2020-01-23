@@ -6,13 +6,18 @@ namespace ThemePreviewer.Samples
 
     public partial class MenuSampleNative : UserControl
     {
+
+#if !NETCOREAPP
         private MainMenu menu;
+#endif
 
         public MenuSampleNative()
         {
             InitializeComponent();
+#if !NETCOREAPP
             menu = BuildMenu();
             ContextMenu = BuildContextMenu();
+#endif
 
             var openButton = new Button();
             openButton.UseVisualStyleBackColor = true;
@@ -23,13 +28,16 @@ namespace ThemePreviewer.Samples
                     BackColor = SystemColors.Window,
                     FormBorderStyle = FormBorderStyle.Sizable
                 };
+#if !NETCOREAPP
                 form.Menu = menu;
+#endif
                 form.Show();
             };
 
             Controls.Add(openButton);
         }
 
+#if !NETCOREAPP
         private MainMenu BuildMenu()
         {
             var menu = new MainMenu();
@@ -45,6 +53,7 @@ namespace ThemePreviewer.Samples
                 menu.MenuItems.Add(BuildMenu(node));
             return menu;
         }
+#endif
 
         private MenuItem BuildMenu(MenuNode node)
         {
