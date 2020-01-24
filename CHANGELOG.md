@@ -1,11 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.5.1] - 2020-01-21
+## [0.5.1] - 2020-01-24
 ### Fixed
 - NuGet package metadata references proper source revision.
 - Publishing a project referencing the PresentationTheme.Aero NuGet package
   no longer fails due to duplicate theme assemblies in the list of inputs.
+- Top-level menu items are now also painted as pressed when focused with the
+  keyboard (e.g. after pressing Alt to reach the menu).
 
 ## [0.5.0] - 2019-08-12
 ### Fixed

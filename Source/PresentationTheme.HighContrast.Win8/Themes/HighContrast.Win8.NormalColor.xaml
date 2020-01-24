@@ -1927,13 +1927,7 @@
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{aero8:SystemAliasResource Menu.BarItem.Hot.Border}"/>
       </Trigger>
-      <Trigger Property="IsSubmenuOpen" Value="True">
-        <Setter TargetName="TemplateRoot" Property="Background"
-                Value="{aero8:SystemAliasResource Menu.BarItem.Pressed.Background}"/>
-        <Setter TargetName="TemplateRoot" Property="BorderBrush"
-                Value="{aero8:SystemAliasResource Menu.BarItem.Pressed.Border}"/>
-      </Trigger>
-      <Trigger Property="IsPressed" Value="True">
+      <Trigger Property="IsKeyboardFocused" Value="True">
         <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{aero8:SystemAliasResource Menu.BarItem.Pressed.Background}"/>
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
@@ -2054,7 +2048,7 @@
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
                 Value="{aero8:SystemAliasResource Menu.BarItem.Pressed.Border}"/>
       </Trigger>
-      <Trigger Property="IsPressed" Value="True">
+      <Trigger Property="IsKeyboardFocused" Value="True">
         <Setter TargetName="TemplateRoot" Property="Background"
                 Value="{aero8:SystemAliasResource Menu.BarItem.Pressed.Background}"/>
         <Setter TargetName="TemplateRoot" Property="BorderBrush"
