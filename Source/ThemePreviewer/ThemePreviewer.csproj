@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.0;net462</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -11,20 +11,11 @@
     <ApplicationIcon>ThemePreviewer.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64</Platforms>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="ThemePreviewer.ico" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -33,6 +24,9 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1">
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+    <Reference Include="ReachFramework.dll"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PresentationTheme.AeroLite.Win10\PresentationTheme.AeroLite.Win10.csproj" />
@@ -43,5 +37,18 @@
     <ProjectReference Include="..\PresentationTheme.HighContrast.Win10\PresentationTheme.HighContrast.Win10.csproj" />
     <ProjectReference Include="..\PresentationTheme.HighContrast.Win8\PresentationTheme.HighContrast.Win8.csproj" />
     <ProjectReference Include="..\ThemeCore\ThemeCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(OutDir)..\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(OutDir)..\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ThemePreviewer.ico" />
   </ItemGroup>
 </Project>
