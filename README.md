@@ -39,7 +39,13 @@ This repository also contains several tools for Windows Visual Style files (.mss
 
 ## Building
 
-Requires Visual Studio 2017 with C# / C++ (v141) workloads and Windows SDK 10.0.15063.0.
+Requires Visual Studio 2019 with .NET / C++ (v142) workloads including the
+Windows 10 SDK component.
+
+UxThemeEx requires [EasyHook](https://easyhook.github.io/) via
+[vcpkg](https://github.com/microsoft/vcpkg)-built NuGet package. To build,
+use the `Tools\Build-Dependencies.ps1` script from a Visual Studio developer
+prompt or similar.
 
 To build a nuget package, run `msbuild -t:Pack` in the root directory and check
 the `dist` directory.
