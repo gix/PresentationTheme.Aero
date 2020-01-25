@@ -101,15 +101,17 @@
   </Target>
 
   <Target Name="Restore" Condition="'$(Restore)'!='false'">
+    <!-- Parallel restore is not threadsafe and cannot be used reliably for CI
+         builds. See https://github.com/NuGet/Home/issues/7648 -->
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties)"
              Targets="Restore"
-             BuildInParallel="true"
+             BuildInParallel="false"
              StopOnFirstFailure="true"/>
     <MSBuild Projects="@(PlatformProjectItem)"
              Properties="$(PlatformBuildProperties)"
              Targets="Restore"
-             BuildInParallel="true"
+             BuildInParallel="false"
              StopOnFirstFailure="true"/>
     <Exec Command="nuget restore -PackagesDirectory &quot;$(MSBuildThisFileDirectory)Source\packages&quot; &quot;@(NativeProjectItem)&quot;"/>
   </Target>
