@@ -6,12 +6,12 @@ typedef struct tagGDIDRAWSTREAM
     DWORD signature;      // = 0x44727753;//"Swrd"
     DWORD reserved;       // Zero value.
     DWORD hDC;            // handle to the device object of window to draw.
-    RECT  rcDest;         // desination rect of window to draw.
+    RECT rcDest;          // desination rect of window to draw.
     DWORD one;            // must be 1.
     DWORD hImage;         // handle to the specia bitmap image.
     DWORD nine;           // must be 9.
-    RECT  rcClip;         // desination rect of window to draw.
-    RECT  rcSrc;          // source rect of bitmap to draw.
+    RECT rcClip;          // desination rect of window to draw.
+    RECT rcSrc;           // source rect of bitmap to draw.
     DWORD drawOption;     // option flag for drawing image.
     DWORD leftArcValue;   // arc value of left side.
     DWORD rightArcValue;  // arc value of right side.
@@ -25,7 +25,7 @@ typedef struct tagGDIDRAWSTREAM
 
 struct GdiDrawStreamImport
 {
-    using FuncType = BOOL(*)(HDC hDC, DWORD dwStructSize, PGDIDRAWSTREAM pStream);
+    using FuncType = BOOL (*)(HDC hDC, DWORD dwStructSize, PGDIDRAWSTREAM pStream);
 
     BOOL operator()(HDC hDC, DWORD dwStructSize, PGDIDRAWSTREAM pStream)
     {

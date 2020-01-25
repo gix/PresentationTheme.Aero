@@ -3,16 +3,16 @@
 namespace uxtheme
 {
 
-static WORD _HitTestRectLeft(RECT const* prc, int cxMargin, int cyMargin,
-                             POINT const* pt, WORD wMiss)
+static WORD _HitTestRectLeft(RECT const* prc, int cxMargin, int cyMargin, POINT const* pt,
+                             WORD wMiss)
 {
     if (pt->x <= prc->left + cxMargin)
         return HTLEFT;
     return wMiss;
 }
 
-static WORD _HitTestRectTop(RECT const* prc, int cxMargin, int cyMargin,
-                            POINT const* pt, WORD wMiss)
+static WORD _HitTestRectTop(RECT const* prc, int cxMargin, int cyMargin, POINT const* pt,
+                            WORD wMiss)
 {
     if (pt->y <= prc->top + cyMargin)
         return HTTOP;
@@ -35,12 +35,13 @@ static WORD _HitTestRectBottom(RECT const* prc, int cxMargin, int cyMargin,
     return wMiss;
 }
 
-using HITTESTRECTPROC = WORD(RECT const* prc, int cxMargin, int cyMargin, POINT const* pt, WORD wMiss);
+using HITTESTRECTPROC = WORD(RECT const* prc, int cxMargin, int cyMargin, POINT const* pt,
+                             WORD wMiss);
 
-static WORD _HitTestRectCorner(
-    HITTESTRECTPROC pfnX, HITTESTRECTPROC pfnY, RECT const* prc, int cxMargin,
-    int cyMargin, int cxMargin2, int cyMargin2, POINT const* pt, WORD wHitC,
-    WORD wHitX, WORD wHitY, WORD wMiss)
+static WORD _HitTestRectCorner(HITTESTRECTPROC pfnX, HITTESTRECTPROC pfnY,
+                               RECT const* prc, int cxMargin, int cyMargin, int cxMargin2,
+                               int cyMargin2, POINT const* pt, WORD wHitC, WORD wHitX,
+                               WORD wHitY, WORD wMiss)
 {
     WORD retX = pfnX(prc, cxMargin, cyMargin, pt, wMiss);
     WORD retY = pfnY(prc, cxMargin, cyMargin, pt, wMiss);
@@ -66,77 +67,41 @@ static WORD _HitTestRectCorner(
 static WORD _HitTestRectTopLeft(RECT const* prc, int cxMargin, int cyMargin,
                                 POINT const* pt, WORD wMiss)
 {
-    return _HitTestRectCorner(
-        _HitTestRectLeft,
-        _HitTestRectTop,
-        prc,
-        cxMargin,
-        cyMargin,
-        GetSystemMetrics(SM_CXVSCROLL),
-        GetSystemMetrics(SM_CYHSCROLL),
-        pt,
-        HTTOPLEFT,
-        HTLEFT,
-        HTTOP,
-        wMiss);
+    return _HitTestRectCorner(_HitTestRectLeft, _HitTestRectTop, prc, cxMargin, cyMargin,
+                              GetSystemMetrics(SM_CXVSCROLL),
+                              GetSystemMetrics(SM_CYHSCROLL), pt, HTTOPLEFT, HTLEFT,
+                              HTTOP, wMiss);
 }
 
 static WORD _HitTestRectTopRight(RECT const* prc, int cxMargin, int cyMargin,
                                  POINT const* pt, WORD wMiss)
 {
-    return _HitTestRectCorner(
-        _HitTestRectRight,
-        _HitTestRectTop,
-        prc,
-        cxMargin,
-        cyMargin,
-        GetSystemMetrics(SM_CXVSCROLL),
-        GetSystemMetrics(SM_CYHSCROLL),
-        pt,
-        HTTOPRIGHT,
-        HTRIGHT,
-        HTTOP,
-        wMiss);
+    return _HitTestRectCorner(_HitTestRectRight, _HitTestRectTop, prc, cxMargin, cyMargin,
+                              GetSystemMetrics(SM_CXVSCROLL),
+                              GetSystemMetrics(SM_CYHSCROLL), pt, HTTOPRIGHT, HTRIGHT,
+                              HTTOP, wMiss);
 }
 
 static WORD _HitTestRectBottomLeft(RECT const* prc, int cxMargin, int cyMargin,
                                    POINT const* pt, WORD wMiss)
 {
-    return _HitTestRectCorner(
-        _HitTestRectLeft,
-        _HitTestRectBottom,
-        prc,
-        cxMargin,
-        cyMargin,
-        GetSystemMetrics(SM_CXVSCROLL),
-        GetSystemMetrics(SM_CYHSCROLL),
-        pt,
-        HTBOTTOMLEFT,
-        HTLEFT,
-        HTBOTTOM,
-        wMiss);
+    return _HitTestRectCorner(_HitTestRectLeft, _HitTestRectBottom, prc, cxMargin,
+                              cyMargin, GetSystemMetrics(SM_CXVSCROLL),
+                              GetSystemMetrics(SM_CYHSCROLL), pt, HTBOTTOMLEFT, HTLEFT,
+                              HTBOTTOM, wMiss);
 }
 
 static WORD _HitTestRectBottomRight(RECT const* prc, int cxMargin, int cyMargin,
                                     POINT const* pt, WORD wMiss)
 {
-    return _HitTestRectCorner(
-        _HitTestRectRight,
-        _HitTestRectBottom,
-        prc,
-        cxMargin,
-        cyMargin,
-        GetSystemMetrics(SM_CXVSCROLL),
-        GetSystemMetrics(SM_CYHSCROLL),
-        pt,
-        HTBOTTOMRIGHT,
-        HTRIGHT,
-        HTBOTTOM,
-        wMiss);
+    return _HitTestRectCorner(_HitTestRectRight, _HitTestRectBottom, prc, cxMargin,
+                              cyMargin, GetSystemMetrics(SM_CXVSCROLL),
+                              GetSystemMetrics(SM_CYHSCROLL), pt, HTBOTTOMRIGHT, HTRIGHT,
+                              HTBOTTOM, wMiss);
 }
 
-static WORD _HitTestResizingRect(
-    DWORD dwHTFlags, RECT const* prc, POINT const* pt, WORD w9GridHit, WORD wMiss)
+static WORD _HitTestResizingRect(DWORD dwHTFlags, RECT const* prc, POINT const* pt,
+                                 WORD w9GridHit, WORD wMiss)
 {
     WORD hit = wMiss;
     bool const caption = dwHTFlags & HTTB_CAPTION;
@@ -257,8 +222,8 @@ static WORD _HitTestResizingRect(
     return hit;
 }
 
-static WORD _HitTestResizingTemplate(
-    DWORD dwHTFlags, HRGN hrgn, POINT const *pt, DWORD w9GridHit, DWORD wMiss)
+static WORD _HitTestResizingTemplate(DWORD dwHTFlags, HRGN hrgn, POINT const* pt,
+                                     DWORD w9GridHit, DWORD wMiss)
 {
     bool const caption = dwHTFlags & HTTB_CAPTION;
     bool const rbLeft = dwHTFlags & HTTB_RESIZINGBORDER_LEFT;
@@ -317,11 +282,13 @@ static WORD _HitTestResizingTemplate(
 WORD HitTest9Grid(RECT const* prc, MARGINS const* margins, POINT const* pt,
                   bool fCheckLeftMarginZero)
 {
-    if (!fCheckLeftMarginZero || margins->cxLeftWidth != 0 || margins->cxRightWidth == 0) {
+    if (!fCheckLeftMarginZero || margins->cxLeftWidth != 0 ||
+        margins->cxRightWidth == 0) {
         if (HTLEFT == _HitTestRectLeft(prc, margins->cxLeftWidth, 0, pt, HTCLIENT)) {
             if (HTTOP == _HitTestRectTop(prc, 0, margins->cyTopHeight, pt, HTCLIENT))
                 return HTTOPLEFT;
-            if (HTBOTTOM == _HitTestRectBottom(prc, 0, margins->cyBottomHeight, pt, HTCLIENT))
+            if (HTBOTTOM ==
+                _HitTestRectBottom(prc, 0, margins->cyBottomHeight, pt, HTCLIENT))
                 return HTBOTTOMLEFT;
             return HTLEFT;
         }
@@ -357,7 +324,8 @@ WORD HitTestRect(DWORD dwHTFlags, RECT const* prc, MARGINS const* margins,
         return _HitTestResizingRect(dwHTFlags, prc, pt, hit, HTBORDER);
 
     if (dwHTFlags & (HTTB_FIXEDBORDER | HTTB_CAPTION)) {
-        if ((hit == HTTOP || hit == HTTOPLEFT || hit == HTTOPRIGHT) && dwHTFlags & HTTB_CAPTION)
+        if ((hit == HTTOP || hit == HTTOPLEFT || hit == HTTOPRIGHT) &&
+            dwHTFlags & HTTB_CAPTION)
             return HTCAPTION;
         return HTBORDER;
     }
@@ -365,8 +333,8 @@ WORD HitTestRect(DWORD dwHTFlags, RECT const* prc, MARGINS const* margins,
     return hit;
 }
 
-WORD HitTestTemplate(DWORD dwHTFlags, RECT const* prc, HRGN hrgn,
-                     MARGINS const* margins, POINT const* pt)
+WORD HitTestTemplate(DWORD dwHTFlags, RECT const* prc, HRGN hrgn, MARGINS const* margins,
+                     POINT const* pt)
 {
 
     if (!PtInRect(prc, *pt))
@@ -380,7 +348,8 @@ WORD HitTestTemplate(DWORD dwHTFlags, RECT const* prc, HRGN hrgn,
         return _HitTestResizingTemplate(dwHTFlags, hrgn, pt, hit, HTBORDER);
 
     if (dwHTFlags & (HTTB_FIXEDBORDER | HTTB_CAPTION)) {
-        if ((hit == HTTOP || hit == HTTOPLEFT || hit == HTTOPRIGHT) && dwHTFlags & HTTB_CAPTION)
+        if ((hit == HTTOP || hit == HTTOPLEFT || hit == HTTOPRIGHT) &&
+            dwHTFlags & HTTB_CAPTION)
             return HTCAPTION;
         return HTBORDER;
     }

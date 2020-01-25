@@ -1,16 +1,15 @@
 #include "RenderList.h"
+#include "DpiInfo.h"
 #include "RenderObj.h"
 #include "Utils.h"
-#include "DpiInfo.h"
 
 namespace uxtheme
 {
 
 static HTHEME MakeThemeHandle(int slot, int recycleNum)
 {
-    auto value = static_cast<uintptr_t>(
-        (static_cast<unsigned short>(recycleNum) << 16) |
-        (static_cast<unsigned short>(slot) & 0xFFFF));
+    auto value = static_cast<uintptr_t>((static_cast<unsigned short>(recycleNum) << 16) |
+                                        (static_cast<unsigned short>(slot) & 0xFFFF));
 
     // Ensures that we never overlap the range of native handles.
     value = ~value;
@@ -39,7 +38,8 @@ void CRenderList::FreeRenderObjects(int iThemeFileLoadId)
     std::lock_guard<std::mutex> lock(_csListLock);
 
     for (RENDER_OBJ_ENTRY& entry : _RenderEntries) {
-        if (entry.pRenderObj && (iThemeFileLoadId == -1 || entry.iLoadId == iThemeFileLoadId)) {
+        if (entry.pRenderObj &&
+            (iThemeFileLoadId == -1 || entry.iLoadId == iThemeFileLoadId)) {
             entry.iRefCount = 0;
             entry.fClosing = 1;
             DeleteCheck(&entry);
@@ -58,7 +58,8 @@ BOOL CRenderList::DeleteCheck(RENDER_OBJ_ENTRY* pEntry)
     return TRUE;
 }
 
-HRESULT CRenderList::OpenThemeHandle(HTHEME hTheme, CRenderObj** ppRenderObj, int* piSlotNum)
+HRESULT CRenderList::OpenThemeHandle(HTHEME hTheme, CRenderObj** ppRenderObj,
+                                     int* piSlotNum)
 {
     std::lock_guard<std::mutex> lock(_csListLock);
 
@@ -95,18 +96,18 @@ void CRenderList::CloseThemeHandle(int iSlotNum)
     }
 }
 
-HRESULT CRenderList::OpenRenderObject(
-    CUxThemeFile* pThemeFile, int iThemeOffset, int iAppNameOffset,
-    int iClassNameOffset, CDrawBase* pDrawBase, CTextDraw* pTextObj,
-    HWND hwnd, int iTargetDpi, unsigned dwOtdFlags, bool fForNonClientUse,
-    HTHEME* phTheme)
+HRESULT CRenderList::OpenRenderObject(CUxThemeFile* pThemeFile, int iThemeOffset,
+                                      int iAppNameOffset, int iClassNameOffset,
+                                      CDrawBase* pDrawBase, CTextDraw* pTextObj,
+                                      HWND hwnd, int iTargetDpi, unsigned dwOtdFlags,
+                                      bool fForNonClientUse, HTHEME* phTheme)
 {
     bool isStronglyAssociatedDpi;
     if (iTargetDpi) {
         isStronglyAssociatedDpi = true;
-    //} else if (hwnd && ThemeHasPerWindowDPI(hwnd, fForNonClientUse)) {
-    //    iTargetDpi = GetWindowDPI(hwnd);
-    //    isStronglyAssociatedDpi = true;
+        //} else if (hwnd && ThemeHasPerWindowDPI(hwnd, fForNonClientUse)) {
+        //    iTargetDpi = GetWindowDPI(hwnd);
+        //    isStronglyAssociatedDpi = true;
     } else {
         iTargetDpi = GetScreenDpi();
         isStronglyAssociatedDpi = false;
@@ -125,11 +126,9 @@ HRESULT CRenderList::OpenRenderObject(
         }
 
         auto obj = entry.pRenderObj;
-        if (!entry.fClosing &&
-            obj->_pThemeFile == pThemeFile &&
+        if (!entry.fClosing && obj->_pThemeFile == pThemeFile &&
             obj->GetThemeOffset() == iThemeOffset &&
-            obj->GetAssociatedDpi() == iTargetDpi &&
-            !obj->IsStronglyAssociatedDpi()) {
+            obj->GetAssociatedDpi() == iTargetDpi && !obj->IsStronglyAssociatedDpi()) {
             ++entry.iRefCount;
             *phTheme = MakeThemeHandle(i, entry.dwRecycleNum);
             return S_OK;
@@ -137,10 +136,10 @@ HRESULT CRenderList::OpenRenderObject(
     }
 
     CRenderObj* renderObj = nullptr;
-    ENSURE_HR(CRenderObj::Create(
-        pThemeFile, 0, iThemeOffset, iAppNameOffset, iClassNameOffset,
-        ++_iNextUniqueId, false, pDrawBase, pTextObj, iTargetDpi,
-        isStronglyAssociatedDpi, dwOtdFlags, &renderObj));
+    ENSURE_HR(CRenderObj::Create(pThemeFile, 0, iThemeOffset, iAppNameOffset,
+                                 iClassNameOffset, ++_iNextUniqueId, false, pDrawBase,
+                                 pTextObj, iTargetDpi, isStronglyAssociatedDpi,
+                                 dwOtdFlags, &renderObj));
 
     int iLoadId = 0;
     if (auto nonSharableHdr = (NONSHARABLEDATAHDR*)renderObj->_pbNonSharableData)

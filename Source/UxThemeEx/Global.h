@@ -1,8 +1,8 @@
 #pragma once
 #include "Handle.h"
 #include "RenderList.h"
-#include "UxThemeFile.h"
 #include "UxThemeEx.h"
+#include "UxThemeFile.h"
 #include <memory>
 
 namespace uxtheme
@@ -17,12 +17,11 @@ public:
         : themeFile(std::move(themeFile))
         , reuseSection(std::move(reuseSection))
         , renderList(std::move(renderList))
-    {
-    }
+    {}
 
     ThemeFileEntry() = default;
     ThemeFileEntry(ThemeFileEntry&&) = default;
-    ThemeFileEntry& operator =(ThemeFileEntry&&) = default;
+    ThemeFileEntry& operator=(ThemeFileEntry&&) = default;
 
     CUxThemeFile& ThemeFile() const { return *themeFile; }
     CRenderList& RenderList() const { return *renderList; }
@@ -50,8 +49,8 @@ extern HTHEMEFILE g_OverrideTheme;
 size_t ThemeFileSlotFromHandle(HTHEMEFILE hThemeFile);
 ThemeFileEntry* ThemeFileEntryFromHandle(HTHEMEFILE hThemeFile);
 CUxThemeFile* ThemeFileFromHandle(HTHEMEFILE hThemeFile);
-HTHEME OpenThemeDataExInternal(
-    HTHEMEFILE hThemeFile, HWND hwnd, wchar_t const* pszClassIdList,
-    unsigned dwFlags, wchar_t const* pszApiName, int iForDPI);
+HTHEME OpenThemeDataExInternal(HTHEMEFILE hThemeFile, HWND hwnd,
+                               wchar_t const* pszClassIdList, unsigned dwFlags,
+                               wchar_t const* pszApiName, int iForDPI);
 
 } // namespace uxtheme

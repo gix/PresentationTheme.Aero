@@ -5,11 +5,9 @@ namespace uxtheme
 {
 
 HRESULT BitmapPixels::OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                                 DWORD** pPixels, int* piWidth,
-                                 int* piHeight, int* piBytesPerPixel,
-                                 int* piBytesPerRow,
-                                 int* piPreviousBytesPerPixel,
-                                 unsigned cbBytesBefore)
+                                 DWORD** pPixels, int* piWidth, int* piHeight,
+                                 int* piBytesPerPixel, int* piBytesPerRow,
+                                 int* piPreviousBytesPerPixel, unsigned cbBytesBefore)
 {
     if (!pPixels)
         return E_INVALIDARG;
@@ -72,14 +70,9 @@ void BitmapPixels::CloseBitmap(HDC hdc, HBITMAP hBitmap)
 
     if (hBitmap) {
         HDC screenDC = GetWindowDC(nullptr);
-        SetDIBits(
-            screenDC,
-            hBitmap,
-            0,
-            _iHeight,
-            (BYTE*)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
-            (const BITMAPINFO *)_hdrBitmap,
-            0);
+        SetDIBits(screenDC, hBitmap, 0, _iHeight,
+                  (BYTE*)_hdrBitmap + 4 * _hdrBitmap->biClrUsed + _hdrBitmap->biSize,
+                  (const BITMAPINFO*)_hdrBitmap, 0);
         if (screenDC)
             ReleaseDC(nullptr, screenDC);
     }

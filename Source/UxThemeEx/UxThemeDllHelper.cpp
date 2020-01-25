@@ -56,8 +56,7 @@ UxThemeDllHelper::UxThemeDllHelper()
         return;
 
     UxThemeInfo const* knownInfo = nullptr;
-    if (VersionInfo version;
-        SUCCEEDED(GetModuleFileVersion(uxthemeModule, version))) {
+    if (VersionInfo version; SUCCEEDED(GetModuleFileVersion(uxthemeModule, version))) {
         for (auto& entry : KnownInfos) {
             if (entry.Version == version) {
                 knownInfo = &entry;
@@ -72,8 +71,7 @@ UxThemeDllHelper::UxThemeDllHelper()
     ProcNames[Proc_OpenThemeDataExInternal] = "OpenThemeDataExInternal";
 
     for (unsigned i = 0; i < ProcCount; ++i) {
-        if (FAILED(ctx.GetSymbolAddress(uxthemeModule, ProcNames[i],
-                                        addresses[i])) &&
+        if (FAILED(ctx.GetSymbolAddress(uxthemeModule, ProcNames[i], addresses[i])) &&
             knownInfo) {
             addresses[i] = (uintptr_t)uxthemeModule + knownInfo->addresses[i];
         }

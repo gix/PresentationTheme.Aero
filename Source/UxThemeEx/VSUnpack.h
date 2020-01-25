@@ -3,9 +3,9 @@
 #include "Utils.h"
 #include <array>
 #include <string>
+#include <uxtheme.h>
 #include <vector>
 #include <windows.h>
-#include <uxtheme.h>
 
 namespace uxtheme
 {
@@ -62,8 +62,10 @@ struct BITMAPHDR
 struct IParserCallBack
 {
     virtual ~IParserCallBack() = default;
-    virtual HRESULT AddIndex(wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen) = 0;
-    virtual HRESULT AddData(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen) = 0;
+    virtual HRESULT AddIndex(wchar_t const* pszAppName, wchar_t const* pszClassName,
+                             int iPartId, int iStateId, int iIndex, int iLen) = 0;
+    virtual HRESULT AddData(short sTypeNum, unsigned char ePrimVal, void const* pData,
+                            unsigned dwLen) = 0;
     virtual int GetNextDataIndex() = 0;
     virtual int AddToDIBDataArray(void* pDIBBits, short width, short height) = 0;
     virtual HRESULT AddBaseClass(int idClass, int idBaseClass) = 0;
@@ -80,24 +82,22 @@ public:
 
     HRESULT GetRootMap(void** ppvRMap, int* pcbRMap);
     HRESULT GetVariantMap(void** ppvVMap, int* pcbVMap);
-    HRESULT GetClassData(wchar_t const* pszColorVariant,
-                         wchar_t const* pszSizeVariant, void** pvMap,
-                         int* pcbMap);
+    HRESULT GetClassData(wchar_t const* pszColorVariant, wchar_t const* pszSizeVariant,
+                         void** pvMap, int* pcbMap);
 
     HRESULT LoadRootMap(IParserCallBack* pfnCB);
-    HRESULT LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB);
+    HRESULT LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize,
+                             IParserCallBack* pfnCB);
     HRESULT LoadBaseClassDataMap(IParserCallBack* pfnCB);
     HRESULT LoadAnimationDataMap(IParserCallBack* pfnCB);
 
 private:
-    HRESULT _FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart,
-                          int iState, int lSymbolVal, VSRECORD** ppRec);
-    HRESULT _GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart,
-                              int iState, int lSymbolVal, void* pvValue,
-                              int* pcbValue);
+    HRESULT _FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart, int iState,
+                          int lSymbolVal, VSRECORD** ppRec);
+    HRESULT _GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart, int iState,
+                              int lSymbolVal, void* pvValue, int* pcbValue);
     HRESULT _CreateImageFromProperties(IMAGEPROPERTIES const* pImageProperties,
-                                       int iImageCount,
-                                       MARGINS const* pSizingMargins,
+                                       int iImageCount, MARGINS const* pSizingMargins,
                                        MARGINS const* pTransparentMargins,
                                        BYTE** ppbNewBitmap, int* pcbNewBitmap);
     HRESULT _GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
@@ -105,9 +105,12 @@ private:
                                      int iImageCount);
     HRESULT _EnsureBufferSize(unsigned cbBytes);
 
-    HRESULT _ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData, bool* pfIsColor);
-    HRESULT _ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData, bool* pfIsMargins);
-    HRESULT _ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData, int cbData);
+    HRESULT _ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData,
+                                    int cbData, bool* pfIsColor);
+    HRESULT _ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                      BYTE* pbData, int cbData, bool* pfIsMargins);
+    HRESULT _ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec, BYTE* pbData,
+                                int cbData);
 
     HRESULT _AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst, VSRECORD* pRec);
     HRESULT _AddScaledBackgroundDataRecord(IParserCallBack* pfnCB);
@@ -119,7 +122,8 @@ private:
     HRESULT _ClearPlateauRecords();
     HRESULT _SavePlateauRecord(VSRECORD* pRec);
     HRESULT _FlushDelayedPlateauRecords(IParserCallBack* pfnCB);
-    HRESULT _FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal);
+    HRESULT _FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                         int lSymbolVal);
 
     bool _IsTrueSizeImage(VSRECORD* pRec);
     int _FindClass(wchar_t const* pszClass);

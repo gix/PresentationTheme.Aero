@@ -14,7 +14,7 @@ namespace uxtheme
 
 static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
 {
-    HRESULT  hr = 0;
+    HRESULT hr = 0;
     OptionalDC windowDC{hdc};
     if (!windowDC)
         return MakeErrorLast();
@@ -22,11 +22,13 @@ static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
     auto bitmapInfo = (BITMAPINFO const*)pvDibBits;
 
     void* pvBits;
-    HBITMAP bitmap = CreateDIBSection(hdc, bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
+    HBITMAP bitmap =
+        CreateDIBSection(hdc, bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
 
-    BYTE* srcBits = (BYTE*)bitmapInfo + bitmapInfo->bmiHeader.biSize + 4 * bitmapInfo->bmiHeader.biClrUsed;
-    if (bitmap && SetDIBits(hdc, bitmap, 0, bitmapInfo->bmiHeader.biHeight,
-                            srcBits, bitmapInfo, DIB_RGB_COLORS)) {
+    BYTE* srcBits = (BYTE*)bitmapInfo + bitmapInfo->bmiHeader.biSize +
+                    4 * bitmapInfo->bmiHeader.biClrUsed;
+    if (bitmap && SetDIBits(hdc, bitmap, 0, bitmapInfo->bmiHeader.biHeight, srcBits,
+                            bitmapInfo, DIB_RGB_COLORS)) {
         *phBitmap = bitmap;
     } else {
         hr = MakeErrorLast();
@@ -37,10 +39,9 @@ static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
     return hr;
 }
 
-CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot,
-                       int iThemeOffset, int iClassNameOffset,
-                       int64_t iUniqueId, bool fEnableCache, int iTargetDpi,
-                       bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags)
+CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
+                       int iClassNameOffset, int64_t iUniqueId, bool fEnableCache,
+                       int iTargetDpi, bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags)
 {
     _fCacheEnabled = fEnableCache;
     _dwOtdFlags = dwOtdFlags;
@@ -58,7 +59,8 @@ CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot,
     if (pThemeFile) {
         _pbSharableData = (BYTE*)pThemeFile->ThemeHeader();
         _pbSectionData = _pbSharableData + iThemeOffset;
-        _ptm = (THEMEMETRICS *)(_pbSharableData + 8 + pThemeFile->ThemeHeader()->iSysMetricsOffset);
+        _ptm = (THEMEMETRICS*)(_pbSharableData + 8 +
+                               pThemeFile->ThemeHeader()->iSysMetricsOffset);
         _pbNonSharableData = (BYTE*)pThemeFile->NonSharableDataHeader();
 
         auto hdr = pThemeFile->NonSharableDataHeader();
@@ -78,27 +80,19 @@ CRenderObj::CRenderObj(CUxThemeFile* pThemeFile, int iCacheSlot,
 }
 
 CRenderObj::~CRenderObj()
-{
-}
+{}
 
-HRESULT CRenderObj::Create(
-    CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
-    int iAppNameOffset, int iClassNameOffset, int64_t iUniqueId,
-    bool fEnableCache, CDrawBase* pBaseObj, CTextDraw* pTextObj, int iTargetDpi,
-    bool fIsStronglyAssociatedDpi, unsigned dwOtdFlags, CRenderObj** ppObj)
+HRESULT CRenderObj::Create(CUxThemeFile* pThemeFile, int iCacheSlot, int iThemeOffset,
+                           int iAppNameOffset, int iClassNameOffset, int64_t iUniqueId,
+                           bool fEnableCache, CDrawBase* pBaseObj, CTextDraw* pTextObj,
+                           int iTargetDpi, bool fIsStronglyAssociatedDpi,
+                           unsigned dwOtdFlags, CRenderObj** ppObj)
 {
     *ppObj = nullptr;
 
     auto obj = make_unique_nothrow<CRenderObj>(
-        pThemeFile,
-        iCacheSlot,
-        iThemeOffset,
-        iClassNameOffset,
-        iUniqueId,
-        fEnableCache,
-        iTargetDpi,
-        fIsStronglyAssociatedDpi,
-        dwOtdFlags);
+        pThemeFile, iCacheSlot, iThemeOffset, iClassNameOffset, iUniqueId, fEnableCache,
+        iTargetDpi, fIsStronglyAssociatedDpi, dwOtdFlags);
     if (!obj)
         return E_OUTOFMEMORY;
 
@@ -157,9 +151,7 @@ CRenderCache::CRenderCache(CRenderObj* pRenderObj)
     memset(&_lfDisplayFont, 0, sizeof(_lfDisplayFont));
 }
 
-
-HRESULT CRenderCache::GetDisplayFontHandle(
-    HDC hdc, LOGFONTW const& lf, HFONT* phFont)
+HRESULT CRenderCache::GetDisplayFontHandle(HDC hdc, LOGFONTW const& lf, HFONT* phFont)
 {
     if (!memcmp(&_lfDisplayFont, &lf, sizeof(lf)) &&
         !lstrcmpiW(_lfDisplayFont.lfFaceName, lf.lfFaceName)) {
@@ -186,13 +178,11 @@ void CRenderCache::FreeDisplayFontHandle()
     }
 }
 
-HRESULT CRenderCache::GetScaledFontHandle(
-    HDC hdc, LOGFONTW const* plfUnscaled, HFONT* phFont)
+HRESULT CRenderCache::GetScaledFontHandle(HDC hdc, LOGFONTW const* plfUnscaled,
+                                          HFONT* phFont)
 {
-    if (!_plfFont ||
-        memcmp(_plfFont, plfUnscaled, sizeof(LOGFONTW)) != 0 ||
-        lstrcmpiW(_plfFont->lfFaceName, plfUnscaled->lfFaceName) != 0)
-    {
+    if (!_plfFont || memcmp(_plfFont, plfUnscaled, sizeof(LOGFONTW)) != 0 ||
+        lstrcmpiW(_plfFont->lfFaceName, plfUnscaled->lfFaceName) != 0) {
         if (_hFont) {
             DeleteObject(_hFont);
             _hFont = nullptr;
@@ -211,8 +201,7 @@ HRESULT CRenderCache::GetScaledFontHandle(
     return S_OK;
 }
 
-HRESULT CRenderObj::GetCachedDisplayFontHandle(
-    HDC hdc, LOGFONTW const& lf, HFONT* phFont)
+HRESULT CRenderObj::GetCachedDisplayFontHandle(HDC hdc, LOGFONTW const& lf, HFONT* phFont)
 {
     if (_fCacheEnabled) {
         auto cache = GetCacheObject();
@@ -227,8 +216,7 @@ HRESULT CRenderObj::GetCachedDisplayFontHandle(
     return S_OK;
 }
 
-HRESULT CRenderObj::GetScaledFontHandle(
-    HDC hdc, unsigned short fontIndex, HFONT* phFont)
+HRESULT CRenderObj::GetScaledFontHandle(HDC hdc, unsigned short fontIndex, HFONT* phFont)
 {
     auto font = _pThemeFile->GetFontByIndex(fontIndex);
     if (_fCacheEnabled) {
@@ -247,8 +235,8 @@ HRESULT CRenderObj::GetScaledFontHandle(
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetEnumValue(
-    int iPartId, int iStateId, int iPropId, int* piVal) const
+HRESULT CRenderObj::ExternalGetEnumValue(int iPartId, int iStateId, int iPropId,
+                                         int* piVal) const
 {
     if (!piVal)
         return E_POINTER;
@@ -261,7 +249,8 @@ HRESULT CRenderObj::ExternalGetEnumValue(
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetBool(int iPartId, int iStateId, int iPropId, int* pfVal) const
+HRESULT CRenderObj::ExternalGetBool(int iPartId, int iStateId, int iPropId,
+                                    int* pfVal) const
 {
     if (!pfVal)
         return E_POINTER;
@@ -274,9 +263,8 @@ HRESULT CRenderObj::ExternalGetBool(int iPartId, int iStateId, int iPropId, int*
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetFont(
-    HDC hdc, int iPartId, int iStateId, int iPropId, bool fWantHdcScaling,
-    LOGFONTW* pFont) const
+HRESULT CRenderObj::ExternalGetFont(HDC hdc, int iPartId, int iStateId, int iPropId,
+                                    bool fWantHdcScaling, LOGFONTW* pFont) const
 {
     if (!pFont)
         return E_INVALIDARG;
@@ -298,8 +286,8 @@ HRESULT CRenderObj::ExternalGetFont(
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetInt(
-    int iPartId, int iStateId, int iPropId, int* piVal) const
+HRESULT CRenderObj::ExternalGetInt(int iPartId, int iStateId, int iPropId,
+                                   int* piVal) const
 {
     if (!piVal)
         return E_POINTER;
@@ -356,14 +344,17 @@ HRESULT CRenderObj::ExternalGetRect(int iPartId, int iStateId, int iPropId,
 
 bool CRenderObj::IsReady() const
 {
-    if (!_pThemeFile) return true;
+    if (!_pThemeFile)
+        return true;
     return _pThemeFile->IsReady();
 }
 
 bool CRenderObj::_IsDWMAtlas() const
 {
-    return CompareStringW(LOCALE_INVARIANT, NORM_IGNORECASE, _pszClassName, -1, L"DWMWINDOW", -1) == 2
-        || CompareStringW(LOCALE_INVARIANT, NORM_IGNORECASE, _pszClassName, -1, L"DWMTOUCH", -1) == 2;
+    return CompareStringW(LOCALE_INVARIANT, NORM_IGNORECASE, _pszClassName, -1,
+                          L"DWMWINDOW", -1) == 2 ||
+           CompareStringW(LOCALE_INVARIANT, NORM_IGNORECASE, _pszClassName, -1,
+                          L"DWMTOUCH", -1) == 2;
 }
 
 HRESULT CRenderObj::ExternalGetStream(int iPartId, int iStateId, int iPropId,
@@ -405,8 +396,8 @@ HRESULT CRenderObj::ExternalGetStream(int iPartId, int iStateId, int iPropId,
     return TRACE_HR(E_NOTIMPL); // FIXME
 }
 
-HRESULT CRenderObj::ExternalGetString(
-    int iPartId, int iStateId, int iPropId, wchar_t* pszBuff, unsigned cchBuff) const
+HRESULT CRenderObj::ExternalGetString(int iPartId, int iStateId, int iPropId,
+                                      wchar_t* pszBuff, unsigned cchBuff) const
 {
     if (!pszBuff)
         return E_POINTER;
@@ -423,8 +414,8 @@ HRESULT CRenderObj::ExternalGetString(
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetBitmap(
-    HDC hdc, int iDibOffset, unsigned dwFlags, HBITMAP* phBitmap) const
+HRESULT CRenderObj::ExternalGetBitmap(HDC hdc, int iDibOffset, unsigned dwFlags,
+                                      HBITMAP* phBitmap) const
 {
     if (!phBitmap)
         return E_INVALIDARG;
@@ -458,9 +449,8 @@ HRESULT CRenderObj::ExternalGetBitmap(
     return E_INVALIDARG;
 }
 
-HRESULT CRenderObj::ExternalGetMargins(
-    HDC hdc, int iPartId, int iStateId, int iPropId, RECT const* formal,
-    MARGINS* pMargins) const
+HRESULT CRenderObj::ExternalGetMargins(HDC hdc, int iPartId, int iStateId, int iPropId,
+                                       RECT const* formal, MARGINS* pMargins) const
 {
     if (!pMargins)
         return E_POINTER;
@@ -473,8 +463,8 @@ HRESULT CRenderObj::ExternalGetMargins(
     return S_OK;
 }
 
-HRESULT CRenderObj::ExternalGetMetric(
-    HDC hdc, int iPartId, int iStateId, int iPropId, int *piVal) const
+HRESULT CRenderObj::ExternalGetMetric(HDC hdc, int iPartId, int iStateId, int iPropId,
+                                      int* piVal) const
 {
     int value;
     ENSURE_HR(ExternalGetInt(iPartId, iStateId, iPropId, &value));
@@ -499,8 +489,8 @@ HRESULT CRenderObj::GetAnimationProperty(
     return S_OK;
 }
 
-HRESULT CRenderObj::GetAnimationTransform(
-    int iPartId, int iStateId, DWORD dwIndex, TA_TRANSFORM const** ppAnimationTransform) const
+HRESULT CRenderObj::GetAnimationTransform(int iPartId, int iStateId, DWORD dwIndex,
+                                          TA_TRANSFORM const** ppAnimationTransform) const
 {
     if (!ppAnimationTransform)
         return E_POINTER;
@@ -511,17 +501,15 @@ HRESULT CRenderObj::GetAnimationTransform(
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     *ppAnimationTransform = CTransformSerializer::GetTransformByIndex(
-        &_pbSharableData[index], dwIndex,
-        GetEntryHeader(index)->dwDataLen);
+        &_pbSharableData[index], dwIndex, GetEntryHeader(index)->dwDataLen);
     if (!*ppAnimationTransform)
         return E_INVALIDARG;
 
     return S_OK;
 }
 
-HRESULT CRenderObj::GetTransitionDuration(
-    int iPartId, int iStateIdFrom, int iStateIdTo, int iPropId,
-    DWORD* pdwDuration) const
+HRESULT CRenderObj::GetTransitionDuration(int iPartId, int iStateIdFrom, int iStateIdTo,
+                                          int iPropId, DWORD* pdwDuration) const
 {
     if (!pdwDuration || iStateIdFrom <= 0 || iStateIdTo <= 0)
         return E_INVALIDARG;
@@ -536,7 +524,8 @@ HRESULT CRenderObj::GetTransitionDuration(
     if (intList.iValueCount == 1)
         *pdwDuration = 0;
     else
-        *pdwDuration = intList.iValues[iStateIdTo + intList.iValues[0] * (iStateIdFrom - 1)];
+        *pdwDuration =
+            intList.iValues[iStateIdTo + intList.iValues[0] * (iStateIdFrom - 1)];
 
     return S_OK;
 }
@@ -562,8 +551,8 @@ BYTE const* CRenderObj::GetLastValidThemeByte() const
     return _pbSharableData + themeHdr->dwTotalLength - 1 - 8;
 }
 
-HRESULT CRenderObj::GetPropertyOrigin(
-    int iPartId, int iStateId, int iTarget, PROPERTYORIGIN* pOrigin) const
+HRESULT CRenderObj::GetPropertyOrigin(int iPartId, int iStateId, int iTarget,
+                                      PROPERTYORIGIN* pOrigin) const
 {
     if (!iTarget)
         return E_FAIL;
@@ -678,7 +667,8 @@ int CRenderObj::GetValueIndex(int iPartId, int iStateId, int iTarget) const
             ptr = &_pbSharableData[index];
         } else {
             if (entry->usTypeNum == iTarget)
-                return narrow_cast<int>((uintptr_t)(entry + 1) - (uintptr_t)_pbSharableData);
+                return narrow_cast<int>((uintptr_t)(entry + 1) -
+                                        (uintptr_t)_pbSharableData);
 
             if (entry->ePrimVal == TMT_JUMPTOPARENT) {
                 int index = *(DWORD const*)(entry + 1);
@@ -893,8 +883,8 @@ HRESULT CRenderObj::GetPartObject(int iPartId, int iStateId, T** ppvObj)
     return S_OK;
 }
 
-HRESULT CRenderObj::PrepareRegionDataForScaling(
-    RGNDATA* pRgnData, RECT const* prcImage, MARGINS* pMargins)
+HRESULT CRenderObj::PrepareRegionDataForScaling(RGNDATA* pRgnData, RECT const* prcImage,
+                                                MARGINS* pMargins)
 {
     int const sw = prcImage->left;
     int const sh = prcImage->top;

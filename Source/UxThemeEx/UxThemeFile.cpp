@@ -3,9 +3,9 @@
 #include "Sections.h"
 #include "Utils.h"
 #include <cassert>
+#include <memoryapi.h>
 #include <strsafe.h>
 #include <winternl.h>
-#include <memoryapi.h>
 
 namespace uxtheme
 {
@@ -24,29 +24,32 @@ CUxThemeFile::CUxThemeFile()
 
 CUxThemeFile::~CUxThemeFile()
 {
-    if (_pbSharableData || _hSharableSection || _pbNonSharableData || _hNonSharableSection)
+    if (_pbSharableData || _hSharableSection || _pbNonSharableData ||
+        _hNonSharableSection)
         CloseFile();
     StringCchCopyA(_szHead, 8, "deleted");
 }
 
-HRESULT CUxThemeFile::CreateFileW(
-    wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
-    int iSharableSectionLength, wchar_t* pszNonSharableSectionName,
-    unsigned cchNonSharableSectionName, int iNonSharableSectionLength,
-    bool fReserve)
+HRESULT CUxThemeFile::CreateFileW(wchar_t* pszSharableSectionName,
+                                  unsigned cchSharableSectionName,
+                                  int iSharableSectionLength,
+                                  wchar_t* pszNonSharableSectionName,
+                                  unsigned cchNonSharableSectionName,
+                                  int iNonSharableSectionLength, bool fReserve)
 {
     DWORD flags = PAGE_READWRITE;
     if (fReserve)
         flags |= SEC_RESERVE;
-    _hSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags,
-                                           0, iSharableSectionLength, nullptr);
-    _pbSharableData = (THEMEHDR*)MapViewOfFile(_hSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    _hSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags, 0,
+                                           iSharableSectionLength, nullptr);
+    _pbSharableData =
+        (THEMEHDR*)MapViewOfFile(_hSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     _cbSharableData = iSharableSectionLength;
 
-    _hNonSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr,
-                                              flags, 0, iNonSharableSectionLength,
-                                              nullptr);
-    _pbNonSharableData = (BYTE*)MapViewOfFile(_hNonSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    _hNonSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags, 0,
+                                              iNonSharableSectionLength, nullptr);
+    _pbNonSharableData =
+        (BYTE*)MapViewOfFile(_hNonSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
     _cbNonSharableData = iNonSharableSectionLength;
     return S_OK;
 }
@@ -54,7 +57,8 @@ HRESULT CUxThemeFile::CreateFileW(
 void CUxThemeFile::CloseFile()
 {
     if (_hSharableSection && _hNonSharableSection && _pbNonSharableData) {
-        if (*_pbNonSharableData & 4 && (!_pbNonSharableData || !(*_pbNonSharableData & 2))) {
+        if (*_pbNonSharableData & 4 &&
+            (!_pbNonSharableData || !(*_pbNonSharableData & 2))) {
             // ClearStockObjects(_hNonSharableSection, 0);
         }
     }
@@ -74,8 +78,7 @@ void CUxThemeFile::CloseFile()
     _hNonSharableSection = nullptr;
 }
 
-HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection,
-                                     HANDLE hNonSharableSection,
+HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection, HANDLE hNonSharableSection,
                                      DWORD desiredAccess, bool cleanupOnFailure)
 {
     if (_pbSharableData || _pbNonSharableData)
@@ -88,7 +91,8 @@ HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection,
     if (!_pbSharableData)
         hr = MakeErrorLast();
 
-    _pbNonSharableData = (BYTE*)MapViewOfFile(hNonSharableSection, desiredAccess, 0, 0, 0);
+    _pbNonSharableData =
+        (BYTE*)MapViewOfFile(hNonSharableSection, desiredAccess, 0, 0, 0);
     _hNonSharableSection = hNonSharableSection;
     if (!_pbNonSharableData)
         hr = MakeErrorLast();
@@ -117,11 +121,8 @@ HRESULT CUxThemeFile::ValidateThemeData(bool fullCheck) const
         return HRESULT_FROM_WIN32(ERROR_INTERNAL_ERROR);
 
     auto hdr = _pbSharableData;
-    if (!hdr
-        || memcmp(hdr->szSignature, "BEGINTHM", 8) != 0
-        || hdr->dwVersion != 65543
-        || !_pbNonSharableData
-        || !(*_pbNonSharableData & 1))
+    if (!hdr || memcmp(hdr->szSignature, "BEGINTHM", 8) != 0 || hdr->dwVersion != 65543 ||
+        !_pbNonSharableData || !(*_pbNonSharableData & 1))
         return HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
 
     return S_OK;
@@ -129,8 +130,7 @@ HRESULT CUxThemeFile::ValidateThemeData(bool fullCheck) const
 
 bool CUxThemeFile::ValidateObj() const
 {
-    return memcmp(_szHead, "thmfile\0", 8) == 0 &&
-           memcmp(_szTail, "end\0", 4) == 0;
+    return memcmp(_szHead, "thmfile\0", 8) == 0 && memcmp(_szTail, "end\0", 4) == 0;
 }
 
 LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
@@ -138,12 +138,13 @@ LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
     if (index >= _pbSharableData->cFonts)
         assert("FRE: index < pHeader->cFonts");
 
-    auto ptr = reinterpret_cast<BYTE*>(&_pbSharableData[index]) +
-        _pbSharableData->iFontsOffset;
+    auto ptr =
+        reinterpret_cast<BYTE*>(&_pbSharableData[index]) + _pbSharableData->iFontsOffset;
     return reinterpret_cast<LOGFONTW const*>(ptr);
 }
 
-HRESULT CUxThemeFile::GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection)
+HRESULT CUxThemeFile::GetGlobalTheme(HANDLE* phSharableSection,
+                                     HANDLE* phNonSharableSection)
 {
     *phSharableSection = nullptr;
     *phNonSharableSection = nullptr;
@@ -155,7 +156,8 @@ HRESULT CUxThemeFile::GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSha
 
     ROOTSECTION* pRootSection = nullptr;
     ENSURE_HR(rootSection.GetRootSectionData(&pRootSection));
-    if (!pRootSection->szSharableSectionName[0] || !pRootSection->szNonSharableSectionName[0])
+    if (!pRootSection->szSharableSectionName[0] ||
+        !pRootSection->szNonSharableSectionName[0])
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
     ENSURE_HR(sharableSection.Open(pRootSection->szSharableSectionName, false));

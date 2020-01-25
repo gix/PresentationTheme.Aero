@@ -9,10 +9,9 @@
 #include <strsafe.h>
 #include <winternl.h>
 
-NTSYSAPI NTSTATUS NTAPI NtOpenSection(
-    _Out_ PHANDLE            SectionHandle,
-    _In_  ACCESS_MASK        DesiredAccess,
-    _In_  POBJECT_ATTRIBUTES ObjectAttributes);
+NTSYSAPI NTSTATUS NTAPI NtOpenSection(_Out_ PHANDLE SectionHandle,
+                                      _In_ ACCESS_MASK DesiredAccess,
+                                      _In_ POBJECT_ATTRIBUTES ObjectAttributes);
 
 namespace uxtheme
 {
@@ -30,11 +29,11 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
     RtlInitUnicodeString(&name, sectionName);
 
     OBJECT_ATTRIBUTES objA;
-    InitializeObjectAttributes(&objA, &name, OBJ_CASE_INSENSITIVE, nullptr,
-                               nullptr);
+    InitializeObjectAttributes(&objA, &name, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
     ModuleHandle ntdllHandle{LoadLibraryW(L"ntdll.dll")};
-    auto NtOpenSectionPtr = (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle, "NtOpenSection");
+    auto NtOpenSectionPtr =
+        (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle, "NtOpenSection");
 
     SectionHandle sectionHandle;
     NTSTATUS st = NtOpenSectionPtr(sectionHandle.CloseAndGetAddressOf(),
@@ -43,7 +42,8 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
         return st;
 
     if (mapView) {
-        FileViewHandle<> sectionData{MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
+        FileViewHandle<> sectionData{
+            MapViewOfFile(sectionHandle, desiredViewAccess, 0, 0, 0)};
         if (!sectionData)
             return MakeErrorLast();
 
@@ -56,8 +56,7 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
 
 DataSection::DataSection(DWORD desiredSectionAccess, DWORD desiredViewAccess)
     : Section(desiredSectionAccess, desiredViewAccess)
-{
-}
+{}
 
 HRESULT DataSection::MakeThemeDataSectionName(wchar_t* pszFullName, unsigned cchMax,
                                               ThemeDataNamespace dataNamespace,
@@ -72,7 +71,8 @@ HRESULT DataSection::MakeThemeDataSectionName(wchar_t* pszFullName, unsigned cch
     return S_OK;
 }
 
-RootSection::RootSection(ULONG sessionId, DWORD desiredSectionAccess, DWORD desiredViewAccess)
+RootSection::RootSection(ULONG sessionId, DWORD desiredSectionAccess,
+                         DWORD desiredViewAccess)
     : Section(desiredSectionAccess, desiredViewAccess)
 {
     if (sessionId)

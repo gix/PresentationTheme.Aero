@@ -4,18 +4,13 @@
 namespace uxtheme
 {
 
-
 HRESULT CThemePNGDecoder::_Init()
 {
     if (_bInited)
         return E_FAIL;
 
-    ENSURE_HR(CoCreateInstance(
-        CLSID_WICImagingFactory,
-        NULL,
-        CLSCTX_INPROC_SERVER,
-        IID_IWICImagingFactory,
-        (LPVOID*)&_pICodecFactory));
+    ENSURE_HR(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER,
+                               IID_IWICImagingFactory, (LPVOID*)&_pICodecFactory));
     //ENSURE_HR(WICCreateImagingFactory_Proxy(567, &_pICodecFactory));
     ENSURE_HR(_pICodecFactory->CreateComponentInfo(CLSID_WICPngDecoder2, &_pInfo1));
     ENSURE_HR(_pInfo1->QueryInterface(&_pBitmapDecoderInfo));
@@ -29,8 +24,7 @@ HRESULT CThemePNGDecoder::_Init()
     return S_OK;
 }
 
-HRESULT CThemePNGDecoder::ConvertToDIB(BYTE const* lpBits, unsigned cbDIB,
-                                       bool* pf32bpp)
+HRESULT CThemePNGDecoder::ConvertToDIB(BYTE const* lpBits, unsigned cbDIB, bool* pf32bpp)
 {
     if (!_bInited)
         ENSURE_HR(_Init());

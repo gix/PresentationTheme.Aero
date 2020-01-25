@@ -9,11 +9,11 @@
 namespace uxtheme
 {
 
-static HRESULT DrawTextWithGlow(
-    HDC hdcMem, wchar_t const* pszText, unsigned cch, RECT* prc,
-    DWORD dwFlags, COLORREF crText, COLORREF crGlow, unsigned nGlowRadius,
-    unsigned nGlowIntensity, BOOL fPreMultiply,
-    DTT_CALLBACK_PROC pfnDrawTextCallback, LPARAM lParam)
+static HRESULT DrawTextWithGlow(HDC hdcMem, wchar_t const* pszText, unsigned cch,
+                                RECT* prc, DWORD dwFlags, COLORREF crText,
+                                COLORREF crGlow, unsigned nGlowRadius,
+                                unsigned nGlowIntensity, BOOL fPreMultiply,
+                                DTT_CALLBACK_PROC pfnDrawTextCallback, LPARAM lParam)
 {
     return S_OK;
 }
@@ -57,62 +57,74 @@ HRESULT CTextDraw::PackProperties(CRenderObj* pRender, int iPartId, int iStateId
     _iSourcePartId = iPartId;
     _iSourceStateId = iStateId;
 
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTCOLOR, (int *)&_crText) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTCOLOR, (int*)&_crText) < 0)
         _crText = 0;
 
-    if (pRender->ExternalGetPosition(iPartId, iStateId, TMT_TEXTSHADOWOFFSET, &_ptShadowOffset) >= 0) {
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTSHADOWCOLOR, (int *)&_crShadow) < 0)
+    if (pRender->ExternalGetPosition(iPartId, iStateId, TMT_TEXTSHADOWOFFSET,
+                                     &_ptShadowOffset) >= 0) {
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTSHADOWCOLOR,
+                                    (int*)&_crShadow) < 0)
             _crShadow = 0;
-        if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_TEXTSHADOWTYPE, (int *)&_eShadowType) < 0)
+        if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_TEXTSHADOWTYPE,
+                                          (int*)&_eShadowType) < 0)
             _eShadowType = TST_NONE;
     }
 
     if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTBORDERSIZE, &_iBorderSize) < 0)
         _iBorderSize = 0;
     else {
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTBORDERCOLOR, (int *)&_crBorder) < 0)
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTBORDERCOLOR,
+                                    (int*)&_crBorder) < 0)
             _crBorder = 0;
-        if (pRender->ExternalGetBool(iPartId, iStateId, TMT_TEXTAPPLYOVERLAY, &_fApplyOverlay) < 0)
+        if (pRender->ExternalGetBool(iPartId, iStateId, TMT_TEXTAPPLYOVERLAY,
+                                     &_fApplyOverlay) < 0)
             _fApplyOverlay = 0;
     }
 
     if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TEXTGLOWSIZE, &_iGlowSize) < 0)
         _iGlowSize = 0;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLOWINTENSITY, &_iGlowIntensity) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLOWINTENSITY, &_iGlowIntensity) <
+        0)
         _iGlowIntensity = 0;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLOWCOLOR, (int *)&_crGlow) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLOWCOLOR, (int*)&_crGlow) < 0)
         _crGlow = 0xFFFFFF;
 
     pRender->GetFontTableIndex(iPartId, iStateId, TMT_FONT, &_iFontIndex);
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_TEXTITALIC, &_fItalicFont) < 0)
         _fItalicFont = 0;
 
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGELIGHTCOLOR, (int *)&_crEdgeLight) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGELIGHTCOLOR,
+                                (int*)&_crEdgeLight) < 0)
         _crEdgeLight = 0xC0C0C0;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEHIGHLIGHTCOLOR, (int *)&_crEdgeHighlight) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEHIGHLIGHTCOLOR,
+                                (int*)&_crEdgeHighlight) < 0)
         _crEdgeHighlight = 0xFFFFFF;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGESHADOWCOLOR, (int *)&_crEdgeShadow) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGESHADOWCOLOR,
+                                (int*)&_crEdgeShadow) < 0)
         _crEdgeShadow = 0x808080;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEDKSHADOWCOLOR, (int *)&_crEdgeDkShadow) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEDKSHADOWCOLOR,
+                                (int*)&_crEdgeDkShadow) < 0)
         _crEdgeDkShadow = 0;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEFILLCOLOR, (int *)&_crEdgeFill) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_EDGEFILLCOLOR,
+                                (int*)&_crEdgeFill) < 0)
         _crEdgeFill = _crEdgeLight;
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_COMPOSITED, &_fComposited) < 0)
         _fComposited = 0;
 
     if (!_fComposited) {
         int textGlow;
-        if (pRender->ExternalGetBool(iPartId, iStateId, TMT_TEXTGLOW, &textGlow) < 0 || !textGlow)
+        if (pRender->ExternalGetBool(iPartId, iStateId, TMT_TEXTGLOW, &textGlow) < 0 ||
+            !textGlow)
             _iGlowSize = 0;
     }
 
     return S_OK;
 }
 
-HRESULT CTextDraw::GetTextExtent(
-    CRenderObj* pRender, HDC hdc, int iPartId, int iStateId,
-    wchar_t const* _pszText, int iCharCount, unsigned dwTextFlags,
-    RECT const* pBoundingRect, RECT* pExtentRect)
+HRESULT CTextDraw::GetTextExtent(CRenderObj* pRender, HDC hdc, int iPartId, int iStateId,
+                                 wchar_t const* _pszText, int iCharCount,
+                                 unsigned dwTextFlags, RECT const* pBoundingRect,
+                                 RECT* pExtentRect)
 {
     HFONT font = nullptr;
     HFONT oldFont = nullptr;
@@ -136,19 +148,8 @@ HRESULT CTextDraw::GetTextExtent(
             if (!DrawTextExW(hdc, (LPWSTR)_pszText, iCharCount, &rc, flags, nullptr))
                 hr = MakeErrorLast();
         } else {
-            hr = DrawTextWithGlow(
-                hdc,
-                _pszText,
-                iCharCount,
-                &rc,
-                flags,
-                _crText,
-                _crGlow,
-                _iGlowSize,
-                _iGlowIntensity,
-                1,
-                nullptr,
-                0);
+            hr = DrawTextWithGlow(hdc, _pszText, iCharCount, &rc, flags, _crText, _crGlow,
+                                  _iGlowSize, _iGlowIntensity, 1, nullptr, 0);
         }
 
         if (hr >= 0)
@@ -191,10 +192,10 @@ HRESULT CTextDraw::GetTextMetricsW(CRenderObj* pRender, HDC hdc, int iPartId,
     return hr;
 }
 
-HRESULT CTextDraw::DrawTextW(
-    HTHEMEFILE hThemeFile, CRenderObj* pRender, HDC hdc, int iPartId,
-    int iStateId, wchar_t const* pszText, unsigned dwCharCount,
-    unsigned dwTextFlags, RECT* pRect, DTTOPTS const* pOptions)
+HRESULT CTextDraw::DrawTextW(HTHEMEFILE hThemeFile, CRenderObj* pRender, HDC hdc,
+                             int iPartId, int iStateId, wchar_t const* pszText,
+                             unsigned dwCharCount, unsigned dwTextFlags, RECT* pRect,
+                             DTTOPTS const* pOptions)
 {
     HRESULT hr;
     RECT rc = {};
@@ -234,8 +235,8 @@ HRESULT CTextDraw::DrawTextW(
         if (flags & DTT_BORDERSIZE)
             borderSize = pOptions->iBorderSize;
         if (flags & DTT_FONTPROP) {
-            pRender->ExternalGetFont(nullptr, iPartId, iStateId,
-                                     pOptions->iFontPropId, false, &userFont);
+            pRender->ExternalGetFont(nullptr, iPartId, iStateId, pOptions->iFontPropId,
+                                     false, &userFont);
             hasFontProp = true;
         }
         if (flags & DTT_COLORPROP) {
@@ -283,8 +284,7 @@ HRESULT CTextDraw::DrawTextW(
             auto hbmp = (HBITMAP)GetCurrentObject(hdc, OBJ_BITMAP);
             DIBSECTION ds;
             isComposited = hbmp && GetObjectW(hbmp, sizeof(ds), &ds) &&
-                           ds.dsBm.bmBitsPixel == 32 &&
-                           ds.dsBm.bmBits != nullptr;
+                           ds.dsBm.bmBitsPixel == 32 && ds.dsBm.bmBits != nullptr;
         }
     }
 
@@ -294,19 +294,8 @@ HRESULT CTextDraw::DrawTextW(
         LPARAM const callbackParam = hasCallback ? pOptions->lParam : 0;
 
         rc = *pRect;
-        hr = DrawTextWithGlow(
-            hdc,
-            pszText,
-            dwCharCount,
-            &rc,
-            textFlags,
-            crText,
-            _crGlow,
-            glowSize,
-            _iGlowIntensity,
-            TRUE,
-            callback,
-            callbackParam);
+        hr = DrawTextWithGlow(hdc, pszText, dwCharCount, &rc, textFlags, crText, _crGlow,
+                              glowSize, _iGlowIntensity, TRUE, callback, callbackParam);
 
         if (hr >= 0)
             hr = 0;
@@ -315,13 +304,15 @@ HRESULT CTextDraw::DrawTextW(
             HTHEME themeTextGlow = UxOpenThemeData(hThemeFile, nullptr, L"TEXTGLOW");
             if (themeTextGlow) {
                 rc = *pRect;
-                if (DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags | DT_CALCRECT, nullptr)) {
+                if (DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc,
+                                textFlags | DT_CALCRECT, nullptr)) {
                     long width = rc.right - rc.left;
                     long x;
                     if (textFlags & DT_RIGHT) {
                         x = pRect->right - width;
                     } else if (textFlags & DT_CENTER) {
-                        x = pRect->left + ((unsigned)(pRect->right - pRect->left - width) >> 1);
+                        x = pRect->left +
+                            ((unsigned)(pRect->right - pRect->left - width) >> 1);
                     } else {
                         x = pRect->left;
                     }
@@ -331,7 +322,8 @@ HRESULT CTextDraw::DrawTextW(
                     if (textFlags & DT_BOTTOM) {
                         y = pRect->bottom - height;
                     } else if (textFlags & DT_VCENTER) {
-                        y = pRect->top + ((unsigned)(pRect->bottom - pRect->top - height) >> 1);
+                        y = pRect->top +
+                            ((unsigned)(pRect->bottom - pRect->top - height) >> 1);
                     } else {
                         y = pRect->top;
                     }
@@ -341,7 +333,8 @@ HRESULT CTextDraw::DrawTextW(
                     rc.top = y;
                     rc.bottom = y + height;
                     InflateRect(&rc, glowSize, glowSize);
-                    UxDrawThemeBackground(hThemeFile, themeTextGlow, hdc, 1, 0, &rc, nullptr);
+                    UxDrawThemeBackground(hThemeFile, themeTextGlow, hdc, 1, 0, &rc,
+                                          nullptr);
                     UxCloseThemeData(hThemeFile, themeTextGlow);
                 }
             }
@@ -355,15 +348,15 @@ HRESULT CTextDraw::DrawTextW(
             rc.top = pRect->top + shadowOffset.y;
             rc.right = pRect->right + shadowOffset.x;
             rc.bottom = pRect->bottom;
-            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags, nullptr)) {
+            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags,
+                             nullptr)) {
                 hr = MakeErrorLast();
                 goto done;
             }
 
             [[fallthrough]];
 
-        case TST_NONE:
-        {
+        case TST_NONE: {
             rc = *pRect;
             if (!borderSize) {
                 goto LABEL_16;
@@ -377,7 +370,8 @@ HRESULT CTextDraw::DrawTextW(
             LOGBRUSH logBrush = {};
             logBrush.lbColor = crBorder;
 
-            GdiPenHandle pen{ExtCreatePen(PS_GEOMETRIC, borderSize, &logBrush, 0, nullptr)};
+            GdiPenHandle pen{
+                ExtCreatePen(PS_GEOMETRIC, borderSize, &logBrush, 0, nullptr)};
             if (!pen) {
                 AbortPath(hdc);
                 hr = MakeErrorLast();
@@ -389,8 +383,7 @@ HRESULT CTextDraw::DrawTextW(
             GdiBrushHandle brush{CreateSolidBrush(applyOverlay ? crBorder : crText)};
             if (brush) {
                 SelectObjectScope<HBRUSH> oldBrush{hdc, brush};
-                if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc,
-                                 0, nullptr)) {
+                if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, 0, nullptr)) {
                     AbortPath(hdc);
                     hr = MakeErrorLast();
                     goto done;
@@ -404,8 +397,8 @@ HRESULT CTextDraw::DrawTextW(
 
         case TST_CONTINUOUS:
             rc = *pRect;
-            DrawShadowText(hdc, pszText, dwCharCount, &rc, textFlags,
-                           crText, crShadow, shadowOffset.x, shadowOffset.y);
+            DrawShadowText(hdc, pszText, dwCharCount, &rc, textFlags, crText, crShadow,
+                           shadowOffset.x, shadowOffset.y);
             break;
         }
 
@@ -419,8 +412,7 @@ HRESULT CTextDraw::DrawTextW(
             }
 
             hr = 0;
-            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc,
-                             textFlags, nullptr))
+            if (!DrawTextExW(hdc, (LPWSTR)pszText, dwCharCount, &rc, textFlags, nullptr))
                 hr = MakeErrorLast();
         } else {
             hr = 0;

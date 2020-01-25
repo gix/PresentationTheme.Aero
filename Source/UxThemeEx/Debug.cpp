@@ -231,20 +231,20 @@ static int Format(char* buffer, size_t bufferSize, SIZE const& value)
 
 static int Format(char* buffer, size_t bufferSize, RECT const& value)
 {
-    return sprintf_s(buffer, bufferSize, "(%ld,%ld,%ld,%ld)",
-                     value.left, value.top, value.right, value.bottom);
+    return sprintf_s(buffer, bufferSize, "(%ld,%ld,%ld,%ld)", value.left, value.top,
+                     value.right, value.bottom);
 }
 
 static int Format(char* buffer, size_t bufferSize, MARGINS const& value)
 {
-    return sprintf_s(buffer, bufferSize, "(l:%d,r:%d,t:%d,b:%d)",
-                     value.cxLeftWidth, value.cxRightWidth, value.cyTopHeight, value.cyBottomHeight);
+    return sprintf_s(buffer, bufferSize, "(l:%d,r:%d,t:%d,b:%d)", value.cxLeftWidth,
+                     value.cxRightWidth, value.cyTopHeight, value.cyBottomHeight);
 }
 
 static int Format(char* buffer, size_t bufferSize, FILETIME const& value)
 {
     return sprintf_s(buffer, bufferSize, "0x%llX",
-        ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
+                     ((DWORD64)value.dwLowDateTime << 32) | value.dwLowDateTime);
 }
 
 static int FormatHex(char* buffer, size_t bufferSize, unsigned value)
@@ -260,12 +260,14 @@ static int FormatHex(char* buffer, size_t bufferSize, unsigned long value)
 class LogFile
 {
 public:
-    LogFile(wchar_t const* path) : path(path) {}
+    LogFile(wchar_t const* path)
+        : path(path)
+    {}
 
     bool Open()
     {
-        FileHandle h{CreateFileW(path.c_str(), GENERIC_WRITE, 0, nullptr,
-                                 CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+        FileHandle h{CreateFileW(path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                                 FILE_ATTRIBUTE_NORMAL, nullptr)};
         if (!h)
             return false;
         hFile = std::move(h);
@@ -275,10 +277,7 @@ public:
     void Indent(int n = 1) { indentLevel += n; }
     void Outdent(int n = 1) { indentLevel -= n; }
 
-    void StartLine()
-    {
-        WriteIndent();
-    }
+    void StartLine() { WriteIndent(); }
 
     template<typename... T>
     void LogNoIndent(char const* format, T const&... args)
@@ -447,7 +446,8 @@ private:
         memset(indentBuffer.data(), ' ', length);
 
         DWORD written;
-        WriteFile(hFile, indentBuffer.data(), static_cast<DWORD>(length), &written, nullptr);
+        WriteFile(hFile, indentBuffer.data(), static_cast<DWORD>(length), &written,
+                  nullptr);
     }
 
     std::wstring path;
@@ -588,8 +588,7 @@ static void DumpAnimationTransform(LogFile& log, TA_TRANSFORM const* transform)
     case TATT_TRANSLATE_2D:
     case TATT_SCALE_2D:
     case TATT_ROTATE_2D:
-    case TATT_SKEW_2D:
-    {
+    case TATT_SKEW_2D: {
         auto t = reinterpret_cast<TA_TRANSFORM_2D const*>(transform);
         log.LogPair("header.eTransformType", t->header.eTransformType);
         log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
@@ -604,8 +603,7 @@ static void DumpAnimationTransform(LogFile& log, TA_TRANSFORM const* transform)
         log.LogPair("rOriginY", t->rOriginY);
         break;
     }
-    case TATT_OPACITY:
-    {
+    case TATT_OPACITY: {
         auto t = reinterpret_cast<TA_TRANSFORM_OPACITY const*>(transform);
         log.LogPair("header.eTransformType", t->header.eTransformType);
         log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
@@ -616,8 +614,7 @@ static void DumpAnimationTransform(LogFile& log, TA_TRANSFORM const* transform)
         log.LogPair("rInitialOpacity", t->rInitialOpacity);
         break;
     }
-    case TATT_CLIP:
-    {
+    case TATT_CLIP: {
         auto t = reinterpret_cast<TA_TRANSFORM_CLIP const*>(transform);
         log.LogPair("header.eTransformType", t->header.eTransformType);
         log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
@@ -637,8 +634,7 @@ static void DumpAnimationTransform(LogFile& log, TA_TRANSFORM const* transform)
     case TATT_TRANSLATE_3D:
     case TATT_SCALE_3D:
     case TATT_ROTATE_3D:
-    case TATT_SKEW_3D:
-    {
+    case TATT_SKEW_3D: {
         auto t = reinterpret_cast<TA_TRANSFORM_3D const*>(transform);
         log.LogPair("header.eTransformType", t->header.eTransformType);
         log.LogPair("header.dwTimingFunctionId", t->header.dwTimingFunctionId);
@@ -725,9 +721,8 @@ static HRESULT DumpBitmap(LogFile& log, TMBITMAPHEADER const& tmhdr, HBITMAP hbm
         int bytesPerRow;
 
         BitmapPixels helper;
-        ENSURE_HR(helper.OpenBitmap(nullptr, hbmp, false, &pixels, &width,
-                                    &height, &bytesPerPixel, &bytesPerRow,
-                                    nullptr, 0));
+        ENSURE_HR(helper.OpenBitmap(nullptr, hbmp, false, &pixels, &width, &height,
+                                    &bytesPerPixel, &bytesPerRow, nullptr, 0));
 
         log.Log("BITMAPINFOHEADER\n");
         log.Indent();
@@ -782,8 +777,8 @@ static void DumpEntry(LogFile& log, ENTRYHDR* entry, CUxThemeFile const& themeFi
     auto const nsdHdr = themeFile.NonSharableDataHeader();
 
     log.Indent();
-    log.Log("Entry(%05u, %05u, index:%05d, len:%05u)\n", entry->usTypeNum, entry->ePrimVal,
-            (int)((uintptr_t)entry - (uintptr_t)hdr), entry->dwDataLen);
+    log.Log("Entry(%05u, %05u, index:%05d, len:%05u)\n", entry->usTypeNum,
+            entry->ePrimVal, (int)((uintptr_t)entry - (uintptr_t)hdr), entry->dwDataLen);
 
     log.Indent();
     if (entry->usTypeNum == TMT_THEMEMETRICS) {
@@ -837,12 +832,11 @@ static void DumpEntry(LogFile& log, ENTRYHDR* entry, CUxThemeFile const& themeFi
         log.Log("rdh.nCount:   %lu\n", data->rdh.nCount);
         log.Log("rdh.nRgnSize: %lu\n", data->rdh.nRgnSize);
         log.Log("rdh.rcBound: (%d,%d,%d,%d)\n", data->rdh.rcBound.left,
-                data->rdh.rcBound.top, data->rdh.rcBound.right,
-                data->rdh.rcBound.bottom);
+                data->rdh.rcBound.top, data->rdh.rcBound.right, data->rdh.rcBound.bottom);
         auto rects = (RECT*)data->Buffer;
         for (DWORD i = 0; i < data->rdh.nCount; ++i) {
-            log.Log("[%lu]: (%d,%d,%d,%d)\n", i, rects[i].left,
-                    rects[i].top, rects[i].right, rects[i].bottom);
+            log.Log("[%lu]: (%d,%d,%d,%d)\n", i, rects[i].left, rects[i].top,
+                    rects[i].right, rects[i].bottom);
         }
     } else if (entry->usTypeNum == TMT_ENDOFCLASS) {
         // Empty
@@ -872,7 +866,8 @@ static void DumpEntry(LogFile& log, ENTRYHDR* entry, CUxThemeFile const& themeFi
             log.Indent();
             DumpAnimationTransform(log, transform);
             log.Outdent();
-            transform = Advance(transform, CTransformSerializer::GetTransformSize(transform));
+            transform =
+                Advance(transform, CTransformSerializer::GetTransformSize(transform));
         }
     } else if (entry->usTypeNum == TMT_TIMINGFUNCTION) {
         auto timingFunction = (TA_TIMINGFUNCTION const*)(entry + 1);
@@ -971,9 +966,12 @@ static void DumpHeader(LogFile& log, CUxThemeFile const& themeFile)
     log.LogPair("dwVersion", hdr->dwVersion);
     log.LogPair("ftModifTimeStamp", hdr->ftModifTimeStamp);
     log.LogPair("dwTotalLength", hdr->dwTotalLength);
-    log.LogPair("iDllNameOffset", hdr->iDllNameOffset, (wchar_t const*)Advance(hdr, hdr->iDllNameOffset));
-    log.LogPair("iColorParamOffset", hdr->iColorParamOffset, (wchar_t const*)Advance(hdr, hdr->iColorParamOffset));
-    log.LogPair("iSizeParamOffset", hdr->iSizeParamOffset, (wchar_t const*)Advance(hdr, hdr->iSizeParamOffset));
+    log.LogPair("iDllNameOffset", hdr->iDllNameOffset,
+                (wchar_t const*)Advance(hdr, hdr->iDllNameOffset));
+    log.LogPair("iColorParamOffset", hdr->iColorParamOffset,
+                (wchar_t const*)Advance(hdr, hdr->iColorParamOffset));
+    log.LogPair("iSizeParamOffset", hdr->iSizeParamOffset,
+                (wchar_t const*)Advance(hdr, hdr->iSizeParamOffset));
     log.LogPair("dwLangID", hdr->dwLangID);
     log.LogPair("iLoadDPI", hdr->iLoadDPI);
     log.LogPair("dwLoadDPIs", hdr->dwLoadDPIs);
@@ -1010,13 +1008,16 @@ static void DumpSectionIndex(LogFile& log, CUxThemeFile const& themeFile)
     auto end = Advance(begin, hdr->iSectionIndexLength);
 
     for (auto p = begin; p < end; ++p) {
-        auto appName = p->AppClassInfo.iAppNameIndex ?
-            (wchar_t const*)Advance(hdr, p->AppClassInfo.iAppNameIndex) : L"<no app>";
-        auto className = p->AppClassInfo.iClassNameIndex ?
-            (wchar_t const*)Advance(hdr, p->AppClassInfo.iClassNameIndex) : L"<no class>";
+        auto appName = p->AppClassInfo.iAppNameIndex
+                           ? (wchar_t const*)Advance(hdr, p->AppClassInfo.iAppNameIndex)
+                           : L"<no app>";
+        auto className =
+            p->AppClassInfo.iClassNameIndex
+                ? (wchar_t const*)Advance(hdr, p->AppClassInfo.iClassNameIndex)
+                : L"<no class>";
 
-        log.Log("%-10ls %-30ls  idx:%05d len:%05d base:%05d\n",
-                appName, className, p->iIndex, p->iLen, p->iBaseClassIndex);
+        log.Log("%-10ls %-30ls  idx:%05d len:%05d base:%05d\n", appName, className,
+                p->iIndex, p->iLen, p->iBaseClassIndex);
 
         auto be = (ENTRYHDR*)Advance(hdr, p->iIndex);
         auto ee = Advance(be, p->iLen);
@@ -1048,8 +1049,8 @@ static void DumpFonts(LogFile& log, CUxThemeFile const& themeFile)
 
 static HRESULT WriteFileAllBytes(wchar_t const* path, void const* ptr, unsigned length)
 {
-    FileHandle file{CreateFileW(path, GENERIC_WRITE, 0, nullptr,
-                                CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr)};
+    FileHandle file{CreateFileW(path, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                                FILE_ATTRIBUTE_NORMAL, nullptr)};
 
     while (length > 0) {
         DWORD bytesWritten;
@@ -1080,8 +1081,8 @@ static HRESULT DumpThemeFile(CUxThemeFile const& themeFile, wchar_t const* path,
     return S_OK;
 }
 
-HRESULT DumpLoadedThemeToTextFile(HTHEMEFILE hThemeFile, wchar_t const* path,
-                                  bool packed, bool fullInfo)
+HRESULT DumpLoadedThemeToTextFile(HTHEMEFILE hThemeFile, wchar_t const* path, bool packed,
+                                  bool fullInfo)
 {
     auto themeFile = ThemeFileFromHandle(hThemeFile);
     if (!themeFile)
@@ -1094,12 +1095,12 @@ HRESULT DumpSystemThemeToTextFile(wchar_t const* path, bool packed, bool fullInf
     SectionHandle sharableSection;
     SectionHandle nonSharableSection;
 
-    ENSURE_HR(CUxThemeFile::GetGlobalTheme(
-        sharableSection.CloseAndGetAddressOf(),
-        nonSharableSection.CloseAndGetAddressOf()));
+    ENSURE_HR(CUxThemeFile::GetGlobalTheme(sharableSection.CloseAndGetAddressOf(),
+                                           nonSharableSection.CloseAndGetAddressOf()));
 
     CUxThemeFile themeFile;
-    ENSURE_HR(themeFile.OpenFromHandle(sharableSection, nonSharableSection, FILE_MAP_READ, true));
+    ENSURE_HR(themeFile.OpenFromHandle(sharableSection, nonSharableSection, FILE_MAP_READ,
+                                       true));
     sharableSection.Detach();
     nonSharableSection.Detach();
 

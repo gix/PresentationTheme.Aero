@@ -8,10 +8,10 @@ namespace uxtheme
 class BitmapPixels
 {
 public:
-    HRESULT OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32,
-                       DWORD** pPixels, int* piWidth, int* piHeight,
-                       int* piBytesPerPixel, int* piBytesPerRow,
-                       int* piPreviousBytesPerPixel, unsigned cbBytesBefore);
+    HRESULT OpenBitmap(HDC hdc, HBITMAP bitmap, bool fForceRGB32, DWORD** pPixels,
+                       int* piWidth, int* piHeight, int* piBytesPerPixel,
+                       int* piBytesPerRow, int* piPreviousBytesPerPixel,
+                       unsigned cbBytesBefore);
     void CloseBitmap(HDC hdc, HBITMAP hBitmap);
 
     BITMAPINFOHEADER const* BitmapHeader() const { return _hdrBitmap; }

@@ -1,8 +1,8 @@
 #pragma once
 #include "DrawBase.h"
-#include <windows.h>
 #include <uxtheme.h>
 #include <vssym32.h>
+#include <windows.h>
 
 namespace uxtheme
 {
@@ -22,12 +22,16 @@ public:
     }
 
     HRESULT GetBackgroundRegion(CRenderObj* pRender, RECT const* pRect, HRGN* pRegion);
-    HRESULT GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect);
-    HRESULT DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions);
-    HRESULT DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion, BOOL fBorder, BOOL fContent, RECT const* pClipRect);
-    HRESULT HitTestBackground(
-        CRenderObj* pRender, int iStateId, DWORD dwHTFlags, RECT const* pRect,
-        HRGN hrgn, POINT ptTest, WORD* pwHitCode);
+    HRESULT GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect,
+                                RECT* pExtentRect);
+    HRESULT DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect,
+                           DTBGOPTS const* pOptions);
+    HRESULT DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect,
+                                  BOOL fGettingRegion, BOOL fBorder, BOOL fContent,
+                                  RECT const* pClipRect);
+    HRESULT HitTestBackground(CRenderObj* pRender, int iStateId, DWORD dwHTFlags,
+                              RECT const* pRect, HRGN hrgn, POINT ptTest,
+                              WORD* pwHitCode);
 
     BOOL _fNoDraw;
     BORDERTYPE _eBorderType;

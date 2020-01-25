@@ -5,10 +5,10 @@
 #include "Utils.h"
 #include "UxThemeHelpers.h"
 
-#include <cassert>
-#include <vssym32.h>
-#include <strsafe.h>
 #include <array>
+#include <cassert>
+#include <strsafe.h>
+#include <vssym32.h>
 
 using std::array;
 using std::nothrow;
@@ -203,14 +203,14 @@ static VSRECORD* GetNextVSRecord(VSRECORD* pRec, int cbBuf, int* pcbPos)
     return result;
 }
 
-static HRESULT _AllocateRecordPlusData(
-    void const * pvData, unsigned cbData, VSRECORD** ppRecord, int* pcbRecord)
+static HRESULT _AllocateRecordPlusData(void const* pvData, unsigned cbData,
+                                       VSRECORD** ppRecord, int* pcbRecord)
 {
     *ppRecord = nullptr;
     *pcbRecord = 0;
 
     auto size = sizeof(VSRECORD) + cbData;
-    auto record = new(cbData, std::nothrow) VSRECORD();
+    auto record = new (cbData, std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -296,7 +296,8 @@ static bool IsDigit(wchar_t wch)
     return (charType & C1_DIGIT) != 0;
 }
 
-static HRESULT ParseIntegerToken(wchar_t const** ppsz, wchar_t const* pszDelim, int* pnValue)
+static HRESULT ParseIntegerToken(wchar_t const** ppsz, wchar_t const* pszDelim,
+                                 int* pnValue)
 {
     wchar_t const* ptr = *ppsz;
     int value = 0;
@@ -360,7 +361,7 @@ static HRESULT ParseIntlist(wchar_t const* pszValue, int** pprgIntegers, int* pc
     if (count == 0 || count > MAX_INTLIST_COUNT)
         return E_INVALIDARG;
 
-    auto values = new(std::nothrow) int[count];
+    auto values = new (std::nothrow) int[count];
     if (!values)
         return E_OUTOFMEMORY;
 
@@ -377,8 +378,8 @@ static HRESULT ParseIntlist(wchar_t const* pszValue, int** pprgIntegers, int* pc
     return hr;
 }
 
-static HRESULT _ParseStringToken(
-    wchar_t const** ppsz, wchar_t const* pszDelim, wchar_t** ppszString)
+static HRESULT _ParseStringToken(wchar_t const** ppsz, wchar_t const* pszDelim,
+                                 wchar_t** ppszString)
 {
     HRESULT hr;
 
@@ -388,7 +389,7 @@ static HRESULT _ParseStringToken(
     for (auto c = *ppsz; *c && !wcschr(delim, *c); ++c)
         ++length;
 
-    auto token = new(std::nothrow) wchar_t[length + 1];
+    auto token = new (std::nothrow) wchar_t[length + 1];
     if (token) {
         StringCchCopyNW(token, length + 1, *ppsz, length);
         *ppszString = token;
@@ -416,14 +417,15 @@ static HRESULT _ParseStringToken(
     return hr;
 }
 
-static void AppendFontResComment(
-    wchar_t** ppszCommentBuf, size_t* pcchComment, wchar_t const* pszStrToAppend)
+static void AppendFontResComment(wchar_t** ppszCommentBuf, size_t* pcchComment,
+                                 wchar_t const* pszStrToAppend)
 {
     if (!*ppszCommentBuf || *pcchComment == 0)
         return;
 
     size_t appendLen = lstrlenW(pszStrToAppend);
-    HRESULT hr = StringCchCopyNW(*ppszCommentBuf, *pcchComment, pszStrToAppend, appendLen);
+    HRESULT hr =
+        StringCchCopyNW(*ppszCommentBuf, *pcchComment, pszStrToAppend, appendLen);
     if (hr == STRSAFE_E_INSUFFICIENT_BUFFER) {
         *ppszCommentBuf = nullptr;
         *pcchComment = 0;
@@ -434,8 +436,8 @@ static void AppendFontResComment(
     *pcchComment -= appendLen;
 }
 
-static HRESULT ParseFont(
-    wchar_t const* pszValue, LOGFONTW* plf, size_t cchComment, wchar_t* pszComment)
+static HRESULT ParseFont(wchar_t const* pszValue, LOGFONTW* plf, size_t cchComment,
+                         wchar_t* pszComment)
 {
     fill_zero(*plf);
     plf->lfWeight = 400;
@@ -463,7 +465,8 @@ static HRESULT ParseFont(
     bool locked = false;
     wchar_t* token;
 
-    for (int idx = 2; *pszValue && _ParseStringToken(&pszValue, L" ,", &token) == S_OK; ++idx) {
+    for (int idx = 2; *pszValue && _ParseStringToken(&pszValue, L" ,", &token) == S_OK;
+         ++idx) {
         wchar_t const* format = nullptr;
         if (!AsciiStrCmpI(token, L"bold")) {
             plf->lfWeight = 700;
@@ -511,9 +514,9 @@ static HRESULT ParseFont(
     return hr;
 }
 
-static HRESULT GetResourceOffset(
-    HMODULE hInst, wchar_t const* pszResType, wchar_t const* pszResName,
-    unsigned* pdwOffset, unsigned* pdwBytes)
+static HRESULT GetResourceOffset(HMODULE hInst, wchar_t const* pszResType,
+                                 wchar_t const* pszResName, unsigned* pdwOffset,
+                                 unsigned* pdwBytes)
 {
     *pdwOffset = 0;
     *pdwBytes = 0;
@@ -531,18 +534,17 @@ static HRESULT GetResourceOffset(
     return S_OK;
 }
 
-static HRESULT AllocImageFileRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocImageFileRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                    int cbType, int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     return E_ABORT;
 }
 
-static HRESULT AllocImageFileResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocImageFileResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                       int cbType, int* pcbRecord, unsigned uResID,
+                                       VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) VSRECORD();
+    auto record = new (std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -566,8 +568,7 @@ static HRESULT LoadImageFileRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
 
     void* data;
     unsigned size;
-    HRESULT hr = GetPtrToResource(hInst, L"IMAGE",
-                                  MAKEINTRESOURCEW(pRecord->uResID),
+    HRESULT hr = GetPtrToResource(hInst, L"IMAGE", MAKEINTRESOURCEW(pRecord->uResID),
                                   &data, &size);
 
     if (hr >= 0) {
@@ -590,47 +591,43 @@ static HRESULT LoadImageFileRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
 }
 
 static void DestroyImageFileRes(void* pvData)
-{
-}
+{}
 
-static HRESULT AllocEnumRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocEnumRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                               int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     int value = *(int*)pszValue;
     return _AllocateRecordPlusData(&value, sizeof(value), ppRecord, pcbRecord);
 }
 
-static HRESULT AllocStringRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocStringRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                                 int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     int length = lstrlenW(pszValue);
     return _AllocateRecordPlusData(pszValue, 2 * (length + 1), ppRecord, pcbRecord);
 }
 
-static HRESULT AllocIntRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocIntRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                              int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     int value;
     ENSURE_HR(ParseIntegerToken(&pszValue, L", ", &value));
     return _AllocateRecordPlusData(&value, sizeof(value), ppRecord, pcbRecord);
 }
 
-static HRESULT AllocAtlasInputImageRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocAtlasInputImageRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                          int cbType, int* pcbRecord,
+                                          VSERRORCONTEXT* pEcx)
 {
     char pvData[16];
     return _AllocateRecordPlusData(&pvData, 16, ppRecord, pcbRecord);
 }
 
-static HRESULT AllocAtlasImageResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocAtlasImageResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                        int cbType, int* pcbRecord, unsigned uResID,
+                                        VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) VSRECORD();
+    auto record = new (std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -647,15 +644,15 @@ static HRESULT AllocAtlasImageResRecord(
     return S_OK;
 }
 
-static HRESULT LoadDiskStreamRes(HMODULE hInst, VSRECORD* pRecord,
-                                 void* pvData, int* pcbData)
+static HRESULT LoadDiskStreamRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
+                                 int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
 
     unsigned values[2];
-    ENSURE_HR(GetResourceOffset(
-        hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID), &values[0], &values[1]));
+    ENSURE_HR(GetResourceOffset(hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID),
+                                &values[0], &values[1]));
 
     if (*pcbData >= 8)
         *pcbData = 8;
@@ -664,9 +661,8 @@ static HRESULT LoadDiskStreamRes(HMODULE hInst, VSRECORD* pRecord,
     return S_OK;
 }
 
-static HRESULT AllocBoolRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocBoolRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                               int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     BOOL value;
     ENSURE_HR(_ParseBool(pszValue, &value));
@@ -674,9 +670,8 @@ static HRESULT AllocBoolRecord(
     return S_OK;
 }
 
-static HRESULT AllocRGBRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocRGBRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                              int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     int values[3];
     int count = (int)countof(values);
@@ -687,9 +682,8 @@ static HRESULT AllocRGBRecord(
     return S_OK;
 }
 
-static HRESULT AllocRectRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocRectRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                               int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     RECT rect;
     int count = 4;
@@ -698,9 +692,8 @@ static HRESULT AllocRectRecord(
     return S_OK;
 }
 
-static HRESULT AllocPositionRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocPositionRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                   int cbType, int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     POINT pt;
     int count = 2;
@@ -709,9 +702,8 @@ static HRESULT AllocPositionRecord(
     return S_OK;
 }
 
-static HRESULT AllocFontRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocFontRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                               int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     LOGFONTW lf;
     if (cbType < sizeof(lf))
@@ -722,45 +714,42 @@ static HRESULT AllocFontRecord(
     return S_OK;
 }
 
-static HRESULT AllocIntlistRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocIntlistRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                  int cbType, int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     int* values;
     int count;
     ENSURE_HR(ParseIntlist(pszValue, &values, &count));
 
-    HRESULT hr = _AllocateRecordPlusData(values, sizeof(int) * count, ppRecord, pcbRecord);
+    HRESULT hr =
+        _AllocateRecordPlusData(values, sizeof(int) * count, ppRecord, pcbRecord);
     delete[] values;
     return hr;
 }
 
-static HRESULT AllocAnimationRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocAnimationRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                    int cbType, int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT AllocFloatRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocFloatRecord(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
+                                int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT AllocFloatListRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    VSERRORCONTEXT* pEcx)
+static HRESULT AllocFloatListRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                    int cbType, int* pcbRecord, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT AllocStringResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocStringResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                    int cbType, int* pcbRecord, unsigned uResID,
+                                    VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
-    auto record = new(std::nothrow) VSRECORD();
+    auto record = new (std::nothrow) VSRECORD();
     if (!record)
         return E_OUTOFMEMORY;
 
@@ -778,9 +767,9 @@ static HRESULT AllocStringResRecord(
     return S_OK;
 }
 
-static HRESULT AllocFontResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocFontResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                  int cbType, int* pcbRecord, unsigned uResID,
+                                  VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     if (cbType < sizeof(LOGFONTW))
         return E_INVALIDARG;
@@ -789,16 +778,16 @@ static HRESULT AllocFontResRecord(
 
     LOGFONTW lf;
     ENSURE_HR(ParseFont(pszValue, &lf, 1000, comment));
-    ENSURE_HR(AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord,
-                                   uResID, pvsr, pEcx));
+    ENSURE_HR(
+        AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID, pvsr, pEcx));
 
     pvsr->strComment = comment;
     return S_OK;
 }
 
-static HRESULT AllocIntlistResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocIntlistResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                     int cbType, int* pcbRecord, unsigned uResID,
+                                     VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     int* values;
     int count;
@@ -808,25 +797,25 @@ static HRESULT AllocIntlistResRecord(
         delete[] values;
     }
 
-    return AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID,
-                                pvsr, pEcx);
+    return AllocStringResRecord(pszValue, ppRecord, cbType, pcbRecord, uResID, pvsr,
+                                pEcx);
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord,
-                             wchar_t* pszData, int cchData)
+static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord, wchar_t* pszData,
+                             int cchData)
 {
     *pszData = 0;
-    return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0 ? HRESULT_FROM_WIN32(ERROR_NOT_FOUND) : 0;
+    return LoadStringW(hInst, pRecord->uResID, pszData, cchData) == 0
+               ? HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
+               : 0;
 }
 
-static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                             int* pcbData)
+static HRESULT LoadStringRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     return LoadStringRes(hInst, pRecord, (wchar_t*)pvData, *pcbData / sizeof(wchar_t));
 }
 
-static HRESULT LoadIntRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                          int* pcbData)
+static HRESULT LoadIntRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -838,8 +827,7 @@ static HRESULT LoadIntRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
     return ParseIntegerToken(&cbuffer, L", ", (int*)pvData);
 }
 
-static HRESULT LoadBoolRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                           int* pcbData)
+static HRESULT LoadBoolRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -849,8 +837,7 @@ static HRESULT LoadBoolRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
     return _ParseBool(buffer, (BOOL*)pvData);
 }
 
-static HRESULT LoadRectRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                           int* pcbData)
+static HRESULT LoadRectRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -884,34 +871,34 @@ static HRESULT LoadRGBRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* p
     wchar_t const* cbuffer = buffer;
     ENSURE_HR(ParseIntegerTokenList(&cbuffer, values, &count));
 
-    *(unsigned*)pvData = (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) | ((values[2] & 0xFF) << 16);
+    *(unsigned*)pvData =
+        (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) | ((values[2] & 0xFF) << 16);
     return S_OK;
 }
 
-static HRESULT AllocStreamResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocStreamResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                    int cbType, int* pcbRecord, unsigned uResID,
+                                    VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT AllocDiskStreamResRecord(
-    wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
-    unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
+static HRESULT AllocDiskStreamResRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
+                                        int cbType, int* pcbRecord, unsigned uResID,
+                                        VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx)
 {
     return TRACE_HR(E_NOTIMPL);
 }
 
-static HRESULT LoadStreamRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                             int* pcbData)
+static HRESULT LoadStreamRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
 
     void* ptr = nullptr;
     int size;
-    ENSURE_HR(GetPtrToResource(hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID),
-                               &ptr, (unsigned*)&size));
+    ENSURE_HR(GetPtrToResource(hInst, L"STREAM", MAKEINTRESOURCEW(pRecord->uResID), &ptr,
+                               (unsigned*)&size));
 
     if (size > *pcbData)
         size = *pcbData;
@@ -942,7 +929,8 @@ static HRESULT LoadPositionRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
     return S_OK;
 }
 
-static HRESULT LoadIntlistRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData)
+static HRESULT LoadIntlistRes(HMODULE hInst, VSRECORD* pRecord, void* pvData,
+                              int* pcbData)
 {
     if (!pcbData || !pRecord || *pcbData < pRecord->cbData)
         return E_INVALIDARG;
@@ -978,56 +966,69 @@ static HRESULT LoadFontRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* 
 struct PARSETABLE
 {
     THEMEPRIMITIVEID tpi;
-    HRESULT(*pfnAlloc)(wchar_t const* pszValue, VSRECORD** ppRecord, int cbType,
-                       int* pcbRecord, VSERRORCONTEXT* pEcx);
-    HRESULT(*pfnAllocRes)(wchar_t const* pszValue, VSRECORD** ppRecord,
-                          int cbType, int* pcbRecord, unsigned uResID,
-                          VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx);
-    HRESULT(*pfnLoad)(HMODULE hInst, VSRECORD* pRecord, void* pvData,
-                      int* pcbData);
-    void(*pfnUnload)(void* pvData);
+    HRESULT (*pfnAlloc)
+    (wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+     VSERRORCONTEXT* pEcx);
+    HRESULT (*pfnAllocRes)
+    (wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
+     unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx);
+    HRESULT (*pfnLoad)(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData);
+    void (*pfnUnload)(void* pvData);
 };
 
 static PARSETABLE parse_table[34] = {
-    {TPID_BITMAPIMAGE,           AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE1,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE2,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE3,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE4,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE5,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE6,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_BITMAPIMAGE7,          AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_STOCKBITMAPIMAGE,      AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_GLYPHIMAGE,            AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_ATLASIMAGE,            AllocImageFileRecord, AllocAtlasImageResRecord, LoadDiskStreamRes},
-    {TPID_ATLASINPUTIMAGE,       AllocAtlasInputImageRecord, AllocStringResRecord, LoadStringRes},
-    {TPID_ENUM,                  AllocEnumRecord, AllocStringResRecord, LoadIntRes},
-    {TPID_STRING,                AllocStringRecord, AllocStringResRecord, LoadStringRes},
-    {TPID_INT,                   AllocIntRecord, AllocStringResRecord, LoadIntRes},
-    {TPID_BOOL,                  AllocBoolRecord, AllocStringResRecord, LoadBoolRes},
-    {TPID_COLOR,                 AllocRGBRecord, AllocStringResRecord, LoadRGBRes},
-    {TPID_MARGINS,               AllocRectRecord, AllocStringResRecord, LoadRectRes},
-    {TPID_FILENAME,              AllocStringRecord, AllocStringResRecord, LoadStringRes},
-    {TPID_SIZE,                  AllocIntRecord, AllocStringResRecord, LoadIntRes},
-    {TPID_POSITION,              AllocPositionRecord, AllocStringResRecord, LoadPositionRes},
-    {TPID_RECT,                  AllocRectRecord, AllocStringResRecord, LoadRectRes},
-    {TPID_FONT,                  AllocFontRecord, AllocFontResRecord, LoadFontRes},
-    {TPID_INTLIST,               AllocIntlistRecord, AllocIntlistResRecord, LoadIntlistRes},
-    {TPID_DISKSTREAM,            AllocImageFileRecord, AllocDiskStreamResRecord, LoadDiskStreamRes},
-    {TPID_STREAM,                AllocImageFileRecord, AllocStreamResRecord, LoadStreamRes},
-    {TPID_ANIMATION,             AllocAnimationRecord},
-    {TPID_TIMINGFUNCTION,        AllocAnimationRecord},
+    {TPID_BITMAPIMAGE, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE1, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE2, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE3, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE4, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE5, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE6, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_BITMAPIMAGE7, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_STOCKBITMAPIMAGE, AllocImageFileRecord, AllocImageFileResRecord,
+     LoadImageFileRes, DestroyImageFileRes},
+    {TPID_GLYPHIMAGE, AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes,
+     DestroyImageFileRes},
+    {TPID_ATLASIMAGE, AllocImageFileRecord, AllocAtlasImageResRecord, LoadDiskStreamRes},
+    {TPID_ATLASINPUTIMAGE, AllocAtlasInputImageRecord, AllocStringResRecord,
+     LoadStringRes},
+    {TPID_ENUM, AllocEnumRecord, AllocStringResRecord, LoadIntRes},
+    {TPID_STRING, AllocStringRecord, AllocStringResRecord, LoadStringRes},
+    {TPID_INT, AllocIntRecord, AllocStringResRecord, LoadIntRes},
+    {TPID_BOOL, AllocBoolRecord, AllocStringResRecord, LoadBoolRes},
+    {TPID_COLOR, AllocRGBRecord, AllocStringResRecord, LoadRGBRes},
+    {TPID_MARGINS, AllocRectRecord, AllocStringResRecord, LoadRectRes},
+    {TPID_FILENAME, AllocStringRecord, AllocStringResRecord, LoadStringRes},
+    {TPID_SIZE, AllocIntRecord, AllocStringResRecord, LoadIntRes},
+    {TPID_POSITION, AllocPositionRecord, AllocStringResRecord, LoadPositionRes},
+    {TPID_RECT, AllocRectRecord, AllocStringResRecord, LoadRectRes},
+    {TPID_FONT, AllocFontRecord, AllocFontResRecord, LoadFontRes},
+    {TPID_INTLIST, AllocIntlistRecord, AllocIntlistResRecord, LoadIntlistRes},
+    {TPID_DISKSTREAM, AllocImageFileRecord, AllocDiskStreamResRecord, LoadDiskStreamRes},
+    {TPID_STREAM, AllocImageFileRecord, AllocStreamResRecord, LoadStreamRes},
+    {TPID_ANIMATION, AllocAnimationRecord},
+    {TPID_TIMINGFUNCTION, AllocAnimationRecord},
     {TPID_SIMPLIFIEDIMAGETYPE},
     {TPID_HIGHCONTRASTCOLORTYPE, AllocEnumRecord},
-    {TPID_BITMAPIMAGETYPE,       AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_COMPOSEDIMAGETYPE,     AllocImageFileRecord, AllocImageFileResRecord, LoadImageFileRes, DestroyImageFileRes},
-    {TPID_FLOAT,                 AllocFloatRecord},
-    {TPID_FLOATLIST,             AllocFloatListRecord},
+    {TPID_BITMAPIMAGETYPE, AllocImageFileRecord, AllocImageFileResRecord,
+     LoadImageFileRes, DestroyImageFileRes},
+    {TPID_COMPOSEDIMAGETYPE, AllocImageFileRecord, AllocImageFileResRecord,
+     LoadImageFileRes, DestroyImageFileRes},
+    {TPID_FLOAT, AllocFloatRecord},
+    {TPID_FLOATLIST, AllocFloatListRecord},
 };
 
-static HRESULT _GenerateEmptySection(
-    IParserCallBack* pfnCB, wchar_t const* pszAppName, wchar_t const* pszClassName,
-    int iPartId, int iStateId)
+static HRESULT _GenerateEmptySection(IParserCallBack* pfnCB, wchar_t const* pszAppName,
+                                     wchar_t const* pszClassName, int iPartId,
+                                     int iStateId)
 {
     int begin = pfnCB->GetNextDataIndex();
     int value = 0;
@@ -1038,9 +1039,9 @@ static HRESULT _GenerateEmptySection(
     return pfnCB->AddIndex(pszAppName, pszClassName, iPartId, iStateId, begin, length);
 }
 
-static HRESULT _TerminateSection(
-    IParserCallBack* pfnCB, wchar_t const* pszApp, wchar_t const* pszClass,
-    int iPart, int iState, int iStartOfSection)
+static HRESULT _TerminateSection(IParserCallBack* pfnCB, wchar_t const* pszApp,
+                                 wchar_t const* pszClass, int iPart, int iState,
+                                 int iStartOfSection)
 {
     int value = 0;
     if (FAILED(pfnCB->AddData(TMT_JUMPTOPARENT, TMT_JUMPTOPARENT, &value, sizeof(value))))
@@ -1050,9 +1051,9 @@ static HRESULT _TerminateSection(
     return pfnCB->AddIndex(pszApp, pszClass, iPart, iState, iStartOfSection, length);
 }
 
-static void _ParseClassName(
-    wchar_t const* pszClassSpec, wchar_t* pszAppNameBuf, unsigned cchAppNameBuf,
-    wchar_t* pszClassNameBuf, unsigned cchClassNameBuf)
+static void _ParseClassName(wchar_t const* pszClassSpec, wchar_t* pszAppNameBuf,
+                            unsigned cchAppNameBuf, wchar_t* pszClassNameBuf,
+                            unsigned cchClassNameBuf)
 {
     *pszAppNameBuf = 0;
     wchar_t* dst = pszClassNameBuf;
@@ -1078,8 +1079,8 @@ static void _ParseClassName(
     *dst = 0;
 }
 
-static HRESULT LoadVSRecordData(
-    HMODULE hInstVS, VSRECORD* pRecord, void* pvBuf, int* pcbBuf)
+static HRESULT LoadVSRecordData(HMODULE hInstVS, VSRECORD* pRecord, void* pvBuf,
+                                int* pcbBuf)
 {
     if (!pRecord || !pcbBuf)
         return E_INVALIDARG;
@@ -1121,20 +1122,34 @@ static void UnloadVSRecordData(VSRECORD* pRecord, void* pvBuf)
 static DWORD MapEnumToSysColor(HIGHCONTRASTCOLOR hcColor)
 {
     switch (hcColor) {
-    case HCC_COLOR_ACTIVECAPTION: return GetSysColorEx(COLOR_ACTIVECAPTION);
-    case HCC_COLOR_CAPTIONTEXT: return GetSysColorEx(COLOR_CAPTIONTEXT);
-    case HCC_COLOR_BTNFACE: return GetSysColorEx(COLOR_BTNFACE);
-    case HCC_COLOR_BTNTEXT: return GetSysColorEx(COLOR_BTNTEXT);
-    case HCC_COLOR_DESKTOP: return GetSysColorEx(COLOR_BACKGROUND);
-    case HCC_COLOR_GRAYTEXT: return GetSysColorEx(COLOR_GRAYTEXT);
-    case HCC_COLOR_HOTLIGHT: return GetSysColorEx(COLOR_HOTLIGHT);
-    case HCC_COLOR_INACTIVECAPTION: return GetSysColorEx(COLOR_INACTIVECAPTION);
-    case HCC_COLOR_INACTIVECAPTIONTEXT: return GetSysColorEx(COLOR_INACTIVECAPTIONTEXT);
-    case HCC_COLOR_HIGHLIGHT: return GetSysColorEx(COLOR_HIGHLIGHT);
-    case HCC_COLOR_HIGHLIGHTTEXT: return GetSysColorEx(COLOR_HIGHLIGHTTEXT);
-    case HCC_COLOR_WINDOW: return GetSysColorEx(COLOR_WINDOW);
-    case HCC_COLOR_WINDOWTEXT: return GetSysColorEx(COLOR_WINDOWTEXT);
-    default: return 0;
+    case HCC_COLOR_ACTIVECAPTION:
+        return GetSysColorEx(COLOR_ACTIVECAPTION);
+    case HCC_COLOR_CAPTIONTEXT:
+        return GetSysColorEx(COLOR_CAPTIONTEXT);
+    case HCC_COLOR_BTNFACE:
+        return GetSysColorEx(COLOR_BTNFACE);
+    case HCC_COLOR_BTNTEXT:
+        return GetSysColorEx(COLOR_BTNTEXT);
+    case HCC_COLOR_DESKTOP:
+        return GetSysColorEx(COLOR_BACKGROUND);
+    case HCC_COLOR_GRAYTEXT:
+        return GetSysColorEx(COLOR_GRAYTEXT);
+    case HCC_COLOR_HOTLIGHT:
+        return GetSysColorEx(COLOR_HOTLIGHT);
+    case HCC_COLOR_INACTIVECAPTION:
+        return GetSysColorEx(COLOR_INACTIVECAPTION);
+    case HCC_COLOR_INACTIVECAPTIONTEXT:
+        return GetSysColorEx(COLOR_INACTIVECAPTIONTEXT);
+    case HCC_COLOR_HIGHLIGHT:
+        return GetSysColorEx(COLOR_HIGHLIGHT);
+    case HCC_COLOR_HIGHLIGHTTEXT:
+        return GetSysColorEx(COLOR_HIGHLIGHTTEXT);
+    case HCC_COLOR_WINDOW:
+        return GetSysColorEx(COLOR_WINDOW);
+    case HCC_COLOR_WINDOWTEXT:
+        return GetSysColorEx(COLOR_WINDOWTEXT);
+    default:
+        return 0;
     }
 }
 
@@ -1227,7 +1242,8 @@ static unsigned PixelPremultiplyAlpha(unsigned rgbaSrc, unsigned rgbTint)
     return PremultiplyColor(color);
 }
 
-static void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, unsigned bgrColor)
+static void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr,
+                                 unsigned bgrColor)
 {
     unsigned const rgbTint = SwapRGB(bgrColor);
     unsigned const* src = reinterpret_cast<unsigned*>(GetBitmapBits(pBitmapHdr));
@@ -1237,9 +1253,9 @@ static void ColorizeGlyphByAlpha(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, uns
         *dst++ = PixelPremultiplyAlpha(*src++, rgbTint);
 }
 
-static void ColorizeAndComposeImages(
-    BYTE* pDstImageBytes, BYTE const* pSrcBGImageBytes, BYTE const* pSrcFGImageBytes,
-    SIZE imageSize, unsigned* pBGColor, unsigned* pFGColor)
+static void ColorizeAndComposeImages(BYTE* pDstImageBytes, BYTE const* pSrcBGImageBytes,
+                                     BYTE const* pSrcFGImageBytes, SIZE imageSize,
+                                     unsigned* pBGColor, unsigned* pFGColor)
 {
     auto srcFg = reinterpret_cast<unsigned const*>(pSrcFGImageBytes);
     auto srcBg = reinterpret_cast<unsigned const*>(pSrcBGImageBytes);
@@ -1268,9 +1284,9 @@ static void ColorizeAndComposeImages(
     }
 }
 
-void ColorizeGlyphByAlphaComposition(
-    BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr, int iImageCount,
-    unsigned* pGlyphBGColor, unsigned* pGlyphColor)
+void ColorizeGlyphByAlphaComposition(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr,
+                                     int iImageCount, unsigned* pGlyphBGColor,
+                                     unsigned* pGlyphColor)
 {
     SIZE size;
     size.cx = pBitmapHdr->biWidth;
@@ -1309,8 +1325,7 @@ static void Convert24to32BPP(BYTE* pBytes, BITMAPINFOHEADER* pBitmapHdr)
 }
 
 static HRESULT _ReadVSVariant(BYTE* pbVariantList, int cbVariantList, int* pcbPos,
-                              wchar_t** ppszName, wchar_t** ppszSize,
-                              wchar_t** ppszColor)
+                              wchar_t** ppszName, wchar_t** ppszSize, wchar_t** ppszColor)
 {
     if (cbVariantList < 4 || *pcbPos >= cbVariantList)
         return STRSAFE_E_END_OF_FILE;
@@ -1324,11 +1339,12 @@ static HRESULT _ReadVSVariant(BYTE* pbVariantList, int cbVariantList, int* pcbPo
         *pcbPos += sizeof(length);
 
         if (ppsz) {
-            auto str = new(std::nothrow) wchar_t[length];
+            auto str = new (std::nothrow) wchar_t[length];
             *ppsz = str;
             if (!str)
                 return E_OUTOFMEMORY;
-            StringCchCopyNW(str, length, (wchar_t const*)&pbVariantList[*pcbPos], length - 1);
+            StringCchCopyNW(str, length, (wchar_t const*)&pbVariantList[*pcbPos],
+                            length - 1);
         }
 
         *pcbPos += Align8(sizeof(wchar_t) * length);
@@ -1360,8 +1376,8 @@ HRESULT CVSUnpack::Initialize(HMODULE hInstSrc, int nVersion, bool fGlobal,
     void* data;
 
     if (!nVersion) {
-        ENSURE_HR(GetPtrToResource(
-            hInstSrc, L"PACKTHEM_VERSION", MAKEINTRESOURCEW(1), &data, &size));
+        ENSURE_HR(GetPtrToResource(hInstSrc, L"PACKTHEM_VERSION", MAKEINTRESOURCEW(1),
+                                   &data, &size));
         _nVersion = *static_cast<short*>(data);
     }
 
@@ -1398,8 +1414,8 @@ HRESULT CVSUnpack::GetRootMap(void** ppvRMap, int* pcbRMap)
     *pcbRMap = 0;
 
     if (!_pvRootMap)
-        ENSURE_HR(GetPtrToResource(
-            _hInst, c_szRMAP, c_szRMAP, &_pvRootMap, (unsigned*)&_cbRootMap));
+        ENSURE_HR(GetPtrToResource(_hInst, c_szRMAP, c_szRMAP, &_pvRootMap,
+                                   (unsigned*)&_cbRootMap));
 
     *ppvRMap = _pvRootMap;
     *pcbRMap = _cbRootMap;
@@ -1415,7 +1431,8 @@ HRESULT CVSUnpack::LoadRootMap(IParserCallBack* pfnCB)
     int classIdx = _FindClass(c_szDocumentationElement);
 
     int pcbPos = 0;
-    for (auto it = static_cast<VSRECORD*>(buf); it; it = GetNextVSRecord(it, cbBuf, &pcbPos)) {
+    for (auto it = static_cast<VSRECORD*>(buf); it;
+         it = GetNextVSRecord(it, cbBuf, &pcbPos)) {
         if (it->iClass == classIdx)
             ENSURE_HR(_AddVSDataRecord(pfnCB, _hInst, it));
     }
@@ -1430,7 +1447,7 @@ HRESULT CVSUnpack::GetVariantMap(void** ppvVMap, int* pcbVMap)
 
     if (!_pvVariantMap)
         ENSURE_HR(GetPtrToResource(_hInst, c_szVMAP, c_szVMAP, &_pvVariantMap,
-        (unsigned*)&_cbVariantMap));
+                                   (unsigned*)&_cbVariantMap));
 
     *ppvVMap = _pvVariantMap;
     *pcbVMap = _cbVariantMap;
@@ -1438,8 +1455,7 @@ HRESULT CVSUnpack::GetVariantMap(void** ppvVMap, int* pcbVMap)
 }
 
 HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
-                                wchar_t const* pszSizeVariant,
-                                void** pvMap, int* pcbMap)
+                                wchar_t const* pszSizeVariant, void** pvMap, int* pcbMap)
 {
     if (!pszColorVariant || !*pszColorVariant)
         return E_INVALIDARG;
@@ -1465,7 +1481,8 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
         if (hr < 0)
             continue;
 
-        if (!AsciiStrCmpI(size, pszSizeVariant) && !AsciiStrCmpI(color, pszColorVariant)) {
+        if (!AsciiStrCmpI(size, pszSizeVariant) &&
+            !AsciiStrCmpI(color, pszColorVariant)) {
             variantFound = true;
             hr = GetPtrToResource(_hInst, L"VARIANT", name, pvMap, (unsigned*)pcbMap);
         }
@@ -1481,8 +1498,8 @@ HRESULT CVSUnpack::GetClassData(wchar_t const* pszColorVariant,
     return hr;
 }
 
-HRESULT CVSUnpack::LoadClassDataMap(
-    wchar_t const* pszColor, wchar_t const* pszSize, IParserCallBack* pfnCB)
+HRESULT CVSUnpack::LoadClassDataMap(wchar_t const* pszColor, wchar_t const* pszSize,
+                                    IParserCallBack* pfnCB)
 {
     void* pvMap;
     int cbBuf;
@@ -1527,8 +1544,8 @@ HRESULT CVSUnpack::LoadClassDataMap(
                     ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
                 if (startOfSection >= 0)
-                    ENSURE_HR(_TerminateSection(pfnCB, appName, className,
-                                                currPartId, currStateId, startOfSection));
+                    ENSURE_HR(_TerminateSection(pfnCB, appName, className, currPartId,
+                                                currStateId, startOfSection));
 
                 if (pRec->iClass <= -1 || pRec->iClass >= _rgClassNames.size())
                     return E_ABORT;
@@ -1536,12 +1553,15 @@ HRESULT CVSUnpack::LoadClassDataMap(
                 if (isNewClass) {
                     appName[0] = 0;
                     className[0] = 0;
-                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), appName, 260, className, 230);
+                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), appName, 260,
+                                    className, 230);
                 } else if (*className != 0) {
                     wchar_t tmpClassName[230];
                     wchar_t tmpAppName[260];
-                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), tmpAppName, 260, tmpClassName, 230);
-                    assert(wcscmp(appName, tmpAppName) == 0 && wcscmp(className, tmpClassName) == 0);
+                    _ParseClassName(_rgClassNames[pRec->iClass].c_str(), tmpAppName, 260,
+                                    tmpClassName, 230);
+                    assert(wcscmp(appName, tmpAppName) == 0 &&
+                           wcscmp(className, tmpClassName) == 0);
                 }
 
                 hasDelayedRecords = false;
@@ -1552,12 +1572,14 @@ HRESULT CVSUnpack::LoadClassDataMap(
                     hasSysmetsSection = true;
                 } else {
                     if (!hasGlobalsSection) {
-                        ENSURE_HR(_GenerateEmptySection(pfnCB, nullptr, L"globals", 0, 0));
+                        ENSURE_HR(
+                            _GenerateEmptySection(pfnCB, nullptr, L"globals", 0, 0));
                         hasGlobalsSection = true;
                     }
 
                     if (!hasSysmetsSection) {
-                        ENSURE_HR(_GenerateEmptySection(pfnCB, nullptr, L"SysMetrics", 0, 0));
+                        ENSURE_HR(
+                            _GenerateEmptySection(pfnCB, nullptr, L"SysMetrics", 0, 0));
                         hasSysmetsSection = true;
                     }
 
@@ -1570,7 +1592,8 @@ HRESULT CVSUnpack::LoadClassDataMap(
                     }
 
                     if (isNewPart && pRec->iState != 0 && v17)
-                        ENSURE_HR(_GenerateEmptySection(pfnCB, appName, className, pRec->iPart, 0));
+                        ENSURE_HR(_GenerateEmptySection(pfnCB, appName, className,
+                                                        pRec->iPart, 0));
                 }
 
                 currClassId = pRec->iClass;
@@ -1609,7 +1632,8 @@ HRESULT CVSUnpack::LoadClassDataMap(
         ENSURE_HR(_FlushDelayedPlateauRecords(pfnCB));
 
     if (startOfSection >= 0)
-        ENSURE_HR(_TerminateSection(pfnCB, appName, className, currPartId, currStateId, startOfSection));
+        ENSURE_HR(_TerminateSection(pfnCB, appName, className, currPartId, currStateId,
+                                    startOfSection));
 
     return hr;
 }
@@ -1672,30 +1696,24 @@ HRESULT CVSUnpack::LoadAnimationDataMap(IParserCallBack* pfnCB)
         if (currClass != timingClass && currPart != pRec->iPart) {
             currPart = pRec->iPart;
             hr = _GenerateEmptySection(
-                pfnCB, g_pszAppName, _rgClassNames[pRec->iClass].c_str(),
-                pRec->iPart, 0);
+                pfnCB, g_pszAppName, _rgClassNames[pRec->iClass].c_str(), pRec->iPart, 0);
         }
 
         if (hr >= 0) {
             int index = pfnCB->GetNextDataIndex();
             hr = _AddVSDataRecord(pfnCB, _hInst, pRec);
             if (hr >= 0)
-                hr = _TerminateSection(
-                    pfnCB,
-                    g_pszAppName,
-                    _rgClassNames[pRec->iClass].c_str(),
-                    pRec->iPart,
-                    pRec->iState,
-                    index);
+                hr = _TerminateSection(pfnCB, g_pszAppName,
+                                       _rgClassNames[pRec->iClass].c_str(), pRec->iPart,
+                                       pRec->iState, index);
         }
     }
 
     return hr;
 }
 
-HRESULT CVSUnpack::_FindVSRecord(
-    void* pvRecBuf, int cbRecBuf, int iClass, int iPart, int iState,
-    int lSymbolVal, VSRECORD** ppRec)
+HRESULT CVSUnpack::_FindVSRecord(void* pvRecBuf, int cbRecBuf, int iClass, int iPart,
+                                 int iState, int lSymbolVal, VSRECORD** ppRec)
 {
     int pcbPos = 0;
 
@@ -1716,12 +1734,13 @@ HRESULT CVSUnpack::_FindVSRecord(
     return HRESULT_FROM_WIN32(ERROR_NO_MATCH);
 }
 
-HRESULT CVSUnpack::_GetPropertyValue(
-    void* pvBits, int cbBits, int iClass, int iPart, int iState, int lSymbolVal,
-    void* pvValue, int* pcbValue)
+HRESULT CVSUnpack::_GetPropertyValue(void* pvBits, int cbBits, int iClass, int iPart,
+                                     int iState, int lSymbolVal, void* pvValue,
+                                     int* pcbValue)
 {
     VSRECORD* pRecord;
-    HRESULT hr = _FindVSRecord(pvBits, cbBits, iClass, iPart, iState, lSymbolVal, &pRecord);
+    HRESULT hr =
+        _FindVSRecord(pvBits, cbBits, iClass, iPart, iState, lSymbolVal, &pRecord);
     if (FAILED(hr))
         return hr;
     return LoadVSRecordData(_hInst, pRecord, pvValue, pcbValue);
@@ -1737,8 +1756,8 @@ CVSUnpack::_GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
         return E_OUTOFMEMORY;
 
     for (int i = 0; i < iImageCount; ++i) {
-        DWORD borderColor = MapEnumToSysColor(
-            (HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBorderColor);
+        DWORD borderColor =
+            MapEnumToSysColor((HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBorderColor);
         DWORD backgroundColor = MapEnumToSysColor(
             (HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBackgroundColor);
 
@@ -1751,26 +1770,19 @@ CVSUnpack::_GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
     return S_OK;
 }
 
-HRESULT CVSUnpack::_CreateImageFromProperties(
-    IMAGEPROPERTIES const* pImageProperties, int iImageCount,
-    MARGINS const* pSizingMargins, MARGINS const* pTransparentMargins,
-    BYTE** ppbNewBitmap, int* pcbNewBitmap)
+HRESULT CVSUnpack::_CreateImageFromProperties(IMAGEPROPERTIES const* pImageProperties,
+                                              int iImageCount,
+                                              MARGINS const* pSizingMargins,
+                                              MARGINS const* pTransparentMargins,
+                                              BYTE** ppbNewBitmap, int* pcbNewBitmap)
 {
     MARGINS const transparentMargin =
         pTransparentMargins ? *pTransparentMargins : MARGINS();
 
-    int const width =
-        transparentMargin.cxLeftWidth +
-        transparentMargin.cxRightWidth +
-        pSizingMargins->cxLeftWidth +
-        pSizingMargins->cxRightWidth +
-        1;
-    int const height =
-        transparentMargin.cyTopHeight +
-        transparentMargin.cyBottomHeight +
-        pSizingMargins->cyTopHeight +
-        pSizingMargins->cyBottomHeight +
-        1;
+    int const width = transparentMargin.cxLeftWidth + transparentMargin.cxRightWidth +
+                      pSizingMargins->cxLeftWidth + pSizingMargins->cxRightWidth + 1;
+    int const height = transparentMargin.cyTopHeight + transparentMargin.cyBottomHeight +
+                       pSizingMargins->cyTopHeight + pSizingMargins->cyBottomHeight + 1;
 
     DWORD const imageSize = iImageCount * 4 * width * height;
     size_t const cBytes = sizeof(BITMAPHEADER) + imageSize;
@@ -1803,14 +1815,14 @@ HRESULT CVSUnpack::_CreateImageFromProperties(
 
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                bool isTransparent =
-                    x < transparentMargin.cxLeftWidth ||
-                    x >= width - transparentMargin.cxRightWidth ||
-                    y < transparentMargin.cyBottomHeight ||
-                    y >= height - transparentMargin.cyTopHeight;
+                bool isTransparent = x < transparentMargin.cxLeftWidth ||
+                                     x >= width - transparentMargin.cxRightWidth ||
+                                     y < transparentMargin.cyBottomHeight ||
+                                     y >= height - transparentMargin.cyTopHeight;
                 bool isBorder =
                     x != transparentMargin.cxLeftWidth + pSizingMargins->cxLeftWidth ||
-                    y != height - pSizingMargins->cyTopHeight - transparentMargin.cyTopHeight - 1;
+                    y != height - pSizingMargins->cyTopHeight -
+                             transparentMargin.cyTopHeight - 1;
 
                 if (isTransparent)
                     *pixel = 0;
@@ -1854,9 +1866,8 @@ bool CVSUnpack::_IsTrueSizeImage(VSRECORD* pRec)
     return (type & ~ST_TILE) == 0;
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB,
-                                           VSRECORD* pRec, BYTE* pbData,
-                                           int cbData, bool* pfIsColor)
+HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                           BYTE* pbData, int cbData, bool* pfIsColor)
 {
     *pfIsColor = false;
 
@@ -1866,7 +1877,8 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB,
             if (!IsHighContrastMode())
                 return S_OK;
 
-            DWORD value = MapEnumToSysColor(*reinterpret_cast<HIGHCONTRASTCOLOR*>(pbData));
+            DWORD value =
+                MapEnumToSysColor(*reinterpret_cast<HIGHCONTRASTCOLOR*>(pbData));
             return pfnCB->AddData(entry.lSymbolVal, TMT_COLOR, &value, sizeof(value));
         }
 
@@ -1877,8 +1889,7 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB,
 
             VSRECORD* r;
             HRESULT hr = _FindVSRecord(_pbClassData, _cbClassData, pRec->iClass,
-                                       pRec->iPart, pRec->iState,
-                                       entry.lHCSymbolVal, &r);
+                                       pRec->iPart, pRec->iState, entry.lHCSymbolVal, &r);
             return FAILED(hr) ? S_FALSE : S_OK;
         }
     }
@@ -1886,9 +1897,8 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB,
     return S_OK;
 }
 
-HRESULT CVSUnpack::_ExpandVSRecordForMargins(IParserCallBack* pfnCB,
-                                             VSRECORD* pRec, BYTE* pbData,
-                                             int cbData, bool* pfIsMargins)
+HRESULT CVSUnpack::_ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                             BYTE* pbData, int cbData, bool* pfIsMargins)
 {
     *pfIsMargins = false;
 
@@ -1900,9 +1910,9 @@ HRESULT CVSUnpack::_ExpandVSRecordForMargins(IParserCallBack* pfnCB,
         MARGINS margins = {};
         int size = 16;
 
-        HRESULT hr = _GetPropertyValue(
-            _pbClassData, _cbClassData, pRec->iClass, pRec->iPart, pRec->iState,
-            TMT_TRANSPARENTMARGINS, &margins, &size);
+        HRESULT hr =
+            _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
+                              pRec->iState, TMT_TRANSPARENTMARGINS, &margins, &size);
         if (hr < 0)
             return hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH) ? S_FALSE : hr;
 
@@ -1971,8 +1981,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
             return E_INVALIDARG;
         break;
 
-    case TMT_SIMPLIFIEDIMAGE:
-    {
+    case TMT_SIMPLIFIEDIMAGE: {
         if (IsHighContrastMode())
             return S_OK;
 
@@ -1983,8 +1992,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         break;
     }
 
-    case TMT_HCSIMPLIFIEDIMAGE:
-    {
+    case TMT_HCSIMPLIFIEDIMAGE: {
         if (!IsHighContrastMode())
             return S_OK;
 
@@ -1993,9 +2001,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
 
         pHCImageProperties = reinterpret_cast<HCIMAGEPROPERTIES*>(pbData);
         iImageCount = cbData / sizeof(HCIMAGEPROPERTIES);
-        ENSURE_HR(_GetImagePropertiesForHC(
-            &pImageProperties, pHCImageProperties,
-            iImageCount));
+        ENSURE_HR(
+            _GetImagePropertiesForHC(&pImageProperties, pHCImageProperties, iImageCount));
         allocatedImageProps.reset(pImageProperties);
         break;
     }
@@ -2058,11 +2065,13 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
             partiallyTransparent = TestBit(_rgfPartiallyTransparent.get(), iRes);
         } else {
             _cBitmaps = 2 * cBitmapsOld;
-            if (!realloc(_rgBitmapIndices, sizeof(_rgBitmapIndices[0]) * (2 * cBitmapsOld)))
+            if (!realloc(_rgBitmapIndices,
+                         sizeof(_rgBitmapIndices[0]) * (2 * cBitmapsOld)))
                 return E_OUTOFMEMORY;
 
             if (_cBitmaps > cBitmapsOld)
-                std::fill(&_rgBitmapIndices[cBitmapsOld], &_rgBitmapIndices[_cBitmaps], -1);
+                std::fill(&_rgBitmapIndices[cBitmapsOld], &_rgBitmapIndices[_cBitmaps],
+                          -1);
 
             if (!realloc(_rgfPartiallyTransparent, (_cBitmaps / CHAR_BIT) + 1))
                 return E_OUTOFMEMORY;
@@ -2076,30 +2085,25 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         if (fSimplifiedImage) {
             MARGINS sizingMargins = {};
             int valueSize = sizeof(sizingMargins);
-            auto v37_ = _GetPropertyValue(
-                _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                pRec->iState, TMT_SIZINGMARGINS, &sizingMargins, &valueSize);
+            auto v37_ = _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass,
+                                          pRec->iPart, pRec->iState, TMT_SIZINGMARGINS,
+                                          &sizingMargins, &valueSize);
 
             if (v37_ != HRESULT_FROM_WIN32(ERROR_NO_MATCH) && v37_ < 0)
                 return v37_;
 
             MARGINS transparentMargins = {};
             valueSize = sizeof(transparentMargins);
-            hr = _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass,
-                                   pRec->iPart, pRec->iState,
-                                   TMT_TRANSPARENTMARGINS, &transparentMargins,
-                                   &valueSize);
+            hr = _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
+                                   pRec->iState, TMT_TRANSPARENTMARGINS,
+                                   &transparentMargins, &valueSize);
 
             BYTE* pb = nullptr;
             int cb = 0;
             if (SUCCEEDED(hr) || hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH))
-                hr = _CreateImageFromProperties(
-                    pImageProperties,
-                    iImageCount,
-                    &sizingMargins,
-                    &transparentMargins,
-                    &pb,
-                    &cb);
+                hr = _CreateImageFromProperties(pImageProperties, iImageCount,
+                                                &sizingMargins, &transparentMargins, &pb,
+                                                &cb);
 
             allocatedImage = malloc_ptr<BYTE>{pb};
             if (hr < 0)
@@ -2110,13 +2114,13 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
             auto hdr = reinterpret_cast<BITMAPHDR*>(pbData);
             if (hdr->size != 0) {
                 if (!_pDecoder) {
-                    _pDecoder = new(std::nothrow) CThemePNGDecoder();
+                    _pDecoder = new (std::nothrow) CThemePNGDecoder();
                     if (!_pDecoder)
                         return E_OUTOFMEMORY;
                 }
 
-                ENSURE_HR(_pDecoder->ConvertToDIB(
-                    static_cast<BYTE const*>(hdr->buffer), hdr->size, &f32bpp));
+                ENSURE_HR(_pDecoder->ConvertToDIB(static_cast<BYTE const*>(hdr->buffer),
+                                                  hdr->size, &f32bpp));
                 isPNG = true;
                 pBitmapHdr = _pDecoder->GetBitmapHeader();
             } else {
@@ -2138,7 +2142,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         } else if (fSimplifiedImage) {
             if (!pHCImageProperties && iImageCount > 0) {
                 for (int i = 0; i < iImageCount; ++i) {
-                    if ((pImageProperties[i].dwBackgroundColor & 0xFF000000) != 0xFF000000 ||
+                    if ((pImageProperties[i].dwBackgroundColor & 0xFF000000) !=
+                            0xFF000000 ||
                         (pImageProperties[i].dwBorderColor & 0xFF000000) != 0xFF000000) {
                         partiallyTransparent = true;
                         break;
@@ -2159,12 +2164,15 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
             unsigned glyphBGColor = 0;
             bool hasGlyphColor = false;
             bool hasGlyphBGColor = false;
-            bool isImageFile =
-                pRec->lSymbolVal >= TMT_IMAGEFILE1 && pRec->lSymbolVal <= TMT_IMAGEFILE5 ||
-                pRec->lSymbolVal >= TMT_GLYPHIMAGEFILE && pRec->lSymbolVal <= TMT_IMAGEFILE7 ||
-                pRec->lSymbolVal >= TMT_COMPOSEDIMAGEFILE1 && pRec->lSymbolVal <= TMT_COMPOSEDGLYPHIMAGEFILE ||
-                pRec->lSymbolVal >= TMT_COMPOSEDIMAGEFILE6 && pRec->lSymbolVal <= TMT_COMPOSEDIMAGEFILE7 ||
-                _IsTrueSizeImage(pRec);
+            bool isImageFile = pRec->lSymbolVal >= TMT_IMAGEFILE1 &&
+                                   pRec->lSymbolVal <= TMT_IMAGEFILE5 ||
+                               pRec->lSymbolVal >= TMT_GLYPHIMAGEFILE &&
+                                   pRec->lSymbolVal <= TMT_IMAGEFILE7 ||
+                               pRec->lSymbolVal >= TMT_COMPOSEDIMAGEFILE1 &&
+                                   pRec->lSymbolVal <= TMT_COMPOSEDGLYPHIMAGEFILE ||
+                               pRec->lSymbolVal >= TMT_COMPOSEDIMAGEFILE6 &&
+                                   pRec->lSymbolVal <= TMT_COMPOSEDIMAGEFILE7 ||
+                               _IsTrueSizeImage(pRec);
 
             if (partiallyTransparent && _fIsLiteVisualStyle && isImageFile &&
                 IsHighContrastMode()) {
@@ -2173,17 +2181,18 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                 int valueSize = sizeof(hcGlyphColor);
 
                 if (SUCCEEDED(_GetPropertyValue(
-                    _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                    pRec->iState, TMT_HCGLYPHCOLOR, &hcGlyphColor, &valueSize))) {
+                        _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
+                        pRec->iState, TMT_HCGLYPHCOLOR, &hcGlyphColor, &valueSize))) {
                     hasGlyphColor = true;
                     glyphColor = static_cast<unsigned>(MapEnumToSysColor(hcGlyphColor));
                 }
 
                 if (SUCCEEDED(_GetPropertyValue(
-                    _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                    pRec->iState, TMT_HCGLYPHBGCOLOR, &hcGlyphBGColor, &valueSize))) {
+                        _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
+                        pRec->iState, TMT_HCGLYPHBGCOLOR, &hcGlyphBGColor, &valueSize))) {
                     hasGlyphBGColor = true;
-                    glyphBGColor = static_cast<unsigned>(MapEnumToSysColor(hcGlyphBGColor));
+                    glyphBGColor =
+                        static_cast<unsigned>(MapEnumToSysColor(hcGlyphBGColor));
                 }
             }
 
@@ -2196,9 +2205,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                             iImageCount = 1;
                             int size = sizeof(iImageCount);
                             if (SUCCEEDED(_GetPropertyValue(
-                                _pbClassData, _cbClassData, pRec->iClass,
-                                pRec->iPart, pRec->iState, TMT_IMAGECOUNT,
-                                &iImageCount, &size)) &&
+                                    _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
+                                    pRec->iState, TMT_IMAGECOUNT, &iImageCount, &size)) &&
                                 iImageCount <= 0)
                                 hr = E_INVALIDARG;
 
@@ -2222,7 +2230,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                             memcpy_s(pbNewBitmap.get(), cbNewBitmap,
                                      GetBitmapBits(pBitmapHdr), cbNewBitmap);
                     } else {
-                        hr = _EnsureBufferSize(4 * pBitmapHdr->biWidth * pBitmapHdr->biHeight);
+                        hr = _EnsureBufferSize(4 * pBitmapHdr->biWidth *
+                                               pBitmapHdr->biHeight);
                         if (hr >= 0) {
                             pbNewBitmap = make_unique_malloc<BYTE[]>(cbNewBitmap);
                             if (pbNewBitmap)
@@ -2291,8 +2300,7 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
         } else {
             v29->bmih = *pBitmapHdr;
             v29->masks[2] = 0xFF;
-            Convert24to32BPP(buffer.get() + sizeof(TMBITMAPHEADER) +
-                             sizeof(BITMAPHEADER),
+            Convert24to32BPP(buffer.get() + sizeof(TMBITMAPHEADER) + sizeof(BITMAPHEADER),
                              pBitmapHdr);
         }
 
@@ -2306,15 +2314,14 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
     return hr;
 }
 
-HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst,
-                                    VSRECORD* pRec)
+HRESULT CVSUnpack::_AddVSDataRecord(IParserCallBack* pfnCB, HMODULE hInst, VSRECORD* pRec)
 {
     array<BYTE, 256> localBuffer;
     int pcbBuf = pRec->cbData;
 
     BYTE* pvBuf = localBuffer.data();
     if (pRec->cbData > localBuffer.size()) {
-        pvBuf = new(nothrow) BYTE[pRec->cbData];
+        pvBuf = new (nothrow) BYTE[pRec->cbData];
         if (!pvBuf)
             return E_OUTOFMEMORY;
     }
@@ -2383,7 +2390,8 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
     }
 
     if (hasDpiRecord) {
-        for (int plateau = DPI_PLATEAU_UNSUPPORTED; plateau < DPI_PLATEAU_COUNT; ++plateau) {
+        for (int plateau = DPI_PLATEAU_UNSUPPORTED; plateau < DPI_PLATEAU_COUNT;
+             ++plateau) {
             int targetDpi;
             if (plateau == DPI_PLATEAU_UNSUPPORTED)
                 targetDpi = GetScreenDpi();
@@ -2412,24 +2420,24 @@ HRESULT CVSUnpack::_FlushDelayedRecords(IParserCallBack* pfnCB)
 
     for (int i = 0, idx = 0; i < _rgImageDpiRec.size(); ++i) {
         if (selectedDpiAssets[i] == PL_1_4x) {
-            hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgImageDpiRec[i], Map_Ordinal_To_MINDPI(idx));
+            hr = _FixSymbolAndAddVSDataRecord(pfnCB, _rgImageDpiRec[i],
+                                              Map_Ordinal_To_MINDPI(idx));
             ++idx;
         }
     }
 
     for (int i = 0, idx = 0; i < _rgImageRec.size(); ++i) {
         if (_rgImageRec[i] && selectedDpiAssets[i] != PL_1_0x) {
-            hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgImageRec[i], Map_Ordinal_To_IMAGEFILE(idx));
+            hr = _FixSymbolAndAddVSDataRecord(pfnCB, _rgImageRec[i],
+                                              Map_Ordinal_To_IMAGEFILE(idx));
             ++idx;
         }
     }
 
     for (int i = 0, idx = 0; i < _rgComposedImageRec.size(); ++i) {
         if (_rgComposedImageRec[i] && selectedDpiAssets[i] != PL_1_0x) {
-            hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgComposedImageRec[i], Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
+            hr = _FixSymbolAndAddVSDataRecord(pfnCB, _rgComposedImageRec[i],
+                                              Map_Ordinal_To_COMPOSEDIMAGEFILE(idx));
             ++idx;
         }
     }
@@ -2467,23 +2475,20 @@ HRESULT CVSUnpack::_FlushDelayedPlateauRecords(IParserCallBack* pfnCB)
     HRESULT hr = S_OK;
     if (closestPlateauIdx >= 0) {
         if (_rgImagePRec[closestPlateauIdx])
-            hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgImagePRec[closestPlateauIdx], TMT_IMAGEFILE);
+            hr = _FixSymbolAndAddVSDataRecord(pfnCB, _rgImagePRec[closestPlateauIdx],
+                                              TMT_IMAGEFILE);
 
         if (hr >= 0 && _rgGlyphImagePRec[closestPlateauIdx])
-            hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgGlyphImagePRec[closestPlateauIdx],
-                TMT_GLYPHIMAGEFILE);
+            hr = _FixSymbolAndAddVSDataRecord(pfnCB, _rgGlyphImagePRec[closestPlateauIdx],
+                                              TMT_GLYPHIMAGEFILE);
 
         if (hr >= 0 && _rgContentMarginsPRec[closestPlateauIdx])
             hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgContentMarginsPRec[closestPlateauIdx],
-                TMT_CONTENTMARGINS);
+                pfnCB, _rgContentMarginsPRec[closestPlateauIdx], TMT_CONTENTMARGINS);
 
         if (hr >= 0 && _rgSizingMarginsPRec[closestPlateauIdx])
             hr = _FixSymbolAndAddVSDataRecord(
-                pfnCB, _rgSizingMarginsPRec[closestPlateauIdx],
-                TMT_SIZINGMARGINS);
+                pfnCB, _rgSizingMarginsPRec[closestPlateauIdx], TMT_SIZINGMARGINS);
     }
 
     _ClearPlateauRecords();
@@ -2546,8 +2551,8 @@ HRESULT CVSUnpack::_SavePlateauRecord(VSRECORD* pRec)
     return S_OK;
 }
 
-HRESULT CVSUnpack::_FixSymbolAndAddVSDataRecord(
-    IParserCallBack* pfnCB, VSRECORD* pRec, int lSymbolVal)
+HRESULT CVSUnpack::_FixSymbolAndAddVSDataRecord(IParserCallBack* pfnCB, VSRECORD* pRec,
+                                                int lSymbolVal)
 {
     char buffer[sizeof(VSRECORD) + 260];
 

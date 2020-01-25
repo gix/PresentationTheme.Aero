@@ -16,8 +16,7 @@ public:
 
     SymbolContext(SymbolContext&& source) noexcept
         : initialized(std::exchange(source.initialized, false))
-    {
-    }
+    {}
 
     SymbolContext& operator=(SymbolContext&& source) noexcept
     {
@@ -29,10 +28,9 @@ public:
     HRESULT Cleanup();
     HRESULT LoadModule(HMODULE module);
     HRESULT UnloadModule(HMODULE module);
-    HRESULT GetSymbolAddress(HMODULE module, char const* symbolName,
-                             uintptr_t& address);
+    HRESULT GetSymbolAddress(HMODULE module, char const* symbolName, uintptr_t& address);
 
-    template <typename T>
+    template<typename T>
     bool GetProc(ModuleHandle const& module, char const* symbolName, T& proc)
     {
         proc = nullptr;

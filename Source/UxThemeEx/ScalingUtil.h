@@ -1,6 +1,6 @@
 #pragma once
-#include <windows.h>
 #include <uxtheme.h>
+#include <windows.h>
 
 namespace uxtheme
 {

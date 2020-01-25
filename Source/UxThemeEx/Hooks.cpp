@@ -5,8 +5,8 @@
 #include "UxThemeDllHelper.h"
 
 #include <array>
-#include <unordered_map>
 #include <easyhook/easyhook.h>
+#include <unordered_map>
 
 typedef struct _HOOK_ACL_
 {
@@ -31,11 +31,11 @@ typedef struct _LOCAL_HOOK_INFO_
     HOOK_ACL LocalACL;
     ULONG Signature;
     TRACED_HOOK_HANDLE Tracking;
-    void* RandomValue; // fixed
-    void* HookIntro; // fixed
-    UCHAR* OldProc; // fixed
-    UCHAR* HookProc; // fixed
-    void* HookOutro; // fixed
+    void* RandomValue;  // fixed
+    void* HookIntro;    // fixed
+    UCHAR* OldProc;     // fixed
+    UCHAR* HookProc;    // fixed
+    void* HookOutro;    // fixed
     int* IsExecutedPtr; // fixed
 } LOCAL_HOOK_INFO, *PLOCAL_HOOK_INFO;
 
@@ -182,8 +182,7 @@ struct CThemeMenuBar : CThemeMenu
         return MBI_NORMAL;
     }
 
-    void LayoutItem(RECT const* prcItem,
-                    SIZE const* prgSize, DRAWITEMMETRICS* dim)
+    void LayoutItem(RECT const* prcItem, SIZE const* prgSize, DRAWITEMMETRICS* dim)
     {
         int const cyItem = prcItem->bottom - prcItem->top;
         int cx = prcItem->left + _spMetrics->marBarItem.cxLeftWidth;
@@ -215,8 +214,7 @@ using namespace uxtheme;
 
 static std::unordered_map<HTHEME, HTHEME> g_ThemeHandleMap;
 
-#define DECLARE_HOOK_INFO(name) \
-    HookTraceInfo<decltype(name)> PFn ## name
+#define DECLARE_HOOK_INFO(name) HookTraceInfo<decltype(name)> PFn##name
 
 union HookHandles
 {
@@ -266,10 +264,11 @@ union HookHandles
         DECLARE_HOOK_INFO(DrawThemeText);
         DECLARE_HOOK_INFO(DrawThemeTextEx);
         DECLARE_HOOK_INFO(GetSysColor);
-        HookTraceInfo<HTHEME(HWND hwnd, wchar_t const* pszClassIdList,
-                             unsigned dwFlags, wchar_t const* pszApiName,
-                             int iForDPI)> PFnOpenThemeDataExInternal;
-        HookTraceInfo<void(CThemeMenuBar*, HWND hwnd, UAHDRAWMENUITEM* pudmi)> PFnCThemeMenuBar_DrawItem;
+        HookTraceInfo<HTHEME(HWND hwnd, wchar_t const* pszClassIdList, unsigned dwFlags,
+                             wchar_t const* pszApiName, int iForDPI)>
+            PFnOpenThemeDataExInternal;
+        HookTraceInfo<void(CThemeMenuBar*, HWND hwnd, UAHDRAWMENUITEM* pudmi)>
+            PFnCThemeMenuBar_DrawItem;
     } t;
     HOOK_TRACE_INFO handles[sizeof(TypedHooks) / sizeof(HOOK_TRACE_INFO)];
 } g_hookHandles;
@@ -301,9 +300,7 @@ static HTHEME FindThemeHandle(HTHEME hTheme)
     return it->second;
 }
 
-static HTHEME WINAPI OpenThemeDataHook(
-    _In_opt_ HWND hwnd,
-    _In_ LPCWSTR pszClassList)
+static HTHEME WINAPI OpenThemeDataHook(_In_opt_ HWND hwnd, _In_ LPCWSTR pszClassList)
 {
     if (g_OverrideTheme) {
         HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
@@ -317,10 +314,8 @@ static HTHEME WINAPI OpenThemeDataHook(
     return OpenThemeData(hwnd, pszClassList);
 }
 
-static HTHEME WINAPI OpenThemeDataExHook(
-    _In_opt_ HWND hwnd,
-    _In_ LPCWSTR pszClassList,
-    _In_ DWORD dwFlags)
+static HTHEME WINAPI OpenThemeDataExHook(_In_opt_ HWND hwnd, _In_ LPCWSTR pszClassList,
+                                         _In_ DWORD dwFlags)
 {
     if (g_OverrideTheme) {
         HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
@@ -334,10 +329,8 @@ static HTHEME WINAPI OpenThemeDataExHook(
     return OpenThemeDataEx(hwnd, pszClassList, dwFlags);
 }
 
-static HTHEME WINAPI OpenThemeDataForDpiHook(
-    _In_opt_ HWND hwnd,
-    _In_ LPCWSTR pszClassList,
-    _In_ UINT dpi)
+static HTHEME WINAPI OpenThemeDataForDpiHook(_In_opt_ HWND hwnd,
+                                             _In_ LPCWSTR pszClassList, _In_ UINT dpi)
 {
     if (g_OverrideTheme) {
         HTHEME hOrigTheme = OpenThemeData(hwnd, pszClassList);
@@ -351,8 +344,7 @@ static HTHEME WINAPI OpenThemeDataForDpiHook(
     return OpenThemeDataForDpi(hwnd, pszClassList, dpi);
 }
 
-static HRESULT WINAPI CloseThemeDataHook(
-    _In_ HTHEME hTheme)
+static HRESULT WINAPI CloseThemeDataHook(_In_ HTHEME hTheme)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride) {
@@ -364,471 +356,362 @@ static HRESULT WINAPI CloseThemeDataHook(
 }
 
 static HRESULT WINAPI GetThemeAnimationPropertyHook(
-    _In_ HTHEME hTheme,
-    _In_ int iStoryboardId,
-    _In_ int iTargetId,
+    _In_ HTHEME hTheme, _In_ int iStoryboardId, _In_ int iTargetId,
     _In_ TA_PROPERTY eProperty,
-    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) VOID *pvProperty,
-    _In_ DWORD cbSize,
-    _Out_ DWORD *pcbSizeOut)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeAnimationProperty(
-            g_OverrideTheme, hThemeOverride, iStoryboardId, iTargetId,
-            eProperty, pvProperty, cbSize, pcbSizeOut);
-    return GetThemeAnimationProperty(hTheme, iStoryboardId, iTargetId,
-                                     eProperty, pvProperty, cbSize, pcbSizeOut);
-}
-
-static HRESULT WINAPI GetThemeAnimationTransformHook(
-    _In_ HTHEME hTheme,
-    _In_ int iStoryboardId,
-    _In_ int iTargetId,
-    _In_ DWORD dwTransformIndex,
-    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TRANSFORM *pTransform,
-    _In_ DWORD cbSize,
-    _Out_ DWORD *pcbSizeOut)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeAnimationTransform(
-            g_OverrideTheme, hThemeOverride, iStoryboardId, iTargetId,
-            dwTransformIndex, pTransform, cbSize, pcbSizeOut);
-    return GetThemeAnimationTransform(hTheme, iStoryboardId, iTargetId,
-                                      dwTransformIndex, pTransform, cbSize,
-                                      pcbSizeOut);
-}
-
-static HRESULT WINAPI GetThemeBackgroundContentRectHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pBoundingRect,
-    _Out_ LPRECT pContentRect)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeBackgroundContentRect(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
-            pBoundingRect, pContentRect);
-    return GetThemeBackgroundContentRect(hTheme, hdc, iPartId, iStateId,
-                                         pBoundingRect, pContentRect);
-}
-
-static HRESULT WINAPI GetThemeBackgroundExtentHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pContentRect,
-    _Out_ LPRECT pExtentRect)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeBackgroundExtent(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
-            pContentRect, pExtentRect);
-    return GetThemeBackgroundExtent(hTheme, hdc, iPartId, iStateId,
-                                    pContentRect, pExtentRect);
-}
-
-static HRESULT WINAPI GetThemeBackgroundRegionHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pRect,
-    _Out_ HRGN* pRegion)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeBackgroundRegion(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
-            pRect, pRegion);
-    return GetThemeBackgroundRegion(hTheme, hdc, iPartId, iStateId,
-                                    pRect, pRegion);
-}
-
-static HRESULT WINAPI GetThemeBitmapHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _In_ ULONG dwFlags,
-    _Out_ HBITMAP* phBitmap)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeBitmap(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
-            dwFlags, phBitmap);
-    return GetThemeBitmap(hTheme, iPartId, iStateId, iPropId, dwFlags, phBitmap);
-}
-
-static HRESULT WINAPI GetThemeBoolHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ BOOL* pfVal)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeBool(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pfVal);
-    return GetThemeBool(hTheme, iPartId, iStateId, iPropId, pfVal);
-}
-
-static HRESULT WINAPI GetThemeColorHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ COLORREF* pColor)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeColor(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pColor);
-    return GetThemeColor(hTheme, iPartId, iStateId, iPropId, pColor);
-}
-
-static HRESULT WINAPI GetThemeEnumValueHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ int* piVal)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeEnumValue(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, piVal);
-    return GetThemeEnumValue(hTheme, iPartId, iStateId, iPropId, piVal);
-}
-
-static HRESULT WINAPI GetThemeFilenameHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_writes_(cchMaxBuffChars) LPWSTR pszThemeFileName,
-    _In_ int cchMaxBuffChars)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeFilename(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
-            pszThemeFileName, cchMaxBuffChars);
-    return GetThemeFilename(hTheme, iPartId, iStateId, iPropId,
-                            pszThemeFileName, cchMaxBuffChars);
-}
-
-static HRESULT WINAPI GetThemeFontHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ LOGFONTW* pFont)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeFont(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, iPropId, pFont);
-    return GetThemeFont(hTheme, hdc, iPartId, iStateId, iPropId, pFont);
-}
-
-static HRESULT WINAPI GetThemeIntHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ int* piVal)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeInt(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, piVal);
-    return GetThemeInt(hTheme, iPartId, iStateId, iPropId, piVal);
-}
-
-static HRESULT WINAPI GetThemeIntListHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ INTLIST* pIntList)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeIntList(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pIntList);
-    return GetThemeIntList(hTheme, iPartId, iStateId, iPropId, pIntList);
-}
-
-static HRESULT WINAPI GetThemeMarginsHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _In_opt_ LPCRECT prc,
-    _Out_ MARGINS* pMargins)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeMargins(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, iPropId, prc, pMargins);
-    return GetThemeMargins(hTheme, hdc, iPartId, iStateId, iPropId, prc, pMargins);
-}
-
-static HRESULT WINAPI GetThemeMetricHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ int* piVal)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeMetric(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, iPropId, piVal);
-    return GetThemeMetric(hTheme, hdc, iPartId, iStateId, iPropId, piVal);
-}
-
-static HRESULT WINAPI GetThemePartSizeHook(
-    _In_ HTHEME hTheme,
-    _In_opt_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_opt_ LPCRECT prc,
-    _In_ enum THEMESIZE eSize,
-    _Out_ SIZE* psz)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemePartSize(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, prc, eSize, psz);
-    return GetThemePartSize(hTheme, hdc, iPartId, iStateId, prc, eSize, psz);
-}
-
-static HRESULT WINAPI GetThemePositionHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ POINT* pPoint)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemePosition(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pPoint);
-    return GetThemePosition(hTheme, iPartId, iStateId, iPropId, pPoint);
-}
-
-static HRESULT WINAPI GetThemePropertyOriginHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ enum PROPERTYORIGIN* pOrigin)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemePropertyOrigin(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pOrigin);
-    return GetThemePropertyOrigin(hTheme, iPartId, iStateId, iPropId, pOrigin);
-}
-
-static HRESULT WINAPI GetThemeRectHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ LPRECT pRect)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeRect(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId, pRect);
-    return GetThemeRect(hTheme, iPartId, iStateId, iPropId, pRect);
-}
-
-static BOOL WINAPI GetThemeSysBoolHook(
-    _In_opt_ HTHEME hTheme,
-    _In_ int iBoolId)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysBool(
-            g_OverrideTheme, hThemeOverride, iBoolId);
-    return GetThemeSysBool(hTheme, iBoolId);
-}
-
-static COLORREF WINAPI GetThemeSysColorHook(
-    _In_opt_ HTHEME hTheme,
-    _In_ int iColorId)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysColor(
-            g_OverrideTheme, hThemeOverride, iColorId);
-    return GetThemeSysColor(hTheme, iColorId);
-}
-
-static HBRUSH WINAPI GetThemeSysColorBrushHook(
-    _In_opt_ HTHEME hTheme,
-    _In_ int iColorId)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysColorBrush(
-            g_OverrideTheme, hThemeOverride, iColorId);
-    return GetThemeSysColorBrush(hTheme, iColorId);
-}
-
-static HRESULT WINAPI GetThemeSysFontHook(
-    _In_opt_ HTHEME hTheme,
-    _In_ int iFontId,
-    _Out_ LOGFONTW* plf)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysFont(
-            g_OverrideTheme, hThemeOverride, iFontId, plf);
-    return GetThemeSysFont(hTheme, iFontId, plf);
-}
-
-static HRESULT WINAPI GetThemeSysSizeHook(
-    _In_opt_ HTHEME hTheme,
-    _In_ int iSizeId)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysSize(
-            g_OverrideTheme, hThemeOverride, iSizeId);
-    return GetThemeSysSize(hTheme, iSizeId);
-}
-
-static HRESULT WINAPI GetThemeSysStringHook(
-    _In_ HTHEME hTheme,
-    _In_ int iStringId,
-    _Out_writes_(cchMaxStringChars) LPWSTR pszStringBuff,
-    _In_ int cchMaxStringChars)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeSysString(
-            g_OverrideTheme, hThemeOverride, iStringId, pszStringBuff,
-            cchMaxStringChars);
-    return GetThemeSysString(hTheme, iStringId, pszStringBuff,
-                             cchMaxStringChars);
-}
-
-static HRESULT WINAPI GetThemeStreamHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_ VOID** ppvStream,
-    _Out_opt_ DWORD* pcbStream,
-    _In_opt_ HINSTANCE hInst)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeStream(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
-            ppvStream, pcbStream, hInst);
-    return GetThemeStream(hTheme, iPartId, iStateId, iPropId,
-                          ppvStream, pcbStream, hInst);
-}
-
-static HRESULT WINAPI GetThemeStringHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ int iPropId,
-    _Out_writes_(cchMaxBuffChars) LPWSTR pszBuff,
-    _In_ int cchMaxBuffChars)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeString(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
-            pszBuff, cchMaxBuffChars);
-    return GetThemeString(hTheme, iPartId, iStateId, iPropId,
-                          pszBuff, cchMaxBuffChars);
-}
-
-static HRESULT WINAPI GetThemeTextExtentHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_reads_(cchCharCount) LPCWSTR pszText,
-    _In_ int cchCharCount,
-    _In_ DWORD dwTextFlags,
-    _In_opt_ LPCRECT pBoundingRect,
-    _Out_ LPRECT pExtentRect)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeTextExtent(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, pszText,
-            cchCharCount, dwTextFlags, pBoundingRect, pExtentRect);
-    return GetThemeTextExtent(hTheme, hdc, iPartId, iStateId, pszText,
-                              cchCharCount, dwTextFlags, pBoundingRect, pExtentRect);
-}
-
-static HRESULT WINAPI GetThemeTextMetricsHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _Out_ TEXTMETRICW* ptm)
-{
-    HTHEME hThemeOverride = FindThemeHandle(hTheme);
-    if (hThemeOverride)
-        return UxGetThemeTextMetrics(
-            g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId, ptm);
-    return GetThemeTextMetrics(hTheme, hdc, iPartId, iStateId, ptm);
-}
-
-static HRESULT WINAPI GetThemeTimingFunctionHook(
-    _In_ HTHEME hTheme,
-    _In_ int iTimingFunctionId,
-    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TIMINGFUNCTION* pTimingFunction,
-    _In_ DWORD cbSize,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) VOID* pvProperty, _In_ DWORD cbSize,
     _Out_ DWORD* pcbSizeOut)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxGetThemeTimingFunction(
-            g_OverrideTheme, hThemeOverride, iTimingFunctionId, pTimingFunction,
-            cbSize, pcbSizeOut);
-    return GetThemeTimingFunction(hTheme, iTimingFunctionId, pTimingFunction,
-                                  cbSize, pcbSizeOut);
+        return UxGetThemeAnimationProperty(g_OverrideTheme, hThemeOverride, iStoryboardId,
+                                           iTargetId, eProperty, pvProperty, cbSize,
+                                           pcbSizeOut);
+    return GetThemeAnimationProperty(hTheme, iStoryboardId, iTargetId, eProperty,
+                                     pvProperty, cbSize, pcbSizeOut);
 }
 
-static BOOL WINAPI GetThemeTransitionDurationHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateIdFrom,
-    _In_ int iStateIdTo,
-    _In_ int iPropId,
-    _Out_ DWORD *pdwDuration)
+static HRESULT WINAPI GetThemeAnimationTransformHook(
+    _In_ HTHEME hTheme, _In_ int iStoryboardId, _In_ int iTargetId,
+    _In_ DWORD dwTransformIndex,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TRANSFORM* pTransform,
+    _In_ DWORD cbSize, _Out_ DWORD* pcbSizeOut)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxGetThemeTransitionDuration(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateIdFrom, iStateIdTo,
-            iPropId, pdwDuration);
-    return GetThemeTransitionDuration(hTheme, iPartId, iStateIdFrom, iStateIdTo,
-                                      iPropId, pdwDuration);
+        return UxGetThemeAnimationTransform(g_OverrideTheme, hThemeOverride,
+                                            iStoryboardId, iTargetId, dwTransformIndex,
+                                            pTransform, cbSize, pcbSizeOut);
+    return GetThemeAnimationTransform(hTheme, iStoryboardId, iTargetId, dwTransformIndex,
+                                      pTransform, cbSize, pcbSizeOut);
+}
+
+static HRESULT WINAPI GetThemeBackgroundContentRectHook(
+    _In_ HTHEME hTheme, _In_opt_ HDC hdc, _In_ int iPartId, _In_ int iStateId,
+    _In_ LPCRECT pBoundingRect, _Out_ LPRECT pContentRect)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBackgroundContentRect(g_OverrideTheme, hThemeOverride, hdc,
+                                               iPartId, iStateId, pBoundingRect,
+                                               pContentRect);
+    return GetThemeBackgroundContentRect(hTheme, hdc, iPartId, iStateId, pBoundingRect,
+                                         pContentRect);
+}
+
+static HRESULT WINAPI GetThemeBackgroundExtentHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                                   _In_ int iPartId, _In_ int iStateId,
+                                                   _In_ LPCRECT pContentRect,
+                                                   _Out_ LPRECT pExtentRect)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBackgroundExtent(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                          iStateId, pContentRect, pExtentRect);
+    return GetThemeBackgroundExtent(hTheme, hdc, iPartId, iStateId, pContentRect,
+                                    pExtentRect);
+}
+
+static HRESULT WINAPI GetThemeBackgroundRegionHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                                   _In_ int iPartId, _In_ int iStateId,
+                                                   _In_ LPCRECT pRect,
+                                                   _Out_ HRGN* pRegion)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBackgroundRegion(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                          iStateId, pRect, pRegion);
+    return GetThemeBackgroundRegion(hTheme, hdc, iPartId, iStateId, pRect, pRegion);
+}
+
+static HRESULT WINAPI GetThemeBitmapHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                         _In_ int iStateId, _In_ int iPropId,
+                                         _In_ ULONG dwFlags, _Out_ HBITMAP* phBitmap)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBitmap(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                iPropId, dwFlags, phBitmap);
+    return GetThemeBitmap(hTheme, iPartId, iStateId, iPropId, dwFlags, phBitmap);
+}
+
+static HRESULT WINAPI GetThemeBoolHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                       _In_ int iStateId, _In_ int iPropId,
+                                       _Out_ BOOL* pfVal)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeBool(g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
+                              pfVal);
+    return GetThemeBool(hTheme, iPartId, iStateId, iPropId, pfVal);
+}
+
+static HRESULT WINAPI GetThemeColorHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                        _In_ int iStateId, _In_ int iPropId,
+                                        _Out_ COLORREF* pColor)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeColor(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                               iPropId, pColor);
+    return GetThemeColor(hTheme, iPartId, iStateId, iPropId, pColor);
+}
+
+static HRESULT WINAPI GetThemeEnumValueHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                            _In_ int iStateId, _In_ int iPropId,
+                                            _Out_ int* piVal)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeEnumValue(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                   iPropId, piVal);
+    return GetThemeEnumValue(hTheme, iPartId, iStateId, iPropId, piVal);
+}
+
+static HRESULT WINAPI GetThemeFilenameHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                           _In_ int iStateId, _In_ int iPropId,
+                                           _Out_writes_(cchMaxBuffChars)
+                                               LPWSTR pszThemeFileName,
+                                           _In_ int cchMaxBuffChars)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeFilename(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                  iPropId, pszThemeFileName, cchMaxBuffChars);
+    return GetThemeFilename(hTheme, iPartId, iStateId, iPropId, pszThemeFileName,
+                            cchMaxBuffChars);
+}
+
+static HRESULT WINAPI GetThemeFontHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                       _In_ int iPartId, _In_ int iStateId,
+                                       _In_ int iPropId, _Out_ LOGFONTW* pFont)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeFont(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                              iPropId, pFont);
+    return GetThemeFont(hTheme, hdc, iPartId, iStateId, iPropId, pFont);
+}
+
+static HRESULT WINAPI GetThemeIntHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                      _In_ int iStateId, _In_ int iPropId,
+                                      _Out_ int* piVal)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeInt(g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
+                             piVal);
+    return GetThemeInt(hTheme, iPartId, iStateId, iPropId, piVal);
+}
+
+static HRESULT WINAPI GetThemeIntListHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                          _In_ int iStateId, _In_ int iPropId,
+                                          _Out_ INTLIST* pIntList)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeIntList(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                 iPropId, pIntList);
+    return GetThemeIntList(hTheme, iPartId, iStateId, iPropId, pIntList);
+}
+
+static HRESULT WINAPI GetThemeMarginsHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                          _In_ int iPartId, _In_ int iStateId,
+                                          _In_ int iPropId, _In_opt_ LPCRECT prc,
+                                          _Out_ MARGINS* pMargins)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeMargins(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                                 iPropId, prc, pMargins);
+    return GetThemeMargins(hTheme, hdc, iPartId, iStateId, iPropId, prc, pMargins);
+}
+
+static HRESULT WINAPI GetThemeMetricHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                         _In_ int iPartId, _In_ int iStateId,
+                                         _In_ int iPropId, _Out_ int* piVal)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeMetric(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                                iPropId, piVal);
+    return GetThemeMetric(hTheme, hdc, iPartId, iStateId, iPropId, piVal);
+}
+
+static HRESULT WINAPI GetThemePartSizeHook(_In_ HTHEME hTheme, _In_opt_ HDC hdc,
+                                           _In_ int iPartId, _In_ int iStateId,
+                                           _In_opt_ LPCRECT prc,
+                                           _In_ enum THEMESIZE eSize, _Out_ SIZE* psz)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemePartSize(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                                  prc, eSize, psz);
+    return GetThemePartSize(hTheme, hdc, iPartId, iStateId, prc, eSize, psz);
+}
+
+static HRESULT WINAPI GetThemePositionHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                           _In_ int iStateId, _In_ int iPropId,
+                                           _Out_ POINT* pPoint)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemePosition(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                  iPropId, pPoint);
+    return GetThemePosition(hTheme, iPartId, iStateId, iPropId, pPoint);
+}
+
+static HRESULT WINAPI GetThemePropertyOriginHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                                 _In_ int iStateId, _In_ int iPropId,
+                                                 _Out_ enum PROPERTYORIGIN* pOrigin)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemePropertyOrigin(g_OverrideTheme, hThemeOverride, iPartId,
+                                        iStateId, iPropId, pOrigin);
+    return GetThemePropertyOrigin(hTheme, iPartId, iStateId, iPropId, pOrigin);
+}
+
+static HRESULT WINAPI GetThemeRectHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                       _In_ int iStateId, _In_ int iPropId,
+                                       _Out_ LPRECT pRect)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeRect(g_OverrideTheme, hThemeOverride, iPartId, iStateId, iPropId,
+                              pRect);
+    return GetThemeRect(hTheme, iPartId, iStateId, iPropId, pRect);
+}
+
+static BOOL WINAPI GetThemeSysBoolHook(_In_opt_ HTHEME hTheme, _In_ int iBoolId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysBool(g_OverrideTheme, hThemeOverride, iBoolId);
+    return GetThemeSysBool(hTheme, iBoolId);
+}
+
+static COLORREF WINAPI GetThemeSysColorHook(_In_opt_ HTHEME hTheme, _In_ int iColorId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysColor(g_OverrideTheme, hThemeOverride, iColorId);
+    return GetThemeSysColor(hTheme, iColorId);
+}
+
+static HBRUSH WINAPI GetThemeSysColorBrushHook(_In_opt_ HTHEME hTheme, _In_ int iColorId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysColorBrush(g_OverrideTheme, hThemeOverride, iColorId);
+    return GetThemeSysColorBrush(hTheme, iColorId);
+}
+
+static HRESULT WINAPI GetThemeSysFontHook(_In_opt_ HTHEME hTheme, _In_ int iFontId,
+                                          _Out_ LOGFONTW* plf)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysFont(g_OverrideTheme, hThemeOverride, iFontId, plf);
+    return GetThemeSysFont(hTheme, iFontId, plf);
+}
+
+static HRESULT WINAPI GetThemeSysSizeHook(_In_opt_ HTHEME hTheme, _In_ int iSizeId)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysSize(g_OverrideTheme, hThemeOverride, iSizeId);
+    return GetThemeSysSize(hTheme, iSizeId);
+}
+
+static HRESULT WINAPI GetThemeSysStringHook(_In_ HTHEME hTheme, _In_ int iStringId,
+                                            _Out_writes_(cchMaxStringChars)
+                                                LPWSTR pszStringBuff,
+                                            _In_ int cchMaxStringChars)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeSysString(g_OverrideTheme, hThemeOverride, iStringId,
+                                   pszStringBuff, cchMaxStringChars);
+    return GetThemeSysString(hTheme, iStringId, pszStringBuff, cchMaxStringChars);
+}
+
+static HRESULT WINAPI GetThemeStreamHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                         _In_ int iStateId, _In_ int iPropId,
+                                         _Out_ VOID** ppvStream,
+                                         _Out_opt_ DWORD* pcbStream,
+                                         _In_opt_ HINSTANCE hInst)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeStream(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                iPropId, ppvStream, pcbStream, hInst);
+    return GetThemeStream(hTheme, iPartId, iStateId, iPropId, ppvStream, pcbStream,
+                          hInst);
+}
+
+static HRESULT WINAPI GetThemeStringHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                         _In_ int iStateId, _In_ int iPropId,
+                                         _Out_writes_(cchMaxBuffChars) LPWSTR pszBuff,
+                                         _In_ int cchMaxBuffChars)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeString(g_OverrideTheme, hThemeOverride, iPartId, iStateId,
+                                iPropId, pszBuff, cchMaxBuffChars);
+    return GetThemeString(hTheme, iPartId, iStateId, iPropId, pszBuff, cchMaxBuffChars);
+}
+
+static HRESULT WINAPI GetThemeTextExtentHook(
+    _In_ HTHEME hTheme, _In_ HDC hdc, _In_ int iPartId, _In_ int iStateId,
+    _In_reads_(cchCharCount) LPCWSTR pszText, _In_ int cchCharCount,
+    _In_ DWORD dwTextFlags, _In_opt_ LPCRECT pBoundingRect, _Out_ LPRECT pExtentRect)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeTextExtent(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                    iStateId, pszText, cchCharCount, dwTextFlags,
+                                    pBoundingRect, pExtentRect);
+    return GetThemeTextExtent(hTheme, hdc, iPartId, iStateId, pszText, cchCharCount,
+                              dwTextFlags, pBoundingRect, pExtentRect);
+}
+
+static HRESULT WINAPI GetThemeTextMetricsHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                              _In_ int iPartId, _In_ int iStateId,
+                                              _Out_ TEXTMETRICW* ptm)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeTextMetrics(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                     iStateId, ptm);
+    return GetThemeTextMetrics(hTheme, hdc, iPartId, iStateId, ptm);
+}
+
+static HRESULT WINAPI GetThemeTimingFunctionHook(
+    _In_ HTHEME hTheme, _In_ int iTimingFunctionId,
+    _Out_writes_bytes_to_opt_(cbSize, *pcbSizeOut) TA_TIMINGFUNCTION* pTimingFunction,
+    _In_ DWORD cbSize, _Out_ DWORD* pcbSizeOut)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeTimingFunction(g_OverrideTheme, hThemeOverride,
+                                        iTimingFunctionId, pTimingFunction, cbSize,
+                                        pcbSizeOut);
+    return GetThemeTimingFunction(hTheme, iTimingFunctionId, pTimingFunction, cbSize,
+                                  pcbSizeOut);
+}
+
+static BOOL WINAPI GetThemeTransitionDurationHook(_In_ HTHEME hTheme, _In_ int iPartId,
+                                                  _In_ int iStateIdFrom,
+                                                  _In_ int iStateIdTo, _In_ int iPropId,
+                                                  _Out_ DWORD* pdwDuration)
+{
+    HTHEME hThemeOverride = FindThemeHandle(hTheme);
+    if (hThemeOverride)
+        return UxGetThemeTransitionDuration(g_OverrideTheme, hThemeOverride, iPartId,
+                                            iStateIdFrom, iStateIdTo, iPropId,
+                                            pdwDuration);
+    return GetThemeTransitionDuration(hTheme, iPartId, iStateIdFrom, iStateIdTo, iPropId,
+                                      pdwDuration);
 }
 
 static BOOL WINAPI IsThemePartDefinedHook(HTHEME hTheme, int iPartId, int iStateId)
@@ -839,125 +722,98 @@ static BOOL WINAPI IsThemePartDefinedHook(HTHEME hTheme, int iPartId, int iState
     return IsThemePartDefined(hTheme, iPartId, iStateId);
 }
 
-static BOOL WINAPI IsThemeBackgroundPartiallyTransparentHook(
-    _In_ HTHEME hTheme,
-    _In_ int iPartId,
-    _In_ int iStateId)
+static BOOL WINAPI IsThemeBackgroundPartiallyTransparentHook(_In_ HTHEME hTheme,
+                                                             _In_ int iPartId,
+                                                             _In_ int iStateId)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxIsThemeBackgroundPartiallyTransparent(
-            g_OverrideTheme, hThemeOverride, iPartId, iStateId);
+        return UxIsThemeBackgroundPartiallyTransparent(g_OverrideTheme, hThemeOverride,
+                                                       iPartId, iStateId);
     return IsThemeBackgroundPartiallyTransparent(hTheme, iPartId, iStateId);
 }
 
-static HRESULT WINAPI DrawThemeEdgeHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pDestRect,
-    _In_ UINT uEdge,
-    _In_ UINT uFlags,
-    _Out_opt_ LPRECT pContentRect)
+static HRESULT WINAPI DrawThemeEdgeHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                        _In_ int iPartId, _In_ int iStateId,
+                                        _In_ LPCRECT pDestRect, _In_ UINT uEdge,
+                                        _In_ UINT uFlags, _Out_opt_ LPRECT pContentRect)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeEdge(g_OverrideTheme, hThemeOverride, hdc, iPartId,
-                               iStateId, pDestRect, uEdge, uFlags, pContentRect);
-    return DrawThemeEdge(hTheme, hdc, iPartId, iStateId, pDestRect, uEdge,
-                         uFlags, pContentRect);
+        return UxDrawThemeEdge(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                               pDestRect, uEdge, uFlags, pContentRect);
+    return DrawThemeEdge(hTheme, hdc, iPartId, iStateId, pDestRect, uEdge, uFlags,
+                         pContentRect);
 }
 
-static HRESULT WINAPI DrawThemeIconHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pRect,
-    _In_ HIMAGELIST himl,
-    _In_ int iImageIndex)
+static HRESULT WINAPI DrawThemeIconHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                        _In_ int iPartId, _In_ int iStateId,
+                                        _In_ LPCRECT pRect, _In_ HIMAGELIST himl,
+                                        _In_ int iImageIndex)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeIcon(g_OverrideTheme, hThemeOverride, hdc, iPartId,
-                               iStateId, pRect, himl, iImageIndex);
+        return UxDrawThemeIcon(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                               pRect, himl, iImageIndex);
     return DrawThemeIcon(hTheme, hdc, iPartId, iStateId, pRect, himl, iImageIndex);
 }
 
-static HRESULT WINAPI DrawThemeBackgroundHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pRect,
-    _In_opt_ LPCRECT pClipRect)
+static HRESULT WINAPI DrawThemeBackgroundHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                              _In_ int iPartId, _In_ int iStateId,
+                                              _In_ LPCRECT pRect,
+                                              _In_opt_ LPCRECT pClipRect)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeBackground(g_OverrideTheme, hThemeOverride, hdc,
-                                     iPartId, iStateId, pRect, pClipRect);
+        return UxDrawThemeBackground(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                     iStateId, pRect, pClipRect);
     return DrawThemeBackground(hTheme, hdc, iPartId, iStateId, pRect, pClipRect);
 }
 
-static HRESULT WINAPI DrawThemeBackgroundExHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_ LPCRECT pRect,
-    _In_opt_ DTBGOPTS const* pOptions)
+static HRESULT WINAPI DrawThemeBackgroundExHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                                _In_ int iPartId, _In_ int iStateId,
+                                                _In_ LPCRECT pRect,
+                                                _In_opt_ DTBGOPTS const* pOptions)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeBackgroundEx(g_OverrideTheme, hThemeOverride, hdc,
-                                       iPartId, iStateId, pRect, pOptions);
+        return UxDrawThemeBackgroundEx(g_OverrideTheme, hThemeOverride, hdc, iPartId,
+                                       iStateId, pRect, pOptions);
     return DrawThemeBackgroundEx(hTheme, hdc, iPartId, iStateId, pRect, pOptions);
 }
 
-static HRESULT WINAPI DrawThemeTextHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_reads_(cchText) LPCWSTR pszText,
-    _In_ int cchText,
-    _In_ DWORD dwTextFlags,
-    _In_ DWORD dwTextFlags2,
-    _In_ LPCRECT pRect)
+static HRESULT WINAPI DrawThemeTextHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                        _In_ int iPartId, _In_ int iStateId,
+                                        _In_reads_(cchText) LPCWSTR pszText,
+                                        _In_ int cchText, _In_ DWORD dwTextFlags,
+                                        _In_ DWORD dwTextFlags2, _In_ LPCRECT pRect)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeText(g_OverrideTheme, hThemeOverride, hdc, iPartId,
-                               iStateId, pszText, cchText, dwTextFlags,
-                               dwTextFlags2, pRect);
-    return DrawThemeText(hTheme, hdc, iPartId, iStateId, pszText, cchText,
-                         dwTextFlags, dwTextFlags2, pRect);
+        return UxDrawThemeText(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                               pszText, cchText, dwTextFlags, dwTextFlags2, pRect);
+    return DrawThemeText(hTheme, hdc, iPartId, iStateId, pszText, cchText, dwTextFlags,
+                         dwTextFlags2, pRect);
 }
 
-static HRESULT WINAPI DrawThemeTextExHook(
-    _In_ HTHEME hTheme,
-    _In_ HDC hdc,
-    _In_ int iPartId,
-    _In_ int iStateId,
-    _In_reads_(cchText) LPCWSTR pszText,
-    _In_ int cchText,
-    _In_ DWORD dwTextFlags,
-    _Inout_ LPRECT pRect,
-    _In_opt_ DTTOPTS const* pOptions)
+static HRESULT WINAPI DrawThemeTextExHook(_In_ HTHEME hTheme, _In_ HDC hdc,
+                                          _In_ int iPartId, _In_ int iStateId,
+                                          _In_reads_(cchText) LPCWSTR pszText,
+                                          _In_ int cchText, _In_ DWORD dwTextFlags,
+                                          _Inout_ LPRECT pRect,
+                                          _In_opt_ DTTOPTS const* pOptions)
 {
     HTHEME hThemeOverride = FindThemeHandle(hTheme);
     if (hThemeOverride)
-        return UxDrawThemeTextEx(g_OverrideTheme, hThemeOverride, hdc, iPartId,
-                                 iStateId, pszText, cchText, dwTextFlags, pRect,
-                                 pOptions);
-    return DrawThemeTextEx(hTheme, hdc, iPartId, iStateId, pszText, cchText,
-                           dwTextFlags, pRect, pOptions);
+        return UxDrawThemeTextEx(g_OverrideTheme, hThemeOverride, hdc, iPartId, iStateId,
+                                 pszText, cchText, dwTextFlags, pRect, pOptions);
+    return DrawThemeTextEx(hTheme, hdc, iPartId, iStateId, pszText, cchText, dwTextFlags,
+                           pRect, pOptions);
 }
 
-static HTHEME WINAPI OpenThemeDataExInternalHook(
-    HWND hwnd, wchar_t const* pszClassIdList,
-    unsigned dwFlags, wchar_t const* pszApiName, int iForDPI)
+static HTHEME WINAPI OpenThemeDataExInternalHook(HWND hwnd, wchar_t const* pszClassIdList,
+                                                 unsigned dwFlags,
+                                                 wchar_t const* pszApiName, int iForDPI)
 {
     HTHEME hThemeOrig = g_hookHandles.t.PFnOpenThemeDataExInternal.Orig()(
         hwnd, pszClassIdList, dwFlags, pszApiName, iForDPI);
@@ -965,13 +821,14 @@ static HTHEME WINAPI OpenThemeDataExInternalHook(
     if (!g_OverrideTheme)
         return hThemeOrig;
 
-    HTHEME hThemeOverride = OpenThemeDataExInternal(
-        g_OverrideTheme, hwnd, pszClassIdList, dwFlags, pszApiName, iForDPI);
+    HTHEME hThemeOverride = OpenThemeDataExInternal(g_OverrideTheme, hwnd, pszClassIdList,
+                                                    dwFlags, pszApiName, iForDPI);
     g_ThemeHandleMap[hThemeOrig] = hThemeOverride;
     return hThemeOrig;
 }
 
-static BOOL ExGetMenuItemInfo(HMENU hMenu, unsigned int wID, BOOL fByPos, MENUITEMINFOW* lpmii)
+static BOOL ExGetMenuItemInfo(HMENU hMenu, unsigned int wID, BOOL fByPos,
+                              MENUITEMINFOW* lpmii)
 {
     if (!GetMenuItemInfoW(hMenu, wID, fByPos, lpmii))
         return FALSE;
@@ -1017,15 +874,14 @@ static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd,
     MENUPARTS const iPartId = MENU_BARITEM;
     BARITEMSTATES const iStateId = this_->ToItemStateId(pudmi->dis.itemState);
 
-    if (IsThemeBackgroundPartiallyTransparent(this_->_spMetrics->hTheme, iPartId, iStateId)) {
-        this_->DrawClientArea(hwnd, pudmi->um.hmenu,
-                              pudmi->dis.hDC, &pudmi->dis.rcItem);
+    if (IsThemeBackgroundPartiallyTransparent(this_->_spMetrics->hTheme, iPartId,
+                                              iStateId)) {
+        this_->DrawClientArea(hwnd, pudmi->um.hmenu, pudmi->dis.hDC, &pudmi->dis.rcItem);
     }
 
     if (!mii.hbmpItem || !IsOemBitmap(mii.hbmpItem)) {
-        DrawThemeBackground(this_->_spMetrics->hTheme, pudmi->dis.hDC,
-                            iPartId, iStateId, &pudmi->dis.rcItem,
-                            nullptr);
+        DrawThemeBackground(this_->_spMetrics->hTheme, pudmi->dis.hDC, iPartId, iStateId,
+                            &pudmi->dis.rcItem, nullptr);
     }
 
     if (mii.hbmpItem) {
@@ -1037,21 +893,20 @@ static void CThemeMenuBar_DrawItemHook(CThemeMenuBar* this_, HWND hwnd,
         if (pudmi->dis.itemState & ODS_NOACCEL)
             textFlags |= DT_HIDEPREFIX;
 
-        DrawThemeText(this_->_spMetrics->hTheme, pudmi->dis.hDC, iPartId,
-                      iStateId, mii.dwTypeData, mii.cch, textFlags, 0, &dim.rgrc[1]);
+        DrawThemeText(this_->_spMetrics->hTheme, pudmi->dis.hDC, iPartId, iStateId,
+                      mii.dwTypeData, mii.cch, textFlags, 0, &dim.rgrc[1]);
     }
 }
 
-#define ADD_HOOK(name) \
-    st = LhInstallHook(GetProcAddress(uxtheme, #name), \
-                       name##Hook, nullptr, &g_hookHandles.t.PFn##name); \
-    if (FAILED(st)) \
+#define ADD_HOOK(name)                                                                   \
+    st = LhInstallHook(GetProcAddress(uxtheme, #name), name##Hook, nullptr,              \
+                       &g_hookHandles.t.PFn##name);                                      \
+    if (FAILED(st))                                                                      \
         return E_FAIL;
 
-#define ADD_HOOK2(name, addr) \
-    st = LhInstallHook(addr, \
-                       name##Hook, nullptr, &g_hookHandles.t.PFn##name); \
-    if (FAILED(st)) \
+#define ADD_HOOK2(name, addr)                                                            \
+    st = LhInstallHook(addr, name##Hook, nullptr, &g_hookHandles.t.PFn##name);           \
+    if (FAILED(st))                                                                      \
         return E_FAIL;
 
 THEMEEXAPI UxOverrideTheme(_In_ HTHEMEFILE hThemeFile)

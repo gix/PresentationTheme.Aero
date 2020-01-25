@@ -1,6 +1,6 @@
 #include "BorderFill.h"
-#include "RenderObj.h"
 #include "DrawHelp.h"
+#include "RenderObj.h"
 #include <algorithm>
 
 namespace uxtheme
@@ -35,7 +35,8 @@ bool CBorderFill::KeyProperty(int iPropId)
     }
 }
 
-HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPartId, int iStateId)
+HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPartId,
+                                    int iStateId)
 {
     static_assert(std::is_trivially_copyable_v<CBorderFill>);
     memset(this, 0, sizeof(CBorderFill));
@@ -49,7 +50,8 @@ HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPart
         return S_OK;
     }
 
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_BORDERTYPE, (int*)&_eBorderType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_BORDERTYPE,
+                                      (int*)&_eBorderType) < 0)
         _eBorderType = BT_RECT;
     if (pRender->ExternalGetInt(iPartId, iStateId, TMT_BORDERCOLOR, (int*)&_crBorder) < 0)
         _crBorder = 0;
@@ -58,17 +60,21 @@ HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPart
         _iBorderSize = 1;
 
     if (_eBorderType == BT_ROUNDRECT) {
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_ROUNDCORNERWIDTH, &_iRoundCornerWidth) < 0)
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_ROUNDCORNERWIDTH,
+                                    &_iRoundCornerWidth) < 0)
             _iRoundCornerWidth = 80;
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_ROUNDCORNERHEIGHT, &_iRoundCornerHeight) < 0)
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_ROUNDCORNERHEIGHT,
+                                    &_iRoundCornerHeight) < 0)
             _iRoundCornerHeight = 80;
     }
 
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_FILLTYPE, (int*)&_eFillType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_FILLTYPE,
+                                      (int*)&_eFillType) < 0)
         _eFillType = FT_SOLID;
 
     if (_eFillType == FT_SOLID) {
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_FILLCOLOR, (int*)&_crFill) < 0) {
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_FILLCOLOR, (int*)&_crFill) <
+            0) {
             _crFill = 0xFFFFFF;
         }
     } else if (_eFillType == FT_TILEIMAGE) {
@@ -79,7 +85,8 @@ HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPart
         _iGradientPartCount = 0;
         for (int prop = TMT_GRADIENTRATIO1; prop < TMT_GRADIENTRATIO5; ++prop) {
             int gradientColor;
-            if (pRender->ExternalGetInt(iPartId, iStateId, prop + 1404, &gradientColor) < 0)
+            if (pRender->ExternalGetInt(iPartId, iStateId, prop + 1404, &gradientColor) <
+                0)
                 break;
 
             int gradientRatio;
@@ -91,8 +98,8 @@ HRESULT CBorderFill::PackProperties(CRenderObj* pRender, bool fNoDraw, int iPart
         }
     }
 
-    if (pRender->ExternalGetMargins(
-        nullptr, iPartId, iStateId, TMT_CONTENTMARGINS, nullptr, &_ContentMargins) < 0) {
+    if (pRender->ExternalGetMargins(nullptr, iPartId, iStateId, TMT_CONTENTMARGINS,
+                                    nullptr, &_ContentMargins) < 0) {
         _ContentMargins.cxLeftWidth = _iBorderSize;
         _ContentMargins.cxRightWidth = _iBorderSize;
         _ContentMargins.cyTopHeight = _iBorderSize;
@@ -153,8 +160,8 @@ HRESULT CBorderFill::GetBackgroundRegion(CRenderObj* pRender, RECT const* pRect,
     return S_OK;
 }
 
-HRESULT CBorderFill::GetBackgroundExtent(
-    CRenderObj* pRender, RECT const* pContentRect, RECT* pExtentRect)
+HRESULT CBorderFill::GetBackgroundExtent(CRenderObj* pRender, RECT const* pContentRect,
+                                         RECT* pExtentRect)
 {
     pExtentRect->left = pContentRect->left - _ContentMargins.cxLeftWidth;
     pExtentRect->top = pContentRect->top - _ContentMargins.cyTopHeight;
@@ -163,8 +170,8 @@ HRESULT CBorderFill::GetBackgroundExtent(
     return S_OK;
 }
 
-HRESULT CBorderFill::DrawBackground(
-    CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, DTBGOPTS const* pOptions)
+HRESULT CBorderFill::DrawBackground(CRenderObj* pRender, HDC hdcOrig, RECT const* pRect,
+                                    DTBGOPTS const* pOptions)
 {
     RECT const* pClipRect = nullptr;
     BOOL fGettingRegion = FALSE;
@@ -185,14 +192,8 @@ HRESULT CBorderFill::DrawBackground(
         return S_OK;
 
     if (_eFillType != FT_SOLID || _eBorderType != BT_RECT)
-        return DrawComplexBackground(
-            pRender,
-            hdcOrig,
-            pRect,
-            fGettingRegion,
-            fBorder,
-            fContent,
-            pClipRect);
+        return DrawComplexBackground(pRender, hdcOrig, pRect, fGettingRegion, fBorder,
+                                     fContent, pClipRect);
 
     if (_iBorderSize == 0) {
         if (!fContent)
@@ -214,8 +215,8 @@ HRESULT CBorderFill::DrawBackground(
                 IntersectRect(&rc, &rc, pClipRect);
             ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
 
-            SetRect(&rc, pRect->right - _iBorderSize, pRect->top,
-                    pRect->right, pRect->bottom);
+            SetRect(&rc, pRect->right - _iBorderSize, pRect->top, pRect->right,
+                    pRect->bottom);
             if (pClipRect)
                 IntersectRect(&rc, &rc, pClipRect);
             ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
@@ -226,8 +227,8 @@ HRESULT CBorderFill::DrawBackground(
                 IntersectRect(&rc, &rc, pClipRect);
             ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
 
-            SetRect(&rc, pRect->left, pRect->bottom - _iBorderSize,
-                    pRect->right, pRect->bottom);
+            SetRect(&rc, pRect->left, pRect->bottom - _iBorderSize, pRect->right,
+                    pRect->bottom);
             if (pClipRect)
                 IntersectRect(&rc, &rc, pClipRect);
             ExtTextOutW(hdcOrig, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
@@ -251,16 +252,17 @@ HRESULT CBorderFill::DrawBackground(
     return S_OK;
 }
 
-HRESULT CBorderFill::DrawComplexBackground(
-    CRenderObj* pRender, HDC hdcOrig, RECT const* pRect, BOOL fGettingRegion,
-    BOOL fBorder, BOOL fContent, RECT const* pClipRect)
+HRESULT CBorderFill::DrawComplexBackground(CRenderObj* pRender, HDC hdcOrig,
+                                           RECT const* pRect, BOOL fGettingRegion,
+                                           BOOL fBorder, BOOL fContent,
+                                           RECT const* pClipRect)
 {
     return E_NOTIMPL;
 }
 
-HRESULT CBorderFill::HitTestBackground(
-    CRenderObj* pRender, int iStateId, DWORD dwHTFlags, RECT const* pRect,
-    HRGN hrgn, POINT ptTest, WORD* pwHitCode)
+HRESULT CBorderFill::HitTestBackground(CRenderObj* pRender, int iStateId, DWORD dwHTFlags,
+                                       RECT const* pRect, HRGN hrgn, POINT ptTest,
+                                       WORD* pwHitCode)
 {
     *pwHitCode = HitTestRect(dwHTFlags, pRect, &_ContentMargins, &ptTest);
     return S_OK;

@@ -40,15 +40,9 @@ class DataSection : public Section
 public:
     DataSection(DWORD desiredSectionAccess, DWORD desiredViewAccess);
 
-    HRESULT Open(wchar_t const* name, bool mapView)
-    {
-        return OpenSection(name, mapView);
-    }
+    HRESULT Open(wchar_t const* name, bool mapView) { return OpenSection(name, mapView); }
 
-    void DetachSectionHandle(HANDLE* phSection)
-    {
-        *phSection = sectionHandle.Detach();
-    }
+    void DetachSectionHandle(HANDLE* phSection) { *phSection = sectionHandle.Detach(); }
 
 private:
     HRESULT MakeThemeDataSectionName(wchar_t* pszFullName, unsigned cchMax,

@@ -43,10 +43,8 @@ ULONG ThemeMemStream::Release()
     return refCount_ -= 1;
 }
 
-HRESULT ThemeMemStream::Read(
-    _Out_writes_bytes_to_(cb, *pcbRead)  void* pv,
-    _In_ ULONG cb,
-    _Out_opt_ ULONG* pcbRead)
+HRESULT ThemeMemStream::Read(_Out_writes_bytes_to_(cb, *pcbRead) void* pv, _In_ ULONG cb,
+                             _Out_opt_ ULONG* pcbRead)
 {
     if (position_ >= size_) {
         *pcbRead = 0;
@@ -65,10 +63,8 @@ HRESULT ThemeMemStream::Read(
     return cb == 0 ? E_FAIL : S_OK;
 }
 
-HRESULT ThemeMemStream::Write(
-    _In_reads_bytes_(cb) void const* pv,
-    _In_  ULONG cb,
-    _Out_opt_ ULONG* pcbWritten)
+HRESULT ThemeMemStream::Write(_In_reads_bytes_(cb) void const* pv, _In_ ULONG cb,
+                              _Out_opt_ ULONG* pcbWritten)
 {
     if (!pv)
         return E_INVALIDARG;
@@ -93,7 +89,8 @@ HRESULT ThemeMemStream::Write(
             buffer_ = std::move(newBuf);
         }
 
-        if (!buffer_ && !position_ || buffer_.get() + position_ < buffer_.get() || (uint64_t)(buffer_.get() + position_) < position_)
+        if (!buffer_ && !position_ || buffer_.get() + position_ < buffer_.get() ||
+            (uint64_t)(buffer_.get() + position_) < position_)
             return HRESULT_FROM_WIN32(ERROR_INVALID_DATA);
 
         memcpy(&buffer_[position_], pv, cbWritten);
@@ -109,10 +106,8 @@ HRESULT ThemeMemStream::Write(
     return S_OK;
 }
 
-HRESULT ThemeMemStream::Seek(
-    LARGE_INTEGER liMove,
-    DWORD dwOrigin,
-    _Out_opt_  ULARGE_INTEGER* pliNewPos)
+HRESULT ThemeMemStream::Seek(LARGE_INTEGER liMove, DWORD dwOrigin,
+                             _Out_opt_ ULARGE_INTEGER* pliNewPos)
 {
     if (dwOrigin == 0)
         position_ = liMove.LowPart;
@@ -151,11 +146,9 @@ HRESULT ThemeMemStream::SetSize(ULARGE_INTEGER uli)
     return S_OK;
 }
 
-HRESULT ThemeMemStream::CopyTo(
-    _In_  IStream* pstm,
-    ULARGE_INTEGER cb,
-    _Out_opt_  ULARGE_INTEGER* pcbRead,
-    _Out_opt_  ULARGE_INTEGER* pcbWritten)
+HRESULT ThemeMemStream::CopyTo(_In_ IStream* pstm, ULARGE_INTEGER cb,
+                               _Out_opt_ ULARGE_INTEGER* pcbRead,
+                               _Out_opt_ ULARGE_INTEGER* pcbWritten)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
@@ -170,14 +163,14 @@ HRESULT ThemeMemStream::Revert()
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT ThemeMemStream::LockRegion(
-    ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType)
+HRESULT ThemeMemStream::LockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                                   DWORD dwLockType)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }
 
-HRESULT ThemeMemStream::UnlockRegion(
-    ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType)
+HRESULT ThemeMemStream::UnlockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                                     DWORD dwLockType)
 {
     return STG_E_UNIMPLEMENTEDFUNCTION;
 }

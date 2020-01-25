@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include <windows.h>
 #include <vssym32.h>
+#include <windows.h>
 
 namespace uxtheme
 {
@@ -51,26 +51,26 @@ struct ENTRYHDR
 
     BYTE* Data()
     {
-        return reinterpret_cast<BYTE*>(
-            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR));
+        return reinterpret_cast<BYTE*>(reinterpret_cast<uintptr_t>(this) +
+                                       sizeof(ENTRYHDR));
     }
 
     BYTE const* Data() const
     {
-        return reinterpret_cast<BYTE*>(
-            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR));
+        return reinterpret_cast<BYTE*>(reinterpret_cast<uintptr_t>(this) +
+                                       sizeof(ENTRYHDR));
     }
 
     ENTRYHDR* Next()
     {
-        return reinterpret_cast<ENTRYHDR*>(
-            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR) + dwDataLen);
+        return reinterpret_cast<ENTRYHDR*>(reinterpret_cast<uintptr_t>(this) +
+                                           sizeof(ENTRYHDR) + dwDataLen);
     }
 
     ENTRYHDR const* Next() const
     {
-        return reinterpret_cast<ENTRYHDR*>(
-            reinterpret_cast<uintptr_t>(this) + sizeof(ENTRYHDR) + dwDataLen);
+        return reinterpret_cast<ENTRYHDR*>(reinterpret_cast<uintptr_t>(this) +
+                                           sizeof(ENTRYHDR) + dwDataLen);
     }
 };
 

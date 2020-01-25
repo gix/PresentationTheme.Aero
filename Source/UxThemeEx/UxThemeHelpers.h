@@ -115,13 +115,20 @@ struct BITMAPHEADER
 inline int Map_COMPOSEDIMAGEFILE_To_DIBDATA(int id)
 {
     switch (id) {
-    case TMT_COMPOSEDIMAGEFILE1: return TMT_DIBDATA1;
-    case TMT_COMPOSEDIMAGEFILE2: return TMT_DIBDATA2;
-    case TMT_COMPOSEDIMAGEFILE3: return TMT_DIBDATA3;
-    case TMT_COMPOSEDIMAGEFILE4: return TMT_DIBDATA4;
-    case TMT_COMPOSEDIMAGEFILE5: return TMT_DIBDATA5;
-    case TMT_COMPOSEDIMAGEFILE6: return TMT_DIBDATA6;
-    case TMT_COMPOSEDIMAGEFILE7: return TMT_DIBDATA7;
+    case TMT_COMPOSEDIMAGEFILE1:
+        return TMT_DIBDATA1;
+    case TMT_COMPOSEDIMAGEFILE2:
+        return TMT_DIBDATA2;
+    case TMT_COMPOSEDIMAGEFILE3:
+        return TMT_DIBDATA3;
+    case TMT_COMPOSEDIMAGEFILE4:
+        return TMT_DIBDATA4;
+    case TMT_COMPOSEDIMAGEFILE5:
+        return TMT_DIBDATA5;
+    case TMT_COMPOSEDIMAGEFILE6:
+        return TMT_DIBDATA6;
+    case TMT_COMPOSEDIMAGEFILE7:
+        return TMT_DIBDATA7;
     default:
         assert("FRE: FALSE");
         return 0;
@@ -131,13 +138,20 @@ inline int Map_COMPOSEDIMAGEFILE_To_DIBDATA(int id)
 inline int Map_IMAGEFILE_To_DIBDATA(int id)
 {
     switch (id) {
-    case TMT_IMAGEFILE1: return 3;
-    case TMT_IMAGEFILE2: return 4;
-    case TMT_IMAGEFILE3: return 5;
-    case TMT_IMAGEFILE4: return 6;
-    case TMT_IMAGEFILE5: return 7;
-    case TMT_IMAGEFILE6: return 22;
-    case TMT_IMAGEFILE7: return 23;
+    case TMT_IMAGEFILE1:
+        return 3;
+    case TMT_IMAGEFILE2:
+        return 4;
+    case TMT_IMAGEFILE3:
+        return 5;
+    case TMT_IMAGEFILE4:
+        return 6;
+    case TMT_IMAGEFILE5:
+        return 7;
+    case TMT_IMAGEFILE6:
+        return 22;
+    case TMT_IMAGEFILE7:
+        return 23;
     default:
         assert("FRE: FALSE");
         return 0;
@@ -147,13 +161,20 @@ inline int Map_IMAGEFILE_To_DIBDATA(int id)
 inline int Map_COMPOSEDIMAGEFILE_To_Ordinal(int id)
 {
     switch (id) {
-    case TMT_COMPOSEDIMAGEFILE1: return 0;
-    case TMT_COMPOSEDIMAGEFILE2: return 1;
-    case TMT_COMPOSEDIMAGEFILE3: return 2;
-    case TMT_COMPOSEDIMAGEFILE4: return 3;
-    case TMT_COMPOSEDIMAGEFILE5: return 4;
-    case TMT_COMPOSEDIMAGEFILE6: return 5;
-    case TMT_COMPOSEDIMAGEFILE7: return 6;
+    case TMT_COMPOSEDIMAGEFILE1:
+        return 0;
+    case TMT_COMPOSEDIMAGEFILE2:
+        return 1;
+    case TMT_COMPOSEDIMAGEFILE3:
+        return 2;
+    case TMT_COMPOSEDIMAGEFILE4:
+        return 3;
+    case TMT_COMPOSEDIMAGEFILE5:
+        return 4;
+    case TMT_COMPOSEDIMAGEFILE6:
+        return 5;
+    case TMT_COMPOSEDIMAGEFILE7:
+        return 6;
     default:
         assert("FRE: FALSE");
         return 6;
@@ -163,13 +184,20 @@ inline int Map_COMPOSEDIMAGEFILE_To_Ordinal(int id)
 inline int Map_IMAGEFILE_To_Ordinal(int id)
 {
     switch (id) {
-    case TMT_IMAGEFILE1: return 0;
-    case TMT_IMAGEFILE2: return 1;
-    case TMT_IMAGEFILE3: return 2;
-    case TMT_IMAGEFILE4: return 3;
-    case TMT_IMAGEFILE5: return 4;
-    case TMT_IMAGEFILE6: return 5;
-    case TMT_IMAGEFILE7: return 6;
+    case TMT_IMAGEFILE1:
+        return 0;
+    case TMT_IMAGEFILE2:
+        return 1;
+    case TMT_IMAGEFILE3:
+        return 2;
+    case TMT_IMAGEFILE4:
+        return 3;
+    case TMT_IMAGEFILE5:
+        return 4;
+    case TMT_IMAGEFILE6:
+        return 5;
+    case TMT_IMAGEFILE7:
+        return 6;
     default:
         assert("FRE: FALSE");
         return 0;
@@ -179,13 +207,20 @@ inline int Map_IMAGEFILE_To_Ordinal(int id)
 inline int Map_Ordinal_To_MINDPI(int i)
 {
     switch (i) {
-    case 0: return TMT_MINDPI1;
-    case 1: return TMT_MINDPI2;
-    case 2: return TMT_MINDPI3;
-    case 3: return TMT_MINDPI4;
-    case 4: return TMT_MINDPI5;
-    case 5: return TMT_MINDPI6;
-    case 6: return TMT_MINDPI7;
+    case 0:
+        return TMT_MINDPI1;
+    case 1:
+        return TMT_MINDPI2;
+    case 2:
+        return TMT_MINDPI3;
+    case 3:
+        return TMT_MINDPI4;
+    case 4:
+        return TMT_MINDPI5;
+    case 5:
+        return TMT_MINDPI6;
+    case 6:
+        return TMT_MINDPI7;
     default:
         assert("FRE: FALSE");
         return TMT_MINDPI1;
@@ -195,13 +230,20 @@ inline int Map_Ordinal_To_MINDPI(int i)
 inline int Map_MINDPI_To_Ordinal(int id)
 {
     switch (id) {
-    case TMT_MINDPI1: return 0;
-    case TMT_MINDPI2: return 1;
-    case TMT_MINDPI3: return 2;
-    case TMT_MINDPI4: return 3;
-    case TMT_MINDPI5: return 4;
-    case TMT_MINDPI6: return 5;
-    case TMT_MINDPI7: return 6;
+    case TMT_MINDPI1:
+        return 0;
+    case TMT_MINDPI2:
+        return 1;
+    case TMT_MINDPI3:
+        return 2;
+    case TMT_MINDPI4:
+        return 3;
+    case TMT_MINDPI5:
+        return 4;
+    case TMT_MINDPI6:
+        return 5;
+    case TMT_MINDPI7:
+        return 6;
     default:
         assert("FRE: FALSE");
         return 0;
@@ -211,13 +253,20 @@ inline int Map_MINDPI_To_Ordinal(int id)
 inline int Map_Ordinal_To_MINSIZE(int i)
 {
     switch (i) {
-    case 0: return TMT_MINSIZE1;
-    case 1: return TMT_MINSIZE2;
-    case 2: return TMT_MINSIZE3;
-    case 3: return TMT_MINSIZE4;
-    case 4: return TMT_MINSIZE5;
-    case 5: return TMT_MINSIZE6;
-    case 6: return TMT_MINSIZE7;
+    case 0:
+        return TMT_MINSIZE1;
+    case 1:
+        return TMT_MINSIZE2;
+    case 2:
+        return TMT_MINSIZE3;
+    case 3:
+        return TMT_MINSIZE4;
+    case 4:
+        return TMT_MINSIZE5;
+    case 5:
+        return TMT_MINSIZE6;
+    case 6:
+        return TMT_MINSIZE7;
     default:
         assert("FRE: FALSE");
         return TMT_MINSIZE7;
@@ -227,13 +276,20 @@ inline int Map_Ordinal_To_MINSIZE(int i)
 inline int Map_Ordinal_To_IMAGEFILE(int i)
 {
     switch (i) {
-    case 0: return TMT_IMAGEFILE1;
-    case 1: return TMT_IMAGEFILE2;
-    case 2: return TMT_IMAGEFILE3;
-    case 3: return TMT_IMAGEFILE4;
-    case 4: return TMT_IMAGEFILE5;
-    case 5: return TMT_IMAGEFILE6;
-    case 6: return TMT_IMAGEFILE7;
+    case 0:
+        return TMT_IMAGEFILE1;
+    case 1:
+        return TMT_IMAGEFILE2;
+    case 2:
+        return TMT_IMAGEFILE3;
+    case 3:
+        return TMT_IMAGEFILE4;
+    case 4:
+        return TMT_IMAGEFILE5;
+    case 5:
+        return TMT_IMAGEFILE6;
+    case 6:
+        return TMT_IMAGEFILE7;
     default:
         assert("FRE: FALSE");
         return TMT_IMAGEFILE7;
@@ -243,13 +299,20 @@ inline int Map_Ordinal_To_IMAGEFILE(int i)
 inline int Map_Ordinal_To_COMPOSEDIMAGEFILE(int i)
 {
     switch (i) {
-    case 0: return TMT_COMPOSEDIMAGEFILE1;
-    case 1: return TMT_COMPOSEDIMAGEFILE2;
-    case 2: return TMT_COMPOSEDIMAGEFILE3;
-    case 3: return TMT_COMPOSEDIMAGEFILE4;
-    case 4: return TMT_COMPOSEDIMAGEFILE5;
-    case 5: return TMT_COMPOSEDIMAGEFILE6;
-    case 6: return TMT_COMPOSEDIMAGEFILE7;
+    case 0:
+        return TMT_COMPOSEDIMAGEFILE1;
+    case 1:
+        return TMT_COMPOSEDIMAGEFILE2;
+    case 2:
+        return TMT_COMPOSEDIMAGEFILE3;
+    case 3:
+        return TMT_COMPOSEDIMAGEFILE4;
+    case 4:
+        return TMT_COMPOSEDIMAGEFILE5;
+    case 5:
+        return TMT_COMPOSEDIMAGEFILE6;
+    case 6:
+        return TMT_COMPOSEDIMAGEFILE7;
     default:
         assert("FRE: FALSE");
         return 5153;
@@ -259,27 +322,42 @@ inline int Map_Ordinal_To_COMPOSEDIMAGEFILE(int i)
 inline int GetDpiPlateauByIndex(int i)
 {
     switch (i) {
-    case 0: return 96;
-    case 1: return 120;
-    case 2: return 144;
-    case 3: return 192;
-    case 4: return 240;
-    case 5: return 288;
-    case 6: return 384;
-    default: return -1;
+    case 0:
+        return 96;
+    case 1:
+        return 120;
+    case 2:
+        return 144;
+    case 3:
+        return 192;
+    case 4:
+        return 240;
+    case 5:
+        return 288;
+    case 6:
+        return 384;
+    default:
+        return -1;
     }
 }
 
 inline int Map_Ordinal_To_DIBDATA(int i)
 {
     switch (i) {
-    case 0: return TMT_DIBDATA1;
-    case 1: return TMT_DIBDATA2;
-    case 2: return TMT_DIBDATA3;
-    case 3: return TMT_DIBDATA4;
-    case 4: return TMT_DIBDATA5;
-    case 5: return TMT_DIBDATA6;
-    case 6: return TMT_DIBDATA7;
+    case 0:
+        return TMT_DIBDATA1;
+    case 1:
+        return TMT_DIBDATA2;
+    case 2:
+        return TMT_DIBDATA3;
+    case 3:
+        return TMT_DIBDATA4;
+    case 4:
+        return TMT_DIBDATA5;
+    case 5:
+        return TMT_DIBDATA6;
+    case 6:
+        return TMT_DIBDATA7;
     default:
         assert("FRE: FALSE");
         return TMT_DIBDATA7;

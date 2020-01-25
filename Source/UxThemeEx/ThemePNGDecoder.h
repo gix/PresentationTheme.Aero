@@ -14,8 +14,8 @@ public:
 
     BITMAPINFOHEADER* GetBitmapHeader()
     {
-        return reinterpret_cast<BITMAPINFOHEADER*>(
-            _stream.GetBuffer(nullptr) + sizeof(BITMAPFILEHEADER));
+        return reinterpret_cast<BITMAPINFOHEADER*>(_stream.GetBuffer(nullptr) +
+                                                   sizeof(BITMAPFILEHEADER));
     }
 
 private:

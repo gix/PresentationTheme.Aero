@@ -34,65 +34,33 @@ struct VISUALSTYLELOAD
 
 static HRESULT VSLoad(VISUALSTYLELOAD* pvsl, bool fIsLiteVisualStyle, bool fHighContrast)
 {
-    if (!pvsl
-        || pvsl->cbStruct != sizeof(VISUALSTYLELOAD)
-        || !pvsl->hInstVS
-        || !pvsl->pfnCB
-        || !pvsl->pszColorVariant
-        || !*pvsl->pszColorVariant
-        || !pvsl->pszSizeVariant
-        || !*pvsl->pszSizeVariant)
+    if (!pvsl || pvsl->cbStruct != sizeof(VISUALSTYLELOAD) || !pvsl->hInstVS ||
+        !pvsl->pfnCB || !pvsl->pszColorVariant || !*pvsl->pszColorVariant ||
+        !pvsl->pszSizeVariant || !*pvsl->pszSizeVariant)
         return E_INVALIDARG;
 
     auto unpack = make_unique_nothrow<CVSUnpack>();
     if (!unpack)
         return E_OUTOFMEMORY;
 
-    ENSURE_HR(unpack->Initialize(pvsl->hInstVS, 0, pvsl->ulFlags & 1,
-                                 fIsLiteVisualStyle, fHighContrast));
+    ENSURE_HR(unpack->Initialize(pvsl->hInstVS, 0, pvsl->ulFlags & 1, fIsLiteVisualStyle,
+                                 fHighContrast));
     ENSURE_HR(unpack->LoadRootMap(pvsl->pfnCB));
-    ENSURE_HR(unpack->LoadClassDataMap(pvsl->pszColorVariant,
-                                       pvsl->pszSizeVariant, pvsl->pfnCB));
+    ENSURE_HR(unpack->LoadClassDataMap(pvsl->pszColorVariant, pvsl->pszSizeVariant,
+                                       pvsl->pfnCB));
     ENSURE_HR(unpack->LoadBaseClassDataMap(pvsl->pfnCB));
     ENSURE_HR(unpack->LoadAnimationDataMap(pvsl->pfnCB));
     return S_OK;
 }
 
 static unsigned const DefaultColors[31] = {
-    0xC8D0D4,
-    0xA56E3A,
-    0x6A240A,
-    0x808080,
-    0xC8D0D4,
-    0xFFFFFF,
-    0x000000,
-    0x000000,
-    0x000000,
-    0xFFFFFF,
-    0xC8D0D4,
-    0xC8D0D4,
-    0x808080,
-    0x6A240A,
-    0xFFFFFF,
-    0xC8D0D4,
-    0x808080,
-    0x808080,
-    0x000000,
-    0xC8D0D4,
-    0xFFFFFF,
-    0x404040,
-    0xC8D0D4,
-    0x000000,
-    0xE1FFFF,
-    0xB5B5B5,
-    0x800000,
-    0xF0CAA6,
-    0xC0C0C0,
-    0xE1D3CE,
-    0xF0F4F4,
+    0xC8D0D4, 0xA56E3A, 0x6A240A, 0x808080, 0xC8D0D4, 0xFFFFFF, 0x000000, 0x000000,
+    0x000000, 0xFFFFFF, 0xC8D0D4, 0xC8D0D4, 0x808080, 0x6A240A, 0xFFFFFF, 0xC8D0D4,
+    0x808080, 0x808080, 0x000000, 0xC8D0D4, 0xFFFFFF, 0x404040, 0xC8D0D4, 0x000000,
+    0xE1FFFF, 0xB5B5B5, 0x800000, 0xF0CAA6, 0xC0C0C0, 0xE1D3CE, 0xF0F4F4,
 };
 
-static void SetFont(LOGFONTW *plf, wchar_t const* lszFontName, int iPointSize)
+static void SetFont(LOGFONTW* plf, wchar_t const* lszFontName, int iPointSize)
 {
     fill_zero(*plf);
     plf->lfWeight = 400;
@@ -152,14 +120,18 @@ CThemeLoader::CThemeLoader()
 
 HRESULT CThemeLoader::AllocateThemeFileBytes(BYTE* upb, unsigned dwAdditionalLen)
 {
-    bool overflowsPage = (uintptr_t)upb / _dwPageSize != ((uintptr_t)upb + dwAdditionalLen) / _dwPageSize;
+    bool overflowsPage =
+        (uintptr_t)upb / _dwPageSize != ((uintptr_t)upb + dwAdditionalLen) / _dwPageSize;
 
     if (overflowsPage) {
-        bool z = dwAdditionalLen <= (unsigned __int64)((BYTE*)_LoadingThemeFile.ThemeHeader() - upb + 0x7FFFFFFF);
+        bool z =
+            dwAdditionalLen <=
+            (unsigned __int64)((BYTE*)_LoadingThemeFile.ThemeHeader() - upb + 0x7FFFFFFF);
         if (!z)
             return E_OUTOFMEMORY;
 
-        SIZE_T s = (SIZE_T)(upb + dwAdditionalLen - (uint64_t)_LoadingThemeFile.ThemeHeader() + 1);
+        SIZE_T s = (SIZE_T)(upb + dwAdditionalLen -
+                            (uint64_t)_LoadingThemeFile.ThemeHeader() + 1);
         if (!VirtualAlloc(_LoadingThemeFile.ThemeHeader(), s, MEM_COMMIT, PAGE_READWRITE))
             return E_OUTOFMEMORY;
     }
@@ -216,8 +188,8 @@ HRESULT CThemeLoader::EmitAndCopyBlock(MIXEDPTRS* u, void const* pSrc, unsigned 
     return S_OK;
 }
 
-BOOL CThemeLoader::IndexExists(
-    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId)
+BOOL CThemeLoader::IndexExists(wchar_t const* pszAppName, wchar_t const* pszClassName,
+                               int iPartId, int iStateId)
 {
     APPCLASSLOCAL const* matchedClass = nullptr;
 
@@ -228,7 +200,8 @@ BOOL CThemeLoader::IndexExists(
         bool reqName = pszAppName && *pszAppName;
         bool hasName = currApp && *currApp;
 
-        if (((!reqName && !hasName) || (reqName && hasName && AsciiStrCmpI(pszAppName, currApp) == 0)) &&
+        if (((!reqName && !hasName) ||
+             (reqName && hasName && AsciiStrCmpI(pszAppName, currApp) == 0)) &&
             AsciiStrCmpI(pszClassName, currCls) == 0) {
             matchedClass = &cls;
             break;
@@ -245,33 +218,36 @@ BOOL CThemeLoader::IndexExists(
     return FALSE;
 }
 
-HRESULT CThemeLoader::AddMissingParent(
-    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId)
+HRESULT CThemeLoader::AddMissingParent(wchar_t const* pszAppName,
+                                       wchar_t const* pszClassName, int iPartId,
+                                       int iStateId)
 {
     int beginIdx = GetNextDataIndex();
     unsigned value = 0;
     ENSURE_HR(AddData(12, 12, &value, sizeof(value)));
 
     int length = GetNextDataIndex() - beginIdx;
-    ENSURE_HR(AddIndexInternal(pszAppName, pszClassName, iPartId, iStateId, beginIdx, length));
+    ENSURE_HR(
+        AddIndexInternal(pszAppName, pszClassName, iPartId, iStateId, beginIdx, length));
     return S_OK;
 }
 
-HRESULT CThemeLoader::AddIndex(
-    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId, int iStateId, int iIndex, int iLen)
+HRESULT CThemeLoader::AddIndex(wchar_t const* pszAppName, wchar_t const* pszClassName,
+                               int iPartId, int iStateId, int iIndex, int iLen)
 {
     if (iPartId && !IndexExists(pszAppName, pszClassName, 0, 0))
         ENSURE_HR(AddMissingParent(pszAppName, pszClassName, 0, 0));
     if (iStateId && !IndexExists(pszAppName, pszClassName, iPartId, 0))
         ENSURE_HR(AddMissingParent(pszAppName, pszClassName, iPartId, 0));
 
-    ENSURE_HR(AddIndexInternal(pszAppName, pszClassName, iPartId, iStateId, iIndex, iLen));
+    ENSURE_HR(
+        AddIndexInternal(pszAppName, pszClassName, iPartId, iStateId, iIndex, iLen));
     return S_OK;
 }
 
-HRESULT CThemeLoader::AddIndexInternal(
-    wchar_t const* pszAppName, wchar_t const* pszClassName, int iPartId,
-    int iStateId, int iIndex, int iLen)
+HRESULT CThemeLoader::AddIndexInternal(wchar_t const* pszAppName,
+                                       wchar_t const* pszClassName, int iPartId,
+                                       int iStateId, int iIndex, int iLen)
 {
     APPCLASSLOCAL* cls = nullptr;
 
@@ -282,7 +258,8 @@ HRESULT CThemeLoader::AddIndexInternal(
         bool reqName = pszAppName && *pszAppName;
         bool hasName = currApp && *currApp;
 
-        if (((!reqName && !hasName) || (reqName && hasName && AsciiStrCmpI(pszAppName, currApp) == 0)) &&
+        if (((!reqName && !hasName) ||
+             (reqName && hasName && AsciiStrCmpI(pszAppName, currApp) == 0)) &&
             AsciiStrCmpI(pszClassName, currCls) == 0) {
             cls = &c;
             break;
@@ -317,8 +294,8 @@ HRESULT CThemeLoader::AddIndexInternal(
     return S_OK;
 }
 
-HRESULT CThemeLoader::AddData(short sTypeNum, unsigned char ePrimVal,
-                              void const* pData, unsigned dwLen)
+HRESULT CThemeLoader::AddData(short sTypeNum, unsigned char ePrimVal, void const* pData,
+                              unsigned dwLen)
 {
     if (ePrimVal == TMT_FONT) {
         unsigned short idx = 0;
@@ -347,7 +324,8 @@ int CThemeLoader::AddToDIBDataArray(void* pDIBBits, short width, short height)
     return _rgDIBDataArray.size() - 1;
 }
 
-HRESULT CThemeLoader::AddDataInternal(short sTypeNum, unsigned char ePrimVal, void const* pData, unsigned dwLen)
+HRESULT CThemeLoader::AddDataInternal(short sTypeNum, unsigned char ePrimVal,
+                                      void const* pData, unsigned dwLen)
 {
     if (dwLen + 16 < dwLen || dwLen + 16 + _iLocalLen > static_cast<DWORD>(INT_MAX))
         return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
@@ -355,10 +333,11 @@ HRESULT CThemeLoader::AddDataInternal(short sTypeNum, unsigned char ePrimVal, vo
     MIXEDPTRS u;
     u.pb = &_pbLocalData[_iLocalLen];
 
-    bool overflowsPage = (uintptr_t)u.pb / _dwPageSize != ((uintptr_t)u.pb + dwLen + 15) / _dwPageSize;
+    bool overflowsPage =
+        (uintptr_t)u.pb / _dwPageSize != ((uintptr_t)u.pb + dwLen + 15) / _dwPageSize;
 
-    if ((overflowsPage || _iLocalLen == 0)
-        && !VirtualAlloc(_pbLocalData, _iLocalLen + dwLen + 16, MEM_COMMIT, PAGE_READWRITE))
+    if ((overflowsPage || _iLocalLen == 0) &&
+        !VirtualAlloc(_pbLocalData, _iLocalLen + dwLen + 16, MEM_COMMIT, PAGE_READWRITE))
         return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
 
     ENSURE_HR(EmitEntryHdr(&u, sTypeNum, ePrimVal));
@@ -386,8 +365,7 @@ void CThemeLoader::FreeLocalTheme()
 }
 
 HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
-                                wchar_t const* pszColorParam,
-                                wchar_t const*pszSizeParam,
+                                wchar_t const* pszColorParam, wchar_t const* pszSizeParam,
                                 HANDLE* phReuseSection, bool fGlobalTheme,
                                 bool fHighContrast)
 {
@@ -401,8 +379,8 @@ HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
 
     size_t const MinReserve = 10 * 1024 * 1024;
 
-    HANDLE hFile = CreateFileW(
-        pszThemeName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+    HANDLE hFile = CreateFileW(pszThemeName, GENERIC_READ, FILE_SHARE_READ, nullptr,
+                               OPEN_EXISTING, 0, nullptr);
     if (!hFile)
         return MakeErrorLast();
 
@@ -428,24 +406,15 @@ HRESULT CThemeLoader::LoadTheme(HMODULE hInst, wchar_t const* pszThemeName,
     vsl.pfnCB = this;
     ENSURE_HR(VSLoad(&vsl, isLiteStyle, fHighContrast));
 
-    ENSURE_HR(PackAndLoadTheme(
-        hFile,
-        pszThemeName,
-        pszColorParam,
-        pszSizeParam,
-        std::max(fileSize, MinReserve),
-        nullptr,
-        0,
-        nullptr,
-        0,
-        phReuseSection,
-        nullptr));
+    ENSURE_HR(PackAndLoadTheme(hFile, pszThemeName, pszColorParam, pszSizeParam,
+                               std::max(fileSize, MinReserve), nullptr, 0, nullptr, 0,
+                               phReuseSection, nullptr));
 
     return S_OK;
 }
 
-HRESULT CThemeLoader::EmitString(
-    MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc, int* piOffSet)
+HRESULT CThemeLoader::EmitString(MIXEDPTRS* u, wchar_t const* pszSrc, unsigned cchSrc,
+                                 int* piOffSet)
 {
     unsigned paddedLen = Align8(2 * (cchSrc + 1));
     ENSURE_HR(AllocateThemeFileBytes(u->pb, paddedLen));
@@ -458,9 +427,9 @@ HRESULT CThemeLoader::EmitString(
     return S_OK;
 }
 
-HRESULT CThemeLoader::EmitObject(
-    MIXEDPTRS* u, short propnum, unsigned char privnum, void* pHdr,
-    unsigned dwHdrLen, void* pObj, unsigned dwObjLen, CRenderObj* pRender)
+HRESULT CThemeLoader::EmitObject(MIXEDPTRS* u, short propnum, unsigned char privnum,
+                                 void* pHdr, unsigned dwHdrLen, void* pObj,
+                                 unsigned dwObjLen, CRenderObj* pRender)
 {
     ENSURE_HR(EmitEntryHdr(u, propnum, privnum));
     ENSURE_HR(AllocateThemeFileBytes(u->pb, dwHdrLen));
@@ -503,54 +472,53 @@ HRESULT CThemeLoader::GetFontTableIndex(LOGFONTW const* pFont, unsigned short* p
     return S_OK;
 }
 
-HRESULT CThemeLoader::PackDrawObject(
-    MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
+HRESULT CThemeLoader::PackDrawObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId,
+                                     int iStateId)
 {
     int bgType;
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId/*0*/, TMT_BGTYPE, &bgType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId /*0*/, TMT_BGTYPE, &bgType) < 0)
         bgType = BT_BORDERFILL;
 
     PARTOBJHDR partHdr;
     partHdr.iPartId = iPartId;
-    partHdr.iStateId = iStateId/*0*/;
+    partHdr.iStateId = iStateId /*0*/;
 
     if (bgType == BT_NONE || bgType == BT_BORDERFILL) {
         CBorderFill borderFill;
-        ENSURE_HR(borderFill.PackProperties(
-            pRender, bgType == BT_NONE, iPartId, iStateId/*0*/));
-        return EmitObject(u, TMT_DRAWOBJ, TMT_DRAWOBJ, &partHdr,
-                          sizeof(partHdr), &borderFill, sizeof(borderFill), pRender);
+        ENSURE_HR(borderFill.PackProperties(pRender, bgType == BT_NONE, iPartId,
+                                            iStateId /*0*/));
+        return EmitObject(u, TMT_DRAWOBJ, TMT_DRAWOBJ, &partHdr, sizeof(partHdr),
+                          &borderFill, sizeof(borderFill), pRender);
     }
 
     CMaxImageFile imgFile;
-    ENSURE_HR(imgFile.PackProperties(pRender, iPartId, iStateId/*0*/));
+    ENSURE_HR(imgFile.PackProperties(pRender, iPartId, iStateId /*0*/));
 
     DIBINFO* pScaledDibInfo = nullptr;
-    HRESULT hr = imgFile.CreateScaledBackgroundImage(
-        pRender, iPartId, iStateId/*0*/, &pScaledDibInfo);
+    HRESULT hr = imgFile.CreateScaledBackgroundImage(pRender, iPartId, iStateId /*0*/,
+                                                     &pScaledDibInfo);
     if (hr < 0)
         return hr;
     if (hr == 0)
         ENSURE_HR(MakeStockObject(pRender, pScaledDibInfo));
 
-    for (int i = 0; ; ++i) {
+    for (int i = 0;; ++i) {
         auto pdi = imgFile.EnumImageFiles(i);
         if (!pdi)
             break;
-        ENSURE_HR(PackImageFileInfo(pdi, &imgFile, u, pRender, iPartId,
-                                    iStateId));
+        ENSURE_HR(PackImageFileInfo(pdi, &imgFile, u, pRender, iPartId, iStateId));
     }
 
     return EmitObject(u, TMT_DRAWOBJ, TMT_DRAWOBJ, &partHdr, sizeof(partHdr), &imgFile,
-                      sizeof(CImageFile) + imgFile._iMultiImageCount * sizeof(DIBINFO), pRender);
+                      sizeof(CImageFile) + imgFile._iMultiImageCount * sizeof(DIBINFO),
+                      pRender);
 }
 
 BOOL CThemeLoader::KeyTextPropertyFound(int iStateDataOffset)
 {
-    for (auto hdr = (ENTRYHDR*)((BYTE*)_LoadingThemeFile.ThemeHeader() + iStateDataOffset);
-         hdr->usTypeNum != TMT_JUMPTOPARENT;
-         hdr = hdr->Next())
-    {
+    for (auto hdr =
+             (ENTRYHDR*)((BYTE*)_LoadingThemeFile.ThemeHeader() + iStateDataOffset);
+         hdr->usTypeNum != TMT_JUMPTOPARENT; hdr = hdr->Next()) {
         if (CTextDraw::KeyProperty(hdr->usTypeNum))
             return TRUE;
     }
@@ -558,8 +526,8 @@ BOOL CThemeLoader::KeyTextPropertyFound(int iStateDataOffset)
     return FALSE;
 }
 
-HRESULT CThemeLoader::PackTextObjects(
-    MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, bool fGlobals)
+HRESULT CThemeLoader::PackTextObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart,
+                                      bool fGlobals)
 {
     for (int partId = 0; partId <= iMaxPart; ++partId) {
         int offset = GetPartOffset(pRender, partId);
@@ -586,8 +554,8 @@ HRESULT CThemeLoader::PackTextObjects(
     return S_OK;
 }
 
-HRESULT CThemeLoader::PackTextObject(
-    MIXEDPTRS* u, CRenderObj* pRender, int iPartId, int iStateId)
+HRESULT CThemeLoader::PackTextObject(MIXEDPTRS* u, CRenderObj* pRender, int iPartId,
+                                     int iStateId)
 {
     PARTOBJHDR partHdr;
     partHdr.iPartId = iPartId;
@@ -595,8 +563,8 @@ HRESULT CThemeLoader::PackTextObject(
 
     CTextDraw textDraw;
     ENSURE_HR(textDraw.PackProperties(pRender, iPartId, iStateId));
-    return EmitObject(u, TMT_TEXTOBJ, TMT_TEXTOBJ, &partHdr, sizeof(partHdr),
-                      &textDraw, sizeof(textDraw), pRender);
+    return EmitObject(u, TMT_TEXTOBJ, TMT_TEXTOBJ, &partHdr, sizeof(partHdr), &textDraw,
+                      sizeof(textDraw), pRender);
 }
 
 int CThemeLoader::GetScreenPpi()
@@ -624,22 +592,28 @@ HRESULT CThemeLoader::PackMetrics()
 
             switch (entryHdr->ePrimVal) {
             case TMT_STRING:
-                _LoadThemeMetrics.wsStrings[entryHdr->usTypeNum - TMT_CSSNAME] = (wchar_t const*)data;
+                _LoadThemeMetrics.wsStrings[entryHdr->usTypeNum - TMT_CSSNAME] =
+                    (wchar_t const*)data;
                 break;
             case TMT_INT:
-                _LoadThemeMetrics.iInts[entryHdr->usTypeNum - TMT_FIRSTINT] = *(DWORD*)data;
+                _LoadThemeMetrics.iInts[entryHdr->usTypeNum - TMT_FIRSTINT] =
+                    *(DWORD*)data;
                 break;
             case TMT_BOOL:
-                _LoadThemeMetrics.fBools[entryHdr->usTypeNum - TMT_FIRSTBOOL] = *(BYTE*)data;
+                _LoadThemeMetrics.fBools[entryHdr->usTypeNum - TMT_FIRSTBOOL] =
+                    *(BYTE*)data;
                 break;
             case TMT_COLOR:
-                _LoadThemeMetrics.crColors[entryHdr->usTypeNum - TMT_FIRSTCOLOR] = *(DWORD*)data;
+                _LoadThemeMetrics.crColors[entryHdr->usTypeNum - TMT_FIRSTCOLOR] =
+                    *(DWORD*)data;
                 break;
             case TMT_SIZE:
-                _LoadThemeMetrics.iSizes[entryHdr->usTypeNum - TMT_FIRSTSIZE] = *(DWORD*)data;
+                _LoadThemeMetrics.iSizes[entryHdr->usTypeNum - TMT_FIRSTSIZE] =
+                    *(DWORD*)data;
                 break;
             case TMT_FONT:
-                _LoadThemeMetrics.lfFonts[entryHdr->usTypeNum - TMT_FIRSTFONT] = _fontTable[*(short*)data];
+                _LoadThemeMetrics.lfFonts[entryHdr->usTypeNum - TMT_FIRSTFONT] =
+                    _fontTable[*(short*)data];
                 break;
             }
 
@@ -656,9 +630,7 @@ HRESULT CThemeLoader::CopyDummyNonSharableDataToLive()
 
     auto hdr = (NONSHARABLEDATAHDR*)VirtualAlloc(
         _LoadingThemeFile.NonSharableDataHeader(),
-        sizeof(NONSHARABLEDATAHDR) + cDIB * sizeof(void*),
-        MEM_COMMIT,
-        PAGE_READWRITE);
+        sizeof(NONSHARABLEDATAHDR) + cDIB * sizeof(void*), MEM_COMMIT, PAGE_READWRITE);
     if (!hdr)
         return E_OUTOFMEMORY;
 
@@ -674,8 +646,8 @@ HRESULT CThemeLoader::CopyDummyNonSharableDataToLive()
     return S_OK;
 }
 
-HRESULT CThemeLoader::CreateReuseSection(
-    wchar_t const* pszSharableSectionName, HANDLE* phReuseSection)
+HRESULT CThemeLoader::CreateReuseSection(wchar_t const* pszSharableSectionName,
+                                         HANDLE* phReuseSection)
 {
     DWORD offset = sizeof(REUSEDATAHDR) + sizeof(DIBREUSEDATA) * _rgDIBDataArray.size();
     offset = AlignPower2<4>(offset);
@@ -683,15 +655,15 @@ HRESULT CThemeLoader::CreateReuseSection(
     for (auto& dibData : _rgDIBDataArray) {
         if (dibData.pDIBBits) {
             dibData.dibReuseData.iDIBBitsOffset = offset;
-            offset += sizeof(int) * dibData.dibReuseData.iWidth * dibData.dibReuseData.iHeight;
+            offset +=
+                sizeof(int) * dibData.dibReuseData.iWidth * dibData.dibReuseData.iHeight;
         } else {
             dibData.dibReuseData.iDIBBitsOffset = -1;
         }
     }
 
-    FileMappingHandle hReuseSection{
-        CreateFileMappingW(FileHandle::InvalidHandle(), nullptr, PAGE_READWRITE,
-                           0, offset, nullptr)};
+    FileMappingHandle hReuseSection{CreateFileMappingW(
+        FileHandle::InvalidHandle(), nullptr, PAGE_READWRITE, 0, offset, nullptr)};
     if (!hReuseSection)
         return MakeErrorLast();
 
@@ -709,15 +681,14 @@ HRESULT CThemeLoader::CreateReuseSection(
                                  countof(reuseDataHdr->szSharableSectionName),
                                  pszSharableSectionName));
 
-    auto reuseIt = (DIBREUSEDATA*)((BYTE*)reuseDataHdr.Get() + reuseDataHdr->iDIBReuseRecordsOffset);
+    auto reuseIt =
+        (DIBREUSEDATA*)((BYTE*)reuseDataHdr.Get() + reuseDataHdr->iDIBReuseRecordsOffset);
     for (auto const& dibData : _rgDIBDataArray) {
         auto const& reuseData = dibData.dibReuseData;
         if (dibData.pDIBBits)
-            memcpy_s(
-            (BYTE*)reuseDataHdr.Get() + reuseData.iDIBBitsOffset,
-                (size_t)(offset - reuseData.iDIBBitsOffset),
-                dibData.pDIBBits,
-                sizeof(COLORREF) * reuseData.iWidth * reuseData.iHeight);
+            memcpy_s((BYTE*)reuseDataHdr.Get() + reuseData.iDIBBitsOffset,
+                     (size_t)(offset - reuseData.iDIBBitsOffset), dibData.pDIBBits,
+                     sizeof(COLORREF) * reuseData.iWidth * reuseData.iHeight);
 
         *reuseIt++ = reuseData;
     }
@@ -756,9 +727,11 @@ static HRESULT GenerateNonSharableData(HANDLE hReuseSection, void* pNonSharableD
     bmi.masks[1] = 0x00FF00;
     bmi.masks[2] = 0x0000FF;
 
-    HBITMAP* dstBitmap = (HBITMAP*)((BYTE*)nonSharableDataHdr + nonSharableDataHdr->iBitmapsOffset);
+    HBITMAP* dstBitmap =
+        (HBITMAP*)((BYTE*)nonSharableDataHdr + nonSharableDataHdr->iBitmapsOffset);
     HBITMAP* const dstBitmapEnd = dstBitmap + reuseDataHdr->iDIBReuseRecordsCount;
-    DIBREUSEDATA* dibReuseRec = (DIBREUSEDATA*)((BYTE*)reuseDataHdr + reuseDataHdr->iDIBReuseRecordsOffset);
+    DIBREUSEDATA* dibReuseRec =
+        (DIBREUSEDATA*)((BYTE*)reuseDataHdr + reuseDataHdr->iDIBReuseRecordsOffset);
 
     for (; dstBitmap < dstBitmapEnd; ++dstBitmap, ++dibReuseRec) {
         if (dibReuseRec->iDIBBitsOffset == -1) {
@@ -771,8 +744,7 @@ static HRESULT GenerateNonSharableData(HANDLE hReuseSection, void* pNonSharableD
         bmi.bmih.biSizeImage = 4 * dibReuseRec->iWidth * dibReuseRec->iHeight;
 
         void* pvBits = nullptr;
-        *dstBitmap = CreateDIBSection(nullptr,
-                                      reinterpret_cast<BITMAPINFO const*>(&bmi),
+        *dstBitmap = CreateDIBSection(nullptr, reinterpret_cast<BITMAPINFO const*>(&bmi),
                                       DIB_RGB_COLORS, &pvBits, hReuseSection,
                                       dibReuseRec->iDIBBitsOffset);
         if (!*dstBitmap)
@@ -785,10 +757,8 @@ static HRESULT GenerateNonSharableData(HANDLE hReuseSection, void* pNonSharableD
 
 HRESULT CThemeLoader::CopyNonSharableDataToLive(HANDLE hReuseSection)
 {
-    void* ptr = VirtualAlloc(
-        _LoadingThemeFile.NonSharableDataHeader(),
-        8 * _rgDIBDataArray.size() + 16,
-        MEM_COMMIT, PAGE_READWRITE);
+    void* ptr = VirtualAlloc(_LoadingThemeFile.NonSharableDataHeader(),
+                             8 * _rgDIBDataArray.size() + 16, MEM_COMMIT, PAGE_READWRITE);
 
     if (!ptr)
         return HRESULT_FROM_WIN32(ERROR_NOT_ENOUGH_MEMORY);
@@ -801,30 +771,20 @@ HRESULT CThemeLoader::PackAndLoadTheme(
     wchar_t const* pszSizeParam, unsigned cbMaxDesiredSharableSectionSize,
     wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
     wchar_t* pszNonSharableSectionName, unsigned cchNonSharableSectionName,
-    HANDLE* phReuseSection,
-    PFNALLOCSECTIONS pfnAllocSections)
+    HANDLE* phReuseSection, PFNALLOCSECTIONS pfnAllocSections)
 {
     ENSURE_HR(PackMetrics());
 
     if (pfnAllocSections) {
         ENSURE_HR(pfnAllocSections(
-            &_LoadingThemeFile,
-            pszSharableSectionName,
-            cchSharableSectionName,
-            cbMaxDesiredSharableSectionSize,
-            pszNonSharableSectionName,
-            cchNonSharableSectionName,
-            8 * _rgDIBDataArray.size() + 16,
-            1));
+            &_LoadingThemeFile, pszSharableSectionName, cchSharableSectionName,
+            cbMaxDesiredSharableSectionSize, pszNonSharableSectionName,
+            cchNonSharableSectionName, 8 * _rgDIBDataArray.size() + 16, 1));
     } else {
         ENSURE_HR(_LoadingThemeFile.CreateFileW(
-            pszSharableSectionName,
-            cchSharableSectionName,
-            cbMaxDesiredSharableSectionSize,
-            pszNonSharableSectionName,
-            cchNonSharableSectionName,
-            8 * _rgDIBDataArray.size() + 16,
-            0));
+            pszSharableSectionName, cchSharableSectionName,
+            cbMaxDesiredSharableSectionSize, pszNonSharableSectionName,
+            cchNonSharableSectionName, 8 * _rgDIBDataArray.size() + 16, 0));
     }
 
     if (phReuseSection) {
@@ -834,19 +794,16 @@ HRESULT CThemeLoader::PackAndLoadTheme(
         ENSURE_HR(CopyDummyNonSharableDataToLive());
     }
 
-    ENSURE_HR(CopyLocalThemeToLive(
-        hFile,
-        cbMaxDesiredSharableSectionSize,
-        pszThemeName,
-        pszColorParam,
-        pszSizeParam));
+    ENSURE_HR(CopyLocalThemeToLive(hFile, cbMaxDesiredSharableSectionSize, pszThemeName,
+                                   pszColorParam, pszSizeParam));
 
     return S_OK;
 }
 
-HRESULT CThemeLoader::CopyLocalThemeToLive(
-    void* hFile, int iTotalLength, wchar_t const* pszThemeName,
-    wchar_t const* pszColorParam, wchar_t const* pszSizeParam)
+HRESULT CThemeLoader::CopyLocalThemeToLive(void* hFile, int iTotalLength,
+                                           wchar_t const* pszThemeName,
+                                           wchar_t const* pszColorParam,
+                                           wchar_t const* pszSizeParam)
 {
     auto const themeHdrSize = Align8(sizeof(THEMEHDR));
     auto const themeHdr = (THEMEHDR*)VirtualAlloc(
@@ -918,7 +875,8 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
 
     _hdr->iStringsLength = (uintptr_t)u.pb - (uintptr_t)stringsBegin;
 
-    _hdr->iSectionIndexOffset = (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile.ThemeHeader();
+    _hdr->iSectionIndexOffset =
+        (uintptr_t)u.pb - (uintptr_t)_LoadingThemeFile.ThemeHeader();
     _hdr->iSectionIndexLength = sizeof(APPCLASSLIVE) * _LocalIndexes.size();
     ENSURE_HR(AllocateThemeFileBytes(u.pb, _hdr->iSectionIndexLength));
 
@@ -959,7 +917,8 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
 
     {
         auto pb = u.pb;
-        ENSURE_HR(EmitAndCopyBlock(&u, _fontTable.data(), sizeof(_fontTable[0]) * _fontTable.size()));
+        ENSURE_HR(EmitAndCopyBlock(&u, _fontTable.data(),
+                                   sizeof(_fontTable[0]) * _fontTable.size()));
         _hdr->iFontsOffset = (uintptr_t)pb - (uintptr_t)_LoadingThemeFile.ThemeHeader();
     }
 
@@ -974,8 +933,7 @@ HRESULT CThemeLoader::CopyLocalThemeToLive(
     return S_OK;
 }
 
-HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
-                                     APPCLASSLIVE* pacl)
+HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, APPCLASSLIVE* pacl)
 {
     BYTE* v26 = u->pb;
     bool const fGlobalsGroup =
@@ -985,8 +943,8 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
     int cParts = pac->iMaxPartNum + 1;
 
     ENSURE_HR(EmitEntryHdr(u, TMT_PARTJUMPTABLE, TMT_PARTJUMPTABLE));
-    ENSURE_HR(AllocateThemeFileBytes(
-        u->pb, sizeof(PARTJUMPTABLEHDR) + sizeof(int) * cParts));
+    ENSURE_HR(
+        AllocateThemeFileBytes(u->pb, sizeof(PARTJUMPTABLEHDR) + sizeof(int) * cParts));
 
     auto partJumpTableHdr = (PARTJUMPTABLEHDR*)u->pb;
     partJumpTableHdr->iBaseClassIndex = pacl->iBaseClassIndex;
@@ -1002,40 +960,37 @@ HRESULT CThemeLoader::CopyClassGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u,
     }
     EndEntry(u);
 
-    int iPartZeroIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+    int iPartZeroIndex =
+        (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
     for (int partId = 0; partId <= pac->iMaxPartNum; ++partId)
-        CopyPartGroup(pac, u, partId, partJumpTable, iPartZeroIndex, pacl->iBaseClassIndex, fGlobalsGroup);
+        CopyPartGroup(pac, u, partId, partJumpTable, iPartZeroIndex,
+                      pacl->iBaseClassIndex, fGlobalsGroup);
 
     int screenDpi = GetScreenDpi();
     CRenderObj* pRender = nullptr;
-    HRESULT hr = CRenderObj::Create(
-        &_LoadingThemeFile,
-        0,
-        (uintptr_t)v26 - (uintptr_t)(_LoadingThemeFile.ThemeHeader()),
-        0,
-        pacl->AppClassInfo.iClassNameIndex,
-        0,
-        false,
-        nullptr,
-        nullptr,
-        screenDpi,
-        false,
-        0,
-        &pRender);
+    HRESULT hr =
+        CRenderObj::Create(&_LoadingThemeFile, 0,
+                           (uintptr_t)v26 - (uintptr_t)(_LoadingThemeFile.ThemeHeader()),
+                           0, pacl->AppClassInfo.iClassNameIndex, 0, false, nullptr,
+                           nullptr, screenDpi, false, 0, &pRender);
 
     if (hr >= 0) {
         if (screenDpi != 96)
             pRender->_dwOtdFlags |= OTD_FORCE_RECT_SIZING;
 
         if (fGlobalsGroup)
-            _iGlobalsDrawObj = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+            _iGlobalsDrawObj =
+                (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
 
-        partJumpTableHdr->iFirstDrawObjIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+        partJumpTableHdr->iFirstDrawObjIndex =
+            (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
         hr = PackDrawObjects(u, pRender, pac->iMaxPartNum, fGlobalsGroup);
         if (hr >= 0) {
             if (fGlobalsGroup)
-                _iGlobalsTextObj = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
-            partJumpTableHdr->iFirstTextObjIndex = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+                _iGlobalsTextObj =
+                    (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+            partJumpTableHdr->iFirstTextObjIndex =
+                (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
             hr = PackTextObjects(u, pRender, pac->iMaxPartNum, fGlobalsGroup);
             if (hr >= 0) {
                 hr = EmitEntryHdr(u, TMT_ENDOFCLASS, TMT_ENDOFCLASS);
@@ -1082,8 +1037,8 @@ BOOL CThemeLoader::KeyDrawPropertyFound(int iStateDataOffset)
     return FALSE;
 }
 
-HRESULT CThemeLoader::PackDrawObjects(
-    MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart, bool fGlobals)
+HRESULT CThemeLoader::PackDrawObjects(MIXEDPTRS* uOut, CRenderObj* pRender, int iMaxPart,
+                                      bool fGlobals)
 {
     for (int partId = 0; partId <= iMaxPart; ++partId) {
         int offset = GetPartOffset(pRender, partId);
@@ -1111,9 +1066,9 @@ HRESULT CThemeLoader::PackDrawObjects(
     return S_OK;
 }
 
-HRESULT CThemeLoader::CopyPartGroup(
-    APPCLASSLOCAL* pac, MIXEDPTRS* u, int iPartId, int* piPartJumpTable,
-    int iPartZeroIndex, int iBaseClassIndex, bool fGlobalsGroup)
+HRESULT CThemeLoader::CopyPartGroup(APPCLASSLOCAL* pac, MIXEDPTRS* u, int iPartId,
+                                    int* piPartJumpTable, int iPartZeroIndex,
+                                    int iBaseClassIndex, bool fGlobalsGroup)
 {
     if (pac->PartStateIndexes.empty())
         return S_OK;
@@ -1129,7 +1084,8 @@ HRESULT CThemeLoader::CopyPartGroup(
 
     HRESULT hr = 0;
     if (piPartJumpTable) {
-        piPartJumpTable[iPartId] = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+        piPartJumpTable[iPartId] =
+            (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
         if (piPartJumpTable[iPartId] == 0) { // FIXME: Remove
             piPartJumpTable[iPartId] = 0;
         }
@@ -1139,8 +1095,8 @@ HRESULT CThemeLoader::CopyPartGroup(
     if (iMaxStateId > 0) {
         int cStates = iMaxStateId + 1;
         ENSURE_HR(EmitEntryHdr(u, TMT_STATEJUMPTABLE, TMT_STATEJUMPTABLE));
-        ENSURE_HR(AllocateThemeFileBytes(
-            u->pb, sizeof(STATEJUMPTABLEHDR) + sizeof(int) * cStates));
+        ENSURE_HR(AllocateThemeFileBytes(u->pb, sizeof(STATEJUMPTABLEHDR) +
+                                                    sizeof(int) * cStates));
 
         auto stateJumpTableHdr = (STATEJUMPTABLEHDR*)u->pb;
         stateJumpTableHdr->cStates = cStates;
@@ -1164,7 +1120,8 @@ HRESULT CThemeLoader::CopyPartGroup(
                 continue;
 
             if (stateJumpTable)
-                stateJumpTable[iState] = (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
+                stateJumpTable[iState] =
+                    (uintptr_t)(u->pi) - (uintptr_t)(_LoadingThemeFile.ThemeHeader());
 
             int vv;
             if (iState)
@@ -1215,14 +1172,14 @@ HRESULT CThemeLoader::MakeStockObject(CRenderObj* pRender, DIBINFO* pdi)
     return S_OK;
 }
 
-HRESULT CThemeLoader::PackImageFileInfo(
-    DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u, CRenderObj* pRender,
-    int iPartId, int iStateId)
+HRESULT CThemeLoader::PackImageFileInfo(DIBINFO* pdi, CImageFile* pImageObj, MIXEDPTRS* u,
+                                        CRenderObj* pRender, int iPartId, int iStateId)
 {
     if (iStateId != 0 || !pdi->fPartiallyTransparent || pdi->iDibOffset <= 0)
         return S_OK;
 
-    pdi->iRgnListOffset = (uintptr_t)u->pb - (uintptr_t)_LoadingThemeFile.ThemeHeader() + 8;
+    pdi->iRgnListOffset =
+        (uintptr_t)u->pb - (uintptr_t)_LoadingThemeFile.ThemeHeader() + 8;
 
     HRESULT hr = EmitEntryHdr(u, TMT_RGNLIST, TMT_RGNLIST);
     if (hr < 0) {
@@ -1261,17 +1218,18 @@ HRESULT CThemeLoader::PackImageFileInfo(
         int cHeight;
         int cWidth;
         BitmapPixels pixels;
-        hr = pixels.OpenBitmap(nullptr, hBitmap, false, &prgdwPixels, &cWidth,
-                               &cHeight, nullptr, nullptr, nullptr, 0);
+        hr = pixels.OpenBitmap(nullptr, hBitmap, false, &prgdwPixels, &cWidth, &cHeight,
+                               nullptr, nullptr, nullptr, 0);
         if (hr >= 0) {
             for (int stateId = 0; stateId <= pImageObj->_iImageCount; ++stateId) {
                 RGNDATA* rgnData = nullptr;
                 int rgnDataLen;
-                hr = pImageObj->BuildRgnData(prgdwPixels, cWidth,
-                                             cHeight, pdi, pRender, stateId,
-                                             &rgnData, &rgnDataLen);
+                hr = pImageObj->BuildRgnData(prgdwPixels, cWidth, cHeight, pdi, pRender,
+                                             stateId, &rgnData, &rgnDataLen);
                 if (hr >= 0 && rgnDataLen != 0) {
-                    jumpTable[stateId] = (int)((uintptr_t)u->pb - (uintptr_t)_LoadingThemeFile.ThemeHeader());
+                    jumpTable[stateId] =
+                        (int)((uintptr_t)u->pb -
+                              (uintptr_t)_LoadingThemeFile.ThemeHeader());
                     hr = EmitEntryHdr(u, TMT_RGNDATA, TMT_RGNDATA);
                     if (hr >= 0) {
                         hr = EmitAndCopyBlock(u, rgnData, rgnDataLen);

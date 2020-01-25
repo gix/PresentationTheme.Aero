@@ -1,8 +1,8 @@
 #pragma once
-#include <windows.h>
-#include <uxtheme.h>
 #include <mutex>
+#include <uxtheme.h>
 #include <vector>
+#include <windows.h>
 
 namespace uxtheme
 {
@@ -33,9 +33,9 @@ public:
 
     HRESULT OpenRenderObject(CUxThemeFile* pThemeFile, int iThemeOffset,
                              int iAppNameOffset, int iClassNameOffset,
-                             CDrawBase* pDrawBase, CTextDraw* pTextObj,
-                             HWND hwnd, int iTargetDpi, unsigned dwOtdFlags,
-                             bool fForNonClientUse, void** phTheme);
+                             CDrawBase* pDrawBase, CTextDraw* pTextObj, HWND hwnd,
+                             int iTargetDpi, unsigned dwOtdFlags, bool fForNonClientUse,
+                             void** phTheme);
     HRESULT CloseRenderObject(HTHEME hTheme);
 
 private:

@@ -1,7 +1,7 @@
 #pragma once
-#include <windows.h>
 #include <uxtheme.h>
 #include <vector>
+#include <windows.h>
 
 namespace uxtheme
 {

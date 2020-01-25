@@ -16,38 +16,30 @@ public:
     STDMETHODIMP_(ULONG) AddRef() override;
     STDMETHODIMP_(ULONG) Release() override;
 
-    STDMETHODIMP Read(
-        _Out_writes_bytes_to_(cb, *pcbRead)  void* pv,
-        _In_ ULONG cb,
-        _Out_opt_ ULONG* pcbRead) override;
+    STDMETHODIMP Read(_Out_writes_bytes_to_(cb, *pcbRead) void* pv, _In_ ULONG cb,
+                      _Out_opt_ ULONG* pcbRead) override;
 
-    STDMETHODIMP Write(
-        _In_reads_bytes_(cb)  void const* pv,
-        _In_  ULONG cb,
-        _Out_opt_ ULONG* pcbWritten) override;
+    STDMETHODIMP Write(_In_reads_bytes_(cb) void const* pv, _In_ ULONG cb,
+                       _Out_opt_ ULONG* pcbWritten) override;
 
-    STDMETHODIMP Seek(
-        LARGE_INTEGER liMove,
-        DWORD dwOrigin,
-        _Out_opt_  ULARGE_INTEGER* pliNewPos) override;
+    STDMETHODIMP Seek(LARGE_INTEGER liMove, DWORD dwOrigin,
+                      _Out_opt_ ULARGE_INTEGER* pliNewPos) override;
 
     STDMETHODIMP SetSize(ULARGE_INTEGER uli) override;
 
-    STDMETHODIMP CopyTo(
-        _In_  IStream* pstm,
-        ULARGE_INTEGER cb,
-        _Out_opt_  ULARGE_INTEGER* pcbRead,
-        _Out_opt_  ULARGE_INTEGER* pcbWritten) override;
+    STDMETHODIMP CopyTo(_In_ IStream* pstm, ULARGE_INTEGER cb,
+                        _Out_opt_ ULARGE_INTEGER* pcbRead,
+                        _Out_opt_ ULARGE_INTEGER* pcbWritten) override;
 
     STDMETHODIMP Commit(DWORD grfCommitFlags) override;
 
     STDMETHODIMP Revert() override;
 
-    STDMETHODIMP LockRegion(
-        ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType) override;
+    STDMETHODIMP LockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                            DWORD dwLockType) override;
 
-    STDMETHODIMP UnlockRegion(
-        ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType) override;
+    STDMETHODIMP UnlockRegion(ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+                              DWORD dwLockType) override;
 
     STDMETHODIMP Stat(_Out_ STATSTG* pStg, DWORD dwStatFlag) override;
 

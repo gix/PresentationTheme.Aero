@@ -13,8 +13,7 @@
 namespace uxtheme
 {
 
-HRESULT SafeStringCchCopyW(
-    wchar_t* pszDest, size_t cchDest, wchar_t const* pszSrc)
+HRESULT SafeStringCchCopyW(wchar_t* pszDest, size_t cchDest, wchar_t const* pszSrc)
 {
     if (!pszDest)
         return E_INVALIDARG;
@@ -70,8 +69,7 @@ HRESULT MemoryDC::OpenDC(HDC hdcSource, int width, int height)
 
     hBitmap = CreateCompatibleBitmap(hdcSource, width, height);
 
-    if (!hBitmap ||
-        (hdc = CreateCompatibleDC(hdcSource), !hdc) ||
+    if (!hBitmap || (hdc = CreateCompatibleDC(hdcSource), !hdc) ||
         (hOldBitmap = (HBITMAP)SelectObject(hdc, hBitmap), !hOldBitmap))
         hr = MakeErrorLast();
 
@@ -134,37 +132,67 @@ DWORD GetSysColorEx(int index)
 {
     if (auto custom = GetCustomColorScheme()) {
         switch (index) {
-        case COLOR_ACTIVECAPTION: return custom->ActiveTitle;
-        case COLOR_BACKGROUND: return custom->Background;
-        case COLOR_BTNFACE: return custom->ButtonFace;
-        case COLOR_BTNTEXT: return custom->ButtonText;
-        case COLOR_GRAYTEXT: return custom->GrayText;
-        case COLOR_HIGHLIGHT: return custom->Hilight;
-        case COLOR_HIGHLIGHTTEXT: return custom->HilightText;
-        case COLOR_HOTLIGHT: return custom->HotTrackingColor;
-        case COLOR_INACTIVECAPTION: return custom->InactiveTitle;
-        case COLOR_INACTIVECAPTIONTEXT: return custom->InactiveTitleText;
-        case COLOR_CAPTIONTEXT: return custom->TitleText;
-        case COLOR_WINDOW: return custom->Window;
-        case COLOR_WINDOWTEXT: return custom->WindowText;
-        case COLOR_SCROLLBAR: return custom->Scrollbar;
-        case COLOR_MENU: return custom->Menu;
-        case COLOR_WINDOWFRAME: return custom->WindowFrame;
-        case COLOR_MENUTEXT: return custom->MenuText;
-        case COLOR_ACTIVEBORDER: return custom->ActiveBorder;
-        case COLOR_INACTIVEBORDER: return custom->InactiveBorder;
-        case COLOR_APPWORKSPACE: return custom->AppWorkspace;
-        case COLOR_BTNSHADOW: return custom->ButtonShadow;
-        case COLOR_BTNHIGHLIGHT: return custom->ButtonHilight;
-        case COLOR_3DDKSHADOW: return custom->ButtonDkShadow;
-        case COLOR_3DLIGHT: return custom->ButtonLight;
-        case COLOR_INFOTEXT: return custom->InfoText;
-        case COLOR_INFOBK: return custom->InfoWindow;
+        case COLOR_ACTIVECAPTION:
+            return custom->ActiveTitle;
+        case COLOR_BACKGROUND:
+            return custom->Background;
+        case COLOR_BTNFACE:
+            return custom->ButtonFace;
+        case COLOR_BTNTEXT:
+            return custom->ButtonText;
+        case COLOR_GRAYTEXT:
+            return custom->GrayText;
+        case COLOR_HIGHLIGHT:
+            return custom->Hilight;
+        case COLOR_HIGHLIGHTTEXT:
+            return custom->HilightText;
+        case COLOR_HOTLIGHT:
+            return custom->HotTrackingColor;
+        case COLOR_INACTIVECAPTION:
+            return custom->InactiveTitle;
+        case COLOR_INACTIVECAPTIONTEXT:
+            return custom->InactiveTitleText;
+        case COLOR_CAPTIONTEXT:
+            return custom->TitleText;
+        case COLOR_WINDOW:
+            return custom->Window;
+        case COLOR_WINDOWTEXT:
+            return custom->WindowText;
+        case COLOR_SCROLLBAR:
+            return custom->Scrollbar;
+        case COLOR_MENU:
+            return custom->Menu;
+        case COLOR_WINDOWFRAME:
+            return custom->WindowFrame;
+        case COLOR_MENUTEXT:
+            return custom->MenuText;
+        case COLOR_ACTIVEBORDER:
+            return custom->ActiveBorder;
+        case COLOR_INACTIVEBORDER:
+            return custom->InactiveBorder;
+        case COLOR_APPWORKSPACE:
+            return custom->AppWorkspace;
+        case COLOR_BTNSHADOW:
+            return custom->ButtonShadow;
+        case COLOR_BTNHIGHLIGHT:
+            return custom->ButtonHilight;
+        case COLOR_3DDKSHADOW:
+            return custom->ButtonDkShadow;
+        case COLOR_3DLIGHT:
+            return custom->ButtonLight;
+        case COLOR_INFOTEXT:
+            return custom->InfoText;
+        case COLOR_INFOBK:
+            return custom->InfoWindow;
         //case : return custom->ButtonAlternateFace;
-        case COLOR_GRADIENTACTIVECAPTION: return custom->GradientActiveTitle;
-        case COLOR_GRADIENTINACTIVECAPTION: return custom->GradientInactiveTitle;
-        case COLOR_MENUHILIGHT: return custom->MenuHilight;
-        case COLOR_MENUBAR: return custom->MenuBar;
+        case COLOR_GRADIENTACTIVECAPTION:
+            return custom->GradientActiveTitle;
+        case COLOR_GRADIENTINACTIVECAPTION:
+            return custom->GradientInactiveTitle;
+        case COLOR_MENUHILIGHT:
+            return custom->MenuHilight;
+        case COLOR_MENUBAR:
+            return custom->MenuBar;
         }
     }
 
@@ -184,9 +212,8 @@ static wchar_t const* StringFromError(wchar_t* buffer, size_t size, long ec)
 {
     assert(buffer);
     *buffer = 0;
-    DWORD cb = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, nullptr,
-                              static_cast<DWORD>(ec), 0, buffer,
-                              static_cast<DWORD>(size), nullptr);
+    DWORD cb = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, static_cast<DWORD>(ec),
+                              0, buffer, static_cast<DWORD>(size), nullptr);
     wchar_t const unk[] = L"<unknown>";
     if (!cb && size > lengthof(unk))
         (void)StringCchCopyW(buffer, size, unk);
@@ -196,7 +223,8 @@ static wchar_t const* StringFromError(wchar_t* buffer, size_t size, long ec)
 static bool IsDebuggerAttached()
 {
     BOOL debuggerPresent = FALSE;
-    return CheckRemoteDebuggerPresent(GetCurrentProcess(), &debuggerPresent) && debuggerPresent;
+    return CheckRemoteDebuggerPresent(GetCurrentProcess(), &debuggerPresent) &&
+           debuggerPresent;
 }
 
 static wchar_t const FallbackMessage[] = L"Failure formatting trace message.\n";
@@ -204,7 +232,8 @@ static wchar_t const FallbackMessage[] = L"Failure formatting trace message.\n";
 static wchar_t const* FixupMessage(wchar_t* buffer, HRESULT hr)
 {
     size_t N = 1024;
-    if (SUCCEEDED(hr)) return buffer;
+    if (SUCCEEDED(hr))
+        return buffer;
     if (hr == STRSAFE_E_INSUFFICIENT_BUFFER) {
         if (N >= 4) {
             buffer[N - 4] = L'.';
@@ -229,13 +258,11 @@ void TraceFormatArgs(char const* file, int lineNumber, char const* function,
     fileName = (fileName != nullptr) ? (fileName + 1) : file;
 
     HRESULT hr = S_OK;
-    hr = StringCchPrintfExW(ptr, static_cast<size_t>(end - ptr),
-                            &ptr, nullptr, 0,
+    hr = StringCchPrintfExW(ptr, static_cast<size_t>(end - ptr), &ptr, nullptr, 0,
                             L"%ls(tid %x): %s(%d): %s: ", L"<module>",
                             GetCurrentThreadId(), fileName, lineNumber, function);
 
-    hr = StringCchVPrintfExW(ptr, static_cast<size_t>(end - ptr),
-                             &ptr, nullptr, 0,
+    hr = StringCchVPrintfExW(ptr, static_cast<size_t>(end - ptr), &ptr, nullptr, 0,
                              format, args);
 
     wchar_t const* message = FixupMessage(buffer, hr);
@@ -254,8 +281,8 @@ void TraceFormatArgs(char const* file, int lineNumber, char const* function,
 #endif
 }
 
-static void TraceFormat(char const* file, int lineNumber,
-                        char const* function, wchar_t const* format, ...)
+static void TraceFormat(char const* file, int lineNumber, char const* function,
+                        wchar_t const* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -263,14 +290,14 @@ static void TraceFormat(char const* file, int lineNumber,
     va_end(args);
 }
 
-long TraceHResult(long hresult, char const* file /*= nullptr*/,
-                  int lineNumber /*= 0*/, char const* function /*= nullptr*/)
+long TraceHResult(long hresult, char const* file /*= nullptr*/, int lineNumber /*= 0*/,
+                  char const* function /*= nullptr*/)
 {
     if (FAILED(hresult)) {
         wchar_t errorMessage[128];
         StringFromError(errorMessage, countof(errorMessage), hresult);
-        TraceFormat(file, lineNumber, function,
-                    L"HResult=0x%x: %ls", hresult, errorMessage);
+        TraceFormat(file, lineNumber, function, L"HResult=0x%x: %ls", hresult,
+                    errorMessage);
         //if (IsDebuggerAttached())
         //    DebugBreak();
     }
@@ -288,9 +315,8 @@ int AsciiStrCmpI(wchar_t const* dst, wchar_t const* src)
     if (dst) {
         if (src) {
             v3 = (BYTE*)dst - (BYTE*)src;
-            do
-            {
-                v4 = *(const wchar_t *)((BYTE*)src + v3);
+            do {
+                v4 = *(const wchar_t*)((BYTE*)src + v3);
                 if ((unsigned __int16)(v4 - 65) <= 0x19u)
                     v4 += 32;
                 v5 = *src;
@@ -310,8 +336,7 @@ int AsciiStrCmpI(wchar_t const* dst, wchar_t const* src)
 }
 
 HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
-                         wchar_t const* pszResName, void** ppBytes,
-                         unsigned* pdwBytes)
+                         wchar_t const* pszResName, void** ppBytes, unsigned* pdwBytes)
 {
     *ppBytes = nullptr;
     *pdwBytes = 0;
@@ -321,10 +346,9 @@ HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
     HGLOBAL hData;
     LPVOID ptr;
 
-    if (hRes
-        && (size = SizeofResource(hInst, hRes)) != 0
-        && (hData = LoadResource(hInst, hRes)) != nullptr
-        && (ptr = LockResource(hData)) != nullptr) {
+    if (hRes && (size = SizeofResource(hInst, hRes)) != 0 &&
+        (hData = LoadResource(hInst, hRes)) != nullptr &&
+        (ptr = LockResource(hData)) != nullptr) {
         *ppBytes = ptr;
         *pdwBytes = size;
         return S_OK;
@@ -333,10 +357,8 @@ HRESULT GetPtrToResource(HMODULE hInst, wchar_t const* pszResType,
     return MakeErrorLast();
 }
 
-BOOL EnumProcessThreads(
-    _In_ DWORD processId,
-    _In_ THREADENUMPROC callback,
-    _In_opt_ LPARAM param)
+BOOL EnumProcessThreads(_In_ DWORD processId, _In_ THREADENUMPROC callback,
+                        _In_opt_ LPARAM param)
 {
     if (!callback)
         return FALSE;
@@ -350,7 +372,8 @@ BOOL EnumProcessThreads(
     if (Thread32First(h, &te)) {
         do {
             if (te.dwSize >= FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID) +
-                sizeof(te.th32OwnerProcessID) && te.th32OwnerProcessID == processId) {
+                                 sizeof(te.th32OwnerProcessID) &&
+                te.th32OwnerProcessID == processId) {
                 callback(te.th32OwnerProcessID, te.th32ThreadID, param);
             }
             te.dwSize = sizeof(te);
@@ -361,10 +384,8 @@ BOOL EnumProcessThreads(
     return TRUE;
 }
 
-BOOL EnumProcessWindows(
-    _In_ DWORD processId,
-    _In_ WNDENUMPROC callback,
-    _In_opt_ LPARAM param)
+BOOL EnumProcessWindows(_In_ DWORD processId, _In_ WNDENUMPROC callback,
+                        _In_opt_ LPARAM param)
 {
     struct Params
     {
@@ -385,8 +406,8 @@ BOOL EnumProcessWindows(
 void SafeSendMessage(HWND hwnd, DWORD uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD_PTR result;
-    if (!SendMessageTimeoutW(hwnd, uMsg, wParam, lParam,
-                             SMTO_BLOCK | SMTO_ABORTIFHUNG, 250, &result))
+    if (!SendMessageTimeoutW(hwnd, uMsg, wParam, lParam, SMTO_BLOCK | SMTO_ABORTIFHUNG,
+                             250, &result))
         PostMessageW(hwnd, uMsg, wParam, lParam);
 }
 
@@ -400,14 +421,20 @@ void SendThemeChangedProcessLocal()
 {
     UxThemeDllHelper::Get().CThemeMenuMetrics_FlushAll();
 
-    EnumProcessWindows(GetCurrentProcessId(), [](HWND hwnd, LPARAM param) -> BOOL {
-        SendThemeChanged(hwnd);
-        EnumChildWindows(hwnd, [](HWND hwndChild, LPARAM p) {
-            SendThemeChanged(hwndChild);
+    EnumProcessWindows(
+        GetCurrentProcessId(),
+        [](HWND hwnd, LPARAM param) -> BOOL {
+            SendThemeChanged(hwnd);
+            EnumChildWindows(
+                hwnd,
+                [](HWND hwndChild, LPARAM p) {
+                    SendThemeChanged(hwndChild);
+                    return TRUE;
+                },
+                0);
             return TRUE;
-        }, 0);
-        return TRUE;
-    }, 0);
+        },
+        0);
 }
 
 HRESULT GetModuleFileNameW(HMODULE module, std::wstring& path)
@@ -430,14 +457,12 @@ HRESULT GetModuleFileVersion(HMODULE module, VersionInfo& version)
     ENSURE_HR(GetModuleFileNameW(module, path));
 
     DWORD verHandle = 0;
-    DWORD const versionInfoSize =
-        GetFileVersionInfoSizeW(path.c_str(), &verHandle);
+    DWORD const versionInfoSize = GetFileVersionInfoSizeW(path.c_str(), &verHandle);
     if (versionInfoSize == 0)
         return HRESULT_FROM_WIN32(GetLastError());
 
     std::vector<char> verData(versionInfoSize);
-    if (!GetFileVersionInfoW(path.c_str(), verHandle, versionInfoSize,
-                             verData.data()))
+    if (!GetFileVersionInfoW(path.c_str(), verHandle, versionInfoSize, verData.data()))
         return HRESULT_FROM_WIN32(GetLastError());
 
     void* buffer = nullptr;

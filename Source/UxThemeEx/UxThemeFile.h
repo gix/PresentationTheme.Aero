@@ -24,12 +24,9 @@ public:
         return *this;
     }
 
-    HRESULT CreateFileW(wchar_t* pszSharableSectionName,
-                        unsigned cchSharableSectionName,
-                        int iSharableSectionLength,
-                        wchar_t* pszNonSharableSectionName,
-                        unsigned cchNonSharableSectionName,
-                        int iNonSharableSectionLength,
+    HRESULT CreateFileW(wchar_t* pszSharableSectionName, unsigned cchSharableSectionName,
+                        int iSharableSectionLength, wchar_t* pszNonSharableSectionName,
+                        unsigned cchNonSharableSectionName, int iNonSharableSectionLength,
                         bool fReserve);
     void CloseFile();
     HRESULT OpenFromHandle(HANDLE hSharableSection, HANDLE hNonSharableSection,
@@ -37,7 +34,8 @@ public:
     HRESULT ValidateThemeData(bool fullCheck) const;
     bool ValidateObj() const;
     LOGFONTW const* GetFontByIndex(unsigned short index) const;
-    static HRESULT GetGlobalTheme(HANDLE* phSharableSection, HANDLE* phNonSharableSection);
+    static HRESULT GetGlobalTheme(HANDLE* phSharableSection,
+                                  HANDLE* phNonSharableSection);
 
     THEMEHDR* ThemeHeader() { return _pbSharableData; }
     THEMEHDR const* ThemeHeader() const { return _pbSharableData; }

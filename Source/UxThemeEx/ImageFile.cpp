@@ -34,10 +34,7 @@ static void _InPlaceUnionRect(RECT* prcDest, RECT const* prcSrc)
 
 static bool _IsOnScreenRect(RECT const* prc)
 {
-    return prc->left >= 0 &&
-           prc->top >= 0 &&
-           prc->right >= 0 &&
-           prc->bottom >= 0;
+    return prc->left >= 0 && prc->top >= 0 && prc->right >= 0 && prc->bottom >= 0;
 }
 
 static BYTE GetAlpha(DWORD p)
@@ -45,12 +42,12 @@ static BYTE GetAlpha(DWORD p)
     return static_cast<BYTE>(p >> 24);
 }
 
-static HRGN _PixelsToRgn(
-    DWORD* pdwBits, int cxImageOffset, int cyImageOffset, int cxImage,
-    int cyImage, int cxSrc, int cySrc, DIBINFO* pdi)
+static HRGN _PixelsToRgn(DWORD* pdwBits, int cxImageOffset, int cyImageOffset,
+                         int cxImage, int cyImage, int cxSrc, int cySrc, DIBINFO* pdi)
 {
     unsigned nAllocRects = 512;
-    auto prgData = make_unique_malloc<RGNDATA>(sizeof(RGNDATAHEADER) + nAllocRects * sizeof(RECT));
+    auto prgData =
+        make_unique_malloc<RGNDATA>(sizeof(RGNDATAHEADER) + nAllocRects * sizeof(RECT));
     if (!prgData)
         return nullptr;
 
@@ -81,7 +78,7 @@ static HRGN _PixelsToRgn(
             if (pdwPixel > pdwLast)
                 break;
 
-            DWORD *pdw0 = pdwPixel;
+            DWORD* pdw0 = pdwPixel;
             ++pdwPixel;
             if (pdi->fPartiallyTransparent) {
                 while (pdwPixel <= pdwLast && GetAlpha(*pdwPixel) >= pdi->iAlphaThreshold)
@@ -97,7 +94,8 @@ static HRGN _PixelsToRgn(
                 prgrc = reinterpret_cast<RECT*>(prgData->Buffer);
             }
 
-            SetRect(&prgrc[prgData->rdh.nCount], pdw0 - pdwFirst, cyRowN - y, pdwPixel - pdwFirst, cyRowN - y + 1);
+            SetRect(&prgrc[prgData->rdh.nCount], pdw0 - pdwFirst, cyRowN - y,
+                    pdwPixel - pdwFirst, cyRowN - y + 1);
             _InPlaceUnionRect(&prgData->rdh.rcBound, &prgrc[prgData->rdh.nCount]);
             ++prgData->rdh.nCount;
         }
@@ -106,9 +104,9 @@ static HRGN _PixelsToRgn(
     if (prgData->rdh.nCount == 0 || !_IsOnScreenRect(&prgData->rdh.rcBound))
         return nullptr;
 
-    return ExtCreateRegion(
-        nullptr, sizeof(RGNDATAHEADER) + (prgData->rdh.nCount * sizeof(RECT)),
-        prgData.get());
+    return ExtCreateRegion(nullptr,
+                           sizeof(RGNDATAHEADER) + (prgData->rdh.nCount * sizeof(RECT)),
+                           prgData.get());
 }
 
 BOOL CImageFile::KeyProperty(int iPropId)
@@ -199,14 +197,11 @@ DIBINFO* CImageFile::EnumImageFiles(int iIndex)
 
 BOOL CImageFile::HasSizingMargin() const
 {
-    return
-        _SizingMargins.cxLeftWidth != 0 ||
-        _SizingMargins.cxRightWidth != 0 ||
-        _SizingMargins.cyTopHeight != 0 ||
-        _SizingMargins.cyBottomHeight != 0;
+    return _SizingMargins.cxLeftWidth != 0 || _SizingMargins.cxRightWidth != 0 ||
+           _SizingMargins.cyTopHeight != 0 || _SizingMargins.cyBottomHeight != 0;
 }
 
-DIBINFO * CImageFile::FindBackgroundImageToScale()
+DIBINFO* CImageFile::FindBackgroundImageToScale()
 {
     if (!HasSizingMargin())
         return nullptr;
@@ -254,15 +249,12 @@ static HBITMAP CreateScaledDDB(HBITMAP hbmp)
     BITMAPHEADER v15;
 
     v1 = hbmp;
-    if (GetObjectW(hbmp, 32, &v14))
-    {
+    if (GetObjectW(hbmp, 32, &v14)) {
         v2 = CreateCompatibleDC(0i64);
         v3 = CreateCompatibleDC(0i64);
         v4 = v3;
-        if (v2)
-        {
-            if (v3)
-            {
+        if (v2) {
+            if (v3) {
                 v15.bmih.biSize = 40;
                 v5 = GetScreenDpi();
                 v15.bmih.biWidth = MulDiv(v14.bmWidth, v5, 96);
@@ -280,16 +272,16 @@ static HBITMAP CreateScaledDDB(HBITMAP hbmp)
                 v15.masks[0] = 0xFF0000;
                 v15.masks[1] = 0xFF00;
                 v15.masks[2] = 0xFF;
-                v8 = CreateDIBitmap(v2, &v15.bmih, 2u, 0i64, (const BITMAPINFO *)&v15, 0);
+                v8 = CreateDIBitmap(v2, &v15.bmih, 2u, 0i64, (const BITMAPINFO*)&v15, 0);
                 v9 = v8;
-                if (v8)
-                {
+                if (v8) {
                     v10 = SelectObject(v2, v8);
                     v11 = SelectObject(v4, v1);
                     SetLayout(v2, 0);
                     SetLayout(v4, 0);
                     v12 = SetStretchBltMode(v2, 3);
-                    StretchBlt(v2, 0, 0, v15.bmih.biWidth, v15.bmih.biHeight, v4, 0, 0, v14.bmWidth, v14.bmHeight, SRCCOPY);
+                    StretchBlt(v2, 0, 0, v15.bmih.biWidth, v15.bmih.biHeight, v4, 0, 0,
+                               v14.bmWidth, v14.bmHeight, SRCCOPY);
                     SetStretchBltMode(v2, v12);
                     SelectObject(v2, v10);
                     SelectObject(v4, v11);
@@ -304,8 +296,8 @@ static HBITMAP CreateScaledDDB(HBITMAP hbmp)
     return v1;
 }
 
-HRESULT CImageFile::CreateScaledBackgroundImage(
-    CRenderObj* pRender, int iPartId, int iStateId, DIBINFO** pScaledDibInfo)
+HRESULT CImageFile::CreateScaledBackgroundImage(CRenderObj* pRender, int iPartId,
+                                                int iStateId, DIBINFO** pScaledDibInfo)
 {
     *pScaledDibInfo = nullptr;
 
@@ -314,7 +306,8 @@ HRESULT CImageFile::CreateScaledBackgroundImage(
         return S_FALSE;
 
     HBITMAP hbmp = nullptr;
-    HRESULT hr = pRender->ExternalGetBitmap(nullptr, imageToScale->iDibOffset, GBF_DIRECT, &hbmp);
+    HRESULT hr =
+        pRender->ExternalGetBitmap(nullptr, imageToScale->iDibOffset, GBF_DIRECT, &hbmp);
     if (hr < 0)
         return hr;
 
@@ -367,37 +360,43 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
     if (_iImageCount < 1)
         _iImageCount = 1;
 
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_IMAGELAYOUT, (int*)&_eImageLayout) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_IMAGELAYOUT,
+                                      (int*)&_eImageLayout) < 0)
         _eImageLayout = IL_HORIZONTAL;
 
     if (_ImageInfo.iDibOffset)
         ENSURE_HR(SetImageInfo(&_ImageInfo, pRender, iPartId, iStateId));
 
-    if (pRender->ExternalGetPosition(
-        iPartId, iStateId, TMT_MINSIZE, (POINT*)&_ImageInfo.szMinSize) >= 0) {
+    if (pRender->ExternalGetPosition(iPartId, iStateId, TMT_MINSIZE,
+                                     (POINT*)&_ImageInfo.szMinSize) >= 0) {
         AdjustSizeMin(&_ImageInfo.szMinSize, 1, 1);
     } else {
         _ImageInfo.szMinSize.cx = _ImageInfo.iSingleWidth;
         _ImageInfo.szMinSize.cy = _ImageInfo.iSingleHeight;
     }
 
-    if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_TRUESIZESCALINGTYPE, (int*)&_eTrueSizeScalingType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_TRUESIZESCALINGTYPE,
+                                      (int*)&_eTrueSizeScalingType) < 0)
         _eTrueSizeScalingType = TSST_NONE;
-    if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_SIZINGTYPE, (int*)&_ImageInfo.eSizingType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_SIZINGTYPE,
+                                      (int*)&_ImageInfo.eSizingType) < 0)
         _ImageInfo.eSizingType = ST_STRETCH;
 
-    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BORDERONLY, &_ImageInfo.fBorderOnly) < 0)
+    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BORDERONLY,
+                                 &_ImageInfo.fBorderOnly) < 0)
         _ImageInfo.fBorderOnly = 0;
-    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TRUESIZESTRETCHMARK, &_iTrueSizeStretchMark) < 0)
+    if (pRender->ExternalGetInt(iPartId, iStateId, TMT_TRUESIZESTRETCHMARK,
+                                &_iTrueSizeStretchMark) < 0)
         _iTrueSizeStretchMark = 0;
-    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_UNIFORMSIZING, &_fUniformSizing) < 0)
+    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_UNIFORMSIZING, &_fUniformSizing) <
+        0)
         _fUniformSizing = 0;
-    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_INTEGRALSIZING, &_fIntegralSizing) < 0)
+    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_INTEGRALSIZING,
+                                 &_fIntegralSizing) < 0)
         _fIntegralSizing = 0;
 
-    pRender->ExternalGetBool(iPartId, iStateId, TMT_TRANSPARENT, &_ImageInfo.fPartiallyTransparent);
+    pRender->ExternalGetBool(iPartId, iStateId, TMT_TRANSPARENT,
+                             &_ImageInfo.fPartiallyTransparent);
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_MIRRORIMAGE, &_fMirrorImage) < 0)
         _fMirrorImage = 1;
     if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_HALIGN, (int*)&_eHAlign) < 0)
@@ -405,30 +404,34 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
     if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_VALIGN, (int*)&_eVAlign) < 0)
         _eVAlign = VA_CENTER;
 
-    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BGFILL, &_fBgFill) >= 0
-        && pRender->ExternalGetInt(iPartId, iStateId, TMT_FILLCOLOR, (int*)&_crFill) < 0)
+    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_BGFILL, &_fBgFill) >= 0 &&
+        pRender->ExternalGetInt(iPartId, iStateId, TMT_FILLCOLOR, (int*)&_crFill) < 0)
         _crFill = 0xFFFFFF;
 
-    if (pRender->ExternalGetMargins(
-        nullptr, iPartId, iStateId, TMT_SIZINGMARGINS, nullptr, &_SizingMargins) < 0)
+    if (pRender->ExternalGetMargins(nullptr, iPartId, iStateId, TMT_SIZINGMARGINS,
+                                    nullptr, &_SizingMargins) < 0)
         _SizingMargins = {};
 
-    if (pRender->ExternalGetMargins(
-        nullptr, iPartId, iStateId, TMT_CONTENTMARGINS, nullptr, &_ContentMargins) < 0)
+    if (pRender->ExternalGetMargins(nullptr, iPartId, iStateId, TMT_CONTENTMARGINS,
+                                    nullptr, &_ContentMargins) < 0)
         _ContentMargins = _SizingMargins;
 
     if (pRender->ExternalGetBool(iPartId, iStateId, TMT_SOURCEGROW, &_fSourceGrow) < 0)
         _fSourceGrow = 0;
-    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_SOURCESHRINK, &_fSourceShrink) < 0)
+    if (pRender->ExternalGetBool(iPartId, iStateId, TMT_SOURCESHRINK, &_fSourceShrink) <
+        0)
         _fSourceShrink = 0;
 
-    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_GLYPHTYPE, (int *)&_eGlyphType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_GLYPHTYPE,
+                                      (int*)&_eGlyphType) < 0)
         _eGlyphType = GT_NONE;
 
     if (_eGlyphType == GT_FONTGLYPH) {
-        if (!pRender->GetFontTableIndex(iPartId, iStateId, TMT_GLYPHFONT, &_iGlyphFontIndex))
+        if (!pRender->GetFontTableIndex(iPartId, iStateId, TMT_GLYPHFONT,
+                                        &_iGlyphFontIndex))
             return S_OK;
-        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLYPHTEXTCOLOR, (int *)&_crGlyphTextColor) < 0)
+        if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLYPHTEXTCOLOR,
+                                    (int*)&_crGlyphTextColor) < 0)
             _crGlyphTextColor = 0;
         if (pRender->ExternalGetInt(iPartId, iStateId, TMT_GLYPHINDEX, &_iGlyphIndex) < 0)
             _iGlyphIndex = 1;
@@ -439,17 +442,18 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
             _GlyphInfo.iDibOffset = 0;
         if (_GlyphInfo.iDibOffset > 0)
             ENSURE_HR(SetImageInfo(&_GlyphInfo, pRender, iPartId, iStateId));
-        pRender->ExternalGetBool(
-            iPartId, iStateId, TMT_GLYPHTRANSPARENT, &_GlyphInfo.fPartiallyTransparent);
+        pRender->ExternalGetBool(iPartId, iStateId, TMT_GLYPHTRANSPARENT,
+                                 &_GlyphInfo.fPartiallyTransparent);
         _GlyphInfo.eSizingType = ST_TRUESIZE;
         _GlyphInfo.fBorderOnly = FALSE;
     }
 
-    if (_eGlyphType != 0 && pRender->ExternalGetBool(iPartId, iStateId, TMT_GLYPHONLY, &_fGlyphOnly) < 0)
+    if (_eGlyphType != 0 &&
+        pRender->ExternalGetBool(iPartId, iStateId, TMT_GLYPHONLY, &_fGlyphOnly) < 0)
         _fGlyphOnly = FALSE;
 
-    if (pRender->ExternalGetEnumValue(
-        iPartId, iStateId, TMT_IMAGESELECTTYPE, (int*)&_eImageSelectType) < 0)
+    if (pRender->ExternalGetEnumValue(iPartId, iStateId, TMT_IMAGESELECTTYPE,
+                                      (int*)&_eImageSelectType) < 0)
         _eImageSelectType = IST_NONE;
 
     if (_eImageSelectType != IST_NONE) {
@@ -458,8 +462,8 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
             pdi = &_GlyphInfo;
 
         for (int i = 0; i < 7; ++i) {
-            int index = pRender->GetValueIndex(iPartId, iStateId,
-                                               Map_Ordinal_To_DIBDATA(i));
+            int index =
+                pRender->GetValueIndex(iPartId, iStateId, Map_Ordinal_To_DIBDATA(i));
             if (index == -1)
                 break;
 
@@ -470,19 +474,19 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
 
             ENSURE_HR(SetImageInfo(pdiCurrent, pRender, iPartId, iStateId));
 
-            if (pRender->ExternalGetInt(iPartId, iStateId,
-                                        Map_Ordinal_To_MINDPI(i), &pdiCurrent->iMinDpi) >= 0) {
+            if (pRender->ExternalGetInt(iPartId, iStateId, Map_Ordinal_To_MINDPI(i),
+                                        &pdiCurrent->iMinDpi) >= 0) {
                 if (pdiCurrent->iMinDpi < 1)
                     pdiCurrent->iMinDpi = 1;
             } else
                 pdiCurrent->iMinDpi = 96;
 
-            if (pRender->ExternalGetPosition(iPartId, iStateId,
-                                             Map_Ordinal_To_MINSIZE(i),
+            if (pRender->ExternalGetPosition(iPartId, iStateId, Map_Ordinal_To_MINSIZE(i),
                                              (POINT*)&pdiCurrent->szMinSize) >= 0) {
                 AdjustSizeMin(&pdiCurrent->szMinSize, 1, 1);
             } else
-                pdiCurrent->szMinSize = {pdiCurrent->iSingleWidth, pdiCurrent->iSingleHeight};
+                pdiCurrent->szMinSize = {pdiCurrent->iSingleWidth,
+                                         pdiCurrent->iSingleHeight};
         }
 
         if (_iMultiImageCount > 0)
@@ -493,12 +497,11 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
 }
 
 static int const rgPropIds[] = {
-    TMT_DIBDATA, TMT_DIBDATA1, TMT_DIBDATA2, TMT_DIBDATA3, TMT_DIBDATA4,
-    TMT_DIBDATA5, TMT_DIBDATA6, TMT_DIBDATA7, TMT_GLYPHDIBDATA, TMT_HBITMAP
-};
+    TMT_DIBDATA,  TMT_DIBDATA1, TMT_DIBDATA2, TMT_DIBDATA3,     TMT_DIBDATA4,
+    TMT_DIBDATA5, TMT_DIBDATA6, TMT_DIBDATA7, TMT_GLYPHDIBDATA, TMT_HBITMAP};
 
-HRESULT CImageFile::GetBitmap(
-    CRenderObj* pRender, int iPropId, unsigned dwFlags, HBITMAP* phBitmap)
+HRESULT CImageFile::GetBitmap(CRenderObj* pRender, int iPropId, unsigned dwFlags,
+                              HBITMAP* phBitmap)
 {
     int index = 0;
 
@@ -518,8 +521,8 @@ HRESULT CImageFile::GetBitmap(
     return pRender->ExternalGetBitmap(nullptr, index, dwFlags, phBitmap);
 }
 
-HRESULT CImageFile::GetPartSize(
-    CRenderObj* pRender, HDC hdc, RECT const* prc, THEMESIZE eSize, SIZE* psz)
+HRESULT CImageFile::GetPartSize(CRenderObj* pRender, HDC hdc, RECT const* prc,
+                                THEMESIZE eSize, SIZE* psz)
 {
     TRUESTRETCHINFO tsi;
 
@@ -554,18 +557,19 @@ static void StretchUniform(T& width, T& height, int targetWidth, int targetHeigh
         height = static_cast<T>(h * scaleX);
 }
 
-void CImageFile::GetDrawnImageSize(
-    DIBINFO const* pdi, RECT const* pRect, TRUESTRETCHINFO const* ptsInfo,
-    SIZE* pszDraw)
+void CImageFile::GetDrawnImageSize(DIBINFO const* pdi, RECT const* pRect,
+                                   TRUESTRETCHINFO const* ptsInfo, SIZE* pszDraw)
 {
     if (pdi->eSizingType == ST_TRUESIZE) {
         if (ptsInfo->fForceStretch) {
             *pszDraw = ptsInfo->szDrawSize;
             if (_fIntegralSizing && !ptsInfo->fFullStretch) {
-                pszDraw->cx = pdi->iSingleWidth * static_cast<int>(
-                    ptsInfo->szDrawSize.cx / static_cast<float>(pdi->iSingleWidth));
-                pszDraw->cy = pdi->iSingleHeight * static_cast<int>(
-                    ptsInfo->szDrawSize.cy / static_cast<float>(pdi->iSingleHeight));
+                pszDraw->cx = pdi->iSingleWidth *
+                              static_cast<int>(ptsInfo->szDrawSize.cx /
+                                               static_cast<float>(pdi->iSingleWidth));
+                pszDraw->cy = pdi->iSingleHeight *
+                              static_cast<int>(ptsInfo->szDrawSize.cy /
+                                               static_cast<float>(pdi->iSingleHeight));
             }
         } else {
             pszDraw->cx = pdi->iSingleWidth;
@@ -573,8 +577,8 @@ void CImageFile::GetDrawnImageSize(
         }
 
         if (_fUniformSizing) {
-            StretchUniform(pszDraw->cx, pszDraw->cy,
-                           pdi->iSingleWidth, pdi->iSingleHeight);
+            StretchUniform(pszDraw->cx, pszDraw->cy, pdi->iSingleWidth,
+                           pdi->iSingleHeight);
         }
     } else {
         if (pRect) {
@@ -586,21 +590,20 @@ void CImageFile::GetDrawnImageSize(
     }
 }
 
-HRESULT CImageFile::SetImageInfo(
-    DIBINFO* pdi, CRenderObj const* pRender, int iPartId, int iStateId)
+HRESULT CImageFile::SetImageInfo(DIBINFO* pdi, CRenderObj const* pRender, int iPartId,
+                                 int iStateId)
 {
     if (!pRender->_pbSharableData)
         return E_FAIL;
 
     TMBITMAPHEADER* tmhdr = pRender->GetBitmapHeader(pdi->iDibOffset);
 
-    int partiallyTransparent =
-        pdi->fPartiallyTransparent ||
-        tmhdr->fPartiallyTransparent;
+    int partiallyTransparent = pdi->fPartiallyTransparent || tmhdr->fPartiallyTransparent;
     pdi->fPartiallyTransparent = partiallyTransparent;
 
     if (partiallyTransparent &&
-        pRender->ExternalGetBool(iPartId, iStateId, TMT_ALPHATHRESHOLD, &pdi->iAlphaThreshold) < 0)
+        pRender->ExternalGetBool(iPartId, iStateId, TMT_ALPHATHRESHOLD,
+                                 &pdi->iAlphaThreshold) < 0)
         pdi->iAlphaThreshold = 255;
 
     HBITMAP hbmp = pRender->BitmapIndexToHandle(tmhdr->iBitmapIndex);
@@ -633,19 +636,17 @@ HRESULT CImageFile::SetImageInfo(
     return S_OK;
 }
 
-HRESULT CImageFile::ScaleMargins(
-    MARGINS* pMargins, HDC hdcOrig, CRenderObj* pRender, DIBINFO const* pdi,
-    SIZE const* pszDraw, float* pfx, float* pfy)
+HRESULT CImageFile::ScaleMargins(MARGINS* pMargins, HDC hdcOrig, CRenderObj* pRender,
+                                 DIBINFO const* pdi, SIZE const* pszDraw, float* pfx,
+                                 float* pfy)
 {
     OptionalDC hdc{hdcOrig};
     bool forceRectSizing = pRender && pRender->_dwOtdFlags & OTD_FORCE_RECT_SIZING;
 
     float scaleX = 1.0f;
     float scaleY = 1.0f;
-    if (_SizingMargins.cxLeftWidth != 0 ||
-        _SizingMargins.cxRightWidth != 0 ||
-        _SizingMargins.cyTopHeight != 0 ||
-        _SizingMargins.cyBottomHeight != 0) {
+    if (_SizingMargins.cxLeftWidth != 0 || _SizingMargins.cxRightWidth != 0 ||
+        _SizingMargins.cyTopHeight != 0 || _SizingMargins.cyBottomHeight != 0) {
         if (pszDraw->cx > 0 && pszDraw->cy > 0) {
             bool v18 = false;
             bool v19 = false;
@@ -676,13 +677,17 @@ HRESULT CImageFile::ScaleMargins(
             scaleY = (int)scaleY;
 
         if (scaleX != 1.0f) {
-            pMargins->cxLeftWidth = (int)std::floor((pMargins->cxLeftWidth * scaleX) + 0.5);
-            pMargins->cxRightWidth = (int)std::floor((pMargins->cxRightWidth * scaleX) + 0.5);
+            pMargins->cxLeftWidth =
+                (int)std::floor((pMargins->cxLeftWidth * scaleX) + 0.5);
+            pMargins->cxRightWidth =
+                (int)std::floor((pMargins->cxRightWidth * scaleX) + 0.5);
         }
 
         if (scaleY != 1.0f) {
-            pMargins->cyTopHeight = (int)std::floor((pMargins->cyTopHeight * scaleY) + 0.5);
-            pMargins->cyBottomHeight = (int)std::floor((pMargins->cyBottomHeight * scaleY) + 0.5);
+            pMargins->cyTopHeight =
+                (int)std::floor((pMargins->cyTopHeight * scaleY) + 0.5);
+            pMargins->cyBottomHeight =
+                (int)std::floor((pMargins->cyBottomHeight * scaleY) + 0.5);
         }
     }
 
@@ -694,8 +699,8 @@ HRESULT CImageFile::ScaleMargins(
     return S_OK;
 }
 
-HRESULT CImageFile::GetScaledContentMargins(
-    CRenderObj* pRender, HDC hdc, RECT const* prcDest, MARGINS* pMargins)
+HRESULT CImageFile::GetScaledContentMargins(CRenderObj* pRender, HDC hdc,
+                                            RECT const* prcDest, MARGINS* pMargins)
 {
     *pMargins = _ContentMargins;
 
@@ -707,8 +712,9 @@ HRESULT CImageFile::GetScaledContentMargins(
     return ScaleMargins(pMargins, hdc, pRender, pdi, &size, nullptr, nullptr);
 }
 
-HRESULT CImageFile::GetBackgroundContentRect(
-    CRenderObj* pRender, HDC hdc, RECT const* pBoundingRect, RECT* pContentRect)
+HRESULT CImageFile::GetBackgroundContentRect(CRenderObj* pRender, HDC hdc,
+                                             RECT const* pBoundingRect,
+                                             RECT* pContentRect)
 {
     MARGINS contentMargins;
     ENSURE_HR(GetScaledContentMargins(pRender, hdc, pBoundingRect, &contentMargins));
@@ -720,8 +726,8 @@ HRESULT CImageFile::GetBackgroundContentRect(
     return S_OK;
 }
 
-DIBINFO* CImageFile::SelectCorrectImageFile(
-    CRenderObj* pRender, HDC hdc, RECT const* prc, bool fForGlyph, TRUESTRETCHINFO* ptsInfo)
+DIBINFO* CImageFile::SelectCorrectImageFile(CRenderObj* pRender, HDC hdc, RECT const* prc,
+                                            bool fForGlyph, TRUESTRETCHINFO* ptsInfo)
 {
     bool releaseDC = false;
     if (!hdc) {
@@ -778,7 +784,8 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
         ptsInfo->szDrawSize = SIZE();
 
         if (pdi->eSizingType == ST_TRUESIZE && _eTrueSizeScalingType != TSST_NONE) {
-            if (prc && (forceSizing || pdi->iSingleWidth > width || pdi->iSingleHeight > height)) {
+            if (prc && (forceSizing || pdi->iSingleWidth > width ||
+                        pdi->iSingleHeight > height)) {
                 ptsInfo->fFullStretch = 1;
                 ptsInfo->szDrawSize.cx = width;
                 ptsInfo->szDrawSize.cy = height;
@@ -799,9 +806,11 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
                                 drawSize.cy = height;
                         }
 
-                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >= _iTrueSizeStretchMark &&
-                            100 * (drawSize.cy - pdi->iSingleHeight) / pdi->iSingleHeight >= _iTrueSizeStretchMark)
-                        {
+                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >=
+                                _iTrueSizeStretchMark &&
+                            100 * (drawSize.cy - pdi->iSingleHeight) /
+                                    pdi->iSingleHeight >=
+                                _iTrueSizeStretchMark) {
                             ptsInfo->szDrawSize = drawSize;
                             ptsInfo->fForceStretch = TRUE;
                         }
@@ -818,9 +827,11 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
                         if (drawSize.cy >= height)
                             drawSize.cy = height;
 
-                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >= _iTrueSizeStretchMark &&
-                            100 * (drawSize.cy - pdi->iSingleHeight) / pdi->iSingleHeight >= _iTrueSizeStretchMark)
-                        {
+                        if (100 * (drawSize.cx - pdi->iSingleWidth) / pdi->iSingleWidth >=
+                                _iTrueSizeStretchMark &&
+                            100 * (drawSize.cy - pdi->iSingleHeight) /
+                                    pdi->iSingleHeight >=
+                                _iTrueSizeStretchMark) {
                             ptsInfo->szDrawSize = drawSize;
                             ptsInfo->fForceStretch = TRUE;
                         }
@@ -840,8 +851,8 @@ DIBINFO* CImageFile::SelectCorrectImageFile(
 HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc,
                                   DTBGOPTS const* pOptions)
 {
-    RECT const* const clipRect = (pOptions && pOptions->dwFlags & DTBG_CLIPRECT) ?
-        &pOptions->rcClip : nullptr;
+    RECT const* const clipRect =
+        (pOptions && pOptions->dwFlags & DTBG_CLIPRECT) ? &pOptions->rcClip : nullptr;
 
     SaveClipRegion scrOrig;
     HGDIOBJ oldFont = nullptr;
@@ -881,7 +892,8 @@ HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc,
             hr = scrOrig.Save(hdc);
             if (hr < 0)
                 goto done;
-            if (!IntersectClipRect(hdc, clipRect->left, clipRect->top, clipRect->right, clipRect->bottom)) {
+            if (!IntersectClipRect(hdc, clipRect->left, clipRect->top, clipRect->right,
+                                   clipRect->bottom)) {
                 hr = MakeErrorLast();
                 goto done;
             }
@@ -905,8 +917,8 @@ done:
     return hr;
 }
 
-HRESULT CImageFile::DrawBackground(
-    CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect, DTBGOPTS const* pOptions)
+HRESULT CImageFile::DrawBackground(CRenderObj* pRender, HDC hdc, int iStateId,
+                                   RECT const* pRect, DTBGOPTS const* pOptions)
 {
     if (!_fGlyphOnly) {
         TRUESTRETCHINFO tsi;
@@ -928,9 +940,9 @@ HRESULT CImageFile::DrawBackground(
     return DrawImageInfo(pdi, pRender, hdc, iStateId, &contentRect, pOptions, &tsi);
 }
 
-HRESULT CImageFile::DrawImageInfo(
-    DIBINFO* pdi, CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect,
-    DTBGOPTS const* pOptions, TRUESTRETCHINFO* ptsInfo)
+HRESULT CImageFile::DrawImageInfo(DIBINFO* pdi, CRenderObj* pRender, HDC hdc,
+                                  int iStateId, RECT const* pRect,
+                                  DTBGOPTS const* pOptions, TRUESTRETCHINFO* ptsInfo)
 {
     TMBITMAPHEADER* pThemeBitmapHeader = nullptr;
     bool fStock = false;
@@ -1004,19 +1016,9 @@ HRESULT CImageFile::DrawImageInfo(
                                &xMarginFactor, &yMarginFactor));
     }
 
-    return DrawBackgroundDS(
-        pdi,
-        pThemeBitmapHeader,
-        fStock,
-        pRender,
-        hdc,
-        iStateId,
-        &rect,
-        ptsInfo->fForceStretch,
-        &_SizingMargins,
-        xMarginFactor,
-        yMarginFactor,
-        pOptions);
+    return DrawBackgroundDS(pdi, pThemeBitmapHeader, fStock, pRender, hdc, iStateId,
+                            &rect, ptsInfo->fForceStretch, &_SizingMargins, xMarginFactor,
+                            yMarginFactor, pOptions);
 }
 
 static bool IsMirrored(HDC hdc)
@@ -1062,7 +1064,7 @@ CBitmapCache::~CBitmapCache()
 
 HBITMAP CBitmapCache::AcquireBitmap(HDC hdc, int iWidth, int iHeight)
 {
-    if (this != (CBitmapCache *)-16 && _csBitmapCache.DebugInfo)
+    if (this != (CBitmapCache*)-16 && _csBitmapCache.DebugInfo)
         EnterCriticalSection(&_csBitmapCache);
 
     if (iWidth > _iWidth || iHeight > _iHeight || !_hBitmap) {
@@ -1089,7 +1091,8 @@ HBITMAP CBitmapCache::AcquireBitmap(HDC hdc, int iWidth, int iHeight)
         bmpInfo.masks[1] = 0xFF00;
         bmpInfo.masks[2] = 0xFF;
 
-        _hBitmap = CreateDIBitmap(hdc, &bmpInfo.bmih, 2, nullptr, (const BITMAPINFO *)&bmpInfo, 0);
+        _hBitmap = CreateDIBitmap(hdc, &bmpInfo.bmih, 2, nullptr,
+                                  (const BITMAPINFO*)&bmpInfo, 0);
         if (_hBitmap) {
             _iWidth = iWidth;
             _iHeight = iHeight;
@@ -1112,9 +1115,9 @@ void CBitmapCache::ReturnBitmap()
 static CBitmapCache g_pBitmapCacheScaled;
 static CBitmapCache g_pBitmapCacheUnscaled;
 
-static HBITMAP CreateScaledTempBitmap(
-    HDC hdc, HBITMAP hSrcBitmap, int ixSrcOffset, int iySrcOffset,
-    int iSrcWidth, int iSrcHeight, int iDestWidth, int iDestHeight)
+static HBITMAP CreateScaledTempBitmap(HDC hdc, HBITMAP hSrcBitmap, int ixSrcOffset,
+                                      int iySrcOffset, int iSrcWidth, int iSrcHeight,
+                                      int iDestWidth, int iDestHeight)
 {
     if (!hSrcBitmap)
         return nullptr;
@@ -1138,15 +1141,15 @@ static HBITMAP CreateScaledTempBitmap(
     SelectObjectScope<HBITMAP> oldSrcBmp{hdcSrc, hSrcBitmap};
     StretchBltModeScope oldStretchBltMode{hdcDest, COLORONCOLOR};
 
-    StretchBlt(hdcDest, 0, 0, iDestWidth, iDestHeight, hdcSrc, ixSrcOffset,
-               iySrcOffset, iSrcWidth, iSrcHeight, SRCCOPY);
+    StretchBlt(hdcDest, 0, 0, iDestWidth, iDestHeight, hdcSrc, ixSrcOffset, iySrcOffset,
+               iSrcWidth, iSrcHeight, SRCCOPY);
 
     return bmp;
 }
 
-static HBITMAP CreateUnscaledBitmap(
-    HDC hdc, HBITMAP hbmSrc, int cxSrcOffset, int cySrcOffset, int cxDest,
-    int cyDest, bool fTemporary)
+static HBITMAP CreateUnscaledBitmap(HDC hdc, HBITMAP hbmSrc, int cxSrcOffset,
+                                    int cySrcOffset, int cxDest, int cyDest,
+                                    bool fTemporary)
 {
     if (!hbmSrc)
         return nullptr;
@@ -1174,11 +1177,11 @@ static HBITMAP CreateUnscaledBitmap(
     return hbmOut;
 }
 
-HRESULT CImageFile::DrawBackgroundDS(
-    DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader, bool fStock,
-    CRenderObj* pRender, HDC hdc, int iStateId, RECT* pRect,
-    bool fForceStretch, MARGINS* pmarDest, float xMarginFactor,
-    float yMarginFactor, DTBGOPTS const* pOptions) const
+HRESULT CImageFile::DrawBackgroundDS(DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapHeader,
+                                     bool fStock, CRenderObj* pRender, HDC hdc,
+                                     int iStateId, RECT* pRect, bool fForceStretch,
+                                     MARGINS* pmarDest, float xMarginFactor,
+                                     float yMarginFactor, DTBGOPTS const* pOptions) const
 {
     HRESULT hr = S_OK;
     int tempSrcWidth = pdi->iSingleWidth;
@@ -1226,15 +1229,15 @@ HRESULT CImageFile::DrawBackgroundDS(
             offsetX = MulDiv(offsetX, dpiX, 96);
             offsetY = MulDiv(offsetY, dpiX, 96);
 
-            hr = pRender->ExternalGetBitmap(hdc, _ScaledImageInfo.iDibOffset,
-                                            GBF_DIRECT, &hDsBitmap);
+            hr = pRender->ExternalGetBitmap(hdc, _ScaledImageInfo.iDibOffset, GBF_DIRECT,
+                                            &hDsBitmap);
         } else {
             tempSrcWidth = static_cast<int>(pdi->iSingleWidth * xMarginFactor);
             tempSrcHeight = static_cast<int>(pdi->iSingleHeight * yMarginFactor);
 
             hBitmapTempScaled = CreateScaledTempBitmap(
-                hdc, hDsBitmap, offsetX, offsetY, pdi->iSingleWidth,
-                pdi->iSingleHeight, tempSrcWidth, tempSrcHeight);
+                hdc, hDsBitmap, offsetX, offsetY, pdi->iSingleWidth, pdi->iSingleHeight,
+                tempSrcWidth, tempSrcHeight);
 
             if (!hBitmapTempScaled) {
                 hr = E_FAIL;
@@ -1277,8 +1280,8 @@ HRESULT CImageFile::DrawBackgroundDS(
         IntersectRect(&dstRect, &clipRect, &pOptions->rcClip);
 
     gds.signature = 0x44727753i64;
-    gds.hImage = (DWORD)reinterpret_cast<uintptr_t>(hDsBitmap);
-    gds.hDC = (DWORD)reinterpret_cast<uintptr_t>(hdc);
+    gds.hImage = (DWORD) reinterpret_cast<uintptr_t>(hDsBitmap);
+    gds.hDC = (DWORD) reinterpret_cast<uintptr_t>(hdc);
     gds.rcDest = dstRect;
     gds.one = 1;
     gds.nine = 9;
@@ -1356,9 +1359,9 @@ struct NINEGRIDPOS
     int yBottom;
 };
 
-static HRESULT ScaleRectsAndCreateRegion(
-    RGNDATA const* prd, RECT const* prcDest, MARGINS const* pMargins,
-    SIZE const* psizeSrc, HRGN* phrgn)
+static HRESULT ScaleRectsAndCreateRegion(RGNDATA const* prd, RECT const* prcDest,
+                                         MARGINS const* pMargins, SIZE const* psizeSrc,
+                                         HRGN* phrgn)
 {
     if (!prd)
         return E_POINTER;
@@ -1425,7 +1428,8 @@ static HRESULT ScaleRectsAndCreateRegion(
                 pptAlloc->y = prcDest->top + std::min(v63, pptSrc->y);
                 break;
             case 2:
-                pptAlloc->x = gridposDest.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->x = gridposDest.xRight + pptSrc->x +
+                              std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
                 pptAlloc->y = prcDest->top + std::min(v63, pptSrc->y);
                 break;
             case 3:
@@ -1437,20 +1441,28 @@ static HRESULT ScaleRectsAndCreateRegion(
                 pptAlloc->y = gridposDest.yTop + v68 * pptSrc->y / yTopOffset;
                 break;
             case 5:
-                pptAlloc->x = gridposDest.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->x = gridposDest.xRight + pptSrc->x +
+                              std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
                 pptAlloc->y = gridposDest.yTop + v68 * pptSrc->y / yTopOffset;
                 break;
             case 6:
                 pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
-                pptAlloc->y = gridposDest.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->y =
+                    gridposDest.yBottom + pptSrc->y +
+                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
                 break;
             case 7:
                 pptAlloc->x = gridposDest.xLeft + v61 * pptSrc->x / xLeftOffset;
-                pptAlloc->y = gridposDest.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->y =
+                    gridposDest.yBottom + pptSrc->y +
+                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
                 break;
             case 8:
-                pptAlloc->x = gridposDest.xRight + pptSrc->x + std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
-                pptAlloc->y = gridposDest.yBottom + pptSrc->y + std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->x = gridposDest.xRight + pptSrc->x +
+                              std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
+                pptAlloc->y =
+                    gridposDest.yBottom + pptSrc->y +
+                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
                 break;
             }
         }
@@ -1472,21 +1484,23 @@ static HRESULT ScaleRectsAndCreateRegion(
     return S_OK;
 }
 
-HRESULT CImageFile::GetBackgroundRegion(
-    CRenderObj* pRender, HDC hdc, int iStateId, RECT const* pRect, HRGN* pRegion)
+HRESULT CImageFile::GetBackgroundRegion(CRenderObj* pRender, HDC hdc, int iStateId,
+                                        RECT const* pRect, HRGN* pRegion)
 {
     HRESULT hr = S_OK;
     DIBINFO const* pdi = SelectCorrectImageFile(pRender, hdc, pRect, 0, nullptr);
 
     if (pdi->iRgnListOffset != 0 && pRender->_pbSharableData) {
-        auto rgnListHdr = reinterpret_cast<REGIONLISTHDR*>(&pRender->_pbSharableData[pdi->iRgnListOffset]);
+        auto rgnListHdr = reinterpret_cast<REGIONLISTHDR*>(
+            &pRender->_pbSharableData[pdi->iRgnListOffset]);
         int* rgnList = (int*)((BYTE*)rgnListHdr + 8);
 
         if (iStateId > rgnListHdr->cStates - 1)
             iStateId = 0;
 
         if (auto iRgnDataOffset = rgnList[iStateId]) {
-            auto rgnData = (RGNDATA*)(&pRender->_pbSharableData[iRgnDataOffset] + sizeof(ENTRYHDR));
+            auto rgnData =
+                (RGNDATA*)(&pRender->_pbSharableData[iRgnDataOffset] + sizeof(ENTRYHDR));
 
             SIZE sz = {};
             MARGINS marDest = _SizingMargins;
@@ -1509,9 +1523,9 @@ HRESULT CImageFile::GetBackgroundRegion(
     return hr;
 }
 
-HRESULT CImageFile::HitTestBackground(
-    CRenderObj* pRender, HDC hdc, int iStateId, DWORD dwHTFlags,
-    RECT const* pRect, HRGN hrgn, POINT ptTest, WORD* pwHitCode)
+HRESULT CImageFile::HitTestBackground(CRenderObj* pRender, HDC hdc, int iStateId,
+                                      DWORD dwHTFlags, RECT const* pRect, HRGN hrgn,
+                                      POINT ptTest, WORD* pwHitCode)
 {
     *pwHitCode = 0;
     if (!PtInRect(pRect, ptTest))
@@ -1521,15 +1535,17 @@ HRESULT CImageFile::HitTestBackground(
 
     GdiRegionHandle hrgnBk;
     if (!hrgn && _ImageInfo.fPartiallyTransparent) {
-        hr = GetBackgroundRegion(pRender, hdc, iStateId, pRect, hrgnBk.CloseAndGetAddressOf());
+        hr = GetBackgroundRegion(pRender, hdc, iStateId, pRect,
+                                 hrgnBk.CloseAndGetAddressOf());
         if (hr >= 0)
             hrgn = hrgnBk;
     }
 
     MARGINS margins = {};
-    if (dwHTFlags & HTTB_SYSTEMSIZINGMARGINS && dwHTFlags & HTTB_RESIZINGBORDER
-        && !(dwHTFlags & HTTB_SIZINGTEMPLATE)) {
-        int cxBorder = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+    if (dwHTFlags & HTTB_SYSTEMSIZINGMARGINS && dwHTFlags & HTTB_RESIZINGBORDER &&
+        !(dwHTFlags & HTTB_SIZINGTEMPLATE)) {
+        int cxBorder =
+            GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
         if (dwHTFlags & HTTB_RESIZINGBORDER_LEFT)
             margins.cxLeftWidth = cxBorder;
         if (dwHTFlags & HTTB_RESIZINGBORDER_RIGHT)
@@ -1557,8 +1573,8 @@ HRESULT CImageFile::HitTestBackground(
     return hr;
 }
 
-HRESULT CImageFile::GetBackgroundExtent(
-    CRenderObj* pRender, HDC hdc, RECT const* pContentRect, RECT* pExtentRect)
+HRESULT CImageFile::GetBackgroundExtent(CRenderObj* pRender, HDC hdc,
+                                        RECT const* pContentRect, RECT* pExtentRect)
 {
     MARGINS margins;
     ENSURE_HR(GetScaledContentMargins(pRender, hdc, pContentRect, &margins));
@@ -1569,8 +1585,8 @@ HRESULT CImageFile::GetBackgroundExtent(
     return S_OK;
 }
 
-void CImageFile::GetOffsets(
-    int iStateId, DIBINFO const* pdi, int* piXOffset, int* piYOffset) const
+void CImageFile::GetOffsets(int iStateId, DIBINFO const* pdi, int* piXOffset,
+                            int* piYOffset) const
 {
     if (_eImageLayout == IL_HORIZONTAL) {
         if (iStateId > 0 && iStateId <= _iImageCount)
@@ -1587,9 +1603,9 @@ void CImageFile::GetOffsets(
     }
 }
 
-HRESULT CImageFile::BuildRgnData(
-    DWORD* prgdwPixels, int cWidth, int cHeight, DIBINFO* pdi,
-    CRenderObj* pRender, int iStateId, RGNDATA** ppRgnData, int* piDataLen)
+HRESULT CImageFile::BuildRgnData(DWORD* prgdwPixels, int cWidth, int cHeight,
+                                 DIBINFO* pdi, CRenderObj* pRender, int iStateId,
+                                 RGNDATA** ppRgnData, int* piDataLen)
 {
     int offsetX, offsetY;
     GetOffsets(iStateId, pdi, &offsetX, &offsetY);
@@ -1600,11 +1616,9 @@ HRESULT CImageFile::BuildRgnData(
         ScaleMargins(&margins, nullptr, pRender, pdi, &size, nullptr, nullptr);
     }
 
-    GdiRegionHandle const hRgn{
-        _PixelsToRgn(prgdwPixels, offsetX, offsetY,
-                     pdi->iSingleWidth > 0 ? pdi->iSingleWidth : cWidth,
-                     pdi->iSingleHeight > 0 ? pdi->iSingleHeight : cHeight,
-                     cWidth, cHeight, pdi)};
+    GdiRegionHandle const hRgn{_PixelsToRgn(
+        prgdwPixels, offsetX, offsetY, pdi->iSingleWidth > 0 ? pdi->iSingleWidth : cWidth,
+        pdi->iSingleHeight > 0 ? pdi->iSingleHeight : cHeight, cWidth, cHeight, pdi)};
     if (!hRgn) {
         *ppRgnData = nullptr;
         *piDataLen = 0;

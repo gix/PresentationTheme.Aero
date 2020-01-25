@@ -14,25 +14,19 @@ class Handle
 public:
     constexpr Handle() noexcept
         : handle(Traits::InvalidHandle())
-    {
-    }
+    {}
 
     constexpr explicit Handle(HandleType handle) noexcept
         : handle(handle)
-    {
-    }
+    {}
 
-    ~Handle() noexcept
-    {
-        Close();
-    }
+    ~Handle() noexcept { Close(); }
 
     constexpr Handle(Handle&& source) noexcept
         : handle(source.Detach())
-    {
-    }
+    {}
 
-    Handle& operator =(Handle&& source) noexcept
+    Handle& operator=(Handle&& source) noexcept
     {
         assert(this != &source);
         Reset(source.Detach());
@@ -40,17 +34,14 @@ public:
     }
 
     Handle(Handle const&) = delete;
-    Handle& operator =(Handle const&) = delete;
+    Handle& operator=(Handle const&) = delete;
 
     constexpr static HandleType InvalidHandle() noexcept
     {
         return Traits::InvalidHandle();
     }
 
-    constexpr bool IsValid() const noexcept
-    {
-        return Traits::IsValid(handle);
-    }
+    constexpr bool IsValid() const noexcept { return Traits::IsValid(handle); }
 
     void Close() noexcept
     {
@@ -75,16 +66,13 @@ public:
         return std::exchange(handle, Traits::InvalidHandle());
     }
 
-    Handle& operator =(HandleType handle)
+    Handle& operator=(HandleType handle)
     {
         Reset(handle);
         return *this;
     }
 
-    constexpr explicit operator bool() const noexcept
-    {
-        return Traits::IsValid(handle);
-    }
+    constexpr explicit operator bool() const noexcept { return Traits::IsValid(handle); }
 
     constexpr HandleType Get() const noexcept { return handle; }
 
@@ -124,17 +112,20 @@ struct NullIsInvalidHandleTraits
     static void Close(HandleType h) noexcept { ::CloseHandle(h); }
 };
 
-
-struct FileHandleTraits : MinusOneIsInvalidHandleTraits {};
+struct FileHandleTraits : MinusOneIsInvalidHandleTraits
+{};
 using FileHandle = Handle<FileHandleTraits>;
 
-struct ProcessHandleTraits : NullIsInvalidHandleTraits {};
+struct ProcessHandleTraits : NullIsInvalidHandleTraits
+{};
 using ProcessHandle = Handle<ProcessHandleTraits>;
 
-struct ThreadHandleTraits : NullIsInvalidHandleTraits {};
+struct ThreadHandleTraits : NullIsInvalidHandleTraits
+{};
 using ThreadHandle = Handle<ThreadHandleTraits>;
 
-struct FileMappingHandleTraits : NullIsInvalidHandleTraits {};
+struct FileMappingHandleTraits : NullIsInvalidHandleTraits
+{};
 using FileMappingHandle = Handle<FileMappingHandleTraits>;
 
 template<typename T>
@@ -154,16 +145,12 @@ public:
 
     constexpr explicit FileViewHandle(void* handle) noexcept
         : Handle<FileViewHandleTraits<T>>(static_cast<T*>(handle))
-    {
-    }
+    {}
 
     T* operator->() noexcept { return this->Get(); }
     T const* operator->() const noexcept { return this->Get(); }
 
-    bool Reset(void* handle) noexcept
-    {
-        return Reset(static_cast<T*>(handle));
-    }
+    bool Reset(void* handle) noexcept { return Reset(static_cast<T*>(handle)); }
 };
 
 template<>
@@ -182,7 +169,8 @@ struct ModuleHandleTraits
 };
 using ModuleHandle = Handle<ModuleHandleTraits>;
 
-struct SectionHandleTraits : NullIsInvalidHandleTraits {};
+struct SectionHandleTraits : NullIsInvalidHandleTraits
+{};
 using SectionHandle = Handle<SectionHandleTraits>;
 
-} // namespace ffmf
+} // namespace uxtheme

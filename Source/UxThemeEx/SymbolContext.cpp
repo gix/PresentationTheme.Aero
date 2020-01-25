@@ -63,8 +63,7 @@ HRESULT SymbolContext::LoadModule(HMODULE module)
 
 HRESULT SymbolContext::UnloadModule(HMODULE module)
 {
-    if (!SymUnloadModule64(GetCurrentProcess(),
-                           reinterpret_cast<uintptr_t>(module)))
+    if (!SymUnloadModule64(GetCurrentProcess(), reinterpret_cast<uintptr_t>(module)))
         return GetLastErrorAsHResult();
     return S_OK;
 }
