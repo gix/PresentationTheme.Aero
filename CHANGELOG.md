@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.5.1] - 2020-01-24
+## [0.6.0] - 2020-01-25
 ### Fixed
 - NuGet package metadata references proper source revision.
 - Publishing a project referencing the PresentationTheme.Aero NuGet package
