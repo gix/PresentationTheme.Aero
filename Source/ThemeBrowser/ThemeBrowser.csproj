@@ -11,19 +11,10 @@
     <ApplicationIcon>ThemeBrowser.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64</Platforms>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="app.manifest">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -37,5 +28,17 @@
     <ProjectReference Include="..\PresentationTheme.Aero.Win10\PresentationTheme.Aero.Win10.csproj" />
     <ProjectReference Include="..\PresentationTheme.Aero\PresentationTheme.Aero.csproj" />
     <ProjectReference Include="..\ThemeCore\ThemeCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(BaseOutputPath)UxThemeEx\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(BaseOutputPath)UxThemeEx\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <Company></Company>
+    <Copyright></Copyright>
+    <Authors>Nico Rieck</Authors>
+    <Product>WPF PresentationFramework Aero Theme</Product>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.5.1</VersionPrefix>
+    <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
+  </PropertyGroup>
+</Project>

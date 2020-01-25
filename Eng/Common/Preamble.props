@@ -1,0 +1,8 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Common.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)Workarounds.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)Version.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)RepoLayout.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)ProjectLayout.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)DeterministicBuild.props"/>
+</Project>

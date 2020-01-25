@@ -39,7 +39,11 @@ IndentWidth: 4
 TabWidth: 4
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
-PointerBindsToType: true
+DerivePointerAlignment: false
+PointerAlignment: Left
+PenaltyReturnTypeOnItsOwnLine: 200
+ReflowComments: false
+SortIncludes: true
 SpacesBeforeTrailingComments: 1
 Standard: Cpp11
 UseTab: false

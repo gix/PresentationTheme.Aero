@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
-         ToolsVersion="15.0" DefaultTargets="Pack">
+         DefaultTargets="Pack">
   <ItemGroup>
     <ProjectItem Include="Source\PresentationTheme.Aero\PresentationTheme.Aero.csproj"/>
     <ProjectItem Include="Source\PresentationTheme.Aero.Win8\PresentationTheme.Aero.Win8.csproj"/>
@@ -20,12 +20,16 @@
     <BuildProperties>Configuration=$(Configuration);Platform=AnyCPU;OfficialBuildId=$(OfficialBuildId)</BuildProperties>
     <PlatformBuildProperties>Configuration=$(Configuration);Platform=$(Platform);OfficialBuildId=$(OfficialBuildId)</PlatformBuildProperties>
     <PackProperties>$(BuildProperties);IncludeSource=true</PackProperties>
-    <PackageDir>$(MSBuildThisFileDirectory)dist\</PackageDir>
+    <PackageDir>$(MSBuildThisFileDirectory)build\dist\</PackageDir>
     <ToolsOutputPath>$(MSBuildThisFileDirectory)build\x64\bin\</ToolsOutputPath>
     <GitHubPagesDir>Docs\_site\</GitHubPagesDir>
   </PropertyGroup>
 
-  <Import Project="Source\Build\Settings.props"/>
+  <Import Project="Eng\Versions.props"/>
+  <Import Project="Eng\Common\Common.props"/>
+  <Import Project="Eng\Common\RepoLayout.props"/>
+  <Import Project="Eng\Common\ProjectLayout.props"/>
+  <Import Project="Eng\Common\GenerateVersionInfo.targets"/>
   <Import Project="$(MSBuildThisFileDirectory)Tools\MSBuildTasks.1.5.0.235\MSBuild.Community.Tasks.Targets"/>
 
   <UsingTask TaskName="ConcatFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
@@ -118,6 +122,10 @@
       seemingly useful MSBuild task property 'UnloadProjectsOnCompletion' cannot
       be used since it does not do anything.
     -->
+    <MSBuild Projects="@(NativeProjectItem)"
+             Properties="$(PlatformBuildProperties);Dummy=ForceReload"
+             BuildInParallel="true"
+             StopOnFirstFailure="true"/>
     <MSBuild Projects="@(ProjectItem)"
              Properties="$(BuildProperties);Dummy=ForceReload"
              BuildInParallel="true"
@@ -126,18 +134,14 @@
              Properties="$(PlatformBuildProperties);Dummy=ForceReload"
              BuildInParallel="true"
              StopOnFirstFailure="true"/>
-    <MSBuild Projects="@(NativeProjectItem)"
-             Properties="$(PlatformBuildProperties);Dummy=ForceReload"
-             BuildInParallel="true"
-             StopOnFirstFailure="true"/>
   </Target>
 
-  <Target Name="Pack" DependsOnTargets="Build" Condition="'$(Pack)'!='false'">
-    <Error Condition="'$(BuildCommit)' == ''" Text="BuildCommit is empty."/>
+  <Target Name="Pack" DependsOnTargets="Build;InitializeSourceControlInformation" Condition="'$(Pack)'!='false'">
+    <Error Condition="'$(SourceRevisionId)' == ''" Text="SourceRevisionId is empty."/>
     <PropertyGroup>
       <PackArgs>-Version "$(Version)" -Symbols -SymbolPackageFormat snupkg</PackArgs>
       <PackArgs>$(PackArgs) -NoPackageAnalysis -OutputDirectory "$(PackageDir)\"</PackArgs>
-      <PackArgs>$(PackArgs) -Properties "RepositoryCommit=$(BuildCommit)"</PackArgs>
+      <PackArgs>$(PackArgs) -Properties "SourceRevisionId=$(SourceRevisionId)"</PackArgs>
     </PropertyGroup>
     <MakeDir Directories="$(PackageDir)"/>
     <Exec Command="nuget.exe pack $(PackArgs) Source\PresentationTheme.Aero.nuspec"/>
@@ -162,40 +166,32 @@
 
   <Target Name="PackTools" DependsOnTargets="PrepareToolsLicense;Build">
     <ItemGroup>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.Win8.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.Aero.Win10.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.AeroLite.Win8.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.AeroLite.Win10.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win8.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)PresentationTheme.HighContrast.Win10.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)Microsoft.Xaml.Behaviors.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.exe"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.pdb"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser.runtimeconfig.json"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeCore.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemeCore.pdb"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.exe"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.pdb"/>
-      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer.runtimeconfig.json"/>
-      <ToolItem Include="$(ToolsOutputPath)EasyHook64.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)UxThemeEx.dll"/>
-      <ToolItem Include="$(ToolsOutputPath)UxThemeEx.pdb"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser\netcoreapp3.0\ThemeBrowser.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser\netcoreapp3.0\ThemeBrowser.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser\netcoreapp3.0\ThemeBrowser.pdb"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemeBrowser\netcoreapp3.0\ThemeBrowser.runtimeconfig.json"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.Aero.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.Aero.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.Aero.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.AeroLite.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.AeroLite.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.HighContrast.Win8.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\PresentationTheme.HighContrast.Win10.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\Microsoft.Xaml.Behaviors.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemeCore.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemeCore.pdb"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemePreviewer.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemePreviewer.exe"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemePreviewer.pdb"/>
+      <ToolItem Include="$(ToolsOutputPath)ThemePreviewer\netcoreapp3.0\ThemePreviewer.runtimeconfig.json"/>
+      <ToolItem Include="$(ToolsOutputPath)UxThemeEx\EasyHook64.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)UxThemeEx\UxThemeEx.dll"/>
+      <ToolItem Include="$(ToolsOutputPath)UxThemeEx\UxThemeEx.pdb"/>
       <ToolItem Include="$(ToolsOutputPath)LICENSE.txt"/>
     </ItemGroup>
     <Error Condition="!Exists(@(ToolItem))" Text="Missing file: %(ToolItem.Identity)"/>
     <Zip ZipFileName="$(PackageDir)ThemeTools-$(Version).zip"
          WorkingDirectory="$(ToolsOutputPath)"
          Files="@(ToolItem)"/>
-  </Target>
-
-  <Target Name="Publish" DependsOnTargets="Build;GetVersion">
-    <PropertyGroup>
-      <PushArgs>&quot;dist/PresentationTheme.Aero.$(NuGetReleaseVersion).nupkg&quot;</PushArgs>
-      <PushArgs>$(PushArgs) -Source https://www.nuget.org/api/v2/package</PushArgs>
-    </PropertyGroup>
-    <Exec Command="nuget push $(PushArgs)"/>
   </Target>
 </Project>

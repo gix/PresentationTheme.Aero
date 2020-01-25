@@ -1,0 +1,12 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Workarounds.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)DeterministicBuild.targets"/>
+
+  <ImportGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
+    <Import Project="$(MSBuildThisFileDirectory)GenerateVersionInfo.targets"/>
+  </ImportGroup>
+
+  <Target Condition="'$(MSBuildProjectExtension)' == '.vcxproj'" Name="VerifyBuildProperties" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(OutputPlatform)' == ''" Text="OutputPlatform property is empty!"/>
+  </Target>
+</Project>

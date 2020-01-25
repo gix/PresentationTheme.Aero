@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
     <GeneratedVersionInfoFile Condition="'$(GeneratedVersionInfoFile)' ==''">$(IntermediateOutputPath)$(MSBuildProjectName).Version.rc</GeneratedVersionInfoFile>
     <GenerateVersionInfo Condition="'$(GenerateVersionInfo)' == ''">true</GenerateVersionInfo>
+    <IgnoreVersionsInVersionInfoHash Condition="'$(IgnoreVersionsInVersionInfoHash)' == ''">false</IgnoreVersionsInVersionInfoHash>
   </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)CreateVersionResource.targets"/>
 
   <PropertyGroup Condition=" '$(Version)' == '' ">
     <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">1.0.0</VersionPrefix>
@@ -18,11 +20,6 @@
     <InternalName Condition=" '$(InternalName)' == '' ">$(TargetName)</InternalName>
     <OriginalFilename Condition=" '$(OriginalFilename)' == '' ">$(TargetName)$(TargetExt)</OriginalFilename>
     <Product Condition=" '$(Product)' == '' ">$(TargetName)</Product>
-    <ProductVersion Condition=" '$(ProductVersion)' == '' ">$(InformationalVersion)</ProductVersion>
-    <ProductVersion Condition=" '$(ProductVersion)' == '' ">$(FileVersion)</ProductVersion>
-    <ProductVersion Condition=" '$(ProductVersion)' == '' ">$(AssemblyVersion)</ProductVersion>
-    <SimpleFileVersion Condition=" '$(SimpleFileVersion)' == '' ">$(FileVersion)</SimpleFileVersion>
-    <SimpleProductVersion Condition=" '$(SimpleProductVersion)' == '' ">$(AssemblyVersion)</SimpleProductVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GenerateVersionInfo)' == 'true'">
@@ -39,109 +36,49 @@
     <GenerateModuleTrademarkAttribute Condition="'$(GenerateModuleTrademarkAttribute)' == ''">true></GenerateModuleTrademarkAttribute>
     <GenerateModuleTitleAttribute Condition="'$(GenerateModuleTitleAttribute)' == ''">true</GenerateModuleTitleAttribute>
     <GenerateModuleVersionAttribute Condition="'$(GenerateModuleVersionAttribute)' == ''">true</GenerateModuleVersionAttribute>
+    <IncludeSourceRevisionInInformationalVersion Condition="'$(IncludeSourceRevisionInInformationalVersion)' == ''">true</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
-
-  <UsingTask TaskName="CreateVersionResource"
-             TaskFactory="CodeTaskFactory"
-             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <SimpleFileVersion ParameterType="System.String"/>
-      <SimpleProductVersion ParameterType="System.String"/>
-      <ConfigurationType ParameterType="System.String"/>
-      <IsDebugBuild ParameterType="System.Boolean"/>
-      <LangId ParameterType="System.Int32"/>
-      <Attributes ParameterType="Microsoft.Build.Framework.ITaskItem[]"/>
-      <OutputFile ParameterType="Microsoft.Build.Framework.ITaskItem" Output="true"/>
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System"/>
-      <Using Namespace="System.Linq"/>
-      <Using Namespace="System.IO"/>
-      <Using Namespace="System.Text"/>
-      <Code Type="Fragment" Language="cs">
-<![CDATA[
-    var fileVersion = SimpleFileVersion ?? "0.0.0.0";
-    var productVersion = SimpleProductVersion ?? "0.0.0.0";
-
-    int fileFlags = 0;
-    if (IsDebugBuild)
-        fileFlags |= 0x1;
-    if (Attributes.Any(x => x.ItemSpec == "PrivateBuild"))
-        fileFlags |= 0x8; // VS_FF_PRIVATEBUILD
-    if (Attributes.Any(x => x.ItemSpec == "SpecialBuild"))
-        fileFlags |= 0x20; // VS_FF_SPECIALBUILD
-
-    int fileOS = 0x40004; // VOS_NT_WINDOWS32;
-
-    int fileType;
-    switch (ConfigurationType) {
-    default:               fileType = 0; break; // VFT_UNKNOWN
-    case "Application":    fileType = 1; break; // VFT_APP
-    case "DynamicLibrary": fileType = 2; break; // VFT_DLL
-    case "StaticLibrary":  fileType = 7; break; // VFT_STATIC_LIB
-    }
-
-    if (LangId == 0)
-        LangId = 0x409; // U.S. English
-    int charsetId = 1200; // Unicode
-
-    var buffer = new StringBuilder();
-    buffer.AppendLine("#define APSTUDIO_READONLY_SYMBOLS");
-    buffer.AppendLine("#include \"afxres.h\"");
-    buffer.AppendLine("#undef APSTUDIO_READONLY_SYMBOLS");
-    buffer.AppendLine("LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US");
-    buffer.AppendLine("#pragma code_page(1252)");
-    buffer.AppendLine("VS_VERSION_INFO VERSIONINFO");
-    buffer.AppendFormat("  FILEVERSION {0}", fileVersion.Replace(".", ","));
-    buffer.AppendLine();
-    buffer.AppendFormat("  PRODUCTVERSION {0}", productVersion.Replace(".", ","));
-    buffer.AppendLine();
-    buffer.AppendLine("  FILEFLAGSMASK 0x3FL");
-    buffer.AppendFormat("  FILEFLAGS 0x{0:X}L", fileFlags);
-    buffer.AppendLine();
-    buffer.AppendFormat("  FILEOS 0x{0:X}L", fileOS);
-    buffer.AppendLine();
-    buffer.AppendFormat("  FILETYPE 0x{0:X}L", fileType);
-    buffer.AppendLine();
-    buffer.AppendLine("  FILESUBTYPE 0x0L");
-    buffer.AppendLine("BEGIN");
-    buffer.AppendLine("    BLOCK \"StringFileInfo\"");
-    buffer.AppendLine("    BEGIN");
-    buffer.AppendFormat("        BLOCK \"{0:X4}{1:X4}\"", LangId, charsetId);
-    buffer.AppendLine();
-    buffer.AppendLine("        BEGIN");
-
-    foreach (var attrib in Attributes) {
-        buffer.AppendFormat("            VALUE \"{0}\", \"{1}\"", attrib.ItemSpec, attrib.GetMetadata("Value"));
-        buffer.AppendLine();
-    }
-
-    buffer.AppendLine("        END");
-    buffer.AppendLine("    END");
-    buffer.AppendLine("    BLOCK \"VarFileInfo\"");
-    buffer.AppendLine("    BEGIN");
-    buffer.AppendFormat("        VALUE \"Translation\", {0:D}, {0:D}", LangId, charsetId);
-    buffer.AppendLine();
-    buffer.AppendLine("    END");
-    buffer.AppendLine("END");
-
-    File.WriteAllText(OutputFile.GetMetadata("FullPath"), buffer.ToString());
-]]>
-      </Code>
-    </Task>
-  </UsingTask>
 
   <Target Name="GenerateVersionInfo"
           BeforeTargets="BeforeResourceCompile"
           DependsOnTargets="CoreGenerateVersionInfo"
-          Condition="'$(GenerateVersionInfo)' == 'true'" />
+          Condition="('$(ConfigurationType)' == 'Application' or '$(ConfigurationType)' == 'DynamicLibrary') and '$(GenerateVersionInfo)' == 'true'"/>
 
-  <Target Name="CoreGenerateVersionInfo"
-          Condition="'$(Language)'=='C' or '$(Language)'=='C++'"
-          Inputs="$(MSBuildAllProjects)"
-          Outputs="$(GeneratedVersionInfoFile)">
+  <Target Name="GetModuleVersion">
+    <PropertyGroup>
+      <ProductVersion Condition=" '$(ProductVersion)' == '' ">$(VersionPrefix).$(VersionSuffixDateStamp)</ProductVersion>
+      <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).$(VersionSuffixDateStamp)</FileVersion>
+      <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(Version)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="InitializeSourceControlInformation" Condition="'$(SourceRevisionId)' == ''">
+    <PropertyGroup>
+      <_DotGitDir>$(RepoRoot).git</_DotGitDir>
+      <_HeadFileContent Condition="Exists('$(_DotGitDir)/HEAD')">$([System.IO.File]::ReadAllText('$(_DotGitDir)/HEAD').Trim())</_HeadFileContent>
+      <_RefPath Condition="$(_HeadFileContent.StartsWith('ref: '))">$(_DotGitDir)/$(_HeadFileContent.Substring(5))</_RefPath>
+      <SourceRevisionId Condition="'$(_RefPath)' != '' and Exists('$(_RefPath)')">$([System.IO.File]::ReadAllText('$(_RefPath)').Trim())</SourceRevisionId>
+      <SourceRevisionId Condition="'$(_HeadFileContent)' != '' and '$(_RefPath)' == ''">$(_HeadFileContent)</SourceRevisionId>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="AddSourceRevisionToInformationalVersion"
+          DependsOnTargets="GetModuleVersion;InitializeSourceControlInformation"
+          Condition="'$(SourceControlInformationFeatureSupported)' == 'true' and '$(IncludeSourceRevisionInInformationalVersion)' == 'true'">
+    <PropertyGroup Condition="'$(SourceRevisionId)' != ''">
+      <!-- Follow SemVer 2.0 rules -->
+      <_InformationalVersionContainsPlus>false</_InformationalVersionContainsPlus>
+      <_InformationalVersionContainsPlus Condition="$(InformationalVersion.Contains('+'))">true</_InformationalVersionContainsPlus>
+
+      <InformationalVersion Condition="!$(_InformationalVersionContainsPlus)">$(InformationalVersion)+$(SourceRevisionId)</InformationalVersion>
+      <InformationalVersion Condition="$(_InformationalVersionContainsPlus)">$(InformationalVersion).$(SourceRevisionId)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="GetModuleAttributes"
+          DependsOnTargets="GetModuleVersion;AddSourceRevisionToInformationalVersion">
     <ItemGroup>
-      <ModuleAttribute Include="Comments" Condition="'$(Description)' != '' and '$(GenerateModuleCommentsAttribute)' == 'true'">
+      <ModuleAttribute Include="Comments" Condition="'$(Description)' != '' and '$(GenerateModuleDescriptionAttribute)' == 'true'">
         <Value>$(Description)</Value>
       </ModuleAttribute>
       <ModuleAttribute Include="CompanyName" Condition="'$(Company)' != '' and '$(GenerateModuleCompanyAttribute)' == 'true'">
@@ -168,13 +105,47 @@
       <ModuleAttribute Include="FileVersion" Condition="'$(FileVersion)' != '' and '$(GenerateModuleFileVersionAttribute)' == 'true'">
         <Value>$(FileVersion)</Value>
       </ModuleAttribute>
-      <ModuleAttribute Include="ProductVersion" Condition="'$(ProductVersion)' != '' and '$(GenerateModuleProductVersionAttribute)' == 'true'">
-        <Value>$(ProductVersion)</Value>
+      <ModuleAttribute Include="ProductVersion" Condition="'$(InformationalVersion)' != '' and '$(GenerateModuleInformationalVersionAttribute)' == 'true'">
+        <Value>$(InformationalVersion)</Value>
       </ModuleAttribute>
     </ItemGroup>
+  </Target>
 
-    <CreateVersionResource SimpleFileVersion="$(SimpleFileVersion)"
-                           SimpleProductVersion="$(SimpleProductVersion)"
+  <!--
+    To allow version changes to be respected on incremental builds (e.g. through
+    CLI parameters), create a hash of all module attributes so that the cache
+    file will change with the calculated module attribute values and msbuild
+    will then execute CoreGenerateVersionInfo to generate a new file.
+  -->
+  <Target Name="CreateGeneratedVersionInfoInputsCacheFile"
+          DependsOnTargets="GetModuleAttributes">
+    <PropertyGroup>
+      <GeneratedVersionInfoInputsCacheFile>$(IntermediateOutputPath)$(MSBuildProjectName).VersionInfoInputs.cache</GeneratedVersionInfoInputsCacheFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <_VersionInfoHashInput Include="@(ModuleAttribute->'%(Identity)%(Value)')"/>
+      <_VersionInfoHashInput Condition=" '$(IgnoreVersionsInVersionInfoHash)' == 'true' and ('%(ModuleAttribute.Identity)' == 'FileVersion' or '%(ModuleAttribute.Identity)' == 'ProductVersion') "
+                             Remove="@(ModuleAttribute->'%(Identity)%(Value)')"/>
+    </ItemGroup>
+
+    <Hash ItemsToHash="@(_VersionInfoHashInput)">
+      <Output TaskParameter="HashResult" PropertyName="_ModuleAttributesHash" />
+    </Hash>
+
+    <WriteLinesToFile Lines="$(_ModuleAttributesHash)" File="$(GeneratedVersionInfoInputsCacheFile)" Overwrite="True" WriteOnlyWhenDifferent="True" />
+
+    <ItemGroup>
+      <FileWrites Include="$(GeneratedVersionInfoInputsCacheFile)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CoreGenerateVersionInfo"
+          Condition="'$(Language)'=='C' or '$(Language)'=='C++'"
+          DependsOnTargets="CreateGeneratedVersionInfoInputsCacheFile"
+          Inputs="$(MSBuildAllProjects)"
+          Outputs="$(GeneratedVersionInfoFile)">
+    <CreateVersionResource FileVersion="$(FileVersion)"
+                           ProductVersion="$(ProductVersion)"
                            ConfigurationType="$(ConfigurationType)"
                            IsDebugBuild="$(UseDebugLibraries)"
                            Attributes="@(ModuleAttribute)"

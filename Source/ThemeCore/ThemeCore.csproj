@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>netcoreapp3.0;net462</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net47</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <ProjectGuid>{839BCDAF-C880-4F9E-B3B6-388C2AE77156}</ProjectGuid>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

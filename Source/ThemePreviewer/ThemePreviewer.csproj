@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>netcoreapp3.0;net462</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;net47</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -25,7 +25,7 @@
       <NoWarn>NU1701</NoWarn>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
     <Reference Include="ReachFramework.dll"/>
   </ItemGroup>
   <ItemGroup>
@@ -39,8 +39,8 @@
     <ProjectReference Include="..\ThemeCore\ThemeCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(OutDir)..\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
-    <None Include="$(OutDir)..\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(BaseOutputPath)UxThemeEx\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(BaseOutputPath)UxThemeEx\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

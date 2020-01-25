@@ -1,67 +1,68 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.5.1</VersionPrefix>
-    <Company></Company>
-    <Copyright></Copyright>
-    <Authors>Nico Rieck</Authors>
-    <Product></Product>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <UseSharedOutputPath>true</UseSharedOutputPath>
-    <DeterministicSourcePaths>true</DeterministicSourcePaths>
-  </PropertyGroup>
-
-  <Import Project="GitHead.props"/>
-  <Import Project="Version.props"/>
-  <Import Project="RepoLayout.props"/>
-  <Import Project="ProjectLayout.props"/>
-
-  <PropertyGroup>
-    <BuildCommit>$(GitHeadSha)</BuildCommit>
-  </PropertyGroup>
-
-  <ItemDefinitionGroup>
+<Project>
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
     <ClCompile>
+      <!-- Enable exceptions and RTTI -->
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+
+      <!-- Create debug symbols for all build types -->
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+
+      <!-- Enable Just My Code debugging for debug builds -->
+      <SupportJustMyCode Condition="'$(IsDebugBuild)' != 'false'">true</SupportJustMyCode>
+
+      <!-- Run-Time Error Checks for debug builds -->
+      <BasicRuntimeChecks Condition="'$(IsDebugBuild)' != 'false'">EnableFastChecks</BasicRuntimeChecks>
+
+      <!-- Optimization -->
+      <Optimization Condition="'$(IsDebugBuild)' != 'false'">Disabled</Optimization>
+      <InlineFunctionExpansion Condition="'$(IsDebugBuild)' != 'false'">Disabled</InlineFunctionExpansion>
+      <WholeProgramOptimization Condition="'$(IsDebugBuild)' != 'false'">false</WholeProgramOptimization>
+
+      <Optimization Condition="'$(IsDebugBuild)' == 'false'">MaxSpeed</Optimization>
+      <InlineFunctionExpansion Condition="'$(IsDebugBuild)' == 'false'">Default</InlineFunctionExpansion>
+      <AdditionalOptions Condition="'$(IsDebugBuild)' == 'false'">%(AdditionalOptions) /Ob3</AdditionalOptions>
+      <OmitFramePointers Condition="'$(IsDebugBuild)' == 'false'">false</OmitFramePointers>
+      <WholeProgramOptimization Condition="'$(IsDebugBuild)' == 'false'">true</WholeProgramOptimization>
+
       <!-- Diagnostics -->
       <WarningLevel>Level4</WarningLevel>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
 
       <!-- C4200: nonstandard extension used : zero-sized array in struct/union -->
-      <DisableSpecificWarnings>4200;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4200</DisableSpecificWarnings>
 
       <!-- C4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2' -->
-      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4251</DisableSpecificWarnings>
 
       <!-- C4275: non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2' -->
-      <DisableSpecificWarnings>4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4275</DisableSpecificWarnings>
 
       <!-- C4324: 'struct_name' : structure was padded due to __declspec(align())
            This warning can be safely ignored. It is just a note that the type
            is smaller than its alignment. -->
-      <DisableSpecificWarnings>4324;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4324</DisableSpecificWarnings>
 
       <!-- C4456: declaration of 'identifier' hides previous local declaration -->
       <!-- C4457: declaration of 'identifier' hides function parameter -->
       <!-- C4458: declaration of 'identifier' hides class member -->
       <!-- C4459: declaration of 'identifier' hides global declaration -->
-      <DisableSpecificWarnings>4456;4457;4458;4459;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4456;4457;4458;4459</DisableSpecificWarnings>
 
       <!-- C4505: 'function' : unreferenced local function has been removed -->
-      <DisableSpecificWarnings>4505;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4505</DisableSpecificWarnings>
 
       <!-- C4512 'class' : assignment operator could not be generated -->
-      <DisableSpecificWarnings>4512;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4512</DisableSpecificWarnings>
 
       <!-- C4013: 'function' undefined; assuming extern returning int -->
-      <TreatSpecificWarningsAsErrors>4013;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4013</TreatSpecificWarningsAsErrors>
 
       <!-- C4099: 'identifier' : type name first seen using 'objecttype1' now seen using 'objecttype2' -->
-      <TreatSpecificWarningsAsErrors>4099;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4099;</TreatSpecificWarningsAsErrors>
 
       <!-- C4130: 'operator' : logical operation on address of string constant -->
-      <TreatSpecificWarningsAsErrors>4130;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4130;</TreatSpecificWarningsAsErrors>
 
       <!-- C4150: deletion of pointer to incomplete type 'type'; no destructor called
            While allowed, this is dangerous. The standard says:
@@ -71,53 +72,53 @@
            In other words, if and only if the destructor turns out to be trivial,
            it is legal. But the compiler does not have enough information when
            this warning is emitted. -->
-      <TreatSpecificWarningsAsErrors>4150;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4150</TreatSpecificWarningsAsErrors>
 
       <!-- C4172: returning address of local variable or temporary -->
-      <TreatSpecificWarningsAsErrors>4172;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4172</TreatSpecificWarningsAsErrors>
 
       <!-- C4471: 'enumeration': a forward declaration of an unscoped enumeration must have an underlying type (int assumed)
            The standard forbids forward declarations of enums without explicit
            underlying type. MSVC is lenient enough and assumes int for such enums
            which might be wrong (too small or too large). -->
-      <TreatSpecificWarningsAsErrors>4471;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4471</TreatSpecificWarningsAsErrors>
 
       <!-- C4477: 'function' : format string 'string' requires an argument of type 'type', but variadic argument number has type 'type' -->
-      <TreatSpecificWarningsAsErrors>4477;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4477</TreatSpecificWarningsAsErrors>
 
       <!-- C4715: 'function' : not all control paths return a value -->
-      <TreatSpecificWarningsAsErrors>4715;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4715</TreatSpecificWarningsAsErrors>
 
       <!-- C4840: non-portable use of class 'type' as an argument to a variadic function
            This warning usually crops up by using strings classes as argument
            to formatting functions. Enforce explicit conversion to a compatible
            type, e.g. to a C string using a cast, '.c_str()' or similar. -->
-      <TreatSpecificWarningsAsErrors>4840;%(TreatSpecificWarningsAsErrors)</TreatSpecificWarningsAsErrors>
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4840</TreatSpecificWarningsAsErrors>
 
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- Warning settings for external headers. All headers included with <> are
+           treated as external. -->
+      <AdditionalOptions>%(AdditionalOptions) /experimental:external /external:anglebrackets</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /external:W0</AdditionalOptions>
 
       <!-- Enforce unique output paths -->
-      <ProgramDataBaseFileName Condition=" '$(ConfigurationType)' == 'StaticLibrary' ">$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName Condition="'$(ConfigurationType)' == 'StaticLibrary'">$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)%(RelativeDir)</AssemblerListingLocation>
-
-      <!-- Unconditionally enable debugging for debug and release configurations. -->
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
 
       <!-- Make the compiler emit individual COMDAT sections for functions and
            global data to enable linker optimizations. -->
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalOptions>/Gw %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /Gw</AdditionalOptions>
 
       <!-- Enable faster PDB generation. -->
-      <AdditionalOptions>/Zf %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /Zf</AdditionalOptions>
 
-      <!-- Use UTF-8 for all files -->
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <!-- Use UTF-8 for all files. -->
+      <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
 
       <!-- Standard Conformance -->
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <LanguageStandard Condition="'$(CLRSupport)' != 'false'">stdcpp17</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
 
       <!-- Conformance: Enforce the C++11 requirement that all functions declared
@@ -126,34 +127,47 @@
       <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
 
       <!-- Conformance: Use external linkage for constexpr variables. -->
-      <AdditionalOptions>/Zc:externConstexpr %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:externConstexpr</AdditionalOptions>
 
       <!-- Conformance: Assume that operator new throws std::bad_alloc instead
            of returning a null pointer. Avoids unnecessary null checks for
            allocation. -->
-      <AdditionalOptions>/Zc:throwingNew %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:throwingNew</AdditionalOptions>
 
       <!-- Conformance: Enables the __cplusplus preprocessor macro to report an
            updated value for recent C++ language standards support. -->
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
+
+      <AdditionalOptions Condition="'$(CLRSupport)' != 'false'">%(AdditionalOptions) /Zc:twoPhase-</AdditionalOptions>
+
+      <!-- Conformance: Enable (experimental) standard conform preprocessor. -->
+      <AdditionalOptions Condition="'$(CLRSupport)' == 'false'">%(AdditionalOptions) /experimental:preprocessor</AdditionalOptions>
 
       <!-- Enable deterministic build. -->
-      <AdditionalOptions>/experimental:deterministic %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /experimental:deterministic</AdditionalOptions>
+
+      <!-- Target Windows 8 -->
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_WIN32_WINNT=0x0602</PreprocessorDefinitions>
+
+      <!-- Windows SDK -->
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;VC_EXTRALEAN;NOMINMAX</PreprocessorDefinitions>
 
       <!-- CoreCRT options -->
+
       <PreprocessorDefinitions>__STDC_WANT_LIB_EXT1__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+
+      <!-- Enable C99-conforming format specifies. -->
       <PreprocessorDefinitions>_CRT_STDIO_ISO_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <!-- Target Windows 8 -->
-      <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <!-- Windows SDK -->
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
 
     <ClCompile Condition="'$(IsDebugBuild)'=='false'">
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
 
+    <Lib>
+      <TargetMachine Condition="'$(Platform)'=='Win32'">MachineX86</TargetMachine>
+      <TargetMachine Condition="'$(Platform)'=='x64'">MachineX64</TargetMachine>
+    </Lib>
     <Lib Condition="'$(IsDebugBuild)'=='false'">
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
@@ -189,4 +203,17 @@
       </ClCompile>
     </ItemGroup>
   </Target>
+
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <HighEntropyVA>true</HighEntropyVA>
+    <ChecksumAlgorithm>SHA256</ChecksumAlgorithm>
+
+    <!-- Disable XML doc warnings in debug builds. -->
+    <!-- CS1573: Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' -->
+    <NoWarn Condition="'$(Configuration)'!='Release'">$(NoWarn);1573</NoWarn>
+    <!-- CS1574: XML comment on 'construct' has syntactically incorrect cref attribute 'name'  -->
+    <NoWarn Condition="'$(Configuration)'!='Release'">$(NoWarn);1574</NoWarn>
+    <!-- CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member' -->
+    <NoWarn Condition="'$(Configuration)'!='Release'">$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
 </Project>

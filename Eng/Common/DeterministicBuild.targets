@@ -1,11 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)GenerateVersionInfo.targets" />
-
-  <Target Name="VerifyBuildProperties" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(OutputPlatform)' == ''" Text="OutputPlatform property is empty!"/>
-  </Target>
-
+<Project>
   <Target Name="_InitializeSourceRootMappedPathsFromSourceControl"
           DependsOnTargets="InitializeSourceControlInformation"
           Condition="'$(SourceControlInformationFeatureSupported)' == 'true'"/>

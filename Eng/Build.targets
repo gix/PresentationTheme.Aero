@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="Common\Postamble.targets"/>
+
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' and '$(IsWpfTempProject)' != 'true'">
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+</Project>

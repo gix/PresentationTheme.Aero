@@ -1,0 +1,10 @@
+<Project>
+  <Import Project="Versions.props"/>
+  <Import Project="Common\Preamble.props"/>
+
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
+    <VCToolsVersion>14.24.28314</VCToolsVersion>
+  </PropertyGroup>
+
+  <Import Project="SharedProperties.props"/>
+</Project>

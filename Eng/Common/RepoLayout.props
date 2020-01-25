@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <RepoRoot Condition="'$(RepoRoot)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)..\..\'))</RepoRoot>
+  </PropertyGroup>
+</Project>

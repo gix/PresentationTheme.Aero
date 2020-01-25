@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup Condition="'$(OfficialBuild)' == 'true' or '$(UseShippingVersions)' == 'true'">
     <_BuildNumber>$(OfficialBuildId)</_BuildNumber>
     <_BuildNumber Condition="'$(OfficialBuildId)' == ''">$([System.DateTime]::Now.ToString(yyyyMMdd)).1</_BuildNumber>
@@ -18,7 +17,7 @@
     <!-- REVISION := r -->
     <VersionSuffixBuildOfTheDay>$(_BuildNumberR)</VersionSuffixBuildOfTheDay>
     <VersionSuffixBuildOfTheDayPadded>$(VersionSuffixBuildOfTheDay.PadLeft(2, $([System.Convert]::ToChar(`0`))))</VersionSuffixBuildOfTheDayPadded>
-  
+
     <!-- PATCH_NUMBER := (SHORT_DATE - VersionBaseShortDate) * 100 + r -->
     <_PatchNumber>$([MSBuild]::Add($([MSBuild]::Multiply($([MSBuild]::Subtract($(VersionSuffixDateStamp), $([MSBuild]::ValueOrDefault($(VersionBaseShortDate), 19000)))), 100)), $(_BuildNumberR)))</_PatchNumber>
   </PropertyGroup>
@@ -33,7 +32,7 @@
     <FinalVersionKind Condition="'$(FinalVersionKind)' == '' and '$(_PreReleaseLabel)' == ''">release</FinalVersionKind>
 
     <_BuildNumberLabels Condition="'$(VersionSuffixDateStamp)' != ''">.$(VersionSuffixDateStamp).$(VersionSuffixBuildOfTheDay)</_BuildNumberLabels>
-    
+
     <!--
       If FinalVersionKind is specified, overrides the package version produced by the build like so:
         ""           1.2.3-beta.12345.67

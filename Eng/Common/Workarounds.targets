@@ -1,0 +1,43 @@
+<Project>
+  <!-- Place the generated AssemblyAttributes source file into IntDir. By
+       default it is generated in the user's temp directory.
+       https://github.com/Microsoft/msbuild/issues/1479 -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj' and '$(CLRSupport)' != 'false'">
+    <TargetFrameworkMonikerAssemblyAttributesPath>$(IntermediateOutputPath)$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)</TargetFrameworkMonikerAssemblyAttributesPath>
+    <TargetFrameworkMonikerAssemblyAttributesFileClean>true</TargetFrameworkMonikerAssemblyAttributesFileClean>
+  </PropertyGroup>
+
+  <!-- The TargetFrameworkMonikerAssemblyAttributesPath source file is added as
+       a ClCompile item using the path as-is. If this path is absolute, using
+       %(RelativeDir) for ClCompile properties can result in invalid paths
+       (e.g., when ObjectFileName is set to '$(IntDir)%(RelativeDir)', the
+       resulting path looks like 'C:\path\to\C:\path\to\file.obj'). To avoid
+       this, affected properties are explicitly overwritten here. -->
+  <Target Name="UpdateTargetFrameworkMonikerAttributeCompile"
+          BeforeTargets="ComputeReferenceCLInput;ClCompile"
+          DependsOnTargets="GenerateTargetFrameworkMonikerAttribute"
+          AfterTargets="GenerateTargetFrameworkMonikerAttribute"
+          Condition="'$(GenerateTargetFrameworkAttribute)' == 'true'">
+    <ItemGroup>
+      <ClCompile Condition="'%(ClCompile.Identity)' == '$(TargetFrameworkMonikerAssemblyAttributesPath)'">
+        <AssemblerListingLocation>$(TargetFrameworkMonikerAssemblyAttributesPath).asm</AssemblerListingLocation>
+        <ObjectFileName>$(TargetFrameworkMonikerAssemblyAttributesPath).obj</ObjectFileName>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
+
+  <!-- Import NuGet targets to WPF temp projects (workaround for
+       https://github.com/dotnet/sourcelink/issues/91) -->
+  <Import Project="$(_WpfTempProjectNuGetFilePathNoExt).targets"
+          Condition="'$(_WpfTempProjectNuGetFilePathNoExt)' != '' and Exists('$(_WpfTempProjectNuGetFilePathNoExt).targets')"/>
+
+  <!-- The build tasks for WPF projects generate a randomly-named temporary
+       assembly as an intermediate step. The resulting artifacts are meant to
+       be cleaned up, but since our project layout uses the project name in all
+       output paths, an empty directory with a random name would be left
+       behind. Strip the randomized part so the OutDir is equal to the real
+       project. -->
+  <PropertyGroup Condition="'$(IsWpfTempProject)' == 'true'">
+    <OutDir>$([System.Text.RegularExpressions.Regex]::Replace($(OutputPath),'_[^_]+?_wpftmp',''))</OutDir>
+  </PropertyGroup>
+</Project>
