@@ -4,7 +4,7 @@ param(
 )
 
 Set-StrictMode -Version 2
-$ErrorActionPreference = 'Error'
+$ErrorActionPreference = 'Stop'
 
 $packages = ('easyhook')
 $triplets = ('x64-windows-vc142-mt')
