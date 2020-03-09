@@ -1,0 +1,22 @@
+<Project>
+  <!-- This targets file ensures that the usually unreferenced theme assemblies
+       are copied to the output directory and are available during development
+       without any manual steps. -->
+
+  <ItemGroup>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win10.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win10.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win10.*"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="@(PresentationThemeAssembly)">
+      <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+</Project>

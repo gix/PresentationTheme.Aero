@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - ListViewItem using ThemeOptions.UseExplorerStyle now correctly honors
   horizontal alignment.
+- Theme assemblies are copied again to the output directory for .NET framework
+  projects.
 
 ## [0.6.0] - 2020-01-25
 ### Fixed
