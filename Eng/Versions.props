@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.6.0</VersionPrefix>
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">0.6.1</VersionPrefix>
     <PreReleaseVersionLabel>preview</PreReleaseVersionLabel>
   </PropertyGroup>
 </Project>
