@@ -1490,8 +1490,7 @@
                       BorderThickness="{TemplateBinding BorderThickness}"
                       Background="{TemplateBinding Background}"
                       Padding="{TemplateBinding Padding}"
-                      SnapsToDevicePixels="True"
-                      HorizontalAlignment="Left">
+                      SnapsToDevicePixels="True">
                 <!-- Use a negative margin on the row presenter instead of a
                      reduced padding on the border to be able to use the same
                      padding values for explorer and non-explorer style. -->

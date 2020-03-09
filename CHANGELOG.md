@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2020-03-09
+### Fixed
+- ListViewItem using ThemeOptions.UseExplorerStyle now correctly honors
+  horizontal alignment.
+
 ## [0.6.0] - 2020-01-25
 ### Fixed
 - NuGet package metadata references proper source revision.
