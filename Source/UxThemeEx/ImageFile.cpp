@@ -46,8 +46,8 @@ static HRGN _PixelsToRgn(DWORD* pdwBits, int cxImageOffset, int cyImageOffset,
                          int cxImage, int cyImage, int cxSrc, int cySrc, DIBINFO* pdi)
 {
     unsigned nAllocRects = 512;
-    auto prgData =
-        make_unique_malloc<RGNDATA>(sizeof(RGNDATAHEADER) + nAllocRects * sizeof(RECT));
+    auto prgData = make_unique_malloc<RGNDATA>(sizeof(RGNDATAHEADER) +
+                                               nAllocRects * sizeof(RECT));
     if (!prgData)
         return nullptr;
 
@@ -306,8 +306,8 @@ HRESULT CImageFile::CreateScaledBackgroundImage(CRenderObj* pRender, int iPartId
         return S_FALSE;
 
     HBITMAP hbmp = nullptr;
-    HRESULT hr =
-        pRender->ExternalGetBitmap(nullptr, imageToScale->iDibOffset, GBF_DIRECT, &hbmp);
+    HRESULT hr = pRender->ExternalGetBitmap(nullptr, imageToScale->iDibOffset, GBF_DIRECT,
+                                            &hbmp);
     if (hr < 0)
         return hr;
 
@@ -462,8 +462,8 @@ HRESULT CImageFile::PackProperties(CRenderObj* pRender, int iPartId, int iStateI
             pdi = &_GlyphInfo;
 
         for (int i = 0; i < 7; ++i) {
-            int index =
-                pRender->GetValueIndex(iPartId, iStateId, Map_Ordinal_To_DIBDATA(i));
+            int index = pRender->GetValueIndex(iPartId, iStateId,
+                                               Map_Ordinal_To_DIBDATA(i));
             if (index == -1)
                 break;
 
@@ -677,17 +677,17 @@ HRESULT CImageFile::ScaleMargins(MARGINS* pMargins, HDC hdcOrig, CRenderObj* pRe
             scaleY = (int)scaleY;
 
         if (scaleX != 1.0f) {
-            pMargins->cxLeftWidth =
-                (int)std::floor((pMargins->cxLeftWidth * scaleX) + 0.5);
-            pMargins->cxRightWidth =
-                (int)std::floor((pMargins->cxRightWidth * scaleX) + 0.5);
+            pMargins->cxLeftWidth = (int)std::floor((pMargins->cxLeftWidth * scaleX) +
+                                                    0.5);
+            pMargins->cxRightWidth = (int)std::floor((pMargins->cxRightWidth * scaleX) +
+                                                     0.5);
         }
 
         if (scaleY != 1.0f) {
-            pMargins->cyTopHeight =
-                (int)std::floor((pMargins->cyTopHeight * scaleY) + 0.5);
-            pMargins->cyBottomHeight =
-                (int)std::floor((pMargins->cyBottomHeight * scaleY) + 0.5);
+            pMargins->cyTopHeight = (int)std::floor((pMargins->cyTopHeight * scaleY) +
+                                                    0.5);
+            pMargins->cyBottomHeight = (int)std::floor(
+                (pMargins->cyBottomHeight * scaleY) + 0.5);
         }
     }
 
@@ -851,8 +851,9 @@ DIBINFO* CImageFile::SelectCorrectImageFile(CRenderObj* pRender, HDC hdc, RECT c
 HRESULT CImageFile::DrawFontGlyph(CRenderObj* pRender, HDC hdc, RECT* prc,
                                   DTBGOPTS const* pOptions)
 {
-    RECT const* const clipRect =
-        (pOptions && pOptions->dwFlags & DTBG_CLIPRECT) ? &pOptions->rcClip : nullptr;
+    RECT const* const clipRect = (pOptions && pOptions->dwFlags & DTBG_CLIPRECT)
+                                     ? &pOptions->rcClip
+                                     : nullptr;
 
     SaveClipRegion scrOrig;
     HGDIOBJ oldFont = nullptr;
@@ -1207,9 +1208,9 @@ HRESULT CImageFile::DrawBackgroundDS(DIBINFO* pdi, TMBITMAPHEADER* pThemeBitmapH
 
         hDsBitmap = hBitmapStock;
     } else {
-        hBitmapTempUnscaled =
-            CreateUnscaledBitmap(hdc, pdi->uhbm.hBitmap, offsetX, offsetY,
-                                 pdi->iSingleWidth, pdi->iSingleHeight, false);
+        hBitmapTempUnscaled = CreateUnscaledBitmap(hdc, pdi->uhbm.hBitmap, offsetX,
+                                                   offsetY, pdi->iSingleWidth,
+                                                   pdi->iSingleHeight, false);
         if (!hBitmapTempUnscaled)
             return TRACE_HR(E_FAIL);
 
@@ -1447,22 +1448,22 @@ static HRESULT ScaleRectsAndCreateRegion(RGNDATA const* prd, RECT const* prcDest
                 break;
             case 6:
                 pptAlloc->x = prcDest->left + std::min(v62, pptSrc->x);
-                pptAlloc->y =
-                    gridposDest.yBottom + pptSrc->y +
-                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->y = gridposDest.yBottom + pptSrc->y +
+                              std::min(margins.cyBottomHeight - pMargins->cyBottomHeight,
+                                       0);
                 break;
             case 7:
                 pptAlloc->x = gridposDest.xLeft + v61 * pptSrc->x / xLeftOffset;
-                pptAlloc->y =
-                    gridposDest.yBottom + pptSrc->y +
-                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->y = gridposDest.yBottom + pptSrc->y +
+                              std::min(margins.cyBottomHeight - pMargins->cyBottomHeight,
+                                       0);
                 break;
             case 8:
                 pptAlloc->x = gridposDest.xRight + pptSrc->x +
                               std::min(margins.cxRightWidth - pMargins->cxRightWidth, 0);
-                pptAlloc->y =
-                    gridposDest.yBottom + pptSrc->y +
-                    std::min(margins.cyBottomHeight - pMargins->cyBottomHeight, 0);
+                pptAlloc->y = gridposDest.yBottom + pptSrc->y +
+                              std::min(margins.cyBottomHeight - pMargins->cyBottomHeight,
+                                       0);
                 break;
             }
         }
@@ -1499,8 +1500,8 @@ HRESULT CImageFile::GetBackgroundRegion(CRenderObj* pRender, HDC hdc, int iState
             iStateId = 0;
 
         if (auto iRgnDataOffset = rgnList[iStateId]) {
-            auto rgnData =
-                (RGNDATA*)(&pRender->_pbSharableData[iRgnDataOffset] + sizeof(ENTRYHDR));
+            auto rgnData = (RGNDATA*)(&pRender->_pbSharableData[iRgnDataOffset] +
+                                      sizeof(ENTRYHDR));
 
             SIZE sz = {};
             MARGINS marDest = _SizingMargins;
@@ -1544,8 +1545,8 @@ HRESULT CImageFile::HitTestBackground(CRenderObj* pRender, HDC hdc, int iStateId
     MARGINS margins = {};
     if (dwHTFlags & HTTB_SYSTEMSIZINGMARGINS && dwHTFlags & HTTB_RESIZINGBORDER &&
         !(dwHTFlags & HTTB_SIZINGTEMPLATE)) {
-        int cxBorder =
-            GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+        int cxBorder = GetSystemMetrics(SM_CXSIZEFRAME) +
+                       GetSystemMetrics(SM_CXPADDEDBORDER);
         if (dwHTFlags & HTTB_RESIZINGBORDER_LEFT)
             margins.cxLeftWidth = cxBorder;
         if (dwHTFlags & HTTB_RESIZINGBORDER_RIGHT)

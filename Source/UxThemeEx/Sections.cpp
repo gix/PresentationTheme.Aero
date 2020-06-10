@@ -32,8 +32,8 @@ HRESULT Section::OpenSection(wchar_t const* sectionName, bool mapView)
     InitializeObjectAttributes(&objA, &name, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
 
     ModuleHandle ntdllHandle{LoadLibraryW(L"ntdll.dll")};
-    auto NtOpenSectionPtr =
-        (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle, "NtOpenSection");
+    auto NtOpenSectionPtr = (decltype(NtOpenSection)*)GetProcAddress(ntdllHandle,
+                                                                     "NtOpenSection");
 
     SectionHandle sectionHandle;
     NTSTATUS st = NtOpenSectionPtr(sectionHandle.CloseAndGetAddressOf(),

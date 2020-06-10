@@ -41,6 +41,7 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 DerivePointerAlignment: false
 PointerAlignment: Left
+PenaltyBreakAssignment: 200
 PenaltyReturnTypeOnItsOwnLine: 200
 ReflowComments: false
 SortIncludes: true

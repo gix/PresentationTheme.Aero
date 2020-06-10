@@ -22,8 +22,8 @@ static HRESULT _BitmapFromDib(HDC hdc, void* const pvDibBits, HBITMAP* phBitmap)
     auto bitmapInfo = (BITMAPINFO const*)pvDibBits;
 
     void* pvBits;
-    HBITMAP bitmap =
-        CreateDIBSection(hdc, bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr, 0);
+    HBITMAP bitmap = CreateDIBSection(hdc, bitmapInfo, DIB_RGB_COLORS, &pvBits, nullptr,
+                                      0);
 
     BYTE* srcBits = (BYTE*)bitmapInfo + bitmapInfo->bmiHeader.biSize +
                     4 * bitmapInfo->bmiHeader.biClrUsed;
@@ -524,8 +524,8 @@ HRESULT CRenderObj::GetTransitionDuration(int iPartId, int iStateIdFrom, int iSt
     if (intList.iValueCount == 1)
         *pdwDuration = 0;
     else
-        *pdwDuration =
-            intList.iValues[iStateIdTo + intList.iValues[0] * (iStateIdFrom - 1)];
+        *pdwDuration = intList
+                           .iValues[iStateIdTo + intList.iValues[0] * (iStateIdFrom - 1)];
 
     return S_OK;
 }

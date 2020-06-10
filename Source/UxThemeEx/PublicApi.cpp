@@ -56,8 +56,8 @@ static HRESULT LoadThemeLibrary(wchar_t const* pszThemePath, HMODULE* phInst,
 
     void* data;
     unsigned len;
-    HRESULT hr =
-        GetPtrToResource(module, L"PACKTHEM_VERSION", MAKEINTRESOURCEW(1), &data, &len);
+    HRESULT hr = GetPtrToResource(module, L"PACKTHEM_VERSION", MAKEINTRESOURCEW(1), &data,
+                                  &len);
 
     if (FAILED(hr) || len != 2)
         return HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
@@ -204,8 +204,8 @@ static HRESULT MatchThemeClass(wchar_t const* pszClassId, CUxThemeFile* pThemeFi
 {
     auto liveClasses = (APPCLASSLIVE*)((BYTE*)pThemeFile->ThemeHeader() +
                                        pThemeFile->ThemeHeader()->iSectionIndexOffset);
-    int numClasses =
-        pThemeFile->ThemeHeader()->iSectionIndexLength / sizeof(APPCLASSLIVE);
+    int numClasses = pThemeFile->ThemeHeader()->iSectionIndexLength /
+                     sizeof(APPCLASSLIVE);
     if (!numClasses)
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 
@@ -237,8 +237,8 @@ static HRESULT MatchThemeApp(wchar_t const* pszAppName, wchar_t const* pszClassI
 {
     auto liveClasses = (APPCLASSLIVE*)((BYTE*)pThemeFile->ThemeHeader() +
                                        pThemeFile->ThemeHeader()->iSectionIndexOffset);
-    int numClasses =
-        pThemeFile->ThemeHeader()->iSectionIndexLength / sizeof(APPCLASSLIVE);
+    int numClasses = pThemeFile->ThemeHeader()->iSectionIndexLength /
+                     sizeof(APPCLASSLIVE);
 
     for (int i = 0; i < numClasses; ++i) {
         auto const& liveClass = liveClasses[i];
@@ -514,8 +514,8 @@ THEMEEXAPI UxOpenThemeFileEx(_In_ wchar_t const* themeFileName, bool highContras
                                reuseSection.CloseAndGetAddressOf(), true, highContrast));
     SetHighContrastMode(highContrast);
 
-    auto themeFile =
-        make_unique_nothrow<CUxThemeFile>(std::move(loader._LoadingThemeFile));
+    auto themeFile = make_unique_nothrow<CUxThemeFile>(
+        std::move(loader._LoadingThemeFile));
     auto renderList = make_unique_nothrow<CRenderList>();
     if (!themeFile || !renderList)
         return E_OUTOFMEMORY;
@@ -610,8 +610,8 @@ THEMEEXAPI UxGetThemeAnimationProperty(_In_ HTHEMEFILE hThemeFile, _In_ HTHEME h
             return HRESULT_FROM_WIN32(ERROR_MORE_DATA);
 
         AnimationProperty const* animationProperty;
-        hr =
-            renderObj->GetAnimationProperty(iStoryboardId, iTargetId, &animationProperty);
+        hr = renderObj->GetAnimationProperty(iStoryboardId, iTargetId,
+                                             &animationProperty);
         if (FAILED(hr))
             continue;
 
@@ -1575,8 +1575,8 @@ THEMEEXAPI UxDrawThemeParentBackgroundEx(_In_ HTHEMEFILE hThemeFile, _In_ HWND h
                         HGDIOBJ pen = GetStockObject(NULL_PEN);
                         HGDIOBJ prevPen = SelectObject(hdc, pen);
                         HGDIOBJ prevBrush = SelectObject(hdc, hbrBack);
-                        UINT prevState =
-                            SetBoundsRect(hdc, nullptr, DCB_RESET | DCB_ENABLE);
+                        UINT prevState = SetBoundsRect(hdc, nullptr,
+                                                       DCB_RESET | DCB_ENABLE);
 
                         LONG left = prc->left;
                         LONG right = prc->right + 1;

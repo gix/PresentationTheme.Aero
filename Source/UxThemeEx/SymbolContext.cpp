@@ -52,9 +52,9 @@ HRESULT SymbolContext::LoadModule(HMODULE module)
 {
     std::wstring path;
     ENSURE_HR(GetModuleFileNameW(module, path));
-    DWORD64 const baseAddr =
-        SymLoadModuleExW(GetCurrentProcess(), nullptr, path.data(), nullptr,
-                         reinterpret_cast<uintptr_t>(module), 0, nullptr, 0);
+    DWORD64 const baseAddr = SymLoadModuleExW(
+        GetCurrentProcess(), nullptr, path.data(), nullptr,
+        reinterpret_cast<uintptr_t>(module), 0, nullptr, 0);
     if (!baseAddr)
         return GetLastErrorAsHResult();
 

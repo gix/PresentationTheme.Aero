@@ -42,14 +42,14 @@ HRESULT CUxThemeFile::CreateFileW(wchar_t* pszSharableSectionName,
         flags |= SEC_RESERVE;
     _hSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags, 0,
                                            iSharableSectionLength, nullptr);
-    _pbSharableData =
-        (THEMEHDR*)MapViewOfFile(_hSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    _pbSharableData = (THEMEHDR*)MapViewOfFile(_hSharableSection, FILE_MAP_ALL_ACCESS, 0,
+                                               0, 0);
     _cbSharableData = iSharableSectionLength;
 
     _hNonSharableSection = CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, flags, 0,
                                               iNonSharableSectionLength, nullptr);
-    _pbNonSharableData =
-        (BYTE*)MapViewOfFile(_hNonSharableSection, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    _pbNonSharableData = (BYTE*)MapViewOfFile(_hNonSharableSection, FILE_MAP_ALL_ACCESS,
+                                              0, 0, 0);
     _cbNonSharableData = iNonSharableSectionLength;
     return S_OK;
 }
@@ -91,8 +91,8 @@ HRESULT CUxThemeFile::OpenFromHandle(HANDLE hSharableSection, HANDLE hNonSharabl
     if (!_pbSharableData)
         hr = MakeErrorLast();
 
-    _pbNonSharableData =
-        (BYTE*)MapViewOfFile(hNonSharableSection, desiredAccess, 0, 0, 0);
+    _pbNonSharableData = (BYTE*)MapViewOfFile(hNonSharableSection, desiredAccess, 0, 0,
+                                              0);
     _hNonSharableSection = hNonSharableSection;
     if (!_pbNonSharableData)
         hr = MakeErrorLast();
@@ -138,8 +138,8 @@ LOGFONTW const* CUxThemeFile::GetFontByIndex(unsigned short index) const
     if (index >= _pbSharableData->cFonts)
         assert("FRE: index < pHeader->cFonts");
 
-    auto ptr =
-        reinterpret_cast<BYTE*>(&_pbSharableData[index]) + _pbSharableData->iFontsOffset;
+    auto ptr = reinterpret_cast<BYTE*>(&_pbSharableData[index]) +
+               _pbSharableData->iFontsOffset;
     return reinterpret_cast<LOGFONTW const*>(ptr);
 }
 

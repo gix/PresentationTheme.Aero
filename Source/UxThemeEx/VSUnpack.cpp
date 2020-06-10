@@ -424,8 +424,8 @@ static void AppendFontResComment(wchar_t** ppszCommentBuf, size_t* pcchComment,
         return;
 
     size_t appendLen = lstrlenW(pszStrToAppend);
-    HRESULT hr =
-        StringCchCopyNW(*ppszCommentBuf, *pcchComment, pszStrToAppend, appendLen);
+    HRESULT hr = StringCchCopyNW(*ppszCommentBuf, *pcchComment, pszStrToAppend,
+                                 appendLen);
     if (hr == STRSAFE_E_INSUFFICIENT_BUFFER) {
         *ppszCommentBuf = nullptr;
         *pcchComment = 0;
@@ -721,8 +721,8 @@ static HRESULT AllocIntlistRecord(wchar_t const* pszValue, VSRECORD** ppRecord,
     int count;
     ENSURE_HR(ParseIntlist(pszValue, &values, &count));
 
-    HRESULT hr =
-        _AllocateRecordPlusData(values, sizeof(int) * count, ppRecord, pcbRecord);
+    HRESULT hr = _AllocateRecordPlusData(values, sizeof(int) * count, ppRecord,
+                                         pcbRecord);
     delete[] values;
     return hr;
 }
@@ -871,8 +871,8 @@ static HRESULT LoadRGBRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* p
     wchar_t const* cbuffer = buffer;
     ENSURE_HR(ParseIntegerTokenList(&cbuffer, values, &count));
 
-    *(unsigned*)pvData =
-        (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) | ((values[2] & 0xFF) << 16);
+    *(unsigned*)pvData = (values[0] & 0xFF) | ((values[1] & 0xFF) << 8) |
+                         ((values[2] & 0xFF) << 16);
     return S_OK;
 }
 
@@ -966,10 +966,10 @@ static HRESULT LoadFontRes(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* 
 struct PARSETABLE
 {
     THEMEPRIMITIVEID tpi;
-    HRESULT (*pfnAlloc)
+    HRESULT(*pfnAlloc)
     (wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
      VSERRORCONTEXT* pEcx);
-    HRESULT (*pfnAllocRes)
+    HRESULT(*pfnAllocRes)
     (wchar_t const* pszValue, VSRECORD** ppRecord, int cbType, int* pcbRecord,
      unsigned uResID, VSRESOURCE* pvsr, VSERRORCONTEXT* pEcx);
     HRESULT (*pfnLoad)(HMODULE hInst, VSRECORD* pRecord, void* pvData, int* pcbData);
@@ -1739,8 +1739,8 @@ HRESULT CVSUnpack::_GetPropertyValue(void* pvBits, int cbBits, int iClass, int i
                                      int* pcbValue)
 {
     VSRECORD* pRecord;
-    HRESULT hr =
-        _FindVSRecord(pvBits, cbBits, iClass, iPart, iState, lSymbolVal, &pRecord);
+    HRESULT hr = _FindVSRecord(pvBits, cbBits, iClass, iPart, iState, lSymbolVal,
+                               &pRecord);
     if (FAILED(hr))
         return hr;
     return LoadVSRecordData(_hInst, pRecord, pvValue, pcbValue);
@@ -1756,8 +1756,8 @@ CVSUnpack::_GetImagePropertiesForHC(IMAGEPROPERTIES** ppImageProperties,
         return E_OUTOFMEMORY;
 
     for (int i = 0; i < iImageCount; ++i) {
-        DWORD borderColor =
-            MapEnumToSysColor((HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBorderColor);
+        DWORD borderColor = MapEnumToSysColor(
+            (HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBorderColor);
         DWORD backgroundColor = MapEnumToSysColor(
             (HIGHCONTRASTCOLOR)pHCImageProperties[i].lHCBackgroundColor);
 
@@ -1776,8 +1776,8 @@ HRESULT CVSUnpack::_CreateImageFromProperties(IMAGEPROPERTIES const* pImagePrope
                                               MARGINS const* pTransparentMargins,
                                               BYTE** ppbNewBitmap, int* pcbNewBitmap)
 {
-    MARGINS const transparentMargin =
-        pTransparentMargins ? *pTransparentMargins : MARGINS();
+    MARGINS const transparentMargin = pTransparentMargins ? *pTransparentMargins
+                                                          : MARGINS();
 
     int const width = transparentMargin.cxLeftWidth + transparentMargin.cxRightWidth +
                       pSizingMargins->cxLeftWidth + pSizingMargins->cxRightWidth + 1;
@@ -1819,10 +1819,10 @@ HRESULT CVSUnpack::_CreateImageFromProperties(IMAGEPROPERTIES const* pImagePrope
                                      x >= width - transparentMargin.cxRightWidth ||
                                      y < transparentMargin.cyBottomHeight ||
                                      y >= height - transparentMargin.cyTopHeight;
-                bool isBorder =
-                    x != transparentMargin.cxLeftWidth + pSizingMargins->cxLeftWidth ||
-                    y != height - pSizingMargins->cyTopHeight -
-                             transparentMargin.cyTopHeight - 1;
+                bool isBorder = x != transparentMargin.cxLeftWidth +
+                                         pSizingMargins->cxLeftWidth ||
+                                y != height - pSizingMargins->cyTopHeight -
+                                         transparentMargin.cyTopHeight - 1;
 
                 if (isTransparent)
                     *pixel = 0;
@@ -1877,8 +1877,8 @@ HRESULT CVSUnpack::_ExpandVSRecordForColor(IParserCallBack* pfnCB, VSRECORD* pRe
             if (!IsHighContrastMode())
                 return S_OK;
 
-            DWORD value =
-                MapEnumToSysColor(*reinterpret_cast<HIGHCONTRASTCOLOR*>(pbData));
+            DWORD value = MapEnumToSysColor(
+                *reinterpret_cast<HIGHCONTRASTCOLOR*>(pbData));
             return pfnCB->AddData(entry.lSymbolVal, TMT_COLOR, &value, sizeof(value));
         }
 
@@ -1910,9 +1910,9 @@ HRESULT CVSUnpack::_ExpandVSRecordForMargins(IParserCallBack* pfnCB, VSRECORD* p
         MARGINS margins = {};
         int size = 16;
 
-        HRESULT hr =
-            _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
-                              pRec->iState, TMT_TRANSPARENTMARGINS, &margins, &size);
+        HRESULT hr = _GetPropertyValue(_pbClassData, _cbClassData, pRec->iClass,
+                                       pRec->iPart, pRec->iState, TMT_TRANSPARENTMARGINS,
+                                       &margins, &size);
         if (hr < 0)
             return hr == HRESULT_FROM_WIN32(ERROR_NO_MATCH) ? S_FALSE : hr;
 
@@ -2191,8 +2191,8 @@ HRESULT CVSUnpack::_ExpandVSRecordData(IParserCallBack* pfnCB, VSRECORD* pRec,
                         _pbClassData, _cbClassData, pRec->iClass, pRec->iPart,
                         pRec->iState, TMT_HCGLYPHBGCOLOR, &hcGlyphBGColor, &valueSize))) {
                     hasGlyphBGColor = true;
-                    glyphBGColor =
-                        static_cast<unsigned>(MapEnumToSysColor(hcGlyphBGColor));
+                    glyphBGColor = static_cast<unsigned>(
+                        MapEnumToSysColor(hcGlyphBGColor));
                 }
             }
 

@@ -289,8 +289,8 @@ HRESULT CTextDraw::DrawTextW(HTHEMEFILE hThemeFile, CRenderObj* pRender, HDC hdc
     }
 
     if (isComposited) {
-        DTT_CALLBACK_PROC const callback =
-            hasCallback ? pOptions->pfnDrawTextCallback : nullptr;
+        DTT_CALLBACK_PROC const callback = hasCallback ? pOptions->pfnDrawTextCallback
+                                                       : nullptr;
         LPARAM const callbackParam = hasCallback ? pOptions->lParam : 0;
 
         rc = *pRect;

@@ -866,8 +866,8 @@ static void DumpEntry(LogFile& log, ENTRYHDR* entry, CUxThemeFile const& themeFi
             log.Indent();
             DumpAnimationTransform(log, transform);
             log.Outdent();
-            transform =
-                Advance(transform, CTransformSerializer::GetTransformSize(transform));
+            transform = Advance(transform,
+                                CTransformSerializer::GetTransformSize(transform));
         }
     } else if (entry->usTypeNum == TMT_TIMINGFUNCTION) {
         auto timingFunction = (TA_TIMINGFUNCTION const*)(entry + 1);
@@ -1011,10 +1011,10 @@ static void DumpSectionIndex(LogFile& log, CUxThemeFile const& themeFile)
         auto appName = p->AppClassInfo.iAppNameIndex
                            ? (wchar_t const*)Advance(hdr, p->AppClassInfo.iAppNameIndex)
                            : L"<no app>";
-        auto className =
-            p->AppClassInfo.iClassNameIndex
-                ? (wchar_t const*)Advance(hdr, p->AppClassInfo.iClassNameIndex)
-                : L"<no class>";
+        auto className = p->AppClassInfo.iClassNameIndex
+                             ? (wchar_t const*)Advance(hdr,
+                                                       p->AppClassInfo.iClassNameIndex)
+                             : L"<no class>";
 
         log.Log("%-10ls %-30ls  idx:%05d len:%05d base:%05d\n", appName, className,
                 p->iIndex, p->iLen, p->iBaseClassIndex);
