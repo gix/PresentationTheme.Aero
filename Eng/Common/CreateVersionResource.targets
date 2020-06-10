@@ -115,7 +115,8 @@
     buffer.AppendLine("    END");
     buffer.AppendLine("END");
 
-    File.WriteAllText(OutputFile.GetMetadata("FullPath"), buffer.ToString(), Encoding.UTF8);
+    var encoding = new UTF8Encoding(false);
+    File.WriteAllText(OutputFile.GetMetadata("FullPath"), buffer.ToString());
 ]]>
       </Code>
     </Task>
