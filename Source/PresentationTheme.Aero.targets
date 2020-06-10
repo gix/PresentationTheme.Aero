@@ -4,12 +4,12 @@
        without any manual steps. -->
 
   <ItemGroup>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win8.*"/>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win8.*"/>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win8.*"/>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.Aero.Win10.*"/>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.AeroLite.Win10.*"/>
-    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\lib\net45\PresentationTheme.HighContrast.Win10.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.Aero.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.AeroLite.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.HighContrast.Win8.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.Aero.Win10.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.AeroLite.Win10.*"/>
+    <PresentationThemeAssembly Include="$(MSBuildThisFileDirectory)..\..\lib\net45\PresentationTheme.HighContrast.Win10.*"/>
   </ItemGroup>
 
   <ItemGroup>
