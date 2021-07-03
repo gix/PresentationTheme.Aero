@@ -1,9 +1,17 @@
-<Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
+    <WholeProgramOptimization Condition="'$(IsDebugBuild)' != 'false'">false</WholeProgramOptimization>
+    <WholeProgramOptimization Condition="'$(IsDebugBuild)' == 'false'">true</WholeProgramOptimization>
+  </PropertyGroup>
+
   <ItemDefinitionGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
     <ClCompile>
       <!-- Enable exceptions and RTTI -->
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <!-- C++/CLI does not support synchronous exceptions. -->
+      <ExceptionHandling Condition="'$(CLRSupport)' == 'true'">Async</ExceptionHandling>
 
       <!-- Create debug symbols for all build types -->
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -13,6 +21,7 @@
 
       <!-- Run-Time Error Checks for debug builds -->
       <BasicRuntimeChecks Condition="'$(IsDebugBuild)' != 'false'">EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks Condition="'$(CLRSupport)' == 'true'">Default</BasicRuntimeChecks>
 
       <!-- Optimization -->
       <Optimization Condition="'$(IsDebugBuild)' != 'false'">Disabled</Optimization>
@@ -28,6 +37,31 @@
       <!-- Diagnostics -->
       <WarningLevel>Level4</WarningLevel>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
+
+      <!-- Emit full source paths in diagnostics -->
+      <UseFullPaths>true</UseFullPaths>
+
+      <!-- C4013: 'function' undefined; assuming extern returning int -->
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4013</TreatSpecificWarningsAsErrors>
+
+      <!-- C4099: 'identifier' : type name first seen using 'objecttype1' now seen using 'objecttype2' -->
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4099</TreatSpecificWarningsAsErrors>
+
+      <!-- C4130: 'operator' : logical operation on address of string constant -->
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4130</TreatSpecificWarningsAsErrors>
+
+      <!-- C4150: deletion of pointer to incomplete type 'type'; no destructor called
+           While allowed, this is dangerous. The standard says:
+             If the object being deleted has incomplete class type at the point
+             of deletion and the complete class has a non-trivial destructor or
+             a deallocation function, the behavior is undefined.
+           In other words, if and only if the destructor turns out to be trivial,
+           it is legal. But the compiler does not have enough information when
+           this warning is emitted. -->
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4150</TreatSpecificWarningsAsErrors>
+
+      <!-- C4172: returning address of local variable or temporary -->
+      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4172</TreatSpecificWarningsAsErrors>
 
       <!-- C4200: nonstandard extension used : zero-sized array in struct/union -->
       <DisableSpecificWarnings>%(DisableSpecificWarnings);4200</DisableSpecificWarnings>
@@ -49,34 +83,6 @@
       <!-- C4459: declaration of 'identifier' hides global declaration -->
       <DisableSpecificWarnings>%(DisableSpecificWarnings);4456;4457;4458;4459</DisableSpecificWarnings>
 
-      <!-- C4505: 'function' : unreferenced local function has been removed -->
-      <DisableSpecificWarnings>%(DisableSpecificWarnings);4505</DisableSpecificWarnings>
-
-      <!-- C4512 'class' : assignment operator could not be generated -->
-      <DisableSpecificWarnings>%(DisableSpecificWarnings);4512</DisableSpecificWarnings>
-
-      <!-- C4013: 'function' undefined; assuming extern returning int -->
-      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4013</TreatSpecificWarningsAsErrors>
-
-      <!-- C4099: 'identifier' : type name first seen using 'objecttype1' now seen using 'objecttype2' -->
-      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4099;</TreatSpecificWarningsAsErrors>
-
-      <!-- C4130: 'operator' : logical operation on address of string constant -->
-      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4130;</TreatSpecificWarningsAsErrors>
-
-      <!-- C4150: deletion of pointer to incomplete type 'type'; no destructor called
-           While allowed, this is dangerous. The standard says:
-             If the object being deleted has incomplete class type at the point
-             of deletion and the complete class has a non-trivial destructor or
-             a deallocation function, the behavior is undefined.
-           In other words, if and only if the destructor turns out to be trivial,
-           it is legal. But the compiler does not have enough information when
-           this warning is emitted. -->
-      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4150</TreatSpecificWarningsAsErrors>
-
-      <!-- C4172: returning address of local variable or temporary -->
-      <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4172</TreatSpecificWarningsAsErrors>
-
       <!-- C4471: 'enumeration': a forward declaration of an unscoped enumeration must have an underlying type (int assumed)
            The standard forbids forward declarations of enums without explicit
            underlying type. MSVC is lenient enough and assumes int for such enums
@@ -85,6 +91,12 @@
 
       <!-- C4477: 'function' : format string 'string' requires an argument of type 'type', but variadic argument number has type 'type' -->
       <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4477</TreatSpecificWarningsAsErrors>
+
+      <!-- C4505: 'function' : unreferenced local function has been removed -->
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4505</DisableSpecificWarnings>
+
+      <!-- C4512 'class' : assignment operator could not be generated -->
+      <DisableSpecificWarnings>%(DisableSpecificWarnings);4512</DisableSpecificWarnings>
 
       <!-- C4715: 'function' : not all control paths return a value -->
       <TreatSpecificWarningsAsErrors>%(TreatSpecificWarningsAsErrors);4715</TreatSpecificWarningsAsErrors>
@@ -97,8 +109,9 @@
 
       <!-- Warning settings for external headers. All headers included with <> are
            treated as external. -->
-      <AdditionalOptions>%(AdditionalOptions) /experimental:external /external:anglebrackets</AdditionalOptions>
-      <AdditionalOptions>%(AdditionalOptions) /external:W0</AdditionalOptions>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>Level1</ExternalWarningLevel>
+      <ExternalTemplatesDiagnostics>true</ExternalTemplatesDiagnostics>
 
       <!-- Enforce unique output paths -->
       <ProgramDataBaseFileName Condition="'$(ConfigurationType)' == 'StaticLibrary'">$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -118,6 +131,7 @@
 
       <!-- Standard Conformance -->
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <!-- C++/CLI only supports C++17 -->
       <LanguageStandard Condition="'$(CLRSupport)' != 'false'">stdcpp17</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
 
@@ -138,10 +152,11 @@
            updated value for recent C++ language standards support. -->
       <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
 
+      <!-- Two-phase name lookup is not supported for C++/CLI. -->
       <AdditionalOptions Condition="'$(CLRSupport)' != 'false'">%(AdditionalOptions) /Zc:twoPhase-</AdditionalOptions>
 
-      <!-- Conformance: Enable (experimental) standard conform preprocessor. -->
-      <AdditionalOptions Condition="'$(CLRSupport)' == 'false'">%(AdditionalOptions) /experimental:preprocessor</AdditionalOptions>
+      <!-- Conformance: Enable standard conform preprocessor. -->
+      <AdditionalOptions Condition="'$(CLRSupport)' == 'false'">%(AdditionalOptions) /Zc:preprocessor</AdditionalOptions>
 
       <!-- Enable deterministic build. -->
       <AdditionalOptions>%(AdditionalOptions) /experimental:deterministic</AdditionalOptions>
@@ -179,7 +194,7 @@
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
       <ImageHasSafeExceptionHandlers Condition="'$(Platform)'=='Win32'">true</ImageHasSafeExceptionHandlers>
       <SetChecksum>true</SetChecksum>
     </Link>

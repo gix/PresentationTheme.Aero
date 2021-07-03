@@ -20,12 +20,12 @@
     <BuildProperties>Configuration=$(Configuration);Platform=AnyCPU;OfficialBuildId=$(OfficialBuildId)</BuildProperties>
     <PlatformBuildProperties>Configuration=$(Configuration);Platform=$(Platform);OfficialBuildId=$(OfficialBuildId)</PlatformBuildProperties>
     <PackProperties>$(BuildProperties);IncludeSource=true</PackProperties>
-    <PackageDir>$(MSBuildThisFileDirectory)build\dist\</PackageDir>
+    <PackageDir>$(MSBuildThisFileDirectory)build\publish\</PackageDir>
     <ToolsOutputPath>$(MSBuildThisFileDirectory)build\x64\bin\</ToolsOutputPath>
     <GitHubPagesDir>Docs\_site\</GitHubPagesDir>
   </PropertyGroup>
 
-  <Import Project="Eng\Versions.props"/>
+  <Import Project="Eng\ProjectInfo.props"/>
   <Import Project="Eng\Common\Common.props"/>
   <Import Project="Eng\Common\RepoLayout.props"/>
   <Import Project="Eng\Common\ProjectLayout.props"/>

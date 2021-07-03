@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)Workarounds.targets"/>
-  <Import Project="$(MSBuildThisFileDirectory)DeterministicBuild.targets"/>
+  <Import Project="Workarounds.targets"/>
+  <Import Project="DeterministicBuild.targets"/>
 
   <ImportGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
-    <Import Project="$(MSBuildThisFileDirectory)GenerateVersionInfo.targets"/>
+    <Import Project="GenerateVersionInfo.targets"/>
   </ImportGroup>
 
   <Target Condition="'$(MSBuildProjectExtension)' == '.vcxproj'" Name="VerifyBuildProperties" BeforeTargets="PrepareForBuild">

@@ -1,9 +1,12 @@
 <Project>
-  <Import Project="Versions.props"/>
+  <Import Project="ProjectInfo.props"/>
   <Import Project="Common\Preamble.props"/>
 
   <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.vcxproj'">
-    <VCToolsVersion>14.24.28314</VCToolsVersion>
+    <VCToolsVersion>14.29.30037</VCToolsVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <UseMultiToolTask>true</UseMultiToolTask>
+    <EnforceProcessCountAcrossBuilds>true</EnforceProcessCountAcrossBuilds>
   </PropertyGroup>
 
   <Import Project="SharedProperties.props"/>

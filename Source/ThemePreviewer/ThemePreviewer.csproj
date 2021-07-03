@@ -39,8 +39,8 @@
     <ProjectReference Include="..\ThemeCore\ThemeCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(BaseOutputPath)UxThemeEx\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
-    <None Include="$(BaseOutputPath)UxThemeEx\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(BinDir)UxThemeEx\UxThemeEx.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="$(BinDir)UxThemeEx\EasyHook64.dll" Visible="false" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

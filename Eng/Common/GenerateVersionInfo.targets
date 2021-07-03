@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
     <GeneratedVersionInfoFile Condition="'$(GeneratedVersionInfoFile)' ==''">$(IntermediateOutputPath)$(MSBuildProjectName).Version.rc</GeneratedVersionInfoFile>
@@ -5,7 +6,7 @@
     <IgnoreVersionsInVersionInfoHash Condition="'$(IgnoreVersionsInVersionInfoHash)' == ''">false</IgnoreVersionsInVersionInfoHash>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)CreateVersionResource.targets"/>
+  <Import Project="CreateVersionResource.targets"/>
 
   <PropertyGroup Condition=" '$(Version)' == '' ">
     <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">1.0.0</VersionPrefix>

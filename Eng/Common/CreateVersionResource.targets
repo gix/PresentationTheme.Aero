@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <!--
     Task: CreateVersionResource
@@ -115,7 +116,6 @@
     buffer.AppendLine("    END");
     buffer.AppendLine("END");
 
-    var encoding = new UTF8Encoding(false);
     File.WriteAllText(OutputFile.GetMetadata("FullPath"), buffer.ToString());
 ]]>
       </Code>
