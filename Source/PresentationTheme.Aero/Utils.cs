@@ -109,12 +109,9 @@ namespace PresentationTheme.Aero
                 return false; // < .NET 4.7.1
 
             var frameworkDescription = (string)frameworkDescriptionProperty.GetValue(null);
-            bool isNetCore = frameworkDescription.StartsWith(
-                ".NET Core", StringComparison.OrdinalIgnoreCase);
-            if (!isNetCore)
-                return false;
-
-            return true;
+            bool isNetFx = frameworkDescription.StartsWith(
+                ".NET Framework", StringComparison.OrdinalIgnoreCase);
+            return !isNetFx;
         }
 
         public static MemoryPatch HookMethod(MethodInfo original, MethodInfo replacement)
