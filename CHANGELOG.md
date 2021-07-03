@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [vNext]
+## [0.6.3] - 2021-07-04
 ### Fixed
 - ThemeManager hooking now works on .NET 5+.
 
