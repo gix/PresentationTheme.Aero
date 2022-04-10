@@ -12,6 +12,12 @@
       <Setter Property="Margin" Value="0"/>
       <Setter Property="Padding" Value="6,1"/>
     </Style>
+    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+      <Setter Property="MinWidth" Value="75"/>
+      <Setter Property="MinHeight" Value="23"/>
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="Padding" Value="6,1"/>
+    </Style>
   </UserControl.Resources>
   <Grid Margin="3">
     <StackPanel>
@@ -20,6 +26,7 @@
           <Button Content="Button" Margin="0,0,0,6" HorizontalAlignment="Left"/>
           <Button x:Name="defaulted" Content="Default" IsDefault="True" Margin="0,0,0,6" HorizontalAlignment="Left"/>
           <Button Content="Disabled" IsEnabled="False" Margin="0,0,0,6" HorizontalAlignment="Left"/>
+          <ToggleButton Content="Toggled" IsChecked="True" HorizontalAlignment="Left" Margin="0,0,0,6"/>
         </StackPanel>
         <StackPanel Margin="22,0,0,0">
           <Button x:Name="normalChrome" Margin="0,0,0,6" HorizontalAlignment="Left" IsHitTestVisible="False"/>

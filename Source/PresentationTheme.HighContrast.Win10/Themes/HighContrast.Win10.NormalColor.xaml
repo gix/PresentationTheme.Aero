@@ -362,7 +362,8 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ButtonBase}">
-          <aero10:ButtonChrome Style="{StaticResource {x:Type aero10:ButtonChrome}}"
+          <aero10:ButtonChrome x:Name="ButtonChrome"
+                               Style="{StaticResource {x:Type aero10:ButtonChrome}}"
                                Focusable="False"
                                Background="{TemplateBinding Background}"
                                BorderBrush="{TemplateBinding BorderBrush}"
@@ -377,6 +378,11 @@
                                ContentStringFormat="{TemplateBinding ContentStringFormat}"
                                ContentTemplate="{TemplateBinding ContentTemplate}"
                                ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"/>
+          <ControlTemplate.Triggers>
+            <Trigger Property="ToggleButton.IsChecked" Value="True">
+              <Setter TargetName="ButtonChrome" Property="RenderPressed" Value="True"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>

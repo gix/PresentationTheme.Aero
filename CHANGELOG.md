@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [vNext]
+### Fixed
+- ToggleButton style does not show IsCheckes state. (#8)
+
 ## [0.6.3] - 2021-07-04
 ### Fixed
 - ThemeManager hooking now works on .NET 5+.
