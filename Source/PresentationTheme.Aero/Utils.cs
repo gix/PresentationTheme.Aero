@@ -333,9 +333,10 @@ namespace PresentationTheme.Aero
         {
             var backup = new byte[instructions.Length];
             Marshal.Copy(address, backup, 0, backup.Length);
-            if (backup.Any(x => x == 0xCC))
+            if (backup[0] == 0xCC) {
                 throw new InvalidOperationException(
-                    "Refusing to patch memory due to breakpoints/INT3 in target memory.");
+                    "Refusing to patch memory due to breakpoint/INT3 in target memory.");
+            }
 
             WriteMemory(address, instructions);
             return new MemoryPatch(address, backup);
