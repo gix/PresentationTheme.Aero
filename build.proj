@@ -194,6 +194,7 @@
     <Error Condition="!Exists(@(ToolItem))" Text="Missing file: %(ToolItem.Identity)"/>
     <Zip ZipFileName="$(PackageDir)ThemeTools-$(Version).zip"
          WorkingDirectory="$(ToolsOutputPath)"
-         Files="@(ToolItem)"/>
+         Files="@(ToolItem)"
+         Flatten="true"/>
   </Target>
 </Project>
