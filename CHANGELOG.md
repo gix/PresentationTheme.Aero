@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [vNext]
+## [0.6.4] - 2022-04-10
 ### Fixed
 - ToggleButton style does not show IsCheckes state. (#8)
 
